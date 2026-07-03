@@ -1,46 +1,160 @@
-# Getting Started with Create React App
+# Fullstack E-commerce
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności Full Stack Web Development oraz zaprezentowania praktycznej znajomości współczesnych technologii wykorzystywanych przy tworzeniu aplikacji webowych.
 
-## Available Scripts
+## Funkcjonalności
 
-In the project directory, you can run:
+### Użytkownik
 
-### `npm start`
+* Rejestracja i logowanie użytkowników
+* Autoryzacja z wykorzystaniem JWT
+* Zarządzanie profilem użytkownika
+* Przeglądanie produktów
+* Wyszukiwanie i filtrowanie produktów
+* Sortowanie produktów
+* Szczegóły produktu
+* Dodawanie produktów do koszyka
+* Zarządzanie zawartością koszyka
+* Składanie zamówień
+* Historia zamówień
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Administrator
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+* Zarządzanie produktami (CRUD)
+* Zarządzanie kategoriami
+* Zarządzanie użytkownikami
+* Zarządzanie zamówieniami
+* Dashboard z podstawowymi statystykami
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Technologie
 
-### `npm run build`
+### Frontend
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* React
+* TypeScript
+* React Router
+* TanStack Query
+* Axios
+* React Hook Form - w trakcie implementacji
+* Zod - w trakcie implementacji
+* Tailwind CSS
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Backend
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+* Node.js
+* Express.js
+* TypeScript
+* MySQL
+* JWT Authentication
+* bcrypt
+* Multer
+* CORS
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Struktura projektu
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```text
+fullstack-ecommerce/
+│
+├── frontend/          
+├── backend/         
+└── README.md
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+---
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Uruchomienie projektu
 
-## Learn More
+### 1. Sklonuj repozytorium
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+git clone https://github.com/MiloszDubiel/fullstack-ecommerce.git
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 2. Przejdź do katalogu projektu
+
+```bash
+cd fullstack-ecommerce
+```
+
+### 3. Instalacja zależności
+
+Frontend
+
+```bash
+cd frontend
+npm install
+```
+
+Backend
+
+```bash
+cd ../backend
+npm install
+```
+
+### 4. Konfiguracja zmiennych środowiskowych
+
+Utwórz plik `.env` w katalogu `server` i uzupełnij odpowiednimi wartościami.
+
+Przykład:
+
+```env
+DATABASE_URL=
+JWT_SECRET=
+PORT=5000
+```
+
+
+### 5. Uruchom aplikację
+
+Backend
+
+```bash
+npm run dev
+```
+
+Frontend
+
+```bash
+npm run dev
+```
+
+---
+
+## 📌 Planowane funkcjonalności
+
+* Integracja płatności (Stripe)
+* Lista ulubionych produktów
+* Opinie i oceny produktów
+* Powiadomienia e-mail
+* Wyszukiwarka z podpowiedziami
+* Panel administratora
+* Upload zdjęć produktów
+* Dashboard sprzedaży
+* Dark Mode
+* Docker
+* CI/CD (GitHub Actions)
+
+---
+
+## Cel projektu
+
+Celem projektu jest stworzenie kompletnej aplikacji e-commerce z wykorzystaniem nowoczesnych technologii oraz dobrych praktyk programistycznych, takich jak:
+
+* architektura warstwowa,
+* REST API,
+* walidacja danych,
+* autoryzacja i uwierzytelnianie,
+* obsługa błędów,
+* bezpieczne przechowywanie danych,
+* optymalizacja wydajności,
+* responsywny interfejs użytkownika.
+
+Projekt jest rozwijany jako element portfolio Full Stack JavaScript/TypeScript.
+
+
+
