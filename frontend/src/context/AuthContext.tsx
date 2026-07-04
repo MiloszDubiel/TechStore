@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
-interface User {
+type User = {
   id: number;
   email: string;
+  name: string;
+  lastName: string;
+  phone?: string | undefined;
   role: "USER" | "SELLER";
-}
+};
 
 interface AuthContextType {
   user: User | null;
@@ -59,7 +62,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     </AuthContext.Provider>
   );
 };
-
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

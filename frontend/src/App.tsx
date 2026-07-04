@@ -8,6 +8,7 @@ import Footer from "./components/layout/Footer";
 import { AuthProvider } from "./context/AuthContext";
 import CartPage from "./pages/CartPage/CartPage";
 import OfferDetails from "./components/ui/OfertDetails";
+import SettingsPage from "./pages/SettingsPage/SettingsPage";
 
 import { FavoriteProvider } from "./context/FavoritesContext";
 
@@ -26,6 +27,8 @@ const App: React.FC = () => {
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="*" element={<Navigate to="/" />} />
                 <Route path="/cart" element={<CartPage />} />
+
+                <Route path="/profile" element={<SettingsPage />} />
               </Routes>
             </div>
 

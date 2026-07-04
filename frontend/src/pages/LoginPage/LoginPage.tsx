@@ -1,69 +1,61 @@
-import React, { useState, useCallback } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+
+import { loginSchema } from "../../schemas/loginSchema";
+import type { LoginFormData } from "../../schemas/loginSchema";
+import { useAuth } from "../../context/AuthContext";
+
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [rememberMe, setRememberMe] = useState(false);
-
-  const [error, setError] = useState<string | null>(null);
-  const [info, setInfo] = useState<string | null>(null);
-
-  const { login } = useAuth();
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/?.test(email);
-  };
-
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleLogin = useCallback(
-    async (e: React.SubmitEvent) => {
-      e.preventDefault();
-      setError(null);
-      setInfo(null);
-
-      if (!validateEmail(email)) {
-        return setError("Niepoprawny format adresu email.");
-      }
-
-      if (!password) {
-        return setError("Hasło jest wymagane.");
-      }
-
-      try {
-        const response = await axios.post(
-          "/api/auth/login",
-          {
-            email,
-            password,
-          },
-        );
-
-        const { accessToken } = response.data;
-
-        login(accessToken);
-        if (rememberMe) {
-          localStorage.setItem("token", accessToken);
-        } else {
-          sessionStorage.setItem("token", accessToken);
-        }
-
-        console.log(response);
-        navigate("/");
-      } catch (err: any) {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data?.message || "Wystąpił błąd");
-        } else {
-          setError("Błąd sieci");
-        }
-        console.log(err.data);
-      }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
     },
-    [email, password, rememberMe, login, navigate],
-  );
+  });
+
+  const { mutate, isPending, error } = useMutation({
+    mutationFn: async (data: LoginFormData) => {
+      const response = await axios.post("/api/auth/login", {
+        email: data.email,
+        password: data.password,
+      });
+
+      return {
+        accessToken: response.data.accessToken,
+        rememberMe: data.rememberMe,
+      };
+    },
+
+    onSuccess: (data) => {
+      login(data.accessToken);
+
+      if (data.rememberMe) {
+        localStorage.setItem("token", data.accessToken);
+      } else {
+        sessionStorage.setItem("token", data.accessToken);
+      }
+
+      navigate("/");
+    },
+  });
+
+  const onSubmit = (data: LoginFormData) => {
+    mutate(data);
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -72,47 +64,48 @@ const LoginPage: React.FC = () => {
           Logowanie
         </h2>
 
+  
         {error && (
           <div className="mb-4 p-2 bg-red-100 text-red-700 border border-red-400">
-            {error}
+            Wystąpił błąd logowania
           </div>
         )}
 
-        {info && (
-          <div className="mb-4 p-2 bg-green-100 text-green-700 border border-green-400">
-            {info}
-          </div>
-        )}
-
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          
           <div>
             <label className="block text-sm font-semibold mb-1">Email</label>
+
             <input
-              type="email"
-              className="w-full border border-gray-300 px-3 py-2 outline-none focus:border-orange-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              {...register("email")}
+              className="w-full border border-gray-300 px-3 py-2 focus:border-orange-500 outline-none"
             />
+
+            {errors.email && (
+              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-semibold mb-1">Hasło</label>
+
             <input
               type="password"
-              className="w-full border border-gray-300 px-3 py-2 outline-none focus:border-orange-500"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              {...register("password")}
+              className="w-full border border-gray-300 px-3 py-2 focus:border-orange-500 outline-none"
             />
+
+            {errors.password && (
+              <p className="text-red-500 text-sm">{errors.password.message}</p>
+            )}
           </div>
 
+ 
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={rememberMe}
-                onChange={() => setRememberMe(!rememberMe)}
+                {...register("rememberMe")}
                 className="accent-orange-500"
               />
               Zapamiętaj mnie
@@ -126,11 +119,13 @@ const LoginPage: React.FC = () => {
             </Link>
           </div>
 
+   
           <button
             type="submit"
-            className="w-full bg-orange-500 text-white py-2 hover:bg-orange-600 transition"
+            disabled={isPending}
+            className="w-full bg-orange-500 text-white py-2 hover:bg-orange-600 transition disabled:opacity-50"
           >
-            Zaloguj się
+            {isPending ? "Logowanie..." : "Zaloguj się"}
           </button>
         </form>
 

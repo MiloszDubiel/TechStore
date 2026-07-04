@@ -13,6 +13,7 @@ type User = {
   role: string;
   is_active: boolean;
   password: string;
+  phone: string;
 };
 
 type Token = {
@@ -50,7 +51,7 @@ export const login = async (req: Request, res: Response) => {
 
   try {
     const [rows] = await connection.query<RowDataPacket[]>(
-      "SELECT first_name, last_name, email, id, role, password FROM users WHERE email = ?",
+      "SELECT first_name, last_name, email, id, role, password, phone FROM users WHERE email = ?",
       [email],
     );
 
@@ -73,7 +74,14 @@ export const login = async (req: Request, res: Response) => {
       );
 
     const accessToken = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        name: user.first_name,
+        lastName: user.last_name,
+        phone: user.phone,
+      },
       process.env.JWT_ACCESS_SECRET as string,
       { expiresIn: accessExpires },
     );

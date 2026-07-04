@@ -5,12 +5,14 @@ import productsRoutes from "./routes/products.routes";
 import authRoutes from "./routes/auth.routes";
 import favoriteRoutes from "./routes/favorite.routes";
 import reviewsRoutes from "./routes/reviews.routes";
+import settingsRoutes from "./routes/settings.routes";
 import path from "node:path";
 
 const app = express();
 
 app.use(express.json());
 
+app.use("/api/settings", settingsRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/favorite", favoriteRoutes);

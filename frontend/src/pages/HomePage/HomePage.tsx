@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { addToCart } from "../../redux/slices/cartSlice";
 
 const HomePage = () => {
-  // const { addToCart, toogleShowCart } = useCart();
   const cart = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
 
