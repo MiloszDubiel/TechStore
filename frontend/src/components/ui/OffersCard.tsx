@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useFavorite } from "../../context/FavoritesContext";
 import { useAuth } from "../../context/AuthContext";
-import { addToCart, toogleShowCart } from "../../redux/slices/cartSlice";
-import { useAppDispatch } from "../../redux/hooks";
+import { useCartStore } from "../../zustand/states/cartState";
 
 type OfferCardProps = {
   id: string;
@@ -16,6 +15,8 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
   const { toggleFavorite, isFavorite } = useFavorite();
   const { isAuthenticated } = useAuth();
 
+  const addToCart = useCartStore((state) => state.addToCart);
+
   const favorite = isFavorite(product.id as string);
   const [favoriteMessage, setFavoriteMessage] = useState<string | null>(null);
 
@@ -27,7 +28,6 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
     "Pamięć RAM",
   ];
   const displayedParams: string[] = [];
-  const dispatch = useAppDispatch();
 
   importantParams.forEach((paramName) => {
     const param = product.product_data.parameters?.find(
@@ -96,8 +96,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
           <button
             className="bg-orange-500 text-white px-6 py-2 hover:bg-orange-600 transition font-semibold cursor-pointer"
             onClick={() => {
-              dispatch(addToCart(product));
-              dispatch(toogleShowCart(true));
+              addToCart(product);
             }}
           >
             Dodaj do koszyka

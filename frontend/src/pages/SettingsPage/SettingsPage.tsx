@@ -7,6 +7,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema } from "../../schemas/profileSchema";
 import type { ProfileFormData } from "../../schemas/profileSchema";
+import useAdresses from "../../hooks/useAdresses";
+import AddressCard from "../../components/ui/AddresesCard";
+import AddressModal from "../../components/ui/AddressModal";
+import type { AddressFrom } from "../../schemas/addressSchema";
 
 type Tab =
   | "dashboard"
@@ -20,12 +24,13 @@ type Tab =
 const AccountPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [currentEditAddress, setCurrentEditAdress] = useState<AddressFrom[]>(
+    [],
+  );
   const { user } = useAuth();
 
-  console.log(user);
-
   const token = localStorage.getItem("token");
-
   const queryClient = useQueryClient();
 
   const {
@@ -56,7 +61,7 @@ const AccountPage = () => {
     }
   }, [user, reset]);
 
-  const { mutate, isError } = useMutation({
+  const { mutate, isError, isSuccess } = useMutation({
     mutationFn: (data: ProfileFormData) =>
       axios.patch("/api/settings/edit-user/personal-data", data, {
         headers: {
@@ -68,6 +73,8 @@ const AccountPage = () => {
     },
     onError: (err) => console.log(err),
   });
+
+  const { userAddresses } = useAdresses(user?.id);
 
   const onSubmit = (data: ProfileFormData) => {
     mutate(data);
@@ -141,9 +148,19 @@ const AccountPage = () => {
 
             <div className="space-y-3">
               <div>
-                <p className="text-gray-500 mb-6">
+                <p className="text-gray-500 mb-2">
                   Zarządzaj swoimi danymi konta
                 </p>
+                {isSuccess && (
+                  <div className=" p-4 border-l-4 border-orange-500 bg-orange-50 text-sm text-gray-700">
+                    Dane zostały zapisane
+                  </div>
+                )}
+                {isError && (
+                  <div className=" p-4 border-l-4 border-orange-500 bg-orange-50 text-sm text-red-700">
+                    Wystąpił błąd podczas zapisu
+                  </div>
+                )}
 
                 <form
                   className="max-w-xl space-y-4"
@@ -234,15 +251,6 @@ const AccountPage = () => {
                     </div>
                   </fieldset>
                 </form>
-                {isError && (
-                  <p className="text-red-500 text-m mt-4">
-                    Wystąpił błąd podczas zapisu
-                  </p>
-                )}
-                <div className="mt-8 p-4 border-l-4 border-orange-500 bg-orange-50 text-sm text-gray-700">
-                  Dane są używane do realizacji zamówień i kontaktu w sprawie
-                  dostawy.
-                </div>
               </div>
             </div>
           </div>
@@ -253,11 +261,43 @@ const AccountPage = () => {
           <div>
             <h2 className="text-2xl font-bold mb-4">Adresy dostawy</h2>
 
-            <button className="bg-orange-500 text-white px-4 py-2 mb-4">
-              Dodaj adres
+            <button
+              className="bg-orange-500 text-white px-4 py-2 mb-4 cursor-pointer"
+              onClick={() => {
+                setIsAddressModalOpen(true);
+                setCurrentEditAdress([]);
+              }}
+            >
+              Dodaj adres dostawy
             </button>
 
+            {userAddresses?.map((address: any) => (
+              <AddressCard
+                key={address.id}
+                title={address.is_default ? "Adres domyślny" : "Adres"}
+                street={`${address.street} ${address.house_number}${
+                  address.apartment_number ? `/${address.apartment_number}` : ""
+                }`}
+                postalCode={address.postal_code}
+                city={address.city}
+                country={address.country}
+                phone={user?.phone}
+                isDefault={address.is_default}
+                onEdit={() => setCurrentEditAdress(address)}
+                onDelete={() => {}}
+              />
+            ))}
             <p className="text-gray-500">Brak zapisanych adresów</p>
+            {isAddressModalOpen && (
+              <AddressModal
+                closeModal={() => setIsAddressModalOpen(false)}
+                saveAddress={(data: any) => {
+                  setCurrentEditAdress(data);
+                  setIsAddressModalOpen(false);
+                }}
+                defaultValues={currentEditAddress}
+              />
+            )}
           </div>
         );
 
@@ -286,6 +326,9 @@ const AccountPage = () => {
     }
   };
 
+  if (!token) {
+    return <>Brak dostępu</>;
+  }
   return (
     <>
       <Navbar />

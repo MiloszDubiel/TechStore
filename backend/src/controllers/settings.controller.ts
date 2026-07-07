@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { updateUserInDB } from "../services/settings.services";
+import { getAdressesFromDB } from "../services/settings.services";
 
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
@@ -30,5 +31,22 @@ export const updateUserProfile = async (req: Request, res: Response) => {
       success: false,
       message: "Błąd serwera",
     });
+  }
+};
+
+export const getAdresses = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "Brak id",
+      });
+    }
+
+    await getAdressesFromDB(id as string);
+  } catch (e) {
+    console.log(e);
   }
 };

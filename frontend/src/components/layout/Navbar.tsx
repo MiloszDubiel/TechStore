@@ -9,16 +9,9 @@ import {
   User,
   Search,
 } from "lucide-react";
-
-import { useFavorite } from "../../context/FavoritesContext";
+import { useCartStore } from "../../zustand/states/cartState";
 import type { Product } from "../../types/ProductType";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import {
-  removeFromCart,
-  updateQuantity,
-  clearCart,
-  toogleShowCart,
-} from "../../redux/slices/cartSlice";
+import { useFavorite } from "../../context/FavoritesContext";
 
 const Navbar: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -30,8 +23,10 @@ const Navbar: React.FC = () => {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
   const { favorites } = useFavorite();
 
-  const cart = useAppSelector((state) => state.cart.cart);
-  const dispatch = useAppDispatch();
+  const { cart, updateQuantity, clearCart, removeFromCart } = useCartStore(
+    (state) => state,
+  );
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const navigate = useNavigate();
@@ -221,11 +216,10 @@ const Navbar: React.FC = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                dispatch(
-                                  updateQuantity({
-                                    id: item.id,
-                                    quantity: Math.max(1, item.quantity - 1),
-                                  }),
+
+                                updateQuantity(
+                                  item.id,
+                                  Math.max(1, item.quantity - 1),
                                 );
                               }}
                               className="px-2 py-1 bg-orange-100 hover:bg-orange-500"
@@ -240,14 +234,10 @@ const Navbar: React.FC = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                dispatch(
-                                  updateQuantity({
-                                    id: item.id,
-                                    quantity: Math.min(
-                                      item.stock,
-                                      item.quantity + 1,
-                                    ),
-                                  }),
+
+                                updateQuantity(
+                                  item.id,
+                                  Math.min(item.stock, item.quantity + 1),
                                 );
                               }}
                               className="px-2 py-1 bg-orange-100 hover:bg-orange-500"
@@ -267,9 +257,7 @@ const Navbar: React.FC = () => {
                           {(item.price * item.quantity).toFixed(2)} zł
                         </div>
                         <button
-                          onClick={() =>
-                            dispatch(removeFromCart({ id: item.id }))
-                          }
+                          onClick={() => removeFromCart(item.id)}
                           className="text-xs text-red-500 hover:underline"
                         >
                           Usuń
@@ -294,7 +282,6 @@ const Navbar: React.FC = () => {
 
                   <button
                     onClick={() => {
-                      dispatch(toogleShowCart(false));
                       navigate("/cart");
                     }}
                     className="w-full mt-3 bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition"
@@ -303,7 +290,7 @@ const Navbar: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => dispatch(clearCart())}
+                    onClick={() => clearCart()}
                     className="w-full mt-2 text-sm text-red-500 hover:underline"
                   >
                     Wyczyść koszyk
@@ -313,17 +300,23 @@ const Navbar: React.FC = () => {
             )}
           </div>
         )}
-        <div className="relative cursor-pointer">
+        <div className="relative">
           <button
             onClick={() =>
               setActiveModal(activeModal === "account" ? null : "account")
             }
-            className="flex items-center gap-2 hover:text-orange-600 transition"
+            className="flex items-center gap-2 hover:text-orange-600 transition cursor-pointer"
           >
-            <User size={22} />
-            <span className="hidden md:block">
-              {isAuthenticated ? user?.email : "Konto"}
+            <span className="md:flex flex-col items-end">
+              <span>
+                {isAuthenticated && user?.name + " " + user?.lastName} <br />
+              </span>
+
+              <span className="text-xs">
+                {isAuthenticated ? user?.email : "Konto"}
+              </span>
             </span>
+            <User size={22} />
           </button>
 
           {activeModal === "account" && (

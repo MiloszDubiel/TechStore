@@ -24,3 +24,12 @@ export const updateUserInDB = async (data: UpdateUserData) => {
 
   return result;
 };
+
+export const getAdressesFromDB = async (id: string) => {
+  const [result] = await connection.query(
+    "SELECT * FROM adresses WHERE user_id = ?",
+    [id],
+  );
+
+  return result;
+};

@@ -2,14 +2,11 @@ import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "../../components/layout/Navbar";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { addToCart } from "../../redux/slices/cartSlice";
+import { useCartStore } from "../../zustand/states/cartState";
 
 const HomePage = () => {
-  const cart = useAppSelector((state) => state.cart);
-  const dispatch = useAppDispatch();
-
-  console.log(cart);
+  const cart = useCartStore((state) => state.cart);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   const createSlug = (name: string) =>
     name
@@ -98,8 +95,7 @@ const HomePage = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        dispatch(addToCart(product));
-                        // toogleShowCart(true);
+                        addToCart(product);
                       }}
                     >
                       Dodaj do koszyka

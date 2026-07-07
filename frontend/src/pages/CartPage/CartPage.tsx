@@ -1,50 +1,42 @@
-import { useState, useReducer, useMemo } from "react";
+import { useMemo } from "react";
 import axios from "axios";
 import Navbar from "../../components/layout/Navbar";
-import { removeFromCart, clearCart } from "../../redux/slices/cartSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-type FromState = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  city: string;
-  postalCode: string;
-  street: string;
-};
+import { useCartStore } from "../../zustand/states/cartState";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { buySchema } from "../../schemas/buySchema";
+import type { BuyFrom } from "../../schemas/buySchema";
 
-type FormAction = {
-  field: string;
-  value: string;
-  type: "SET_FIELD";
-};
+//Za pomoca useReducer
+// const formDataReducer = (state: FromState, action: FormAction) => {
+//   switch (action.type) {
+//     case "SET_FIELD":
+//       return {
+//         ...state,
+//         [action.field]: action.value,
+//       };
 
-const formDataReducer = (state: FromState, action: FormAction) => {
-  switch (action.type) {
-    case "SET_FIELD":
-      return {
-        ...state,
-        [action.field]: action.value,
-      };
-
-    default:
-      return state;
-  }
-};
+//     default:
+//       return state;
+//   }
+// };
 
 const CartPage = () => {
-  const cart = useAppSelector((state) => state.cart.cart);
-  const dispatch = useAppDispatch();
+  const cart = useCartStore((state) => state.cart);
 
-  const [formState, dispatchFormState] = useReducer(formDataReducer, {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    city: "",
-    postalCode: "",
-    street: "",
-  });
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const clearCart = useCartStore((state) => state.clearCart);
+
+  //Za pomoca
+  // const [formState, dispatchFormState] = useReducer(formDataReducer, {
+  //   firstName: "",
+  //   lastName: "",
+  //   email: "",
+  //   phone: "",
+  //   city: "",
+  //   postalCode: "",
+  //   street: "",
+  // });
 
   const totalPrice = useMemo(
     () =>
@@ -55,19 +47,36 @@ const CartPage = () => {
     [cart],
   );
 
-  const [deliveryMethod, setDeliveryMethod] = useState<string>("courier");
-  const [paymentMethod, setPaymentMethod] = useState<string>("blik");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm<BuyFrom>({
+    resolver: zodResolver(buySchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      city: "",
+      postalCode: "",
+      street: "",
+      deliveryMethod: "courier",
+      paymentMethod: "blik",
+    },
+  });
 
-  const deliveryPrice = deliveryMethod === "courier" ? 15 : 12;
+  const deliveryPrice = watch("deliveryMethod") === "courier" ? 15 : 12;
   const finalPrice = totalPrice + deliveryPrice;
 
   const handleOrder = async () => {
     try {
       await axios.post("/api/orders", {
         cart,
-        deliveryData: formState,
-        deliveryMethod,
-        paymentMethod,
+        deliveryData: watch(),
+        deliveryMethod: watch("deliveryMethod"),
+        paymentMethod: watch("paymentMethod"),
         totalPrice: finalPrice,
       });
 
@@ -136,95 +145,53 @@ const CartPage = () => {
 
           <div className="space-y-3">
             <input
-              name="firstName"
               placeholder="Imię"
-              onChange={(e) => {
-                dispatchFormState({
-                  type: "SET_FIELD",
-                  field: "firstName",
-                  value: e.target.value,
-                });
-              }}
+              {...register("firstName")}
               className="w-full border p-2 border-gray-200"
             />
+            <p className="text-red-500 text-sm">{errors.firstName?.message}</p>
 
             <input
-              name="lastName"
               placeholder="Nazwisko"
-              onChange={(e) => {
-                dispatchFormState({
-                  type: "SET_FIELD",
-                  field: "lastName",
-                  value: e.target.value,
-                });
-              }}
+              {...register("lastName")}
               className="w-full border p-2 border-gray-200"
             />
+            <p className="text-red-500 text-sm">{errors.lastName?.message}</p>
 
             <input
-              name="email"
+              {...register("email")}
               placeholder="Email"
-              onChange={(e) => {
-                dispatchFormState({
-                  type: "SET_FIELD",
-                  field: "email",
-                  value: e.target.value,
-                });
-              }}
               className="w-full border p-2 border-gray-200"
             />
+            <p className="text-red-500 text-sm">{errors.email?.message}</p>
 
             <input
-              name="phone"
               placeholder="Telefon"
-              onChange={(e) => {
-                dispatchFormState({
-                  type: "SET_FIELD",
-                  field: "phone",
-                  value: e.target.value,
-                });
-              }}
+              {...register("phone")}
               className="w-full border p-2 border-gray-200"
             />
+            <p className="text-red-500 text-sm">{errors.phone?.message}</p>
 
             <input
-              name="city"
               placeholder="Miasto"
-              onChange={(e) => {
-                dispatchFormState({
-                  type: "SET_FIELD",
-                  field: e.target.name,
-                  value: e.target.value,
-                });
-              }}
+              {...register("city")}
               className="w-full border p-2 border-gray-200"
             />
+            <p className="text-red-500 text-sm">{errors.city?.message}</p>
 
             <input
-              name="postalCode"
               placeholder="Kod pocztowy"
-              onChange={(e) => {
-                dispatchFormState({
-                  type: "SET_FIELD",
-                  field: e.target.name,
-                  value: e.target.value,
-                });
-              }}
+              {...register("postalCode")}
               className="w-full border p-2 border-gray-200"
             />
+            <p className="text-red-500 text-sm">{errors.postalCode?.message}</p>
 
             <input
-              name="street"
+              {...register("street")}
               placeholder="Ulica i numer"
-              onChange={(e) => {
-                dispatchFormState({
-                  type: "SET_FIELD",
-                  field: e.target.name,
-                  value: e.target.value,
-                });
-              }}
               className="w-full border p-2 border-gray-200"
             />
+            <p className="text-red-500 text-sm">{errors.street?.message}</p>
           </div>
 
           <div>
@@ -234,22 +201,14 @@ const CartPage = () => {
               <span>Kurier</span>
               <span>15 zł</span>
 
-              <input
-                type="radio"
-                checked={deliveryMethod === "courier"}
-                onChange={() => setDeliveryMethod("courier")}
-              />
+              <input type="radio" {...register("deliveryMethod")} />
             </label>
 
             <label className="flex justify-between border p-3 cursor-pointer border-gray-200">
               <span>Paczkomat</span>
               <span>12 zł</span>
 
-              <input
-                type="radio"
-                checked={deliveryMethod === "parcel"}
-                onChange={() => setDeliveryMethod("parcel")}
-              />
+              <input type="radio" {...register("deliveryMethod")} />
             </label>
           </div>
 
@@ -257,20 +216,12 @@ const CartPage = () => {
             <h3 className="font-semibold mb-2">Płatność</h3>
 
             <label className="flex border p-3 mb-2 cursor-pointer border-gray-200">
-              <input
-                type="radio"
-                checked={paymentMethod === "blik"}
-                onChange={() => setPaymentMethod("blik")}
-              />
+              <input type="radio" {...register("paymentMethod")} />
               <span className="ml-2">BLIK</span>
             </label>
 
             <label className="flex border p-3 mb-2 cursor-pointer border-gray-200">
-              <input
-                type="radio"
-                checked={paymentMethod === "transfer"}
-                onChange={() => setPaymentMethod("transfer")}
-              />
+              <input type="radio" {...register("paymentMethod")} />
               <span className="ml-2">Przelew</span>
             </label>
           </div>
@@ -292,14 +243,14 @@ const CartPage = () => {
             </div>
 
             <button
-              onClick={handleOrder}
+              onClick={handleSubmit(handleOrder)}
               className="w-full bg-orange-500 text-white py-3 mt-4 hover:bg-orange-600 transition"
             >
               Złóż zamówienie
             </button>
 
             <button
-              onClick={() => () => dispatch(clearCart())}
+              onClick={clearCart}
               className="w-full text-sm text-red-500 hover:underline"
             >
               Wyczyść koszyk
