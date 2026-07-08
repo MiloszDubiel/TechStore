@@ -5,6 +5,7 @@ type AddressCardProps = {
   city: string;
   country: string;
   phone: string | null | undefined;
+  id: string;
   isDefault?: boolean;
   onEdit: () => void;
   onDelete: () => void;
@@ -16,14 +17,13 @@ export default function AddressCard({
   postalCode,
   city,
   country,
-  phone,
   isDefault,
   onEdit,
   onDelete,
 }: AddressCardProps) {
   return (
-    <div className="rounded-xl border bg-white p-6 shadow-sm">
-      <div className="flex justify-between items-start">
+    <div className=" bg-white p-6 shadow-sm mb-2 gap-2">
+      <div className="flex justify-between items-center mb-2 gap-2">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-lg font-semibold">{title}</h3>
@@ -33,6 +33,7 @@ export default function AddressCard({
                 Domyślny
               </span>
             )}
+            
           </div>
 
           <p>{street}</p>
@@ -40,20 +41,19 @@ export default function AddressCard({
             {postalCode} {city}
           </p>
           <p>{country}</p>
-          <p className="mt-2 text-gray-500">{phone}</p>
         </div>
 
         <div className="flex gap-2">
           <button
             onClick={onEdit}
-            className="rounded-lg border px-3 py-2 hover:bg-gray-100"
+            className=" border border-gray-200 px-3 py-2 hover:bg-gray-100 "
           >
             Edytuj
           </button>
 
           <button
             onClick={onDelete}
-            className="rounded-lg border border-red-500 px-3 py-2 text-red-500 hover:bg-red-50"
+            className=" border border-red-200 px-3 py-2 text-red-500 hover:bg-red-50"
           >
             Usuń
           </button>
@@ -62,4 +62,3 @@ export default function AddressCard({
     </div>
   );
 }
-

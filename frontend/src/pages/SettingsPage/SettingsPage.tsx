@@ -11,6 +11,7 @@ import useAdresses from "../../hooks/useAdresses";
 import AddressCard from "../../components/ui/AddresesCard";
 import AddressModal from "../../components/ui/AddressModal";
 import type { AddressFrom } from "../../schemas/addressSchema";
+import NotificationCard from "../../components/ui/NotificationCard";
 
 type Tab =
   | "dashboard"
@@ -25,9 +26,14 @@ const AccountPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
-  const [currentEditAddress, setCurrentEditAdress] = useState<AddressFrom[]>(
-    [],
-  );
+  const [currentEditAddress, setCurrentEditAdress] = useState<AddressFrom>({
+    city: "",
+    postal_code: "",
+    street: "",
+    isEdit: false,
+    is_default: false,
+  });
+  const [edited, setEdited] = useState(false);
   const { user } = useAuth();
 
   const token = localStorage.getItem("token");
@@ -74,7 +80,15 @@ const AccountPage = () => {
     onError: (err) => console.log(err),
   });
 
-  const { userAddresses } = useAdresses(user?.id);
+  const {
+    userAddresses,
+    addressSetSuccess,
+    saveAddress,
+    updateAddress,
+    addressUpdateSuccess,
+    deleteAddress,
+    addressDeleteSuccess,
+  } = useAdresses(user?.id, token);
 
   const onSubmit = (data: ProfileFormData) => {
     mutate(data);
@@ -152,10 +166,12 @@ const AccountPage = () => {
                   Zarządzaj swoimi danymi konta
                 </p>
                 {isSuccess && (
-                  <div className=" p-4 border-l-4 border-orange-500 bg-orange-50 text-sm text-gray-700">
-                    Dane zostały zapisane
-                  </div>
+                  <NotificationCard message={"Dane zostały zapisane"} />
                 )}
+                {addressDeleteSuccess && (
+                  <NotificationCard message={"Adres został usunięty"} />
+                )}
+
                 {isError && (
                   <div className=" p-4 border-l-4 border-orange-500 bg-orange-50 text-sm text-red-700">
                     Wystąpił błąd podczas zapisu
@@ -261,38 +277,73 @@ const AccountPage = () => {
           <div>
             <h2 className="text-2xl font-bold mb-4">Adresy dostawy</h2>
 
+            {(addressSetSuccess || addressUpdateSuccess) && (
+              <NotificationCard
+                message={
+                  addressSetSuccess
+                    ? `Dane zostały zapisane`
+                    : `Zapisano zmiany`
+                }
+              />
+            )}
             <button
               className="bg-orange-500 text-white px-4 py-2 mb-4 cursor-pointer"
               onClick={() => {
                 setIsAddressModalOpen(true);
-                setCurrentEditAdress([]);
+                setCurrentEditAdress({
+                  city: "",
+                  postal_code: "",
+                  street: "",
+                  isEdit: false,
+                  is_default: false,
+                });
+                setEdited(false);
               }}
             >
               Dodaj adres dostawy
             </button>
 
-            {userAddresses?.map((address: any) => (
-              <AddressCard
-                key={address.id}
-                title={address.is_default ? "Adres domyślny" : "Adres"}
-                street={`${address.street} ${address.house_number}${
-                  address.apartment_number ? `/${address.apartment_number}` : ""
-                }`}
-                postalCode={address.postal_code}
-                city={address.city}
-                country={address.country}
-                phone={user?.phone}
-                isDefault={address.is_default}
-                onEdit={() => setCurrentEditAdress(address)}
-                onDelete={() => {}}
-              />
-            ))}
-            <p className="text-gray-500">Brak zapisanych adresów</p>
+            {userAddresses && userAddresses.length > 0 ? (
+              userAddresses?.map((address: any) => (
+                <AddressCard
+                  key={address.id}
+                  id={address.id}
+                  title={address.is_default ? "Adres domyślny" : "Adres"}
+                  street={address.street}
+                  postalCode={address.postal_code}
+                  city={address.city}
+                  country={address.country}
+                  phone={user?.phone}
+                  isDefault={address.is_default}
+                  onEdit={() => {
+                    setCurrentEditAdress({
+                      ...address,
+                      aid: address.id,
+                      isEdit: true,
+                    });
+
+                    setEdited(true);
+                    setIsAddressModalOpen(true);
+                  }}
+                  onDelete={() => {
+                    deleteAddress(address.id);
+                  }}
+                />
+              ))
+            ) : (
+              <p className="text-gray-500">Brak zapisanych adresów</p>
+            )}
+
             {isAddressModalOpen && (
               <AddressModal
                 closeModal={() => setIsAddressModalOpen(false)}
                 saveAddress={(data: any) => {
-                  setCurrentEditAdress(data);
+                  saveAddress(data);
+                  setIsAddressModalOpen(false);
+                }}
+                isEdited={edited}
+                updateAddress={(data: any) => {
+                  updateAddress(data);
                   setIsAddressModalOpen(false);
                 }}
                 defaultValues={currentEditAddress}

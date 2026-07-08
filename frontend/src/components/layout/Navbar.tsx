@@ -307,12 +307,16 @@ const Navbar: React.FC = () => {
             }
             className="flex items-center gap-2 hover:text-orange-600 transition cursor-pointer"
           >
-            <span className="md:flex flex-col items-end">
+            <span
+              className={
+                `flex ` + (isAuthenticated ? "flex-col items-end" : "")
+              }
+            >
               <span>
                 {isAuthenticated && user?.name + " " + user?.lastName} <br />
               </span>
 
-              <span className="text-xs">
+              <span className="text-xs flex items-center justify-center">
                 {isAuthenticated ? user?.email : "Konto"}
               </span>
             </span>
