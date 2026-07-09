@@ -1,19 +1,24 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
-
-type User = {
+import React, { createContext, useContext, useState } from "react";
+import { useUser } from "../hooks/useUser";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLogout } from "../hooks/useLogin";
+export type User = {
   id: number;
   email: string;
   name: string;
-  lastName: string;
+  last_name: string;
   phone?: string | undefined;
   role: "USER" | "SELLER";
 };
 
 interface AuthContextType {
   user: User | null;
-  login: (token: string) => void;
-  logout: () => void;
+  login: (
+    accessToken: string,
+    refreshToken: string,
+    rememberMe: boolean,
+  ) => void;
+  logout: () => any;
   isAuthenticated: boolean;
 }
 
@@ -22,37 +27,58 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const queryClient = useQueryClient();
+  const logoutMutation = useLogout();
 
-  const login = (token: string) => {
-    localStorage.setItem("token", token);
+  const [token, setToken] = useState(
+    localStorage.getItem("token") ?? sessionStorage.getItem("token"),
+  );
+  const { data: user, isLoading, isFetching } = useUser(token);
 
-    const decoded: User = jwtDecode(token);
-    setUser(decoded);
+  const login = (
+    accessToken: string,
+    refreshToken: string,
+    rememberMe: boolean,
+  ) => {
+    if (rememberMe) {
+      localStorage.setItem("token", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+    } else {
+      sessionStorage.setItem("token", accessToken);
+      sessionStorage.setItem("refreshToken", refreshToken);
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["user"] });
+    setToken(accessToken);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("refreshToken");
+
+        setToken(null);
+
+        queryClient.clear();
+      },
+    });
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      try {
-        const decoded: User = jwtDecode(token);
-        setUser(decoded);
-      } catch {
-        logout();
-      }
-    }
-  }, []);
-
+  if (isLoading || isFetching) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-xl">Ładowanie...</p>
+      </div>
+    );
+  }
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: user ?? null,
         login,
         logout,
         isAuthenticated: !!user,
@@ -62,7 +88,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     </AuthContext.Provider>
   );
 };
-
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) throw new Error("useAuth must be used inside AuthProvider");

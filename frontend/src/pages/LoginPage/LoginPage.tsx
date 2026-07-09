@@ -1,19 +1,13 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-
 import { loginSchema } from "../../schemas/loginSchema";
 import type { LoginFormData } from "../../schemas/loginSchema";
+import { useLogin } from "../../hooks/useLogin";
 import { useAuth } from "../../context/AuthContext";
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth();
-
   const {
     register,
     handleSubmit,
@@ -26,45 +20,27 @@ const LoginPage: React.FC = () => {
       rememberMe: false,
     },
   });
+  const { login } = useAuth();
+  const { mutate, error, isPending } = useLogin();
 
-  const { mutate, isPending, error } = useMutation({
-    mutationFn: async (data: LoginFormData) => {
-      const response = await axios.post("/api/auth/login", {
-        email: data.email,
-        password: data.password,
-      });
-
-      return {
-        accessToken: response.data.accessToken,
-        rememberMe: data.rememberMe,
-      };
-    },
-
-    onSuccess: (data) => {
-      login(data.accessToken);
-
-      if (data.rememberMe) {
-        localStorage.setItem("token", data.accessToken);
-      } else {
-        sessionStorage.setItem("token", data.accessToken);
-      }
-
-      navigate("/");
-    },
-  });
+  const navigate = useNavigate();
 
   const onSubmit = (data: LoginFormData) => {
-    mutate(data);
+    mutate(data, {
+      onSuccess: (data) => {
+        login(data.accessToken, data.refreshToken, data.rememberMe ?? false);
+        navigate("/");
+      },
+    });
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md bg-white shadow-md p-8 border border-orange-300">
+      <div className="w-full max-w-md bg-white shadow-md p-8 border border-gray-300">
         <h2 className="text-2xl font-bold text-center text-orange-600 mb-6">
           Logowanie
         </h2>
 
-  
         {error && (
           <div className="mb-4 p-2 bg-red-100 text-red-700 border border-red-400">
             Wystąpił błąd logowania
@@ -72,7 +48,6 @@ const LoginPage: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          
           <div>
             <label className="block text-sm font-semibold mb-1">Email</label>
 
@@ -100,7 +75,6 @@ const LoginPage: React.FC = () => {
             )}
           </div>
 
- 
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2">
               <input
@@ -119,7 +93,6 @@ const LoginPage: React.FC = () => {
             </Link>
           </div>
 
-   
           <button
             type="submit"
             disabled={isPending}

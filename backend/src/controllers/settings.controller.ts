@@ -7,6 +7,8 @@ import {
   getAdressesFromDB,
   saveAdressesToDB,
   updateAdressesToDB,
+  editPassword,
+  getPassword,
 } from "../services/settings.services";
 
 export const updateUserProfile = async (req: Request, res: Response) => {
@@ -143,8 +145,6 @@ export const deleteAddress = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    console.log("ADDRESS ID:", id);
-
     if (!id) {
       return res.status(400).json({
         success: false,
@@ -166,5 +166,83 @@ export const deleteAddress = async (req: Request, res: Response) => {
       success: false,
       message: "Błąd serwera",
     });
+  }
+};
+
+export const editUserSecurity = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    const result = await editPassword({
+      userId,
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    });
+
+    return res.status(200).json({
+      message: "Hasło zostało pomyślnie zmienione",
+      result,
+    });
+  } catch (error: any) {
+    switch (error.message) {
+      case "Użytkownik nie znaleziony":
+        return res.status(404).json({
+          message: error.message,
+        });
+
+      case "Aktualne hasło jest niepoprawne":
+        return res.status(401).json({
+          message: error.message,
+        });
+
+      case "Hasła nie są takie same":
+        return res.status(400).json({
+          message: error.message,
+        });
+
+      default:
+        return res.status(500).json({
+          message: "Wewnętrzny błąd serwera",
+        });
+    }
+  }
+};
+
+export const getPasswordUpdatedAt = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const result = await getPassword(userId);
+
+    console.log("Data ostatniej zmiany hasła:", result.passwordUpdatedAt);
+    return res.status(200).json({
+      message: "Data ostatniej zmiany hasła",
+      result: result.passwordUpdatedAt,
+    });
+  } catch (error: any) {
+    switch (error.message) {
+      case "Użytkownik nie znaleziony":
+        return res.status(404).json({
+          message: error.message,
+        });
+
+      case "Aktualne hasło jest niepoprawne":
+        return res.status(401).json({
+          message: error.message,
+        });
+
+      case "Hasła nie są takie same":
+        return res.status(400).json({
+          message: error.message,
+        });
+
+      default:
+        return res.status(500).json({
+          message: "Wewnętrzny błąd serwera",
+        });
+    }
   }
 };

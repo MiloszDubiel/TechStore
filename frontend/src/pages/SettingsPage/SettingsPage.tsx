@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Navbar from "../../components/layout/Navbar";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth, type User } from "../../context/AuthContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,8 @@ import AddressCard from "../../components/ui/AddresesCard";
 import AddressModal from "../../components/ui/AddressModal";
 import type { AddressFrom } from "../../schemas/addressSchema";
 import NotificationCard from "../../components/ui/NotificationCard";
+import Security from "./Security/Security";
+import Preferences from "./Preferences/Preferrences";
 
 type Tab =
   | "dashboard"
@@ -23,7 +25,7 @@ type Tab =
   | "settings";
 
 const AccountPage = () => {
-  const [activeTab, setActiveTab] = useState<Tab>("dashboard");
+  const [activeTab, setActiveTab] = useState<Tab>("orders");
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [currentEditAddress, setCurrentEditAdress] = useState<AddressFrom>({
@@ -36,7 +38,8 @@ const AccountPage = () => {
   const [edited, setEdited] = useState(false);
   const { user } = useAuth();
 
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token") ?? sessionStorage.getItem("token");
   const queryClient = useQueryClient();
 
   const {
@@ -48,7 +51,7 @@ const AccountPage = () => {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       firstName: user?.name,
-      lastName: user?.lastName,
+      last_name: user?.last_name,
       email: user?.email,
       id: user?.id,
       phone: user?.phone,
@@ -59,7 +62,7 @@ const AccountPage = () => {
     if (user) {
       reset({
         firstName: user.name,
-        lastName: user.lastName,
+        last_name: user.last_name,
         email: user.email,
         phone: user.phone,
         id: user.id,
@@ -74,18 +77,18 @@ const AccountPage = () => {
           Authorization: `Bearer ${token}`,
         },
       }),
+
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({
+        queryKey: ["user"],
+      });
     },
-    onError: (err) => console.log(err),
   });
 
   const {
     userAddresses,
-    addressSetSuccess,
     saveAddress,
     updateAddress,
-    addressUpdateSuccess,
     deleteAddress,
     addressDeleteSuccess,
   } = useAdresses(user?.id, token);
@@ -96,14 +99,6 @@ const AccountPage = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "dashboard":
-        return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Panel użytkownika</h2>
-            <p className="text-gray-500">Witaj w swoim koncie</p>
-          </div>
-        );
-
       case "orders":
         return (
           <div>
@@ -113,7 +108,7 @@ const AccountPage = () => {
               {[1, 2, 3].map((id) => (
                 <div
                   key={id}
-                  className="border p-4 flex justify-between items-center"
+                  className="border border-gray-200 p-4 flex justify-between items-center"
                 >
                   <div>
                     <p className="font-semibold">Zamówienie #{id}</p>
@@ -205,13 +200,13 @@ const AccountPage = () => {
 
                       <input
                         placeholder="Nazwisko"
-                        {...register("lastName")}
+                        {...register("last_name")}
                         className="w-full border p-3 focus:outline-none focus:border-orange-500 border-gray-200"
                       />
                     </div>
-                    {errors.lastName && (
+                    {errors.last_name && (
                       <p className="text-red-500 text-sm">
-                        {errors.lastName.message}
+                        {errors.last_name.message}
                       </p>
                     )}
 
@@ -277,15 +272,6 @@ const AccountPage = () => {
           <div>
             <h2 className="text-2xl font-bold mb-4">Adresy dostawy</h2>
 
-            {(addressSetSuccess || addressUpdateSuccess) && (
-              <NotificationCard
-                message={
-                  addressSetSuccess
-                    ? `Dane zostały zapisane`
-                    : `Zapisano zmiany`
-                }
-              />
-            )}
             <button
               className="bg-orange-500 text-white px-4 py-2 mb-4 cursor-pointer"
               onClick={() => {
@@ -353,27 +339,10 @@ const AccountPage = () => {
         );
 
       case "security":
-        return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Bezpieczeństwo</h2>
-
-            <div className="space-y-3">
-              <input className="border p-2 w-full" placeholder="Nowe hasło" />
-              <button className="bg-orange-500 text-white px-4 py-2">
-                Zmień hasło
-              </button>
-            </div>
-          </div>
-        );
+        return <Security user={user as User} />;
 
       case "settings":
-        return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Ustawienia</h2>
-
-            <p className="text-gray-500">Preferencje konta i powiadomień</p>
-          </div>
-        );
+        return <Preferences />;
     }
   };
 
@@ -390,15 +359,6 @@ const AccountPage = () => {
 
       <main className="container mx-auto px-6 py-10 grid grid-cols-12 gap-8">
         <aside className="col-span-3 bg-white shadow-md h-fit ">
-          <button
-            onClick={() => setActiveTab("dashboard")}
-            className={`w-full text-left p-4 border-b border-gray-200 cursor-pointer ${
-              activeTab === "dashboard" ? "bg-orange-500 text-white" : ""
-            }`}
-          >
-            Panel
-          </button>
-
           <button
             onClick={() => setActiveTab("orders")}
             className={`w-full text-left p-4 border-b border-gray-200 cursor-pointer ${

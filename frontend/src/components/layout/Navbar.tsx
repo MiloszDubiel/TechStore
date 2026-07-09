@@ -12,10 +12,11 @@ import {
 import { useCartStore } from "../../zustand/states/cartState";
 import type { Product } from "../../types/ProductType";
 import { useFavorite } from "../../context/FavoritesContext";
+import { useLogout } from "../../hooks/useLogin";
+import { useUser } from "../../hooks/useUser";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Navbar: React.FC = () => {
-  const { user, logout, isAuthenticated } = useAuth();
-
   const [search, setSearch] = useState<string>("");
 
   type ModalType = "cart" | "favorites" | "account" | "notifications" | null;
@@ -27,6 +28,10 @@ const Navbar: React.FC = () => {
     (state) => state,
   );
 
+  const { logout, isAuthenticated, user } = useAuth();
+
+ 
+
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const navigate = useNavigate();
@@ -34,6 +39,7 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     setActiveModal(null);
+    navigate("/");
   };
 
   const createSlug = useCallback(
@@ -313,7 +319,7 @@ const Navbar: React.FC = () => {
               }
             >
               <span>
-                {isAuthenticated && user?.name + " " + user?.lastName} <br />
+                {isAuthenticated && user?.name + " " + user?.last_name} <br />
               </span>
 
               <span className="text-xs flex items-center justify-center">

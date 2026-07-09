@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import axios from "axios";
+import api from "../../api/axios";
 import Navbar from "../../components/layout/Navbar";
 import { useCartStore } from "../../zustand/states/cartState";
 import { useForm } from "react-hook-form";
@@ -72,7 +72,7 @@ const CartPage = () => {
 
   const handleOrder = async () => {
     try {
-      await axios.post("/api/orders", {
+      await api.post("/api/orders", {
         cart,
         deliveryData: watch(),
         deliveryMethod: watch("deliveryMethod"),

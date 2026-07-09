@@ -8,7 +8,7 @@ import { RowDataPacket } from "mysql2/promise";
 type User = {
   id: number;
   email: string;
-  first_name: string;
+  name: string;
   last_name: string;
   role: string;
   is_active: boolean;
@@ -26,13 +26,13 @@ type Token = {
 };
 
 export const register = async (req: Request, res: Response) => {
-  const { email, password, first_name, last_name } = req.body;
+  const { email, password, name, last_name } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     await connection.query(
-      "INSERT INTO users (email, password, first_name, last_name) VALUES (?, ?, ?, ?)",
-      [email, hashedPassword, first_name, last_name],
+      "INSERT INTO users (email, password, name, last_name) VALUES (?, ?, ?, ?)",
+      [email, hashedPassword, name, last_name],
     );
     res.json({ message: "Rejestracja zakończona sukcesem" });
   } catch (err: any) {
@@ -51,7 +51,7 @@ export const login = async (req: Request, res: Response) => {
 
   try {
     const [rows] = await connection.query<RowDataPacket[]>(
-      "SELECT first_name, last_name, email, id, role, password, phone FROM users WHERE email = ?",
+      "SELECT name, last_name, email, id, role, password, phone FROM users WHERE email = ?",
       [email],
     );
 
@@ -78,7 +78,7 @@ export const login = async (req: Request, res: Response) => {
         id: user.id,
         email: user.email,
         role: user.role,
-        name: user.first_name,
+        name: user.name,
         lastName: user.last_name,
         phone: user.phone,
       },
@@ -157,5 +157,38 @@ export const logout = async (req: Request, res: Response) => {
   } catch (err: any) {
     console.log(err);
     res.status(500).json({ error: err.message });
+  }
+};
+
+export const getUser = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const [rows] = await connection.query<RowDataPacket[]>(
+      `
+      SELECT 
+        id,
+        email,
+        name,
+        last_name,
+        role,
+        phone
+      FROM users
+      WHERE id = ?
+      `,
+      [userId],
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.json(rows[0]);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+    });
   }
 };

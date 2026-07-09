@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../../api/axios";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "../../components/layout/Navbar";
 import { Link } from "react-router-dom";
@@ -16,7 +16,7 @@ const HomePage = () => {
 
   const fetchOffers = async () => {
     try {
-      const response = await axios.get("/api/products/products");
+      const response = await api.get("/api/products/products");
       return response.data.slice(0, 4);
     } catch (err) {
       console.error(err);

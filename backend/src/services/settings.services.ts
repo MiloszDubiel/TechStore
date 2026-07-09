@@ -1,10 +1,17 @@
 import { connection } from "../config/db.config";
+import bcrypt from "bcryptjs";
 
 interface UpdateUserData {
   id: number;
   firstName: string;
   lastName: string;
   phone?: string;
+}
+interface EditPasswordProps {
+  userId: number;
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 export const updateUserInDB = async (data: UpdateUserData) => {
@@ -14,7 +21,7 @@ export const updateUserInDB = async (data: UpdateUserData) => {
     `
       UPDATE users
       SET
-        first_name = ?,
+        name = ?,
         last_name = ?,
         phone = ?
       WHERE id = ?
@@ -97,8 +104,6 @@ export const updateAdressesToDB = async (
   try {
     await conn.beginTransaction();
 
-    // Jeżeli ustawiamy ten adres jako domyślny,
-    // wyłącz wszystkie inne
     if (is_default) {
       await conn.query(
         `
@@ -142,4 +147,80 @@ export const deleteAddressFromDB = async (aid: string) => {
       `,
     [aid],
   );
+};
+
+export const editPassword = async ({
+  userId,
+  currentPassword,
+  newPassword,
+  confirmPassword,
+}: EditPasswordProps) => {
+  if (newPassword !== confirmPassword) {
+    throw new Error("Hasła nie są takie same");
+  }
+
+  const [rows]: any = await connection.query(
+    "SELECT password FROM users WHERE id = ?",
+    [userId],
+  );
+
+  const user = rows[0];
+
+  if (!user) {
+    throw new Error("Użytkownik nie znaleziony");
+  }
+
+  const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+
+  if (!isPasswordValid) {
+    throw new Error("Aktualne hasło jest niepoprawne");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+  await connection.query(
+    `
+  UPDATE users 
+  SET password = ?, password_updated_at = NOW()
+  WHERE id = ?
+  `,
+    [hashedPassword, userId],
+  );
+
+  const [row]: any = await connection.query(
+    `
+  SELECT password_updated_at 
+  FROM users
+  WHERE id = ?
+  `,
+    [userId],
+  );
+
+  return {
+    success: true,
+    passwordUpdatedAt: row[0].password_updated_at,
+  };
+};
+
+export const getPassword = async (userId: string) => {
+  try {
+    const [rows]: any = await connection.query(
+      `
+      SELECT password_updated_at 
+      FROM users
+      WHERE id = ?
+      `,
+      [userId],
+    );
+
+    if (!rows[0]) {
+      throw new Error("Użytkownik nie znaleziony");
+    }
+
+    return {
+      passwordUpdatedAt: rows[0].password_updated_at,
+    };
+  } catch (error) {
+    throw new Error("Wewnętrzny błąd serwera");
+  }
 };
