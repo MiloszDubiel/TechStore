@@ -11,6 +11,8 @@ import {
   getPassword,
 } from "../services/settings.services";
 
+import { ResultSetHeader } from "mysql2";
+
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id; // z JWT middleware
@@ -54,7 +56,17 @@ export const getAdresses = async (req: Request, res: Response) => {
       });
     }
 
-    const addresses = await getAdressesFromDB(id as string);
+    const results = (await getAdressesFromDB(id as string)) as any[];
+
+    const addresses = results.map((address: any) => ({
+      ...address,
+      is_default: Boolean(address.is_default),
+    }));
+
+    res.json({
+      addresses,
+    });
+
     res.status(200).json({ addresses });
   } catch (e) {
     console.log(e);
@@ -107,35 +119,38 @@ export const updateAdresses = async (req: Request, res: Response) => {
 
 export const setAdresses = async (req: Request, res: Response) => {
   try {
-    const { id } = (req as any).user;
-
     const { street, postal_code, city, is_default } = req.body;
+    const { id } = (req as any).user;
 
     if (!id) {
       return res.status(400).json({
         success: false,
-        message: "Brak id użytkownika",
+        message: "Brak id",
       });
     }
 
-    const address = await saveAdressesToDB(
+    const result = await saveAdressesToDB(
       id,
       street,
       postal_code,
       city,
-      Boolean(is_default),
+      is_default,
     );
 
+    const newAddress = {
+      id: result.insertId,
+      street,
+      postal_code,
+      city,
+      is_default,
+    };
+
     return res.status(201).json({
-      success: true,
-      message: "Adres dodany",
-      address,
+      address: newAddress,
     });
   } catch (e) {
-    console.error(e);
-
-    return res.status(500).json({
-      success: false,
+    console.log(e);
+    res.status(500).json({
       message: "Błąd serwera",
     });
   }

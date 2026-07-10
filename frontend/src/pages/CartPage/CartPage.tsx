@@ -1,42 +1,14 @@
 import { useMemo } from "react";
-import api from "../../api/axios";
 import Navbar from "../../components/layout/Navbar";
 import { useCartStore } from "../../zustand/states/cartState";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { buySchema } from "../../schemas/buySchema";
-import type { BuyFrom } from "../../schemas/buySchema";
-
-//Za pomoca useReducer
-// const formDataReducer = (state: FromState, action: FormAction) => {
-//   switch (action.type) {
-//     case "SET_FIELD":
-//       return {
-//         ...state,
-//         [action.field]: action.value,
-//       };
-
-//     default:
-//       return state;
-//   }
-// };
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
   const cart = useCartStore((state) => state.cart);
-
   const removeFromCart = useCartStore((state) => state.removeFromCart);
   const clearCart = useCartStore((state) => state.clearCart);
 
-  //Za pomoca
-  // const [formState, dispatchFormState] = useReducer(formDataReducer, {
-  //   firstName: "",
-  //   lastName: "",
-  //   email: "",
-  //   phone: "",
-  //   city: "",
-  //   postalCode: "",
-  //   street: "",
-  // });
+  const navigate = useNavigate();
 
   const totalPrice = useMemo(
     () =>
@@ -47,54 +19,14 @@ const CartPage = () => {
     [cart],
   );
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    watch,
-  } = useForm<BuyFrom>({
-    resolver: zodResolver(buySchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      city: "",
-      postalCode: "",
-      street: "",
-      deliveryMethod: "courier",
-      paymentMethod: "blik",
-    },
-  });
-
-  const deliveryPrice = watch("deliveryMethod") === "courier" ? 15 : 12;
-  const finalPrice = totalPrice + deliveryPrice;
-
-  const handleOrder = async () => {
-    try {
-      await api.post("/api/orders", {
-        cart,
-        deliveryData: watch(),
-        deliveryMethod: watch("deliveryMethod"),
-        paymentMethod: watch("paymentMethod"),
-        totalPrice: finalPrice,
-      });
-
-      clearCart();
-      alert("Zamówienie złożone!");
-    } catch (err) {
-      console.error(err);
-      alert("Błąd zamówienia");
-    }
-  };
-
   return (
     <>
       <Navbar />
 
       <section className="bg-orange-500 text-white py-16 text-center">
-        <h1 className="text-4xl font-bold mb-4">Twój Koszyk</h1>
-        <p className="text-lg">Sprawdź produkty i złóż zamówienie</p>
+        <h1 className="text-4xl font-bold mb-4">Twój koszyk</h1>
+
+        <p>Sprawdź produkty przed zakupem</p>
       </section>
 
       <main className="container mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -106,32 +38,44 @@ const CartPage = () => {
           {cart.map((item: any) => (
             <div
               key={item.id}
-              className="bg-white shadow-md p-4 flex gap-4 items-center"
+              className="
+                bg-white
+                shadow-md
+                p-4
+                flex
+                gap-4
+                items-center
+                "
             >
               <img
                 src={item.product_data.images?.[0]?.url || "/no-image.png"}
-                alt={item.product_data.name}
-                className="w-20 h-20 object-cover"
+                className="
+                  w-24
+                  h-24
+                  object-cover
+                  "
               />
 
               <div className="flex-1">
-                <h3 className="font-semibold line-clamp-2">
-                  {item.product_data.name}
-                </h3>
+                <h3 className="font-semibold">{item.product_data.name}</h3>
 
-                <p className="text-sm text-gray-500">
-                  {item.quantity} x {item.price} zł
-                </p>
+                <p className="text-gray-500">Ilość: {item.quantity}</p>
+
+                <p>{item.price} zł / szt.</p>
               </div>
 
               <div className="text-right">
-                <div className="font-bold text-orange-500">
+                <p className="font-bold text-orange-500">
                   {(item.price * item.quantity).toFixed(2)} zł
-                </div>
+                </p>
 
                 <button
                   onClick={() => removeFromCart(item.id)}
-                  className="text-sm text-red-500 hover:underline"
+                  className="
+                    text-red-500
+                    text-sm
+                    hover:underline
+                    "
                 >
                   Usuń
                 </button>
@@ -140,122 +84,67 @@ const CartPage = () => {
           ))}
         </div>
 
-        <div className="bg-white shadow-md p-6 space-y-6 h-fit">
-          <h2 className="text-xl font-bold">Dane do dostawy</h2>
+        {/* PODSUMOWANIE */}
 
-          <div className="space-y-3">
-            <input
-              placeholder="Imię"
-              {...register("firstName")}
-              className="w-full border p-2 border-gray-200"
-            />
-            <p className="text-red-500 text-sm">{errors.firstName?.message}</p>
+        <div
+          className="
+          bg-white
+          shadow-md
+          p-6
+          h-fit
+          "
+        >
+          <h2 className="text-xl font-bold mb-6">Podsumowanie</h2>
 
-            <input
-              placeholder="Nazwisko"
-              {...register("lastName")}
-              className="w-full border p-2 border-gray-200"
-            />
-            <p className="text-red-500 text-sm">{errors.lastName?.message}</p>
+          <div className="flex justify-between mb-3">
+            <span>Produkty</span>
 
-            <input
-              {...register("email")}
-              placeholder="Email"
-              className="w-full border p-2 border-gray-200"
-            />
-            <p className="text-red-500 text-sm">{errors.email?.message}</p>
-
-            <input
-              placeholder="Telefon"
-              {...register("phone")}
-              className="w-full border p-2 border-gray-200"
-            />
-            <p className="text-red-500 text-sm">{errors.phone?.message}</p>
-
-            <input
-              placeholder="Miasto"
-              {...register("city")}
-              className="w-full border p-2 border-gray-200"
-            />
-            <p className="text-red-500 text-sm">{errors.city?.message}</p>
-
-            <input
-              placeholder="Kod pocztowy"
-              {...register("postalCode")}
-              className="w-full border p-2 border-gray-200"
-            />
-            <p className="text-red-500 text-sm">{errors.postalCode?.message}</p>
-
-            <input
-              {...register("street")}
-              placeholder="Ulica i numer"
-              className="w-full border p-2 border-gray-200"
-            />
-            <p className="text-red-500 text-sm">{errors.street?.message}</p>
+            <span>{totalPrice} zł</span>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-2">Dostawa</h3>
+          <div className="flex justify-between mb-3">
+            <span>Dostawa</span>
 
-            <label className="flex justify-between border p-3 mb-2 cursor-pointer border-gray-200">
-              <span>Kurier</span>
-              <span>15 zł</span>
-
-              <input type="radio" {...register("deliveryMethod")} />
-            </label>
-
-            <label className="flex justify-between border p-3 cursor-pointer border-gray-200">
-              <span>Paczkomat</span>
-              <span>12 zł</span>
-
-              <input type="radio" {...register("deliveryMethod")} />
-            </label>
+            <span>zostanie wybrana później</span>
           </div>
 
-          <div>
-            <h3 className="font-semibold mb-2">Płatność</h3>
+          <hr className="my-4" />
 
-            <label className="flex border p-3 mb-2 cursor-pointer border-gray-200">
-              <input type="radio" {...register("paymentMethod")} />
-              <span className="ml-2">BLIK</span>
-            </label>
+          <div className="flex justify-between text-xl font-bold">
+            <span>Razem</span>
 
-            <label className="flex border p-3 mb-2 cursor-pointer border-gray-200">
-              <input type="radio" {...register("paymentMethod")} />
-              <span className="ml-2">Przelew</span>
-            </label>
+            <span className="text-orange-500">{totalPrice} zł</span>
           </div>
 
-          <div className="border-t pt-4 space-y-2">
-            <div className="flex justify-between">
-              <span>Produkty</span>
-              <span>{totalPrice} zł</span>
-            </div>
+          <button
+            disabled={cart.length === 0}
+            onClick={() => {
+              navigate("/cart/checkout");
+            }}
+            className="
+            w-full
+            mt-6
+            bg-orange-500
+            text-white
+            py-3
+            hover:bg-orange-600
+            disabled:bg-gray-300
+            "
+          >
+            Przejdź do kasy
+          </button>
 
-            <div className="flex justify-between">
-              <span>Dostawa</span>
-              <span>{deliveryPrice} zł</span>
-            </div>
-
-            <div className="flex justify-between text-lg font-bold">
-              <span>Do zapłaty</span>
-              <span className="text-orange-500">{finalPrice} zł</span>
-            </div>
-
-            <button
-              onClick={handleSubmit(handleOrder)}
-              className="w-full bg-orange-500 text-white py-3 mt-4 hover:bg-orange-600 transition"
-            >
-              Złóż zamówienie
-            </button>
-
-            <button
-              onClick={clearCart}
-              className="w-full text-sm text-red-500 hover:underline"
-            >
-              Wyczyść koszyk
-            </button>
-          </div>
+          <button
+            onClick={clearCart}
+            className="
+            w-full
+            mt-3
+            text-red-500
+            hover:underline
+            "
+          >
+            Wyczyść koszyk
+          </button>
         </div>
       </main>
     </>

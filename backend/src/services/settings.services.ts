@@ -1,4 +1,5 @@
 import { connection } from "../config/db.config";
+import { ResultSetHeader } from "mysql2";
 import bcrypt from "bcryptjs";
 
 interface UpdateUserData {
@@ -38,8 +39,11 @@ export const getAdressesFromDB = async (id: string) => {
     [id],
   );
 
+  
+
   return result;
 };
+
 export const saveAdressesToDB = async (
   id: string,
   street: string,
@@ -52,8 +56,6 @@ export const saveAdressesToDB = async (
   try {
     await conn.beginTransaction();
 
-    // Jeżeli nowy adres ma być domyślny,
-    // wyłącz obecny domyślny adres
     if (is_default) {
       await conn.query(
         `
@@ -65,7 +67,7 @@ export const saveAdressesToDB = async (
       );
     }
 
-    const result = await conn.query(
+    const [result] = await conn.query<ResultSetHeader>(
       `
       INSERT INTO addresses
       (

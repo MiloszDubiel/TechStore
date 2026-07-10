@@ -1,10 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
-import type { AddressFrom } from "../schemas/addressSchema";
-
 const useAdresses = (userID: string | unknown, token: string | null) => {
   const queryClient = useQueryClient();
+
   const { data } = useQuery({
     queryKey: ["adressess", userID],
     queryFn: async () =>
@@ -24,8 +23,12 @@ const useAdresses = (userID: string | unknown, token: string | null) => {
         },
       }),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({
+        queryKey: ["adressess", userID],
+      });
+
+      return response.data.address;
     },
   });
 
@@ -69,7 +72,10 @@ const useAdresses = (userID: string | unknown, token: string | null) => {
   }
 
   return {
-    userAddresses: data?.data.addresses,
+    userAddresses: data?.data.addresses.map((address: any) => ({
+      ...address,
+      is_default: Boolean(address.is_default),
+    })),
     addressSetSuccess,
     saveAddress,
     updateAddress,

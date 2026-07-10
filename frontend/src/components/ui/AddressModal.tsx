@@ -40,7 +40,6 @@ export default function AddressModal({
   };
 
   const onSubmit = (data: AddressFrom) => {
-    console.log("SUBMIT DATA", data);
 
     if (isEdited) {
       console.log(data);
@@ -54,7 +53,7 @@ export default function AddressModal({
     console.log("ERRORS", errors);
   };
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-10">
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
         <div className="bg-white p-6 w-full max-w-md ">
           <h2 className="text-xl font-bold mb-4">Adres dostawy</h2>

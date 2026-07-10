@@ -7,7 +7,7 @@ export const adressesSchema = z.object({
     .regex(/^\d{2}-\d{3}$/, "Kod musi być w formacie XX-XXX"),
 
   street: z.string().min(3, "Podaj ulicę"),
-  isEdit: z.boolean(),
+  isEdit: z.boolean().optional(),
   is_default: z.boolean(),
 });
 
