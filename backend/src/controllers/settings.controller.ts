@@ -11,14 +11,14 @@ import {
   getPassword,
 } from "../services/settings.services";
 
-import { ResultSetHeader } from "mysql2";
-
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id; // z JWT middleware
-    const { firstName, lastName, phone } = req.body;
+    const { last_name, name, phone, email } = req.body;
 
-    if (!firstName || !lastName) {
+    console.log(userId);
+
+    if (!userId) {
       return res.status(400).json({
         success: false,
         message: "Brak wymaganych danych",
@@ -27,9 +27,10 @@ export const updateUserProfile = async (req: Request, res: Response) => {
 
     await updateUserInDB({
       id: userId,
-      firstName,
-      lastName,
+      name,
+      last_name,
       phone,
+      email,
     });
 
     return res.status(200).json({
@@ -63,10 +64,6 @@ export const getAdresses = async (req: Request, res: Response) => {
       is_default: Boolean(address.is_default),
     }));
 
-    res.json({
-      addresses,
-    });
-
     res.status(200).json({ addresses });
   } catch (e) {
     console.log(e);
@@ -78,6 +75,8 @@ export const updateAdresses = async (req: Request, res: Response) => {
     const { id } = (req as any).user;
 
     const { street, postal_code, city, is_default, aid } = req.body;
+
+    console.log(id);
 
     if (!id) {
       return res.status(400).json({

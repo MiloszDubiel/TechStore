@@ -1,3 +1,5 @@
+
+
 -- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
 -- Host: localhost    Database: my_it_store
@@ -20,8 +22,10 @@
 --
 
 
+DROP DATABASE my_it_store;
 CREATE DATABASE my_it_store;
 USE my_it_store;
+
 
 DROP TABLE IF EXISTS `addresses`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

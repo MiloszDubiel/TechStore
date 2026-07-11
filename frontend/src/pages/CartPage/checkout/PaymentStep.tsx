@@ -84,7 +84,6 @@ const PaymentStep = ({ next, back }: any) => {
       <div className="flex justify-between mt-8">
         <GrayButton onClick={back}>Wstecz</GrayButton>
         <OrangeButton disabled={!selectedPayment} onClick={next}>
-          {" "}
           Dalej
         </OrangeButton>
       </div>

@@ -8,38 +8,15 @@ const DeliveryStep = ({ next, back }: any) => {
 
   const [method, setMethod] = useState(checkoutData.delivery?.method ?? "");
 
-  const selectCourier = () => {
-    setMethod("courier");
-
-    updateCheckout({
-      delivery: {
-        method: "courier",
-        price: 15,
-      },
-    });
-  };
-
-  const selectLocker = () => {
-    setMethod("locker");
-
-    updateCheckout({
-      delivery: {
-        method: "locker",
-        price: 12,
-        locker: undefined,
-      },
-    });
-  };
-
   useEffect(() => {
     updateCheckout({
       delivery: {
         method: "courier",
         price: 15,
-        locker: undefined,
+        locker: null,
       },
     });
-  });
+  }, []);
 
   return (
     <div>
@@ -59,7 +36,17 @@ const DeliveryStep = ({ next, back }: any) => {
           type="radio"
           name="delivery"
           checked={method === "courier"}
-          onChange={selectCourier}
+          onChange={() => {
+            setMethod("courier");
+
+            updateCheckout({
+              delivery: {
+                method: "courier",
+                price: 15,
+                locker: null,
+              },
+            });
+          }}
         />
 
         <span className="ml-3">Kurier DHL - 15 zł</span>
@@ -78,7 +65,17 @@ const DeliveryStep = ({ next, back }: any) => {
           type="radio"
           name="delivery"
           checked={method === "locker"}
-          onChange={selectLocker}
+          onChange={() => {
+            setMethod("locker");
+
+            updateCheckout({
+              delivery: {
+                ...checkoutData.delivery,
+                method: "locker",
+                price: 12,
+              },
+            });
+          }}
         />
 
         <span className="ml-3">Paczkomat InPost - 12 zł</span>

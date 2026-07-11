@@ -4,9 +4,10 @@ import bcrypt from "bcryptjs";
 
 interface UpdateUserData {
   id: number;
-  firstName: string;
-  lastName: string;
+  name: string;
+  last_name: string;
   phone?: string;
+  email: string;
 }
 interface EditPasswordProps {
   userId: number;
@@ -16,7 +17,7 @@ interface EditPasswordProps {
 }
 
 export const updateUserInDB = async (data: UpdateUserData) => {
-  const { id, firstName, lastName, phone } = data;
+  const { id, name, last_name, phone, email } = data;
 
   const [result] = await connection.query(
     `
@@ -24,10 +25,11 @@ export const updateUserInDB = async (data: UpdateUserData) => {
       SET
         name = ?,
         last_name = ?,
-        phone = ?
+        phone = ?,
+        email = ?
       WHERE id = ?
     `,
-    [firstName, lastName, phone || null, id],
+    [name, last_name, phone || null, email, id],
   );
 
   return result;
@@ -38,8 +40,6 @@ export const getAdressesFromDB = async (id: string) => {
     "SELECT * FROM addresses WHERE user_id = ?",
     [id],
   );
-
-  
 
   return result;
 };

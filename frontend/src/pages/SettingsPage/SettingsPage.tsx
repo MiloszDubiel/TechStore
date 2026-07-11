@@ -50,7 +50,7 @@ const AccountPage = () => {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: user?.name,
+      name: user?.name,
       last_name: user?.last_name,
       email: user?.email,
       id: user?.id,
@@ -61,7 +61,7 @@ const AccountPage = () => {
   useEffect(() => {
     if (user) {
       reset({
-        firstName: user.name,
+        name: user.name,
         last_name: user.last_name,
         email: user.email,
         phone: user.phone,
@@ -93,6 +93,9 @@ const AccountPage = () => {
     addressDeleteSuccess,
   } = useAdresses(user?.id, token);
 
+  const onError = (er: any) => {
+    console.log(er);
+  };
   const onSubmit = (data: ProfileFormData) => {
     mutate(data);
   };
@@ -175,7 +178,7 @@ const AccountPage = () => {
 
                 <form
                   className="max-w-xl space-y-4"
-                  onSubmit={handleSubmit(onSubmit)}
+                  onSubmit={handleSubmit(onSubmit, onError)}
                 >
                   <fieldset>
                     <div>
@@ -184,14 +187,14 @@ const AccountPage = () => {
                       </label>
 
                       <input
-                        {...register("firstName")}
+                        {...register("name")}
                         placeholder="Imię"
                         className="w-full border p-3 focus:outline-none focus:border-orange-500 border-gray-200"
                       />
                     </div>
-                    {errors.firstName && (
+                    {errors.name && (
                       <p className="text-red-500 text-sm">
-                        {errors.firstName.message}
+                        {errors.name.message}
                       </p>
                     )}
 

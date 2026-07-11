@@ -12,9 +12,6 @@ import {
 import { useCartStore } from "../../zustand/states/cartState";
 import type { Product } from "../../types/ProductType";
 import { useFavorite } from "../../context/FavoritesContext";
-import { useLogout } from "../../hooks/useLogin";
-import { useUser } from "../../hooks/useUser";
-import { useQueryClient } from "@tanstack/react-query";
 
 const Navbar: React.FC = () => {
   const [search, setSearch] = useState<string>("");
@@ -29,8 +26,6 @@ const Navbar: React.FC = () => {
   );
 
   const { logout, isAuthenticated, user } = useAuth();
-
- 
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -131,7 +126,7 @@ const Navbar: React.FC = () => {
                               "/no-image.png"
                             }
                             alt={product.product_data.name}
-                            className="w-full h-full object-cover rounded"
+                            className="w-full h-full object-cover "
                           />
                         </div>
 
@@ -264,7 +259,7 @@ const Navbar: React.FC = () => {
                         </div>
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="text-xs text-red-500 hover:underline"
+                          className="text-xs text-red-500 hover:underline cursor-pointer"
                         >
                           Usuń
                         </button>
@@ -290,14 +285,14 @@ const Navbar: React.FC = () => {
                     onClick={() => {
                       navigate("/cart");
                     }}
-                    className="w-full mt-3 bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition"
+                    className="w-full mt-3 bg-orange-500 text-white py-2  hover:bg-orange-600 transition cursor-pointer"
                   >
                     Przejdź do koszyka
                   </button>
 
                   <button
                     onClick={() => clearCart()}
-                    className="w-full mt-2 text-sm text-red-500 hover:underline"
+                    className="w-full mt-2 text-sm text-red-500 hover:underline cursor-pointer"
                   >
                     Wyczyść koszyk
                   </button>

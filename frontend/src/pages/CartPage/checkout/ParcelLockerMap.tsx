@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
-import { useCheckout } from "../../../context/CheckoutContext";
+
+import { useCheckout, type LockerData } from "../../../context/CheckoutContext";
 
 // Import stylów Leaflet (wymagane!)
 import "leaflet/dist/leaflet.css";
@@ -17,7 +17,7 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const lockers = [
+const lockers: LockerData[] = [
   {
     id: "RZE01A",
     name: "Paczkomat RZE01A",
@@ -41,6 +41,8 @@ const lockers = [
 export default function ParcelLockerMap() {
   const { updateCheckout, checkoutData } = useCheckout();
 
+  console.log(checkoutData);
+
   return (
     <div className="mt-6">
       <h3 className="font-semibold mb-3">Wybierz paczkomat</h3>
@@ -48,7 +50,7 @@ export default function ParcelLockerMap() {
       <MapContainer
         center={[50.0413, 21.999] as [number, number]}
         zoom={13}
-        className="h-[400px] w-full"
+        className="h-100 w-full"
       >
         <TileLayer
           attribution="&copy; OpenStreetMap"
@@ -70,7 +72,8 @@ export default function ParcelLockerMap() {
                     e.stopPropagation();
                     updateCheckout({
                       delivery: {
-                        ...checkoutData.delivery,
+                        method: "locker",
+                        price: 12,
                         locker,
                       },
                     });

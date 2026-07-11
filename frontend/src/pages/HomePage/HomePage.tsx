@@ -91,7 +91,7 @@ const HomePage = () => {
                     </div>
 
                     <button
-                      className="mt-auto w-full bg-orange-500 text-white py-2  hover:bg-orange-600 transition"
+                      className="mt-auto w-full bg-orange-500 text-white py-2  hover:bg-orange-600 transition cursor-pointer"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

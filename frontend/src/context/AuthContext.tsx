@@ -33,7 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setToken] = useState(
     localStorage.getItem("token") ?? sessionStorage.getItem("token"),
   );
-  const { data: user, isLoading, isFetching } = useUser(token);
+  const { data: user } = useUser(token);
 
   const login = (
     accessToken: string,
@@ -68,13 +68,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  if (isLoading || isFetching) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl">Ładowanie...</p>
-      </div>
-    );
-  }
   return (
     <AuthContext.Provider
       value={{

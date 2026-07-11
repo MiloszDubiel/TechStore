@@ -157,9 +157,7 @@ export default function AddressStep({ next, back }: Props) {
             saveAddress(data, {
               onSuccess: (response) => {
                 const newAddress = response.data.address;
-
-                console.log();
-                setSelectedAddressId(newAddress[0].insertId);
+                setSelectedAddressId(newAddress.id);
 
                 updateCheckout({
                   address: newAddress,

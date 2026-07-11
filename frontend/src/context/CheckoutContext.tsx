@@ -18,35 +18,30 @@ export type AddressData = {
 
 export type LockerData = {
   id: string;
-  lockerName: string;
+  name: string;
   address: string;
   position?: [number, number];
 };
 
 export type DeliveryData = {
-  method?: "courier" | "locker";
-
+  method: "courier" | "locker";
   price: number;
-  locker?: LockerData;
+  locker: LockerData | null;
 };
 
 export type PaymentData = {
-  method?: "blik" | "card" | "transfer" | "cash";
+  method: "blik" | "card" | "transfer" | "cash";
 };
 
 export type CheckoutData = {
   customer: CustomerData | null;
-
   address: AddressData | null;
-
-  delivery: DeliveryData | null;
-
-  payment: PaymentData | null;
+  delivery: DeliveryData;
+  payment: PaymentData;
 };
 
 type CheckoutContextType = {
   checkoutData: CheckoutData;
-
   updateCheckout: (data: Partial<CheckoutData>) => void;
 };
 
@@ -60,7 +55,8 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
 
     delivery: {
       method: "courier",
-      price: 0,
+      price: 15,
+      locker: null,
     },
 
     payment: {
@@ -69,10 +65,19 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
   });
 
   const updateCheckout = (data: Partial<CheckoutData>) => {
-    setCheckoutData((prev) => ({
-      ...prev,
-      ...data,
-    }));
+    setCheckoutData((prev) => {
+      const updated = {
+        ...prev,
+        ...data,
+      };
+
+      // zabezpieczenie przed niepotrzebnym rerenderem
+      if (JSON.stringify(prev) === JSON.stringify(updated)) {
+        return prev;
+      }
+
+      return updated;
+    });
   };
 
   return (
