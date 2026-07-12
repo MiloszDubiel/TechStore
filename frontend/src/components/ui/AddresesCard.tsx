@@ -1,3 +1,5 @@
+import { GrayButton, OrangeButton } from "./Buttons";
+
 type AddressCardProps = {
   title: string;
   street: string;
@@ -33,7 +35,6 @@ export default function AddressCard({
                 Domyślny
               </span>
             )}
-            
           </div>
 
           <p>{street}</p>
@@ -44,19 +45,8 @@ export default function AddressCard({
         </div>
 
         <div className="flex gap-2">
-          <button
-            onClick={onEdit}
-            className=" border border-gray-200 px-3 py-2 hover:bg-gray-100 "
-          >
-            Edytuj
-          </button>
-
-          <button
-            onClick={onDelete}
-            className=" border border-red-200 px-3 py-2 text-red-500 hover:bg-red-50"
-          >
-            Usuń
-          </button>
+          <GrayButton onClick={onEdit}> Edytuj</GrayButton>
+          <OrangeButton onClick={onDelete}> Usuń</OrangeButton>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import DeliveryStep from "./DeliveryStep";
 import PaymentStep from "./PaymentStep";
 import SummaryStep from "./SummaryStep";
 import { useCheckout } from "../../../context/CheckoutContext";
+import Navbar from "../../../components/layout/Navbar";
 
 export default function CheckoutLayout() {
   const { checkoutData } = useCheckout();
@@ -69,33 +70,36 @@ export default function CheckoutLayout() {
   };
 
   return (
-    <div className="container mx-auto px-6 py-10">
-      <CheckoutSteps steps={steps} current={step} />
+    <>
+      <Navbar />
+      <div className="container mx-auto px-6 py-10">
+        <CheckoutSteps steps={steps} current={step} />
 
-      <div
-        className="
+        <div
+          className="
         grid
         grid-cols-1
         lg:grid-cols-3
         gap-8
         mt-10
         "
-      >
-        <div
-          className="
+        >
+          <div
+            className="
           lg:col-span-2
           bg-white
           p-6
           shadow
           "
-        >
-          {renderStep()}
-        </div>
+          >
+            {renderStep()}
+          </div>
 
-        <div className="order-first lg:order-last">
-          <OrderSummary />
+          <div className="order-first lg:order-last">
+            <OrderSummary />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

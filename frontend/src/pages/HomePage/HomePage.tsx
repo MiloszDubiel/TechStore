@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { useCartStore } from "../../zustand/states/cartState";
 
 const HomePage = () => {
-  const cart = useCartStore((state) => state.cart);
   const addToCart = useCartStore((state) => state.addToCart);
 
   const createSlug = (name: string) =>

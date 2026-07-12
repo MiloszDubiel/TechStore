@@ -3,6 +3,7 @@ import {
   getProducts,
   getCurrtentProdcut,
   getCurrtentProdcutByID,
+  saveOrderToDB,
 } from "../services/prodcuts.service";
 
 export const getOffersFromDatabase = async (req: Request, res: Response) => {
@@ -15,6 +16,16 @@ export const getOffersFromDatabase = async (req: Request, res: Response) => {
     console.error(err);
     res.status(500).json({ message: "Błąd pobierania ofert" });
   }
+};
+
+export const orderProdcuts = async (req: Request, res: Response) => {
+  const userId = (req as any).user.id;
+
+  const { orderId, success } = await saveOrderToDB(userId, req.body);
+
+  if (success) return res.status(200).json({ orderId, success });
+
+  return res.status(500).json({ success });
 };
 
 export const getProductByExternalID = async (req: Request, res: Response) => {

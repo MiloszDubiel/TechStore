@@ -20,6 +20,7 @@ interface AuthContextType {
   ) => void;
   logout: () => any;
   isAuthenticated: boolean;
+  token: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -75,6 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         login,
         logout,
         isAuthenticated: !!user,
+        token,
       }}
     >
       {children}

@@ -9,10 +9,14 @@ interface LoginResponse {
 }
 
 const loginUser = async (data: LoginFormData): Promise<LoginResponse> => {
+  
+  
   const response = await api.post("/api/auth/login", {
     email: data.email,
     password: data.password,
   });
+
+
 
   return {
     accessToken: response.data.accessToken,
