@@ -35,6 +35,8 @@ export const OrangeButton = ({
       className="
              
             bg-orange-500
+            hover:bg-orange-600
+            
             text-white
             px-6
             py-3

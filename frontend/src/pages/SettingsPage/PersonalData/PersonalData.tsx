@@ -12,6 +12,8 @@ export const PersonalData = () => {
   const queryClient = useQueryClient();
   const { user, token } = useAuth();
 
+  console
+
   const {
     register,
     handleSubmit,

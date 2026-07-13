@@ -108,7 +108,7 @@ const CartPage = () => {
             <span>zostanie wybrana później</span>
           </div>
 
-          <hr className="my-4" />
+          <hr className="my-4 text-gray-300" />
 
           <div className="flex justify-between text-xl font-bold">
             <span>Razem</span>
@@ -141,6 +141,7 @@ const CartPage = () => {
             mt-3
             text-red-500
             hover:underline
+            cursor-pointer
             "
           >
             Wyczyść koszyk

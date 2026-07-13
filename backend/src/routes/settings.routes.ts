@@ -10,6 +10,8 @@ import {
   getAdresses,
   setAdresses,
   updateAdresses,
+  getOrderDetails,
+  getOrders
 } from "../controllers/settings.controller";
 
 const router = Router();
@@ -21,5 +23,6 @@ router.patch("/edit-user/adresses", verifyToken, updateAdresses);
 router.delete("/edit-user/adresses/:id", verifyToken, deleteAddress);
 router.patch("/edit-user/security", verifyToken, editUserSecurity);
 router.get("/edit-user/security/password-date", verifyToken, getPasswordUpdatedAt);
+
 
 export default router;

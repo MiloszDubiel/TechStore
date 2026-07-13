@@ -5,7 +5,7 @@ import { useCartStore } from "../../../zustand/states/cartState";
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+
 import NotificationCard from "../../../components/ui/NotificationCard";
 const methods = {
   blik: "Kod BLIK",

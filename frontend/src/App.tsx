@@ -12,6 +12,10 @@ import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import CheckoutLayout from "./pages/CartPage/checkout/CheckoutLayout";
 import { FavoriteProvider } from "./context/FavoritesContext";
 import { CheckoutProvider } from "./context/CheckoutContext";
+import {
+  CheckIsEmptyCart,
+  CheckIsLoggedIn,
+} from "./components/ProtectetRoutes";
 
 const App: React.FC = () => {
   return (
@@ -25,13 +29,41 @@ const App: React.FC = () => {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/offers" element={<OffersList />} />
                   <Route path="/offers/:slug/:id" element={<OfferDetails />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
+                  <Route
+                    path="/login"
+                    element={
+                      <CheckIsLoggedIn>
+                        <LoginPage />
+                      </CheckIsLoggedIn>
+                    }
+                  />
+                  <Route
+                    path="/register"
+                    element={
+                      <CheckIsLoggedIn>
+                        <RegisterPage />
+                      </CheckIsLoggedIn>
+                    }
+                  />
                   <Route path="*" element={<Navigate to="/" />} />
                   <Route path="/cart" element={<CartPage />} />
 
-                  <Route path="/profile" element={<SettingsPage />} />
-                  <Route path="/cart/checkout" element={<CheckoutLayout />} />
+                  <Route
+                    path="/profile"
+                    element={
+                      <CheckIsLoggedIn>
+                        <SettingsPage />
+                      </CheckIsLoggedIn>
+                    }
+                  />
+                  <Route
+                    path="/cart/checkout"
+                    element={
+                      <CheckIsEmptyCart>
+                        <CheckoutLayout />
+                      </CheckIsEmptyCart>
+                    }
+                  />
                 </Routes>
               </div>
 

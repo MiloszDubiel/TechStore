@@ -1,12 +1,13 @@
 import { useState } from "react";
 import Navbar from "../../components/layout/Navbar";
-import { useAuth, type User } from "../../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 import { Addresses } from "./Addresses/Addresses";
 
 import Security from "./Security/Security";
 import Preferences from "./Preferences/Preferrences";
 import { PersonalData } from "./PersonalData/PersonalData";
+import Orders from "./Orders/Orders";
 
 type Tab =
   | "orders"
@@ -18,42 +19,14 @@ type Tab =
 
 const AccountPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("orders");
-  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [selectedOrderId] = useState<string | null>(null);
 
-  const { user, token } = useAuth();
+  const { token } = useAuth();
 
   const renderContent = () => {
     switch (activeTab) {
       case "orders":
-        return (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">Moje zamówienia</h2>
-
-            <div className="space-y-3">
-              {[1, 2, 3].map((id) => (
-                <div
-                  key={id}
-                  className="border border-gray-200 p-4 flex justify-between items-center"
-                >
-                  <div>
-                    <p className="font-semibold">Zamówienie #{id}</p>
-                    <p className="text-sm text-gray-500">Status: wysłane</p>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setSelectedOrderId(String(id));
-                      setActiveTab("order-details");
-                    }}
-                    className="text-orange-500 hover:underline"
-                  >
-                    Szczegóły
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+        return <Orders />;
 
       case "order-details":
         return (
@@ -81,7 +54,7 @@ const AccountPage = () => {
       case "addresses":
         return <Addresses />;
       case "security":
-        return <Security user={user as User} />;
+        return <Security />;
 
       case "settings":
         return <Preferences />;

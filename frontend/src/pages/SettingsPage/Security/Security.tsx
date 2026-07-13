@@ -1,4 +1,4 @@
-import type { User } from "../../../context/AuthContext";
+import { useAuth, type User } from "../../../context/AuthContext";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -8,13 +8,12 @@ import {
 import { useEditUserSecurity } from "../../../hooks/useEditUserSeciurity";
 import NotificationCard from "../../../components/ui/NotificationCard";
 import { AxiosError } from "axios";
-import { data } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
-type SecurityProps = {
-  user: User;
-};
-
-const Security = ({ user }: SecurityProps) => {
+const Security = () => {
+  const [successMessage, setSuccessMessage] = useState("");
   const {
     register,
     handleSubmit,
@@ -28,6 +27,8 @@ const Security = ({ user }: SecurityProps) => {
     },
   });
 
+  const { logout } = useAuth();
+  const queryClient = useQueryClient();
   const {
     passwordUpdatedAtQuery: {
       isLoading,
@@ -36,17 +37,32 @@ const Security = ({ user }: SecurityProps) => {
     editPasswordMutation: { mutate, isSuccess, isError, error },
   } = useEditUserSecurity();
 
-  const onSubmit = (data: ChangePasswordSchema) => {
-    mutate(data);
-  };
+  const navigate = useNavigate();
 
-  console.log("passwordUpdatedAtQuery", passwordUpdatedAt);
+  const onSubmit = (data: ChangePasswordSchema) => {
+    mutate(data, {
+      onSuccess: () => {
+        setSuccessMessage(
+          "Hasło zostało pomyślnie zmienione. Za chwilę nastąpi wylogowanie...",
+        );
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("refreshToken");
+
+        queryClient.clear();
+        setTimeout(() => {
+          logout();
+          navigate("/login");
+        }, 3000);
+      },
+    });
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {isSuccess && (
-        <NotificationCard message="Hasło zostało pomyślnie zmienione" />
-      )}
+      {isSuccess && <NotificationCard message={successMessage} />}
       {isError && (
         <NotificationCard
           message={

@@ -23,6 +23,7 @@ export const verifyToken = (
     );
 
     if (typeof decoded === "string") {
+      console.log("TUTAJ");
       return res.status(403).json({ message: "Nieprawidłowy token" });
     }
 
@@ -34,7 +35,7 @@ export const verifyToken = (
     };
 
     next();
-  } catch {
+  } catch (error) {
     return res.status(403).json({ message: "Nieprawidłowy token" });
   }
 };

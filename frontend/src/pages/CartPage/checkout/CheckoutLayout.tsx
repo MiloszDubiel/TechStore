@@ -10,6 +10,7 @@ import SummaryStep from "./SummaryStep";
 import { useCheckout } from "../../../context/CheckoutContext";
 import Navbar from "../../../components/layout/Navbar";
 
+
 export default function CheckoutLayout() {
   const { checkoutData } = useCheckout();
 

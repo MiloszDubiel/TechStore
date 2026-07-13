@@ -7,8 +7,11 @@ import favoriteRoutes from "./routes/favorite.routes";
 import reviewsRoutes from "./routes/reviews.routes";
 import settingsRoutes from "./routes/settings.routes";
 import path from "node:path";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -21,5 +24,5 @@ app.use("/api/reviews", reviewsRoutes);
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 app.listen(5000, () => {
-  console.log("Server running on port 5000");
+  console.log("Serwer działa na porcie 5000");
 });

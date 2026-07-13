@@ -9,6 +9,8 @@ import {
   updateAdressesToDB,
   editPassword,
   getPassword,
+  getOrdersFromDB,
+  getOrderDetailsFromDB,
 } from "../services/settings.services";
 
 export const updateUserProfile = async (req: Request, res: Response) => {
@@ -258,5 +260,42 @@ export const getPasswordUpdatedAt = async (req: Request, res: Response) => {
           message: "Wewnętrzny błąd serwera",
         });
     }
+  }
+};
+
+export const getOrders = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const orders = await getOrdersFromDB(userId);
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({
+      message: "Błąd pobierania zamówień",
+    });
+  }
+};
+
+export const getOrderDetails = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({
+        message: "Brak ID",
+      });
+    }
+
+    const order = await getOrderDetailsFromDB(id as string, userId);
+
+    res.status(200).json({
+      order,
+      message: "Błąd pobierania zamówienia",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Błąd pobierania zamówienia",
+    });
   }
 };

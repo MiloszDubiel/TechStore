@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "../api/axios";
+import axios from "axios";
 import type { ChangePasswordSchema } from "../schemas/seciuritySchema";
 
-const editUserSecurity = async (data: ChangePasswordSchema) => {
-  const token = localStorage.getItem("token");
 
-  const response = await api.patch("/api/settings/edit-user/security", data, {
+const editUserSecurity = async (data: ChangePasswordSchema) => {
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+
+  const response = await axios.patch("/api/settings/edit-user/security", data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -15,9 +17,10 @@ const editUserSecurity = async (data: ChangePasswordSchema) => {
 };
 
 const getPasswordUpdatedAt = async () => {
-  const token = localStorage.getItem("token");
+  const token =
+    localStorage.getItem("token") || sessionStorage.getItem("token");
 
-  const response = await api.get(
+  const response = await axios.get(
     "/api/settings/edit-user/security/password-date",
     {
       headers: {
@@ -30,8 +33,6 @@ const getPasswordUpdatedAt = async () => {
 };
 
 export const useEditUserSecurity = () => {
-  const queryClient = useQueryClient();
-
   const passwordUpdatedAtQuery = useQuery({
     queryKey: ["password-updated-at"],
     queryFn: getPasswordUpdatedAt,
@@ -39,12 +40,6 @@ export const useEditUserSecurity = () => {
 
   const editPasswordMutation = useMutation({
     mutationFn: (data: ChangePasswordSchema) => editUserSecurity(data),
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["password-updated-at"],
-      });
-    },
   });
 
   return {

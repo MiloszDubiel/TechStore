@@ -1,11 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import api from "../api/axios";
+import axios from "axios"; 
 
 const getUser = async () => {
   const token =
     localStorage.getItem("token") ?? sessionStorage.getItem("token");
 
-  const response = await api.get("/api/auth/user", {
+  const response = await axios.get("/api/auth/user", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
