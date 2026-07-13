@@ -1,3 +1,4 @@
+import { OrangeButton } from "../../../components/ui/Buttons";
 import { useAuth } from "../../../context/AuthContext";
 import { useOrder } from "../../../hooks/useOrders";
 
@@ -10,43 +11,114 @@ const OrderDetails = ({ id, onBack }: any) => {
     return <p>Ładowanie...</p>;
   }
 
-
   return (
-    <>
-      <button onClick={onBack} className="mb-6 text-orange-500">
-        ← Powrót
-      </button>
+    <div className="space-y-8">
+      <OrangeButton onClick={onBack}> Powrót do zamówień</OrangeButton>
 
-      <h2 className="text-2xl font-bold mb-6">Zamówienie #{data.id}</h2>
+      <div>
+        <h2 className="text-3xl font-bold">Zamówienie {data.order_number}</h2>
 
-      <div className="border p-5 mb-6">
-        <p>Status: {data.status}</p>
-        <p>Data: {new Date(data.created_at).toLocaleString()}</p>
-        <p>Łącznie: {data.total_price} zł</p>
+        <p className="text-gray-500 mt-1">Szczegóły złożonego zamówienia</p>
       </div>
 
-      <h3 className="font-semibold mb-4">Produkty</h3>
+      <div className="border border-gray-300">
+        <div className="border-b border-gray-300 bg-gray-50 px-6 py-4">
+          <h3 className="font-semibold text-lg">Informacje o zamówieniu</h3>
+        </div>
 
-      <div className="space-y-4">
-        {data.items.map((item: any) => {
-          const product = item.product_data;
+        <div className="grid grid-cols-2 gap-y-6 px-6 py-6">
+          <div>
+            <p className="text-sm text-gray-500">Status</p>
+            <p className="font-semibold">{data.status}</p>
+          </div>
 
-          return (
-            <div key={product.id} className="border p-4 flex gap-4">
-              <img src={product.images[0]} className="w-20 h-20 object-cover" />
+          <div>
+            <p className="text-sm text-gray-500">Data zamówienia</p>
+            <p>{new Date(data.created_at).toLocaleString("pl-PL")}</p>
+          </div>
 
-              <div className="flex-1">
-                <p className="font-semibold">{product.name}</p>
+          <div>
+            <p className="text-sm text-gray-500">Łączna kwota</p>
+            <p className="text-xl font-bold text-orange-500">
+              {Number(data.total_price).toFixed(2)} zł
+            </p>
+          </div>
 
-                <p>Ilość: {item.quantity}</p>
+          <div>
+            <p className="text-sm text-gray-500">Liczba produktów</p>
+            <p>{data.items.length}</p>
+          </div>
+        </div>
+      </div>
 
-                <p>{item.price} zł</p>
+      <div className="border border-gray-300">
+        <div className="border-b border-gray-300 bg-gray-50 px-6 py-4">
+          <h3 className="font-semibold text-lg">Zamówione produkty</h3>
+        </div>
+
+        <div>
+          {data.items.map((item: any, index: number) => {
+            const product = item.product_data;
+
+            return (
+              <div
+                key={product.id}
+                className={`flex gap-5 p-6 ${
+                  index !== data.items.length - 1
+                    ? "border-b border-gray-300"
+                    : ""
+                }`}
+              >
+                <img
+                  src={product.images?.[0]}
+                  alt={product.name}
+                  className="w-28 h-28 object-contain border border-gray-300 p-2"
+                />
+
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-semibold text-lg">{product.name}</h4>
+
+                    {product.producer && (
+                      <p className="text-gray-500 mt-1">
+                        Producent: {product.producer}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex justify-between items-end mt-5">
+                    <div className="space-y-1">
+                      <p className="text-gray-500">
+                        Ilość:{" "}
+                        <span className="font-semibold text-black">
+                          {item.quantity}
+                        </span>
+                      </p>
+
+                      <p className="text-gray-500">
+                        Cena za sztukę:{" "}
+                        <span className="font-semibold text-black">
+                          {Number(item.price).toFixed(2)} zł
+                        </span>
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-sm text-gray-500">Wartość</p>
+
+                      <p className="text-xl font-bold text-orange-500">
+                        {(item.quantity * item.price).toFixed(2)} zł
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
+
 export default OrderDetails;

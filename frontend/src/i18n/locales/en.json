@@ -1,0 +1,11 @@
+{
+  "navbar": {
+    "home": "Home",
+    "shop": "Shop",
+    "login": "Login"
+  },
+  "cart": {
+    "title": "Your cart",
+    "empty": "Cart is empty"
+  }
+}

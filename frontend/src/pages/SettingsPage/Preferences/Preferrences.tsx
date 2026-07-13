@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 const Preferences = () => {
   const [settings, setSettings] = useState({
@@ -53,38 +53,10 @@ const Preferences = () => {
           </select>
         </section>
 
-        {/* Regionalne */}
-        <section className="border p-4 border-gray-200">
-          <h3 className="font-semibold mb-3">Regionalne</h3>
+      
+     
 
-          <label className="block text-sm text-gray-600 mb-2">Język</label>
-
-          <select
-            value={settings.language}
-            onChange={(e) => updateSetting("language", e.target.value)}
-            className="w-full border p-3 mb-4 border-gray-200"
-          >
-            <option value="pl">Polski</option>
-
-            <option value="en">English</option>
-          </select>
-
-          <label className="block text-sm text-gray-600 mb-2">Waluta</label>
-
-          <select
-            value={settings.currency}
-            onChange={(e) => updateSetting("currency", e.target.value)}
-            className="w-full border p-3 border-gray-200"
-          >
-            <option>PLN</option>
-
-            <option>EUR</option>
-
-            <option>USD</option>
-          </select>
-        </section>
-
-        {/* Powiadomienia */}
+    
         <section className="border p-4 border-gray-200">
           <h3 className="font-semibold mb-3">Powiadomienia</h3>
 

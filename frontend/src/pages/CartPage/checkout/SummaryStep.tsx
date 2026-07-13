@@ -7,6 +7,7 @@ import axios from "axios";
 import { useAuth } from "../../../context/AuthContext";
 
 import NotificationCard from "../../../components/ui/NotificationCard";
+
 const methods = {
   blik: "Kod BLIK",
   card: "Płatność kartą",
@@ -14,8 +15,8 @@ const methods = {
   cash: "Płatność przy odbiorze",
 };
 
-const SummaryStep = ({ back }: any) => {
-  const { checkoutData } = useCheckout();
+const SummaryStep = ({ back, onSuccess }: any) => {
+  const { checkoutData, setIsComplete } = useCheckout();
   const cartItems = useCartStore((state) => state.cart);
   const clearCart = useCartStore((state) => state.clearCart);
   const { token } = useAuth();
@@ -44,7 +45,7 @@ const SummaryStep = ({ back }: any) => {
     });
   };
 
-  const { mutate, isSuccess } = useMutation({
+  const { mutate, isSuccess, isPending } = useMutation({
     mutationFn: (data: any) =>
       axios.post("/api/products/products/order", data, {
         headers: {
@@ -57,15 +58,13 @@ const SummaryStep = ({ back }: any) => {
 
       clearCart();
 
-      setOrderCompleted(true);
+      setIsComplete(true);
 
-      alert(
-        `Zamówienie zostało utworzone! Numer zamówienia: ${response.data.orderId}`,
-      );
+      onSuccess(response.data.order_number);
     },
 
     onError: (error: any) => {
-      alert(
+      console.log(
         error.response?.data?.message ?? "Nie udało się utworzyć zamówienia",
       );
     },
@@ -151,9 +150,10 @@ const SummaryStep = ({ back }: any) => {
 
       {!orderCompleted && (
         <div className="flex justify-between mt-8">
-          && <GrayButton onClick={back}> Wstecz</GrayButton>
+          <GrayButton onClick={back}> Wstecz</GrayButton>
           <button
             onClick={order}
+            disabled={isPending}
             className="
     bg-orange-500
     text-white
@@ -161,10 +161,11 @@ const SummaryStep = ({ back }: any) => {
     py-3
     hover:bg-orange-600
     cursor-pointer
-
+    disabled:bg-gray-400
+    disabled:cursor-not-allowed
  "
           >
-            Zamawiam
+            {isPending ? "Tworzenie zamówienia..." : "Zamawiam"}
           </button>
         </div>
       )}

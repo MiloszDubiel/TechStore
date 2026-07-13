@@ -12,8 +12,16 @@ import {
 import { useCartStore } from "../../zustand/states/cartState";
 import type { Product } from "../../types/ProductType";
 import { useFavorite } from "../../context/FavoritesContext";
+import { useTranslation } from "react-i18next";
 
 const Navbar: React.FC = () => {
+  const { i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === "pl" ? "en" : "pl";
+    i18n.changeLanguage(newLang);
+  };
+
   const [search, setSearch] = useState<string>("");
 
   type ModalType = "cart" | "favorites" | "account" | "notifications" | null;
@@ -92,6 +100,12 @@ const Navbar: React.FC = () => {
       </div>
 
       <div className="flex items-center gap-6 text-gray-600 relative ">
+        <button
+          onClick={toggleLanguage}
+          className="border border-gray-300 px-3 py-1 hover:bg-orange-50 hover:text-orange-600 transition font-medium cursor-pointer"
+        >
+          {i18n.language === "pl" ? "EN" : "PL"}
+        </button>
         <div className="relative">
           <Heart
             size={22}

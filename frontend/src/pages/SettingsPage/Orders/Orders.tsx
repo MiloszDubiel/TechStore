@@ -34,7 +34,9 @@ const Orders = () => {
                 className="border p-5 flex justify-between items-center border-gray-200"
               >
                 <div>
-                  <p className="font-semibold">Zamówienie #{order.id}</p>
+                  <p className="font-semibold">
+                    Zamówienie {order.order_number}
+                  </p>
 
                   <p className="text-sm text-gray-500">
                     {new Date(order.created_at).toLocaleDateString()}

@@ -9,17 +9,18 @@ import PaymentStep from "./PaymentStep";
 import SummaryStep from "./SummaryStep";
 import { useCheckout } from "../../../context/CheckoutContext";
 import Navbar from "../../../components/layout/Navbar";
-
+import OrderSuccess from "./OrderSuccess";
 
 export default function CheckoutLayout() {
   const { checkoutData } = useCheckout();
 
   const [step, setStep] = useState(0);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   const steps =
     checkoutData.delivery?.method === "locker"
-      ? ["Dane", "Dostawa", "Płatność", "Podsumowanie"]
-      : ["Dane", "Dostawa", "Adres", "Płatność", "Podsumowanie"];
+      ? ["Dane", "Dostawa", "Płatność", "Podsumowanie", "Sukces"]
+      : ["Dane", "Dostawa", "Adres", "Płatność", "Podsumowanie", "Sukces"];
 
   const next = () => {
     setStep((prev) => Math.min(prev + 1, steps.length - 1));
@@ -42,7 +43,18 @@ export default function CheckoutLayout() {
           return <PaymentStep next={next} back={back} />;
 
         case 3:
-          return <SummaryStep back={back} />;
+          return (
+            <SummaryStep
+              back={back}
+              onSuccess={(id: string) => {
+                setOrderId(id);
+                next();
+              }}
+            />
+          );
+
+        case 4:
+          return <OrderSuccess orderId={orderId} />;
 
         default:
           return null;
@@ -63,7 +75,18 @@ export default function CheckoutLayout() {
         return <PaymentStep next={next} back={back} />;
 
       case 4:
-        return <SummaryStep back={back} />;
+        return (
+          <SummaryStep
+            back={back}
+            onSuccess={(id: string) => {
+              setOrderId(id);
+              next();
+            }}
+          />
+        );
+
+      case 5:
+        return <OrderSuccess orderId={orderId} />;
 
       default:
         return null;

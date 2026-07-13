@@ -1,4 +1,28 @@
 import { connection } from "../config/db.config";
+import { RowDataPacket } from "mysql2";
+
+const generateOrderNumber = async () => {
+  const today = new Date();
+
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  const date = `${year}${month}${day}`;
+
+  const [rows] = await connection.query<RowDataPacket[]>(
+    `
+    SELECT COUNT(*) as count
+    FROM orders
+    WHERE DATE(created_at) = CURDATE()
+    `,
+  );
+
+  const nextNumber = Number(rows[0]?.count) + 1;
+
+  return `MITS-${date}-${String(nextNumber).padStart(5, "0")}`;
+};
+
 const componentsCategories = [
   "Procesory",
   "Dyski HDD",
@@ -195,6 +219,8 @@ VALUES(?,?,?,?,?,?,?,?)
 
     // order
 
+    const orderNumber = await generateOrderNumber();
+
     const [orderResult]: any = await conn.query(
       `
 INSERT INTO orders
@@ -208,10 +234,11 @@ locker_id,
 locker_name,
 locker_address,
 total_price,
+order_number,
 status
 )
 
-VALUES(?,?,?,?,?,?,?,?,?,'PENDING')
+VALUES(?,?,?,?,?,?,?,?,?,?,'PENDING')
 
 `,
 
@@ -233,6 +260,7 @@ VALUES(?,?,?,?,?,?,?,?,?,'PENDING')
         delivery.locker?.address ?? null,
 
         totalPrice + delivery.price,
+        orderNumber,
       ],
     );
 

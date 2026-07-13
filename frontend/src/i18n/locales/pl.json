@@ -1,0 +1,11 @@
+{
+  "navbar": {
+    "home": "Strona główna",
+    "shop": "Sklep",
+    "login": "Logowanie"
+  },
+  "cart": {
+    "title": "Twój koszyk",
+    "empty": "Koszyk jest pusty"
+  }
+}

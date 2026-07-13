@@ -42,7 +42,10 @@ export type CheckoutData = {
 
 type CheckoutContextType = {
   checkoutData: CheckoutData;
-  updateCheckout: (data: Partial<CheckoutData>) => void;
+  setCheckoutData: React.Dispatch<React.SetStateAction<CheckoutData>>;
+  isComplete: boolean;
+  setIsComplete: React.Dispatch<React.SetStateAction<boolean>>;
+  updateCheckout: (data: any) => void;
 };
 
 const CheckoutContext = createContext<CheckoutContextType | null>(null);
@@ -63,6 +66,7 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
       method: "blik",
     },
   });
+  const [isComplete, setIsComplete] = useState(false);
 
   const updateCheckout = (data: Partial<CheckoutData>) => {
     setCheckoutData((prev) => {
@@ -84,6 +88,9 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
     <CheckoutContext.Provider
       value={{
         checkoutData,
+        setCheckoutData,
+        isComplete,
+        setIsComplete,
         updateCheckout,
       }}
     >

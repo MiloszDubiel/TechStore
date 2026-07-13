@@ -32,6 +32,15 @@
     animation: logo-spin infinite 20s linear;
   }
 }
+@theme {
+  --color-background: white;
+  --color-text: black;
+}
+
+.dark {
+  --color-background: #111827;
+  --color-text: white;
+}
 
 .card {
   padding: 2em;

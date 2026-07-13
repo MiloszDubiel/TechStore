@@ -244,6 +244,7 @@ export const getOrdersFromDB = async (userId: string | null) => {
         o.total_price,
         o.status,
         o.created_at,
+        o.order_number,
         COUNT(oi.id) as items_count
       FROM orders o
       LEFT JOIN order_items oi

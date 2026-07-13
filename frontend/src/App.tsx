@@ -15,63 +15,72 @@ import { CheckoutProvider } from "./context/CheckoutContext";
 import {
   CheckIsEmptyCart,
   CheckIsLoggedIn,
+  CheckIsLoggedOut,
 } from "./components/ProtectetRoutes";
+import { ThemeProvider } from "./context/ThemeProvider";
 
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <CheckoutProvider>
-        <FavoriteProvider>
-          <BrowserRouter>
-            <div className="flex flex-col min-h-screen">
-              <div className="flex-1 h-fit">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route path="/offers" element={<OffersList />} />
-                  <Route path="/offers/:slug/:id" element={<OfferDetails />} />
-                  <Route
-                    path="/login"
-                    element={
-                      <CheckIsLoggedIn>
-                        <LoginPage />
-                      </CheckIsLoggedIn>
-                    }
-                  />
-                  <Route
-                    path="/register"
-                    element={
-                      <CheckIsLoggedIn>
-                        <RegisterPage />
-                      </CheckIsLoggedIn>
-                    }
-                  />
-                  <Route path="*" element={<Navigate to="/" />} />
-                  <Route path="/cart" element={<CartPage />} />
+      <ThemeProvider>
+        <CheckoutProvider>
+          <FavoriteProvider>
+            <BrowserRouter>
+              <div className="flex flex-col min-h-screen">
+                <div className="flex-1 h-fit">
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/offers" element={<OffersList />} />
+                    <Route
+                      path="/offers/:slug/:id"
+                      element={<OfferDetails />}
+                    />
+                    <Route
+                      path="/login"
+                      element={
+                        <CheckIsLoggedOut>
+                          <LoginPage />
+                        </CheckIsLoggedOut>
+                      }
+                    />
+                    <Route
+                      path="/register"
+                      element={
+                        <CheckIsLoggedOut>
+                          <RegisterPage />
+                        </CheckIsLoggedOut>
+                      }
+                    />
 
-                  <Route
-                    path="/profile"
-                    element={
-                      <CheckIsLoggedIn>
-                        <SettingsPage />
-                      </CheckIsLoggedIn>
-                    }
-                  />
-                  <Route
-                    path="/cart/checkout"
-                    element={
-                      <CheckIsEmptyCart>
-                        <CheckoutLayout />
-                      </CheckIsEmptyCart>
-                    }
-                  />
-                </Routes>
+                    <Route path="/cart" element={<CartPage />} />
+
+                    <Route
+                      path="/profile"
+                      element={
+                        <CheckIsLoggedIn>
+                          <SettingsPage />
+                        </CheckIsLoggedIn>
+                      }
+                    />
+                    <Route
+                      path="/cart/checkout"
+                      element={
+                        <CheckIsEmptyCart>
+                          <CheckoutLayout />
+                        </CheckIsEmptyCart>
+                      }
+                    />
+
+                    <Route path="*" element={<Navigate to="/" />} />
+                  </Routes>
+                </div>
+
+                <Footer />
               </div>
-
-              <Footer />
-            </div>
-          </BrowserRouter>
-        </FavoriteProvider>
-      </CheckoutProvider>
+            </BrowserRouter>
+          </FavoriteProvider>
+        </CheckoutProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 };
