@@ -40,7 +40,6 @@ export default function AddressModal({
   };
 
   const onSubmit = (data: AddressFrom) => {
-
     if (isEdited) {
       console.log(data);
       updateAddress({ ...data, aid: defaultValues.aid });
@@ -53,10 +52,10 @@ export default function AddressModal({
     console.log("ERRORS", errors);
   };
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-10">
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-        <div className="bg-white p-6 w-full max-w-md ">
-          <h2 className="text-xl font-bold mb-4">Adres dostawy</h2>
+    <div className="bg-black/50 fixed inset-0 z-10 flex items-center justify-center">
+      <div className="bg-black/50 fixed inset-0 flex items-center justify-center">
+        <div className=" w-full max-w-md p-6 bg-white">
+          <h2 className="mb-4 text-xl font-bold">Adres dostawy</h2>
 
           <form
             onSubmit={(e) => {
@@ -65,22 +64,22 @@ export default function AddressModal({
             className="space-y-4"
           >
             <div>
-              <label className="block text-sm font-medium mb-1">Miasto</label>
+              <label className="block mb-1 text-sm font-medium">Miasto</label>
 
               <input
                 {...register("city")}
-                className="border p-2 w-full border-gray-200 rounded"
+                className="w-full p-2 border border-gray-200 rounded"
               />
 
               {errors.city && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-500">
                   {errors.city.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block mb-1 text-sm font-medium">
                 Kod pocztowy
               </label>
 
@@ -92,28 +91,28 @@ export default function AddressModal({
                     shouldDirty: true,
                   });
                 }}
-                className="border p-2 w-full border-gray-200 rounded"
+                className="w-full p-2 border border-gray-200 rounded"
               />
 
               {errors.postal_code && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-500">
                   {errors.postal_code.message}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">
+              <label className="block mb-1 text-sm font-medium">
                 Ulica i numer
               </label>
 
               <input
                 {...register("street")}
-                className="border p-2 w-full border-gray-200 rounded"
+                className="w-full p-2 border border-gray-200 rounded"
               />
 
               {errors.street && (
-                <p className="text-red-500 text-sm mt-1">
+                <p className="mt-1 text-sm text-red-500">
                   {errors.street.message}
                 </p>
               )}
@@ -140,14 +139,14 @@ export default function AddressModal({
               <button
                 type="button"
                 onClick={closeModal}
-                className="border border-gray-200 px-4 py-2  cursor-pointer"
+                className="px-4 py-2 border border-gray-200 cursor-pointer"
               >
                 Anuluj
               </button>
 
               <button
                 type="submit"
-                className="bg-orange-500 text-white px-4 py-2 cursor-pointer hover:bg-orange-600"
+                className="hover:bg-orange-600 px-4 py-2 text-white bg-orange-500 cursor-pointer"
               >
                 Zapisz adres
               </button>

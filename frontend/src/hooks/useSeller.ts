@@ -1,0 +1,77 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import * as sellerApi from "../api/seller";
+
+export const useSeller = () => {
+  const queryClient = useQueryClient();
+
+  const products = useQuery({
+    queryKey: ["seller-products"],
+    queryFn: sellerApi.getProducts,
+  });
+
+  const orders = useQuery({
+    queryKey: ["seller-orders"],
+    queryFn: sellerApi.getOrders,
+  });
+
+  const addProduct = useMutation({
+    mutationFn: sellerApi.addProduct,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["seller-products"],
+      });
+    },
+  });
+
+  const createProfile = useMutation({
+    mutationFn: sellerApi.createStore,
+  });
+
+  const updateProduct = useMutation({
+    mutationFn: sellerApi.updateProduct,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["seller-products"],
+      });
+    },
+  });
+
+  const deleteProduct = useMutation({
+    mutationFn: sellerApi.deleteProduct,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["seller-products"],
+      });
+    },
+  });
+
+  const updateOrderStatus = useMutation({
+    mutationFn: sellerApi.updateOrderStatus,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["seller-orders"],
+      });
+    },
+  });
+
+  return {
+    products,
+
+    orders,
+
+    addProduct,
+
+    updateProduct,
+
+    deleteProduct,
+
+    updateOrderStatus,
+
+    createProfile,
+  };
+};

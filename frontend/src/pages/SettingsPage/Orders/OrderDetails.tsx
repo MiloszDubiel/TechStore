@@ -18,15 +18,15 @@ const OrderDetails = ({ id, onBack }: any) => {
       <div>
         <h2 className="text-3xl font-bold">Zamówienie {data.order_number}</h2>
 
-        <p className="text-gray-500 mt-1">Szczegóły złożonego zamówienia</p>
+        <p className="mt-1 text-gray-500">Szczegóły złożonego zamówienia</p>
       </div>
 
       <div className="border border-gray-300">
-        <div className="border-b border-gray-300 bg-gray-50 px-6 py-4">
-          <h3 className="font-semibold text-lg">Informacje o zamówieniu</h3>
+        <div className="bg-gray-50 px-6 py-4 border-b border-gray-300">
+          <h3 className="text-lg font-semibold">Informacje o zamówieniu</h3>
         </div>
 
-        <div className="grid grid-cols-2 gap-y-6 px-6 py-6">
+        <div className="gap-y-6 grid grid-cols-2 px-6 py-6">
           <div>
             <p className="text-sm text-gray-500">Status</p>
             <p className="font-semibold">{data.status}</p>
@@ -52,8 +52,8 @@ const OrderDetails = ({ id, onBack }: any) => {
       </div>
 
       <div className="border border-gray-300">
-        <div className="border-b border-gray-300 bg-gray-50 px-6 py-4">
-          <h3 className="font-semibold text-lg">Zamówione produkty</h3>
+        <div className="bg-gray-50 px-6 py-4 border-b border-gray-300">
+          <h3 className="text-lg font-semibold">Zamówione produkty</h3>
         </div>
 
         <div>
@@ -72,21 +72,21 @@ const OrderDetails = ({ id, onBack }: any) => {
                 <img
                   src={product.images?.[0]}
                   alt={product.name}
-                  className="w-28 h-28 object-contain border border-gray-300 p-2"
+                  className="w-28 h-28 object-contain p-2 border border-gray-300"
                 />
 
-                <div className="flex-1 flex flex-col justify-between">
+                <div className="flex flex-col justify-between flex-1">
                   <div>
-                    <h4 className="font-semibold text-lg">{product.name}</h4>
+                    <h4 className="text-lg font-semibold">{product.name}</h4>
 
                     {product.producer && (
-                      <p className="text-gray-500 mt-1">
+                      <p className="mt-1 text-gray-500">
                         Producent: {product.producer}
                       </p>
                     )}
                   </div>
 
-                  <div className="flex justify-between items-end mt-5">
+                  <div className="flex items-end justify-between mt-5">
                     <div className="space-y-1">
                       <p className="text-gray-500">
                         Ilość:{" "}

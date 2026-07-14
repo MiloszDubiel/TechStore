@@ -5,38 +5,15 @@ export default function OrderSummary() {
 
   const productsPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0,
+    0
   );
 
   return (
-    <div
-      className="
-bg-white
-shadow
-p-6
-sticky
-top-5
-"
-    >
-      <h2
-        className="
-font-bold
-text-xl
-mb-4
-"
-      >
-        Podsumowanie
-      </h2>
+    <div className=" top-5 sticky p-6 bg-white shadow">
+      <h2 className=" mb-4 text-xl font-bold">Podsumowanie</h2>
 
       {cart.map((item) => (
-        <div
-          key={item.id}
-          className="
-flex
-justify-between
-mb-2
-"
-        >
+        <div key={item.id} className=" flex justify-between mb-2">
           <span>{item.product_data.name}</span>
 
           <span>
@@ -54,15 +31,7 @@ mb-2
         <span>{productsPrice} zł</span>
       </div>
 
-      <div
-        className="
-flex
-justify-between
-font-bold
-text-lg
-mt-3
-"
-      >
+      <div className=" flex justify-between mt-3 text-lg font-bold">
         <span>Razem</span>
 
         <span className="text-orange-500">{productsPrice} zł</span>

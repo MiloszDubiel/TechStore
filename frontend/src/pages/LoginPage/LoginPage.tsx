@@ -7,7 +7,6 @@ import type { LoginFormData } from "../../schemas/loginSchema";
 import { useLogin } from "../../hooks/useLogin";
 import { useAuth } from "../../context/AuthContext";
 
-
 const LoginPage: React.FC = () => {
   const {
     register,
@@ -44,7 +43,7 @@ const LoginPage: React.FC = () => {
 
         {error && (
           <div className="mb-4 p-2 bg-red-100 text-red-700 border border-red-400">
-            {error?.response?.data.message}
+            {(error as any)?.response?.data.message}
           </div>
         )}
 

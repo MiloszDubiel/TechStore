@@ -14,10 +14,10 @@ const SellerReply = ({ reviewId }: { reviewId: string }) => {
       <textarea
         value={reply}
         onChange={(e) => setReply(e.target.value)}
-        className="border w-full"
+        className="w-full border"
       />
 
-      <button onClick={sendReply} className="bg-green-600 text-white p-2 mt-1">
+      <button onClick={sendReply} className="p-2 mt-1 text-white bg-green-600">
         Odpowiedz
       </button>
     </div>

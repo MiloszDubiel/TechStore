@@ -23,7 +23,7 @@ export default function AddressStep({ next, back }: Props) {
   const [closeModal, setCloseModal] = useState(false);
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    null,
+    null
   );
 
   useEffect(() => {
@@ -40,23 +40,16 @@ export default function AddressStep({ next, back }: Props) {
   }, [userAddresses]);
 
   const currentAddress = userAddresses?.find(
-    (address: any) => address.id === selectedAddressId,
+    (address: any) => address.id === selectedAddressId
   );
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Adres zamieszkania</h2>
+      <h2 className="mb-6 text-2xl font-bold">Adres zamieszkania</h2>
 
       {currentAddress ? (
-        <div className="space-y-6 mb-4">
-          <div
-            className="
-        border
-        border-gray-200
-        p-5
-        bg-gray-50
-      "
-          >
+        <div className="mb-4 space-y-6">
+          <div className=" bg-gray-50 p-5 border border-gray-200">
             <h2 className="font-semibold mb-3">Dane do zamówienia</h2>
 
             <p className="font-medium">{currentAddress.street}</p>
@@ -71,14 +64,7 @@ export default function AddressStep({ next, back }: Props) {
           </div>
         </div>
       ) : (
-        <div
-          className="
-      border
-      border-gray-200
-      p-5
-      bg-gray-50
-    "
-        >
+        <div className=" bg-gray-50 p-5 border border-gray-200">
           Nie wybrano adresu
         </div>
       )}
@@ -102,20 +88,17 @@ export default function AddressStep({ next, back }: Props) {
                 checked={selectedAddressId === address.id}
                 onChange={() => {
                   setSelectedAddressId(address.id);
-
-                  updateCheckout({
-                    address,
-                  });
+                  updateCheckout({ address });
                 }}
                 className="mt-1"
               />
 
               <div>
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-2">
                   <p className="font-semibold">{address.street}</p>
 
                   {address.is_default && (
-                    <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">
+                    <span className="px-2 py-1 text-xs text-green-700 bg-green-100 rounded-full">
                       Domyślny
                     </span>
                   )}
@@ -129,14 +112,14 @@ export default function AddressStep({ next, back }: Props) {
           ))}
         </div>
       ) : (
-        <div className="border border-dashed border-gray-300 p-6 text-center text-gray-500">
+        <div className="p-6 text-center text-gray-500 border border-gray-300 border-dashed">
           Nie masz zapisanych adresów.
         </div>
       )}
 
       <button
         type="button"
-        className="mt-6 border border-orange-500 text-orange-500 px-5 py-3 hover:bg-orange-50 transition cursor-pointer"
+        className="hover:bg-orange-50 px-5 py-3 mt-6 text-orange-500 transition border border-orange-500 cursor-pointer"
         onClick={() => setCloseModal(true)}
       >
         + Dodaj nowy adres
@@ -158,11 +141,7 @@ export default function AddressStep({ next, back }: Props) {
               onSuccess: (response) => {
                 const newAddress = response.data.address;
                 setSelectedAddressId(newAddress.id);
-
-                updateCheckout({
-                  address: newAddress,
-                });
-
+                updateCheckout({ address: newAddress });
                 setCloseModal(false);
               },
             });

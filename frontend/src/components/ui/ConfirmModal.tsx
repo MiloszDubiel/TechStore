@@ -25,9 +25,9 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="bg-black/40 fixed inset-0 z-50 flex items-center justify-center">
       <div className="w-full max-w-md bg-white shadow-xl">
-        <div className="border-b border-gray-200 p-5">
+        <div className="p-5 border-b border-gray-200">
           <h2 className="text-xl font-semibold">{title}</h2>
         </div>
 
@@ -39,7 +39,7 @@ export default function ConfirmModal({
           )}
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-gray-200 p-5">
+        <div className="flex justify-end gap-3 p-5 border-t border-gray-200">
           <GrayButton onClick={onCancel}>{cancelText}</GrayButton>
 
           <OrangeButton onClick={onConfirm}> {confirmText}</OrangeButton>

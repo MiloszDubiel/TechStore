@@ -18,7 +18,7 @@ const ReviewsList = ({ productId }: { productId: string }) => {
   return (
     <div className="space-y-4">
       {reviews?.map((review: any) => (
-        <div key={review.id} className="border p-4 border-gray-200">
+        <div key={review.id} className="p-4 border border-gray-200">
           <div className="flex justify-between">
             <span className="font-bold">{review.email}</span>
             <div className="flex items-center gap-1">
@@ -40,7 +40,7 @@ const ReviewsList = ({ productId }: { productId: string }) => {
           <p className="mt-2">{review.comment}</p>
 
           {review.seller_reply && (
-            <div className="mt-3 bg-gray-100 p-3 rounded">
+            <div className="p-3 mt-3 bg-gray-100 rounded">
               <b>Odpowiedź sprzedawcy:</b>
               <p>{review.seller_reply}</p>
             </div>

@@ -24,14 +24,14 @@ export default function AddressCard({
   onDelete,
 }: AddressCardProps) {
   return (
-    <div className=" bg-white p-6 shadow-sm mb-2 gap-2">
-      <div className="flex justify-between items-center mb-2 gap-2">
+    <div className=" gap-2 p-6 mb-2 bg-white shadow-sm">
+      <div className="flex items-center justify-between gap-2 mb-2">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-lg font-semibold">{title}</h3>
 
             {isDefault && (
-              <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">
+              <span className="px-2 py-1 text-xs text-green-700 bg-green-100 rounded-full">
                 Domyślny
               </span>
             )}

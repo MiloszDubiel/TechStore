@@ -27,6 +27,7 @@ const RegisterPage = () => {
   });
 
   const { mutate, isPending, isSuccess, error } = useRegister();
+  // console.log(error.response.data.message);
 
   const onSubmit = (data: RegisterSchema) => {
     mutate(data, {

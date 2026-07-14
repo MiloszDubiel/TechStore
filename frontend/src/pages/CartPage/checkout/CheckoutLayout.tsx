@@ -96,18 +96,10 @@ export default function CheckoutLayout() {
   return (
     <>
       <Navbar />
-      <div className="container mx-auto px-6 py-10">
+      <div className="container px-6 py-10 mx-auto">
         <CheckoutSteps steps={steps} current={step} />
 
-        <div
-          className="
-        grid
-        grid-cols-1
-        lg:grid-cols-3
-        gap-8
-        mt-10
-        "
-        >
+        <div className=" lg:grid-cols-3 grid grid-cols-1 gap-8 mt-10">
           <div
             className="
           lg:col-span-2
@@ -119,7 +111,7 @@ export default function CheckoutLayout() {
             {renderStep()}
           </div>
 
-          <div className="order-first lg:order-last">
+          <div className="lg:order-last order-first">
             <OrderSummary />
           </div>
         </div>

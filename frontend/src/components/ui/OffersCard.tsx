@@ -31,7 +31,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
 
   importantParams.forEach((paramName) => {
     const param = product.product_data.parameters?.find(
-      (p: any) => p.name === paramName,
+      (p: any) => p.name === paramName
     );
     if (param) {
       const value = param.valuesLabels?.[0] || param.values?.[0];
@@ -49,31 +49,31 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
   return (
     <Link
       to={`/offers/${createSlug(product.product_data.name)}/${product.id}`}
-      className="block bg-white border hover:shadow-lg transition p-4 border-gray-200"
+      className="hover:shadow-lg block p-4 transition bg-white border border-gray-200"
     >
-      <div className="flex gap-6 items-start">
-        <div className="w-40 h-32 fshrink-0">
+      <div className="flex items-start gap-6">
+        <div className="fshrink-0 w-40 h-32">
           <img
             src={product.product_data.images[0]?.url}
             alt={product.product_data.name}
-            className="w-full h-full object-contain"
+            className="object-contain w-full h-full"
           />
         </div>
 
         <div className="flex-1">
-          <h3 className="text-lg hover:underline font-semibold line-clamp-2 hover:text-orange-600 transition">
+          <h3 className="hover:underline line-clamp-2 hover:text-orange-600 text-lg font-semibold transition">
             {product.product_data.name}
           </h3>
 
-          <p className="text-sm text-gray-500 mt-1">Kategoria: {category}</p>
+          <p className="mt-1 text-sm text-gray-500">Kategoria: {category}</p>
 
-          <ul className="text-sm text-gray-600 mt-1 space-y-1">
+          <ul className="mt-1 space-y-1 text-sm text-gray-600">
             {displayedParams.map((param) => (
               <li key={param}>{param}</li>
             ))}
           </ul>
 
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="mt-2 text-sm text-gray-500">
             Dostępna szybka wysyłka • Gwarancja 24 miesiące
           </p>
         </div>
@@ -94,7 +94,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
           </p>
 
           <button
-            className="bg-orange-500 text-white px-6 py-2 hover:bg-orange-600 transition font-semibold cursor-pointer"
+            className="hover:bg-orange-600 px-6 py-2 font-semibold text-white transition bg-orange-500 cursor-pointer"
             onClick={() => {
               addToCart(product);
             }}
@@ -138,7 +138,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
         </div>
       </div>
       {favoriteMessage && (
-        <div className="fixed bottom-6 right-6 text-black border-orange-400 border px-4 py-2 shadow-lg z-50">
+        <div className="bottom-6 right-6 fixed z-50 px-4 py-2 text-black border border-orange-400 shadow-lg">
           {favoriteMessage}
         </div>
       )}

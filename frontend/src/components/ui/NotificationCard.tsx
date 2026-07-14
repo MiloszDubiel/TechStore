@@ -4,7 +4,7 @@ type Props = {
 
 const NotificationCard = ({ message }: Props) => {
   return (
-    <div className="p-4 border-l-4 border-orange-500 bg-orange-50 text-sm text-gray-700 mb-2">
+    <div className="bg-orange-50 p-4 mb-2 text-sm text-gray-700 border-l-4 border-orange-500">
       {message}
     </div>
   );

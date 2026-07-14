@@ -68,34 +68,24 @@ export default function CustomerStep({ next }: Props) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Dane klienta</h2>
+      <h2 className="mb-6 text-2xl font-bold">Dane klienta</h2>
       {!currentUser && !guestCheckout && (
-        <div className="mb-6 border border-gray-200 p-5 bg-gray-50">
-          <h3 className="font-semibold mb-3">Masz już konto?</h3>
+        <div className="bg-gray-50 p-5 mb-6 border border-gray-200">
+          <h3 className="mb-3 font-semibold">Masz już konto?</h3>
 
-          <p className="text-gray-500 mb-4">
+          <p className="mb-4 text-gray-500">
             Zaloguj się lub kontynuuj jako gość.
           </p>
 
           <button
-            className="
-      bg-orange-500
-      text-white
-      px-5
-      py-3
-      mr-3
-      "
+            className=" px-5 py-3 mr-3 text-white bg-orange-500"
             onClick={() => navigate("/login")}
           >
             Zaloguj się
           </button>
 
           <button
-            className="
-      border
-      px-5
-      py-3
-      "
+            className=" px-5 py-3 border"
             onClick={() => setGuestCheckout(true)}
           >
             Kontynuuj jako gość
@@ -108,15 +98,7 @@ export default function CustomerStep({ next }: Props) {
           {checkoutData?.customer?.name &&
           checkoutData?.customer?.last_name &&
           checkoutData?.customer?.email ? (
-            <div
-              className="
-              border
-              border-gray-200
-              
-              p-5
-              bg-gray-50
-            "
-            >
+            <div className=" bg-gray-50 p-5 border border-gray-200">
               <h2 className="font-semibold mb-3">Dane do zamówienia</h2>
 
               <p>
@@ -128,14 +110,7 @@ export default function CustomerStep({ next }: Props) {
               <p className="text-gray-500">{checkoutData!?.customer?.phone}</p>
             </div>
           ) : (
-            <div
-              className="
-              border
-              border-gray-200 
-              p-5
-              bg-gray-50
-            "
-            >
+            <div className=" bg-gray-50 p-5 border border-gray-200">
               <h2 className="font-semibold mb-3">Dane do zamówienia</h2>
 
               <p>
@@ -148,7 +123,7 @@ export default function CustomerStep({ next }: Props) {
           )}
 
           <div className="flex justify-between">
-            <div className="gap-2 flex">
+            <div className="flex gap-2">
               <GrayButton onClick={() => setUseOtherData(true)}>
                 Użyj innych danych
               </GrayButton>
@@ -175,17 +150,11 @@ export default function CustomerStep({ next }: Props) {
       ) : (
         <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium mb-1 ">Imię</label>
+            <label className=" block mb-1 text-sm font-medium">Imię</label>
 
             <input
               {...register("name")}
-              className="
-                w-full
-                border
-                
-                p-3
-                 border-gray-200
-              "
+              className=" w-full p-3 border border-gray-200"
             />
 
             {errors.name && (
@@ -194,11 +163,11 @@ export default function CustomerStep({ next }: Props) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Nazwisko</label>
+            <label className="block mb-1 text-sm font-medium">Nazwisko</label>
 
             <input
               {...register("last_name")}
-              className="w-full                border                             p-3                 border-gray-200              "
+              className=" w-full p-3 border border-gray-200"
             />
             {errors.last_name && (
               <p className="text-red-500 text-sm">{errors.last_name.message}</p>
@@ -206,17 +175,11 @@ export default function CustomerStep({ next }: Props) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block mb-1 text-sm font-medium">Email</label>
 
             <input
               {...register("email")}
-              className="
-                w-full
-                border
-               
-                p-3
-                 border-gray-200
-              "
+              className=" w-full p-3 border border-gray-200"
             />
             {errors.email && (
               <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -224,17 +187,11 @@ export default function CustomerStep({ next }: Props) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Telefon</label>
+            <label className="block mb-1 text-sm font-medium">Telefon</label>
 
             <input
               {...register("phone")}
-              className="
-                w-full
-                border
-             
-                p-3
-                 border-gray-200
-              "
+              className=" w-full p-3 border border-gray-200"
               maxLength={9}
             />
             {errors.phone && (
@@ -261,13 +218,7 @@ export default function CustomerStep({ next }: Props) {
 
             <button
               type="submit"
-              className="
-      bg-orange-500
-      text-white
-      px-6
-      py-3
-      cursor-pointer
-    "
+              className=" px-6 py-3 text-white bg-orange-500 cursor-pointer"
             >
               Dalej
             </button>

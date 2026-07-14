@@ -19,13 +19,13 @@ const AddReview = ({ productId }: { productId: string }) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
   };
 
   return (
-    <div className="border p-4 border-gray-200 ">
-      <h3 className="font-semibold mb-3">Dodaj opinię</h3>
+    <div className=" p-4 border border-gray-200">
+      <h3 className="mb-3 font-semibold">Dodaj opinię</h3>
 
       <div className="flex gap-1 mb-3" onMouseLeave={() => setHoverRating(0)}>
         {[1, 2, 3, 4, 5].map((star) => {
@@ -49,7 +49,7 @@ const AddReview = ({ productId }: { productId: string }) => {
       </div>
 
       <textarea
-        className="w-full border mt-2 border-gray-200 p-2 "
+        className=" w-full p-2 mt-2 border border-gray-200"
         placeholder="Napisz swoją opinię..."
         value={comment}
         onChange={(e) => setComment(e.target.value)}
@@ -57,7 +57,7 @@ const AddReview = ({ productId }: { productId: string }) => {
 
       <button
         onClick={submit}
-        className="mt-3 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 "
+        className="hover:bg-orange-600  px-4 py-2 mt-3 text-white bg-orange-500"
       >
         Dodaj opinię
       </button>

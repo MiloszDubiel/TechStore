@@ -20,7 +20,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
   const cartItems = useCartStore((state) => state.cart);
   const clearCart = useCartStore((state) => state.clearCart);
   const { token } = useAuth();
-  const [orderCompleted, setOrderCompleted] = useState(false);
+  const [orderCompleted] = useState(false);
 
   const productsPrice = cartItems.reduce(
     (sum: number, item: any) => sum + item.price * item.quantity,
@@ -84,7 +84,6 @@ const SummaryStep = ({ back, onSuccess }: any) => {
         <p className="text-gray-600">{checkoutData.customer?.email}</p>
       </section>
 
-      {/* Adres */}
       {checkoutData.delivery?.method === "courier" && (
         <section className="mb-5">
           <h3 className="font-semibold text-lg mb-2">Adres zamieszkania</h3>

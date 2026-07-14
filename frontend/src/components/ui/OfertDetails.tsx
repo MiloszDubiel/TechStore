@@ -33,7 +33,7 @@ const OfferDetails = () => {
     return (
       <>
         <Navbar />
-        <div className="max-w-6xl mx-auto p-10 text-center text-lg">
+        <div className="max-w-6xl p-10 mx-auto text-lg text-center">
           Ładowanie produktu...
         </div>
       </>
@@ -43,7 +43,7 @@ const OfferDetails = () => {
     return (
       <>
         <Navbar />
-        <div className="max-w-6xl mx-auto p-10 text-center text-lg">
+        <div className="max-w-6xl p-10 mx-auto text-lg text-center">
           Nie znaleziono oferty
         </div>
       </>
@@ -58,8 +58,8 @@ const OfferDetails = () => {
     <>
       <Navbar />
 
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="max-w-7xl p-6 mx-auto">
+        <div className="lg:grid-cols-2 grid grid-cols-1 gap-12">
           <div>
             <img
               src={productData?.images?.[selectedImage]?.url || "/no-image.png"}
@@ -91,7 +91,7 @@ const OfferDetails = () => {
               {productData?.name || "Brak nazwy produktu"}
             </h1>
 
-            <p className="text-3xl text-orange-600 font-semibold mt-4">
+            <p className="mt-4 text-3xl font-semibold text-orange-600">
               {product?.price ?? "—"} zł
             </p>
 
@@ -101,20 +101,20 @@ const OfferDetails = () => {
 
             <button
               disabled={!product?.stock}
-              className="mt-6 w-full bg-orange-500 hover:bg-orange-600 disabled:bg-gray-300 text-white py-3  transition text-lg font-semibold cursor-pointer"
+              className="hover:bg-orange-600 disabled:bg-gray-300 w-full py-3 mt-6 text-lg font-semibold text-white transition bg-orange-500 cursor-pointer"
             >
               {product?.stock ? "Dodaj do koszyka" : "Brak w magazynie"}
             </button>
 
             {productData?.parameters?.length > 0 && (
               <div className="mt-10">
-                <h2 className="text-xl font-semibold mb-4">Specyfikacja</h2>
+                <h2 className="mb-4 text-xl font-semibold">Specyfikacja</h2>
 
                 <div className="space-y-2">
                   {visibleParameters.map((param: any, index: number) => (
                     <div
                       key={index}
-                      className="flex justify-between border-b border-gray-300 pb-2 text-sm"
+                      className="flex justify-between pb-2 text-sm border-b border-gray-300"
                     >
                       <span className="text-gray-600">{param?.name}</span>
                       <span className="font-medium text-right">
@@ -127,7 +127,7 @@ const OfferDetails = () => {
                 {parameters.length > 5 && (
                   <button
                     onClick={() => setShowParamsDrawer(true)}
-                    className="mt-4 text-orange-600 font-medium hover:underline cursor-pointer"
+                    className="hover:underline mt-4 font-medium text-orange-600 cursor-pointer"
                   >
                     {showAllParams ? "Ukryj parametry" : "Wszystkie parametry"}
                   </button>
@@ -139,7 +139,7 @@ const OfferDetails = () => {
 
         {productData?.productSafety?.safetyInformation?.description && (
           <div className="mt-16">
-            <h2 className="text-2xl font-semibold mb-6">
+            <h2 className="mb-6 text-2xl font-semibold">
               Informacje o bezpieczeństwie
             </h2>
 
@@ -149,7 +149,7 @@ const OfferDetails = () => {
           </div>
         )}
         <div className="mt-20">
-          <h2 className="text-2xl font-semibold mb-6">Opinie klientów</h2>
+          <h2 className="mb-6 text-2xl font-semibold">Opinie klientów</h2>
 
           <ReviewsList productId={id as string} />
 
@@ -164,26 +164,26 @@ const OfferDetails = () => {
         <>
           <div
             onClick={() => setShowParamsDrawer(false)}
-            className="fixed inset-0 bg-black/40 z-40"
+            className="bg-black/40 fixed inset-0 z-40"
           />
 
-          <div className="fixed top-0 left-0 h-full bg-white shadow-xl z-50 transform transition-transform duration-300 flex flex-col w-150">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center shrink-0">
+          <div className="w-150 fixed top-0 left-0 z-50 flex flex-col h-full transition-transform duration-300 transform bg-white shadow-xl">
+            <div className="shrink-0 flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-semibold">Specyfikacja produktu</h2>
 
               <button
                 onClick={() => setShowParamsDrawer(false)}
-                className="text-gray-500 hover:text-black text-xl cursor-pointer"
+                className="hover:text-black text-xl text-gray-500 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="p-6 space-y-3 overflow-y-auto flex-1">
+            <div className="flex-1 p-6 space-y-3 overflow-y-auto">
               {productData?.parameters?.map((param: any, index: number) => (
                 <div
                   key={index}
-                  className="flex justify-between border-b border-gray-200 pb-2 text-sm"
+                  className="flex justify-between pb-2 text-sm border-b border-gray-200"
                 >
                   <span className="text-gray-600">{param?.name}</span>
                   <span className="font-medium text-right">

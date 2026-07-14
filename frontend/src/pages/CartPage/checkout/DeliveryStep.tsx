@@ -20,31 +20,17 @@ const DeliveryStep = ({ next, back }: any) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-5">Metoda dostawy</h2>
+      <h2 className="mb-5 text-2xl font-bold">Metoda dostawy</h2>
 
-      <label
-        className="
-          border 
-          border-gray-200 
-          p-4 
-          block 
-          mb-3 
-          cursor-pointer
-        "
-      >
+      <label className=" block p-4 mb-3 border border-gray-200 cursor-pointer">
         <input
           type="radio"
           name="delivery"
           checked={method === "courier"}
           onChange={() => {
             setMethod("courier");
-
             updateCheckout({
-              delivery: {
-                method: "courier",
-                price: 15,
-                locker: null,
-              },
+              delivery: { method: "courier", price: 15, locker: null },
             });
           }}
         />
@@ -52,22 +38,13 @@ const DeliveryStep = ({ next, back }: any) => {
         <span className="ml-3">Kurier DHL - 15 zł</span>
       </label>
 
-      <label
-        className="
-          border 
-          border-gray-200 
-          p-4 
-          block 
-          cursor-pointer
-        "
-      >
+      <label className=" block p-4 border border-gray-200 cursor-pointer">
         <input
           type="radio"
           name="delivery"
           checked={method === "locker"}
           onChange={() => {
             setMethod("locker");
-
             updateCheckout({
               delivery: {
                 ...checkoutData.delivery,
@@ -98,5 +75,4 @@ const DeliveryStep = ({ next, back }: any) => {
     </div>
   );
 };
-
 export default DeliveryStep;

@@ -24,14 +24,14 @@ const Orders = () => {
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-6">Moje zamówienia</h2>
+      <h2 className="mb-6 text-2xl font-bold">Moje zamówienia</h2>
 
       <div className="space-y-4">
         {orders.length > 0
           ? orders.map((order: any) => (
               <div
                 key={order.id}
-                className="border p-5 flex justify-between items-center border-gray-200"
+                className="flex items-center justify-between p-5 border border-gray-200"
               >
                 <div>
                   <p className="font-semibold">

@@ -18,6 +18,8 @@ import {
   CheckIsLoggedOut,
 } from "./components/ProtectetRoutes";
 import { ThemeProvider } from "./context/ThemeProvider";
+import BecomeSellerPage from "./pages/SellerPage/BecomeSellerPage";
+import SellerDashboard from "./pages/SellerDashboardPage/SellerDashboard";
 
 const App: React.FC = () => {
   return (
@@ -27,7 +29,7 @@ const App: React.FC = () => {
           <FavoriteProvider>
             <BrowserRouter>
               <div className="flex flex-col min-h-screen">
-                <div className="flex-1 h-fit">
+                <div className="h-fit flex-1">
                   <Routes>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/offers" element={<OffersList />} />
@@ -69,6 +71,14 @@ const App: React.FC = () => {
                           <CheckoutLayout />
                         </CheckIsEmptyCart>
                       }
+                    />
+                    <Route
+                      path="/seller/create"
+                      element={<BecomeSellerPage />}
+                    />
+                    <Route
+                      path="/seller/dashboard"
+                      element={<SellerDashboard />}
                     />
 
                     <Route path="*" element={<Navigate to="/" />} />

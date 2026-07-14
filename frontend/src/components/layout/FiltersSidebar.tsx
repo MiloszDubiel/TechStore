@@ -14,10 +14,10 @@ const FiltersSidebar = ({
   const navigate = useNavigate();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
-    searchParams.get("categories")?.split(",") || [],
+    searchParams.get("categories")?.split(",") || []
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
-    searchParams.get("brands")?.split(",") || [],
+    searchParams.get("brands")?.split(",") || []
   );
   const [min, setMin] = useState(searchParams.get("min") || "");
   const [max, setMax] = useState(searchParams.get("max") || "");
@@ -50,7 +50,7 @@ const FiltersSidebar = ({
   const toggleValue = (
     value: string,
     state: string[],
-    setter: (v: string[]) => void,
+    setter: (v: string[]) => void
   ) => {
     if (state.includes(value)) {
       setter(state.filter((v) => v !== value));
@@ -72,11 +72,11 @@ const FiltersSidebar = ({
     .filter((cat) => selectedCategories.includes(cat)).length;
 
   return (
-    <aside className="w-64 bg-white p-5 shadow h-max space-y-6">
+    <aside className="h-max w-64 p-5 space-y-6 bg-white shadow">
       <h2 className="text-lg font-bold">Filtry</h2>
 
       <div>
-        <h3 className="font-semibold mb-2">Kategorie</h3>
+        <h3 className="mb-2 font-semibold">Kategorie</h3>
         <div className="space-y-1">
           {displayedCategories.map((cat) => (
             <label key={cat} className="flex items-center gap-2">
@@ -94,7 +94,7 @@ const FiltersSidebar = ({
           {categories.length > 4 && (
             <button
               onClick={() => setShowAllCategories(!showAllCategories)}
-              className="text-orange-500 hover:underline text-sm mt-1 flex items-center gap-1"
+              className="hover:underline flex items-center gap-1 mt-1 text-sm text-orange-500"
             >
               {showAllCategories ? "Pokaż mniej" : "Pokaż więcej"}
               {!showAllCategories && hiddenSelectedCount > 0 && (
@@ -108,27 +108,27 @@ const FiltersSidebar = ({
       </div>
 
       <div>
-        <h3 className="font-semibold mb-2">Cena</h3>
+        <h3 className="mb-2 font-semibold">Cena</h3>
         <div className="flex gap-2">
           <input
             type="number"
             placeholder="Od"
             value={min}
             onChange={(e) => setMin(e.target.value)}
-            className="w-full border rounded px-2 py-1 border-gray-200"
+            className="w-full px-2 py-1 border border-gray-200 rounded"
           />
           <input
             type="number"
             placeholder="Do"
             value={max}
             onChange={(e) => setMax(e.target.value)}
-            className="w-full border rounded px-2 py-1 border-gray-200"
+            className="w-full px-2 py-1 border border-gray-200 rounded"
           />
         </div>
       </div>
 
       <div>
-        <h3 className="font-semibold mb-2">Marka</h3>
+        <h3 className="mb-2 font-semibold">Marka</h3>
         <div className="space-y-1">
           {brands.map((brand) => (
             <label key={brand} className="flex items-center gap-2">
@@ -147,7 +147,7 @@ const FiltersSidebar = ({
       </div>
 
       <div>
-        <h3 className="font-semibold mb-2">Dostępność</h3>
+        <h3 className="mb-2 font-semibold">Dostępność</h3>
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -160,11 +160,11 @@ const FiltersSidebar = ({
       </div>
 
       <div>
-        <h3 className="font-semibold mb-2">Ocena</h3>
+        <h3 className="mb-2 font-semibold">Ocena</h3>
         <select
           value={rating}
           onChange={(e) => setRating(e.target.value)}
-          className="w-full border rounded px-2 py-1 border-gray-200"
+          className="w-full px-2 py-1 border border-gray-200 rounded"
         >
           <option value="">Dowolna</option>
           <option value="4">4 i więcej</option>
@@ -175,14 +175,14 @@ const FiltersSidebar = ({
 
       <button
         onClick={updateURL}
-        className="w-full bg-gray-100 hover:bg-orange-100 hover:text-orange-500 transition py-2 cursor-pointer"
+        className="hover:bg-orange-100 hover:text-orange-500 w-full py-2 transition bg-gray-100 cursor-pointer"
       >
         Wyszukaj
       </button>
 
       <button
         onClick={resetFilters}
-        className="w-full bg-gray-100 hover:bg-orange-100 hover:text-orange-500 transition py-2 cursor-pointer"
+        className="hover:bg-orange-100 hover:text-orange-500 w-full py-2 transition bg-gray-100 cursor-pointer"
       >
         Resetuj filtry
       </button>

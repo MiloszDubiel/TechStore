@@ -15,47 +15,36 @@ const OrderSuccess = ({ orderId }: Props) => {
   }, [clearCart]);
 
   return (
-    <div className="flex justify-center items-center flex-col py-16">
-      <div className="flex justify-center items-center mb-5">
+    <div className="flex flex-col items-center justify-center py-16">
+      <div className="flex items-center justify-center mb-5">
         <CheckCircle size={72} className="text-green-500" />
       </div>
 
-      <h1 className="text-3xl font-bold text-gray-800 mb-3">
+      <h1 className="mb-3 text-3xl font-bold text-gray-800">
         Zamówienie złożone!
       </h1>
 
-      <p className="text-gray-600 mb-6">
+      <p className="mb-6 text-gray-600">
         Dziękujemy za zakup. Twoje zamówienie zostało przyjęte do realizacji.
       </p>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-        <p className="text-sm text-gray-500 mb-1">Numer zamówienia</p>
+      <div className="bg-gray-50 p-4 mb-6 border border-gray-200 rounded-lg">
+        <p className="mb-1 text-sm text-gray-500">Numer zamówienia</p>
 
         <p className="text-xl font-bold text-orange-500">#{orderId}</p>
       </div>
 
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="mb-6 text-sm text-gray-500">
         Na podany adres e-mail otrzymasz potwierdzenie zamówienia.
       </p>
 
       <Link
         to="/"
-        className="
-            inline-block
-            bg-orange-500
-            text-white
-            px-6
-            py-3
-            rounded-lg
-            font-medium
-            hover:bg-orange-600
-            transition
-          "
+        className=" hover:bg-orange-600 inline-block px-6 py-3 font-medium text-white transition bg-orange-500 rounded-lg"
       >
         Wróć do sklepu
       </Link>
     </div>
   );
 };
-
 export default OrderSuccess;
