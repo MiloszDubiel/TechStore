@@ -1,36 +1,12 @@
 import { Search, Edit, Trash2, Plus } from "lucide-react";
 import { useSeller } from "../../hooks/useSeller";
 
-const products = [
-  {
-    id: 1,
-    name: "Laptop Lenovo Legion",
-    price: 4999,
-    stock: 12,
-    status: "Aktywny",
-  },
-  {
-    id: 2,
-    name: "Klawiatura mechaniczna",
-    price: 299,
-    stock: 25,
-    status: "Aktywny",
-  },
-  {
-    id: 3,
-    name: "Mysz gamingowa",
-    price: 159,
-    stock: 0,
-    status: "Brak",
-  },
-];
-
 const Products = () => {
   const {
-    products: { data },
+    products: { data = [] },
   } = useSeller();
 
-  console.log(data);
+
 
   return (
     <div>
@@ -75,20 +51,21 @@ const Products = () => {
           </thead>
 
           <tbody>
-            {products.map((product) => (
-              <tr
-                key={product.id}
-                className=" hover:bg-gray-50 border-t border-gray-300"
-              >
-                <td className="p-4 font-medium">{product.name}</td>
+            {data.length > 0 ? (
+              data.map((product: any) => (
+                <tr
+                  key={product.id}
+                  className=" hover:bg-gray-50 border-t border-gray-300"
+                >
+                  <td className="p-4 font-medium">{product.name}</td>
 
-                <td className="p-4">{product.price} zł</td>
+                  <td className="p-4">{product.price} zł</td>
 
-                <td className="p-4">{product.stock}</td>
+                  <td className="p-4">{product.stock}</td>
 
-                <td className="p-4">
-                  <span
-                    className={`
+                  <td className="p-4">
+                    <span
+                      className={`
                     px-3
                     py-1
                     rounded-full
@@ -100,24 +77,31 @@ const Products = () => {
                         : "bg-red-100 text-red-700"
                     }
                     `}
-                  >
-                    {product.status}
-                  </span>
-                </td>
+                    >
+                      {product.status}
+                    </span>
+                  </td>
 
-                <td className="p-4">
-                  <div className="flex gap-3">
-                    <button className=" hover:text-blue-800 text-blue-600">
-                      <Edit size={18} />
-                    </button>
+                  <td className="p-4">
+                    <div className="flex gap-3">
+                      <button className=" hover:text-blue-800 text-blue-600">
+                        <Edit size={18} />
+                      </button>
 
-                    <button className=" hover:text-red-800 text-red-600">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                      <button className=" hover:text-red-800 text-red-600">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td className="p-4 text-center" colSpan={5}>
+                  Brak produktów w magazynie
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

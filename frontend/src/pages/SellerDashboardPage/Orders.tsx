@@ -1,28 +1,6 @@
 import { Search, Eye, PackageCheck } from "lucide-react";
+import { useSeller } from "../../hooks/useSeller";
 
-const orders = [
-  {
-    id: "ORD-1001",
-    customer: "Jan Kowalski",
-    total: 4599,
-    status: "W realizacji",
-    date: "14.07.2026",
-  },
-  {
-    id: "ORD-1002",
-    customer: "Anna Nowak",
-    total: 299,
-    status: "Wysłane",
-    date: "13.07.2026",
-  },
-  {
-    id: "ORD-1003",
-    customer: "Piotr Wiśniewski",
-    total: 159,
-    status: "Oczekuje",
-    date: "12.07.2026",
-  },
-];
 
 const getStatusClasses = (status: string) => {
   switch (status) {
@@ -41,10 +19,13 @@ const getStatusClasses = (status: string) => {
 };
 
 const Orders = () => {
+  const {
+    orders: { data = [] },
+  } = useSeller();
+
   return (
     <div>
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-2xl font-bold">Zamówienia</h2>
 
@@ -52,9 +33,8 @@ const Orders = () => {
         </div>
       </div>
 
-      {/* Search */}
       <div className="mb-6">
-        <div className="flex items-center gap-3 border border-gray-300 px-4 py-3">
+        <div className="flex items-center gap-3 px-4 py-3 border border-gray-300">
           <Search size={20} className="text-gray-400" />
 
           <input
@@ -65,8 +45,7 @@ const Orders = () => {
         </div>
       </div>
 
-          <div className="overflow-x-auto border
-       border-gray-300 ">
+      <div className=" overflow-x-auto border border-gray-300">
         <table className="w-full text-left">
           <thead className="bg-gray-100">
             <tr>
@@ -80,47 +59,52 @@ const Orders = () => {
           </thead>
 
           <tbody>
-            {orders.map((order) => (
-              <tr
-                key={order.id}
-                className="border-t border-gray-300 hover:bg-gray-50"
-              >
-                <td className="p-4 font-medium">{order.id}</td>
+            {data.length > 0 ? (
+              data.map((order: any) => (
+                <tr
+                  key={order.id}
+                  className="hover:bg-gray-50 border-t border-gray-300"
+                >
+                  <td className="p-4 font-medium">{order.id}</td>
 
-                <td className="p-4">{order.customer}</td>
+                  <td className="p-4">{order.customer}</td>
 
-                <td className="p-4">{order.date}</td>
+                  <td className="p-4">{order.date}</td>
 
-                <td className="p-4">{order.total} zł</td>
+                  <td className="p-4">{order.total} zł</td>
 
-                <td className="p-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm ${getStatusClasses(
-                      order.status,
-                    )}`}
-                  >
-                    {order.status}
-                  </span>
-                </td>
+                  <td className="p-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm ${getStatusClasses(
+                        order.status
+                      )}`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
 
-                <td className="p-4">
-                  <div className="flex gap-3">
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <Eye size={18} />
-                    </button>
+                  <td className="p-4">
+                    <div className="flex gap-3">
+                      <button className="hover:text-blue-800 text-blue-600">
+                        <Eye size={18} />
+                      </button>
 
-                    <button className="text-green-600 hover:text-green-800">
-                      <PackageCheck size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      <button className="hover:text-green-800 text-green-600">
+                        <PackageCheck size={18} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <td className="p-4 text-center" colSpan={6}>
+                Brak zamówień
+              </td>
+            )}
           </tbody>
         </table>
       </div>
     </div>
   );
 };
-
 export default Orders;

@@ -2,7 +2,8 @@ import axios from "axios";
 
 const API = "http://localhost:5000/api/seller";
 
-const token = () => localStorage.getItem("token");
+const token = () =>
+  localStorage.getItem("token") || sessionStorage.getItem("token");
 
 export const getProducts = async () => {
   const { data } = await axios.get(`${API}/products`, {
@@ -20,6 +21,32 @@ export const addProduct = async (product: any) => {
       Authorization: `Bearer ${token()}`,
     },
   });
+
+  return data;
+};
+
+export const getCategories = async () => {
+  const { data } = await axios.get(
+    `http://localhost:5000/api/products/categories`,
+    {
+      headers: {
+        Authorization: `Bearer ${token()}`,
+      },
+    }
+  );
+
+  return data;
+};
+
+export const getSubcategories = async () => {
+  const { data } = await axios.get(
+    `http://localhost:5000/api/products/subcategories`,
+    {
+      headers: {
+        Authorization: `Bearer ${token()}`,
+      },
+    }
+  );
 
   return data;
 };

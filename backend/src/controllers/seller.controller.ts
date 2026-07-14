@@ -4,6 +4,9 @@ import {
   createSellerProfile,
   getSellerByUserId,
   updateUserRoleToSeller,
+  getSellerProducts,
+  createProduct,
+  saveProductImages,
 } from "../services/seller.services";
 
 export const createSeller = async (req: Request, res: Response) => {
@@ -132,6 +135,46 @@ export const getProfile = async (req: Request, res: Response) => {
     res.status(500).json({
       message: "Wewnetrzny błąd serwera",
       success: false,
+    });
+  }
+};
+
+export const getProducts = async (req: Request, res: Response) => {
+  try {
+    const sellerId = (req as any).user.id;
+
+    const products = await getSellerProducts(sellerId);
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Nie udało się pobrać ofert",
+    });
+  }
+};
+
+export const addProduct = async (req: Request, res: Response) => {
+  try {
+    const sellerId = (req as any).user.id;
+
+    if (!sellerId) {
+      res.status(404).json({ message: "Brak id" });
+    }
+
+    const product = await createProduct(sellerId, req.body);
+
+    if (req.files) {
+      await saveProductImages(product.id, req.files as Express.Multer.File[]);
+    }
+
+    res.status(201).json(product);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Nie udało się dodać produktu",
     });
   }
 };

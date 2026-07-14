@@ -59,19 +59,23 @@ export const useSeller = () => {
     },
   });
 
+  const getCategories = useQuery({
+    queryFn: sellerApi.getCategories,
+    queryKey: ["categories"],
+  });
+  const getSubcategories = useQuery({
+    queryFn: sellerApi.getSubcategories,
+    queryKey: ["subcategories"],
+  });
   return {
     products,
-
     orders,
-
     addProduct,
-
     updateProduct,
-
     deleteProduct,
-
     updateOrderStatus,
-
     createProfile,
+    getCategories,
+    getSubcategories,
   };
 };

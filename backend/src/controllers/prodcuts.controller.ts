@@ -4,6 +4,8 @@ import {
   getCurrtentProdcut,
   getCurrtentProdcutByID,
   saveOrderToDB,
+  getCategoriesFromDB,
+  getSubcategoriesFromDB,
 } from "../services/prodcuts.service";
 
 export const getOffersFromDatabase = async (req: Request, res: Response) => {
@@ -53,6 +55,36 @@ export const getProductByID = async (req: Request, res: Response) => {
 
     if (!response) {
       return res.status(400).json({ error: "Brak produktu" });
+    }
+
+    return res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getCategories = async (req: Request, res: Response) => {
+  try {
+    const response = await getCategoriesFromDB();
+
+    if (!response) {
+      return res.status(400).json({ error: "Brak kategorii" });
+    }
+
+    return res.json(response);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const getSubcategories = async (req: Request, res: Response) => {
+  try {
+    const response = await getSubcategoriesFromDB();
+
+    if (!response) {
+      return res.status(400).json({ error: "Brak podkategorii" });
     }
 
     return res.json(response);

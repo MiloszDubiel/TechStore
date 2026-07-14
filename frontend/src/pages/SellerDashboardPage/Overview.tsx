@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { GrayButton, OrangeButton } from "../../components/ui/Buttons";
+import { useSeller } from "../../hooks/useSeller";
 
 const stats = [
   {
@@ -35,29 +36,12 @@ const stats = [
   },
 ];
 
-const recentOrders = [
-  {
-    id: "ORD-1025",
-    customer: "Jan Kowalski",
-    price: "4999 zł",
-    status: "W realizacji",
-  },
-  {
-    id: "ORD-1024",
-    customer: "Anna Nowak",
-    price: "299 zł",
-    status: "Wysłane",
-  },
-  {
-    id: "ORD-1023",
-    customer: "Piotr Wiśniewski",
-    price: "159 zł",
-    status: "Oczekuje",
-  },
-];
-
 const Overview = () => {
   const navigate = useNavigate();
+
+  const {
+    orders: { data = [] },
+  } = useSeller();
 
   return (
     <div>
@@ -103,33 +87,42 @@ const Overview = () => {
             <h3 className="text-lg font-semibold">Ostatnie zamówienia</h3>
 
             <button className=" text-sm text-orange-500">
-              Zobacz wszystkie
+              <Link to="/seller/dashboard?tab=orders">Zobacz wszystkie</Link>
             </button>
           </div>
 
           <div className="space-y-4">
-            {recentOrders.map((order) => (
-              <div
-                key={order.id}
-                className=" flex items-center justify-between pb-4 border-b border-gray-300"
-              >
-                <div>
-                  <p className="font-medium">{order.id}</p>
+            {data.length > 0 ? (
+              data.map((order: any) => (
+                <div
+                  key={order.id}
+                  className=" flex items-center justify-between pb-4 border-b border-gray-300"
+                >
+                  <div>
+                    <p className="font-medium">{order.id}</p>
 
-                  <p className="text-sm text-gray-500">{order.customer}</p>
+                    <p className="text-sm text-gray-500">{order.customer}</p>
+                  </div>
+
+                  <div className="text-right">
+                    <p className="font-semibold">{order.price}</p>
+
+                    <span className=" text-sm text-gray-500">
+                      {order.status}
+                    </span>
+                  </div>
                 </div>
-
-                <div className="text-right">
-                  <p className="font-semibold">{order.price}</p>
-
-                  <span className=" text-sm text-gray-500">{order.status}</span>
+              ))
+            ) : (
+              <div className=" flex items-center justify-center pb-4">
+                <div>
+                  <p className="font-medium">Brak nowych zamówień</p>
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
-        {/* Quick actions */}
         <div className=" p-6 border border-gray-300">
           <h3 className="mb-6 text-lg font-semibold">Szybkie akcje</h3>
 

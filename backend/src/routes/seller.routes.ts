@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { verifyToken } from "../middleware/auth.middleware";
-import { createSeller, getProfile } from "../controllers/seller.controller";
-import { uploadSellerLogo } from "../multer";
-import { getSellerByUserId } from "../services/seller.services";
+import {
+  createSeller,
+  getProfile,
+  getProducts,
+  addProduct,
+} from "../controllers/seller.controller";
+import { uploadSellerLogo, uploadProductImages } from "../multer";
 
 const router = Router();
 
@@ -13,6 +17,14 @@ router.post(
   createSeller,
 );
 
+router.get("/products", verifyToken, getProducts);
+
+router.post(
+  "/products",
+  verifyToken,
+  uploadProductImages.array("images", 8),
+  addProduct,
+);
 router.get("/get-my-profile/:id", verifyToken, getProfile);
 
 export default router;

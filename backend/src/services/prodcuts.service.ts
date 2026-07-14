@@ -328,3 +328,20 @@ WHERE id=?
     conn.release();
   }
 };
+
+export const getCategoriesFromDB = async () => {
+  const [rows] = await connection.query("SELECT * FROM categories");
+  if (!rows) {
+    return null;
+  }
+  return rows;
+};
+
+export const getSubcategoriesFromDB = async () => {
+  const [rows] = await connection.query("SELECT * FROM subcategories");
+
+  if (!rows) {
+    return null;
+  }
+  return rows;
+};
