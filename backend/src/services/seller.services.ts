@@ -6,6 +6,8 @@ export interface CreateProductDTO {
   description: string;
   price: number;
   stock: number;
+  brand: string;
+  model: string;
 
   category_id: number;
   subcategory_id?: number;
@@ -83,6 +85,9 @@ export const getSellerProducts = async (sellerId: number) => {
       p.stock,
       p.attributes,
       p.created_at,
+      p.brand,
+      p.model,
+
 
       c.name AS category,
 
@@ -119,6 +124,8 @@ export const createProduct = async (
 ) => {
   const {
     name,
+    brand,
+    model,
     description,
     price,
     stock,
@@ -138,10 +145,12 @@ export const createProduct = async (
       stock,
       category_id,
       subcategory_id,
-      attributes
+      attributes,
+      brand,
+      model
     )
 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
     [
       sellerId,
@@ -152,6 +161,8 @@ export const createProduct = async (
       category_id,
       subcategory_id ?? null,
       JSON.stringify(attributes),
+      brand,
+      model,
     ],
   );
 
@@ -166,6 +177,8 @@ export const createProduct = async (
     stock,
     category_id,
     subcategory_id,
+    model,
+    brand,
     attributes,
   };
 };
@@ -188,4 +201,20 @@ export const saveProductImages = async (
       [productId, `/uploads/products/${productId}/${file.filename}`],
     );
   }
+};
+
+export const deleteProductFromDB = async (
+  productId: number,
+  sellerId: number,
+) => {
+  const [result] = await connection.query(
+    `
+    DELETE FROM products
+    WHERE id = ?
+      AND seller_id = ?
+    `,
+    [productId, sellerId],
+  );
+
+  return result;
 };

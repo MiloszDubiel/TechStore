@@ -1,18 +1,32 @@
 import { Search, Edit, Trash2, Plus } from "lucide-react";
 import { useSeller } from "../../hooks/useSeller";
-
+import EditProduct from "./tabs/Products/EditProduct";
+import { useState } from "react";
+import ConfirmModal from "../../components/ui/ConfirmModal";
+import NotificationCard from "../../components/ui/NotificationCard";
 const Products = () => {
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [productData, setProductData] = useState<any>();
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
   const {
     products: { data = [] },
+    deleteProduct: { mutate, isSuccess },
   } = useSeller();
 
-
-
+  if (editingProduct) {
+    return (
+      <EditProduct
+        product={editingProduct}
+        onBack={() => setEditingProduct(null)}
+      />
+    );
+  }
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold">Produkty</h2>
+          <h2 className="text-2xl font-bold">Produkty w sprzedaży</h2>
 
           <p className="text-gray-500">Zarządzaj produktami w swoim sklepie</p>
         </div>
@@ -35,6 +49,8 @@ const Products = () => {
       </div>
 
       <div className=" overflow-x-auto border border-gray-300">
+        {isSuccess && <NotificationCard message={message} />}
+
         <table className=" w-full text-left">
           <thead className=" bg-gray-100">
             <tr>
@@ -84,11 +100,20 @@ const Products = () => {
 
                   <td className="p-4">
                     <div className="flex gap-3">
-                      <button className=" hover:text-blue-800 text-blue-600">
+                      <button
+                        onClick={() => setEditingProduct(product)}
+                        className="hover:text-orange-800 text-orange-600 cursor-pointer"
+                      >
                         <Edit size={18} />
                       </button>
 
-                      <button className=" hover:text-red-800 text-red-600">
+                      <button
+                        className=" hover:text-red-800 text-red-600 cursor-pointer"
+                        onClick={() => {
+                          setIsOpen(true);
+                          setProductData(product);
+                        }}
+                      >
                         <Trash2 size={18} />
                       </button>
                     </div>
@@ -105,6 +130,21 @@ const Products = () => {
           </tbody>
         </table>
       </div>
+      <ConfirmModal
+        isOpen={isOpen}
+        message={`Czy napewno chcesz usunąć produkt: ${productData?.name}`}
+        onConfirm={() => {
+          mutate(productData!.id, {
+            onSuccess: (data) => setMessage(data.message),
+            onError: (data) => setMessage(data.message),
+          });
+          setIsOpen(false);
+        }}
+        onCancel={() => {
+          setIsOpen(false);
+        }}
+        title="Usuń"
+      />
     </div>
   );
 };

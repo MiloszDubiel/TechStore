@@ -5,6 +5,7 @@ import {
   getProfile,
   getProducts,
   addProduct,
+  deleteProduct,
 } from "../controllers/seller.controller";
 import { uploadSellerLogo, uploadProductImages } from "../multer";
 
@@ -18,6 +19,7 @@ router.post(
 );
 
 router.get("/products", verifyToken, getProducts);
+router.delete("/products/:id", verifyToken, deleteProduct);
 
 router.post(
   "/products",

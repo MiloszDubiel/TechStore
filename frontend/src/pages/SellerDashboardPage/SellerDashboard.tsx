@@ -1,7 +1,7 @@
 import { useSearchParams } from "react-router-dom";
 import Products from "./Products";
 import Orders from "./Orders";
-import AddProduct from "./AddProduct";
+import AddProduct from "./tabs/Products/AddProduct";
 import SellerSettings from "./SellerSettings";
 import Overview from "./Overview";
 
@@ -23,7 +23,7 @@ const tabs = [
   },
   {
     id: "products",
-    name: "Produkty",
+    name: "Produkty w sprzedaży",
     icon: Package,
   },
   {
@@ -33,7 +33,7 @@ const tabs = [
   },
   {
     id: "add-product",
-    name: "Dodaj produkt",
+    name: "Dodaj produkt do sprzedaży",
     icon: Plus,
   },
   {

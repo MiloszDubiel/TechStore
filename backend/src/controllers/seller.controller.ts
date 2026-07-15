@@ -7,6 +7,7 @@ import {
   getSellerProducts,
   createProduct,
   saveProductImages,
+  deleteProductFromDB,
 } from "../services/seller.services";
 
 export const createSeller = async (req: Request, res: Response) => {
@@ -175,6 +176,31 @@ export const addProduct = async (req: Request, res: Response) => {
 
     res.status(500).json({
       message: "Nie udało się dodać produktu",
+    });
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const sellerId = (req as any).user.id;
+    const productId = Number(req.params.id);
+
+    const result: any = await deleteProductFromDB(productId, sellerId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        message: "Nie znaleziono produktu lub nie należy do Ciebie.",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Produkt został usunięty.",
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Nie udało się usunąć produktu.",
     });
   }
 };
