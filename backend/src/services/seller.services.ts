@@ -22,7 +22,16 @@ export interface CreateProductDTO {
 
 export const getSellerByUserId = async (userId: number) => {
   const [rows] = await connection.query<RowDataPacket[]>(
-    "SELECT id FROM seller_profiles WHERE user_id = ?",
+    "SELECT * FROM seller_profiles WHERE user_id = ?",
+    [userId],
+  );
+
+  return rows[0] ?? null;
+};
+
+export const getCompanyInfo = async (userId: number) => {
+  const [rows] = await connection.query<RowDataPacket[]>(
+    "SELECT * FROM seller_profiles WHERE user_id = ?",
     [userId],
   );
 
@@ -36,13 +45,21 @@ export const createSellerProfile = async ({
   description,
   logo,
   nip,
+  city,
+  postal_code,
+  street,
+  company_name,
 }: {
   userId: number;
   shop_name: string;
   slug: string;
   description: string;
   logo: string | null;
-  nip?: string | null;
+  nip: string | null;
+  city?: string;
+  postal_code?: string;
+  street?: string;
+  company_name: string;
 }) => {
   const [result] = await connection.query<ResultSetHeader>(
     `
@@ -53,11 +70,26 @@ export const createSellerProfile = async ({
       slug,
       description,
       logo,
-      nip
+      nip,
+      city,
+      postal_code,
+      street,
+      company_name
     )
-    VALUES (?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `,
-    [userId, shop_name, slug, description, logo, nip],
+    [
+      userId,
+      shop_name,
+      slug,
+      description,
+      logo,
+      nip,
+      city || null,
+      postal_code || null,
+      street || null,
+      company_name,
+    ],
   );
 
   return result.insertId;

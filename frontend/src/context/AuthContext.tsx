@@ -16,11 +16,12 @@ interface AuthContextType {
   login: (
     accessToken: string,
     refreshToken: string,
-    rememberMe: boolean,
+    rememberMe: boolean
   ) => void;
   logout: () => any;
   isAuthenticated: boolean;
   token: string | null;
+  isPending: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -32,14 +33,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const logoutMutation = useLogout();
 
   const [token, setToken] = useState(
-    localStorage.getItem("token") ?? sessionStorage.getItem("token"),
+    localStorage.getItem("token") ?? sessionStorage.getItem("token")
   );
-  const { data: user } = useUser(token);
+  const { data: user, isPending } = useUser(token);
 
   const login = (
     accessToken: string,
     refreshToken: string,
-    rememberMe: boolean,
+    rememberMe: boolean
   ) => {
     if (rememberMe) {
       localStorage.setItem("token", accessToken);
@@ -77,6 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         logout,
         isAuthenticated: !!user,
         token,
+        isPending,
       }}
     >
       {children}

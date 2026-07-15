@@ -35,8 +35,6 @@ const Navbar: React.FC = () => {
 
   const { logout, isAuthenticated, user } = useAuth();
 
-  console.log(user);
-
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const navigate = useNavigate();
@@ -75,7 +73,7 @@ const Navbar: React.FC = () => {
             <input
               type="text"
               placeholder="Szukaj produktów..."
-              className="outline-0  w-full py-2 pl-10 pr-4"
+              className="outline-0 w-full py-2 pl-10 pr-4"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

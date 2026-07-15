@@ -4,31 +4,45 @@ import { useEffect, useState } from "react";
 
 type Props = {
   value?: File[];
-
+  images?: string[];
   onChange: (files: File[]) => void;
 
-  multiple?: boolean;
+  onRemoveExisting?: (image: string) => void;
 
+  multiple?: boolean;
   maxFiles?: number;
+  isEdit?: boolean;
 };
 
 const ImageUploader = ({
   value = [],
+  images = [],
   onChange,
   multiple = true,
   maxFiles = 5,
 }: Props) => {
   const [preview, setPreview] = useState<string[]>([]);
+  const [removedImages, setRemovedImages] = useState<string[]>([]);
 
   useEffect(() => {
-    const urls = value.map((file) => URL.createObjectURL(file));
+    const urls = value
+      .filter((file) => file instanceof File)
+      .map((file) => URL.createObjectURL(file));
 
-    setPreview(urls);
+    const activeImages = images.filter(
+      (image) => !removedImages.includes(image)
+    );
+
+    setPreview([...activeImages, ...urls]);
 
     return () => {
       urls.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [value]);
+  }, [
+    value.map((file) => file.name).join(","),
+    images.join(","),
+    removedImages.join(","),
+  ]);
 
   const onDrop = (acceptedFiles: File[]) => {
     let files = acceptedFiles;
@@ -44,8 +58,9 @@ const ImageUploader = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-
     multiple,
+    maxFiles,
+    maxSize: 2 * 1024 * 1024,
 
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".webp"],
@@ -53,7 +68,17 @@ const ImageUploader = ({
   });
 
   const removeImage = (index: number) => {
-    onChange(value.filter((_, i) => i !== index));
+    if (index < images.length) {
+      const removed = images[index];
+
+      setRemovedImages((prev) => [...prev, removed]);
+
+      return;
+    }
+
+    const fileIndex = index - images.length;
+
+    onChange(value.filter((_, i) => i !== fileIndex));
   };
 
   return (
@@ -61,12 +86,15 @@ const ImageUploader = ({
       <div
         {...getRootProps()}
         className={`
- p-10 text-center border-2 border-dashed cursor-pointer
- border-gray-300
+          p-10 
+          text-center 
+          border-2 
+          border-dashed 
+          cursor-pointer
+          border-gray-300
 
- ${isDragActive ? "border-orange-500 bg-orange-50" : ""}
-
- `}
+          ${isDragActive ? "border-orange-500 bg-orange-50" : ""}
+        `}
       >
         <input {...getInputProps()} />
 
@@ -83,7 +111,11 @@ const ImageUploader = ({
         <div className="grid grid-cols-4 gap-4 mt-5">
           {preview.map((image, index) => (
             <div key={index} className="relative">
-              <img src={image} className="object-cover w-full h-32" />
+              <img
+                src={image}
+                className="object-cover w-full h-32"
+                alt="preview"
+              />
 
               <button
                 type="button"
@@ -99,5 +131,4 @@ const ImageUploader = ({
     </div>
   );
 };
-
 export default ImageUploader;

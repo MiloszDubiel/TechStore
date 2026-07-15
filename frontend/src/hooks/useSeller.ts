@@ -49,6 +49,10 @@ export const useSeller = () => {
     },
   });
 
+  const editProfile = useMutation({
+    mutationFn: sellerApi.editProfile,
+  });
+
   const updateOrderStatus = useMutation({
     mutationFn: sellerApi.updateOrderStatus,
 
@@ -62,6 +66,11 @@ export const useSeller = () => {
   const getCategories = useQuery({
     queryFn: sellerApi.getCategories,
     queryKey: ["categories"],
+  });
+
+  const getCompanyInfo = useQuery({
+    queryFn: sellerApi.getCompanyInfo,
+    queryKey: ["company-info"],
   });
   const getSubcategories = useQuery({
     queryFn: sellerApi.getSubcategories,
@@ -77,5 +86,7 @@ export const useSeller = () => {
     createProfile,
     getCategories,
     getSubcategories,
+    editProfile,
+    getCompanyInfo,
   };
 };

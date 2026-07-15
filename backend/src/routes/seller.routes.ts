@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyToken } from "../middleware/auth.middleware";
 import {
-  createSeller,
+  createProfile,
   getProfile,
   getProducts,
   addProduct,
@@ -15,7 +15,7 @@ router.post(
   "/create",
   verifyToken,
   uploadSellerLogo.single("logo"),
-  createSeller,
+  createProfile,
 );
 
 router.get("/products", verifyToken, getProducts);
@@ -27,6 +27,6 @@ router.post(
   uploadProductImages.array("images", 8),
   addProduct,
 );
-router.get("/get-my-profile/:id", verifyToken, getProfile);
+router.get("/get-my-profile/", verifyToken, getProfile);
 
 export default router;

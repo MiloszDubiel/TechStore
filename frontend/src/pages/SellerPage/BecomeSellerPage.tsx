@@ -1,54 +1,68 @@
-import { useAuth } from "../../context/AuthContext";
-import BecomeSellerForm from "../../components/ui/SellerForm";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/layout/Navbar";
-import { Link } from "react-router-dom";
+import SellerProfileForm from "../../components/ui/SellerForm";
 import { useSeller } from "../../hooks/useSeller";
-const BecomeSellerPage = () => {
-  const { user } = useAuth();
-  const {
-    createProfile: { data },
-  } = useSeller();
+import { useQueryClient } from "@tanstack/react-query";
+
+
+const BecomeSellerForm = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const { createProfile, getCompanyInfo } = useSeller();
+
+  const { data: seller, isLoading } = getCompanyInfo;
+
+  useEffect(() => {
+    if (seller) {
+      navigate("/seller/dashboard");
+    }
+  }, [seller, navigate]);
+
+  const submit = (data: any) => {
+    const formData = new FormData();
+
+    Object.entries(data).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+
+      if (value instanceof File) {
+        formData.append(key, value);
+      } else {
+        formData.append(key, String(value));
+      }
+    });
+
+    createProfile.mutate(formData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["seller"],
+        });
+
+        navigate("/seller/dashboard");
+      },
+    });
+  };
+
+  if (isLoading) {
+    return <div>Ładowanie...</div>;
+  }
 
   return (
     <>
       <Navbar />
-      <section className="flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-3xl p-8 bg-white">
-          <h1 className="mb-6 text-3xl font-bold text-center">
-            Zostań sprzedawcą
-          </h1>
 
-          {!data && <BecomeSellerForm isLoggedIn={!user} />}
-          {data && (
-            <div className="bg-orange-50 p-4 mb-8 border border-gray-300">
-              <p className="mb-4 text-gray-700">Zostałeś już sprzedawcą</p>
-
-              <Link
-                to="/seller/dashboard"
-                className=" hover:bg-orange-600 inline-block px-5 py-2 font-semibold text-white transition bg-orange-500"
-              >
-                Przejdz do panelu sprzedawcy
-              </Link>
-            </div>
-          )}
-
-          {!user && (
-            <div className="bg-orange-50 p-4 mb-8 border border-gray-300">
-              <p className="mb-4 text-gray-700">
-                Nie masz jeszcze konta. Utwórz konto i załóż sklep.
-              </p>
-
-              <Link
-                to="/register"
-                className=" hover:bg-orange-600 inline-block px-5 py-2 font-semibold text-white transition bg-orange-500"
-              >
-                Zarejestruj się
-              </Link>
-            </div>
-          )}
+      <div className="flex items-center justify-center min-h-screen px-6 py-10">
+        <div className="w-full max-w-3xl">
+          <SellerProfileForm
+            mode="create"
+            onSubmit={submit}
+            isLoading={createProfile.isPending}
+          />
         </div>
-      </section>
+      </div>
     </>
   );
 };
-export default BecomeSellerPage;
+
+export default BecomeSellerForm;

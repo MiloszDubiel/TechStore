@@ -128,7 +128,7 @@ const Overview = () => {
 
           <div className=" space-y-3">
             <OrangeButton
-              onClick={() => navigate("/seller/dashboard?tab=products")}
+              onClick={() => navigate("/seller/dashboard?tab=add-product")}
             >
               Dodaj Produkt
             </OrangeButton>

@@ -1,7 +1,6 @@
 import { Search, Eye, PackageCheck } from "lucide-react";
 import { useSeller } from "../../hooks/useSeller";
 
-
 const getStatusClasses = (status: string) => {
   switch (status) {
     case "Oczekuje":
@@ -97,9 +96,9 @@ const Orders = () => {
                 </tr>
               ))
             ) : (
-              <td className="p-4 text-center" colSpan={6}>
-                Brak zamówień
-              </td>
+              <tr className="p-4 text-center">
+                <td colSpan={6}> Brak zamówień</td>
+              </tr>
             )}
           </tbody>
         </table>

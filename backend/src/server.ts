@@ -25,6 +25,7 @@ app.use("/api/seller", sellerRoutes);
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.listen(5000, () => {
   console.log("Serwer działa na porcie 5000");
 });

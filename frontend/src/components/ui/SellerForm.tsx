@@ -1,75 +1,77 @@
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { sellerSchema, type SellerForm } from "../../schemas/sellerSchemta";
-import { useAuth } from "../../context/AuthContext";
-import { useSeller } from "../../hooks/useSeller";
-import { useEffect, useState } from "react";
-import NotificationCard from "./NotificationCard";
+import ImageUploader from "../ui/ImageUploader";
+import {
+  sellerProfileSchema,
+  type SellerProfileType,
+} from "../../schemas/sellerSchemta";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { Save, Store, Building2 } from "lucide-react";
+import { useSeller } from "../../hooks/useSeller";
 
 type Props = {
-  isLoggedIn: boolean;
+  mode: "create" | "edit";
+  defaultValues?: Partial<SellerProfileType>;
+  onSubmit: (data: SellerProfileType) => void;
+  isLoading?: boolean;
 };
 
-const BecomeSellerForm = ({ isLoggedIn }: Props) => {
+const SellerProfileForm = ({
+  mode,
+  defaultValues,
+  onSubmit,
+  isLoading,
+}: Props) => {
+  const {
+    getCompanyInfo: { data },
+  } = useSeller();
+
+  console.log(defaultValues);
+
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors },
-  } = useForm<SellerForm>({
-    resolver: zodResolver(sellerSchema),
+  } = useForm<SellerProfileType>({
+    resolver: zodResolver(sellerProfileSchema),
+    defaultValues,
   });
-  const queryClient = useQueryClient();
-
-  const [disabled, setDisabled] = useState(false);
-
-  const { user, token } = useAuth();
-  const {
-    get: { data },
-    set: { mutate, isSuccess },
-  } = useSeller(token, user?.id);
 
   useEffect(() => {
     if (data) {
-      setDisabled(true);
+      reset({
+        shop_name: data.shop_name ?? "",
+        description: data.description ?? "",
+        company_name: data.company_name ?? "",
+        nip: data.nip ?? "",
+        street: data.street ?? "",
+        city: data.city ?? "",
+        postal_code: data.postal_code ?? "",
+      });
     }
-  }, []);
-
-  const onSubmit = (seller: SellerForm) => {
-    mutate(seller, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["seller"] });
-      },
-      onError: (err) => console.log(err),
-    });
-  };
+  }, [data]);
+  const isEdit = mode === "edit";
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {isLoggedIn && (
-        <div className="bg-gray-50 p-4 border border-gray-300">
-          <h3 className="font-semibold text-gray-800">Konto użytkownika</h3>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <section className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Store size={22} className="text-orange-500" />
 
-          <p className="mt-1 text-sm text-gray-600">
-            Aby prowadzić sklep, musisz posiadać konto.
-          </p>
+          <h2 className="text-xl font-semibold">Dane sklepu</h2>
         </div>
-      )}
 
-      <div>
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">Dane firmy</h2>
-        {isSuccess && <NotificationCard message="Utworzono sklep" />}
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Nazwa sklepu
-            </label>
+            <label className="block mb-2 font-medium">Nazwa sklepu</label>
 
             <input
               {...register("shop_name")}
-              placeholder="Sklep"
-              className=" focus:border-orange-500 w-full px-4 py-3 text-gray-900 border border-gray-300 outline-none"
+              placeholder="Nazwa sklepu"
+              className="focus:border-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
             />
 
             {errors.shop_name && (
@@ -80,31 +82,13 @@ const BecomeSellerForm = ({ isLoggedIn }: Props) => {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              NIP
-            </label>
-
-            <input
-              {...register("nip")}
-              placeholder="Wymagany"
-              className=" focus:border-orange-500 w-full px-4 py-3 text-gray-900 border border-gray-300 outline-none"
-              maxLength={10}
-            />
-            {errors.nip && (
-              <p className="mt-1 text-sm text-red-500">{errors.nip.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Opis sklepu
-            </label>
+            <label className="block mb-2 font-medium">Opis sklepu</label>
 
             <textarea
               {...register("description")}
-              placeholder="Opisz czym zajmuje się Twój sklep..."
               rows={5}
-              className=" focus:border-orange-500 w-full px-4 py-3 text-gray-900 border border-gray-300 outline-none resize-none"
+              placeholder="Opis sklepu..."
+              className="focus:border-orange-500 w-full px-4 py-3 border border-gray-300 outline-none resize-none"
             />
 
             {errors.description && (
@@ -115,14 +99,23 @@ const BecomeSellerForm = ({ isLoggedIn }: Props) => {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Logo sklepu
-            </label>
+            <label className="block mb-2 font-medium">Logo sklepu</label>
 
-            <input
-              type="file"
-              {...register("logo")}
-              className=" file:border-0 file:bg-orange-500 file:text-white file:px-4 file:py-2 file:mr-4 w-full px-4 py-3 text-gray-700 border border-gray-300"
+            <ImageUploader
+              images={
+                data?.logo
+                  ? [
+                      `${import.meta.env.VITE_API_URL}uploads/sellers/${
+                        data?.logo
+                      }`,
+                    ]
+                  : []
+              }
+              value={[]}
+              onChange={(files) => {
+                setValue("logo", files[0]);
+              }}
+              isEdit={true}
             />
 
             {errors.logo && (
@@ -130,16 +123,102 @@ const BecomeSellerForm = ({ isLoggedIn }: Props) => {
             )}
           </div>
         </div>
-      </div>
+      </section>
+
+      <section className="p-6 bg-white border border-gray-300">
+        <div className="flex items-center gap-3 mb-6">
+          <Building2 size={22} className="text-orange-500" />
+
+          <h2 className="text-xl font-semibold">Dane firmy</h2>
+        </div>
+
+        <div className="md:grid-cols-2 grid grid-cols-1 gap-5">
+          <div>
+            <input
+              {...register("company_name")}
+              placeholder="Nazwa firmy"
+              className="input"
+            />
+
+            {errors.company_name && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.company_name.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <input
+              {...register("nip")}
+              placeholder="NIP"
+              className="input"
+              maxLength={10}
+            />
+
+            {errors.nip && (
+              <p className="mt-1 text-sm text-red-500">{errors.nip.message}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              {...register("street")}
+              placeholder="Ulica"
+              className="input"
+            />
+
+            {errors.street && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.street.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <input
+              {...register("city")}
+              placeholder="Miasto"
+              className="input"
+            />
+
+            {errors.city && (
+              <p className="mt-1 text-sm text-red-500">{errors.city.message}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              {...register("postal_code")}
+              placeholder="Kod pocztowy"
+              className="input"
+            />
+
+            {errors.postal_code && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.postal_code.message}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
 
       <button
-        type="submit"
-        className=" hover:bg-orange-600 disabled w-full py-3 font-semibold text-white transition bg-orange-500"
-        disabled={disabled}
+        disabled={isLoading}
+        className=" hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white bg-orange-500"
       >
-        Załóż sklep
+        {isEdit ? (
+          <>
+            <Save size={18} />
+            Zapisz zmiany
+          </>
+        ) : (
+          <>
+            <Store size={18} />
+            Załóż sklep
+          </>
+        )}
       </button>
     </form>
   );
 };
-export default BecomeSellerForm;
+export default SellerProfileForm;

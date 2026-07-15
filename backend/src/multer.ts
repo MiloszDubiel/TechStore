@@ -3,14 +3,36 @@ import path from "path";
 import fs from "fs";
 
 const storage1 = multer.diskStorage({
-  destination: "uploads/sellers",
-  filename: (req: any, file: any, cb: any) => {
-    cb(null, Date.now() + "-" + file.originalname);
+  destination: (req, file, cb) => {
+    cb(null, "uploads/sellers");
+  },
+
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+
+    const filename =
+      Date.now() + "-" + Math.round(Math.random() * 100000) + ext;
+
+    cb(null, filename);
   },
 });
 
 export const uploadSellerLogo = multer({
   storage: storage1,
+
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+
+  fileFilter: (req, file, cb) => {
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Niepoprawny format pliku"));
+    }
+  },
 });
 
 const storage = multer.diskStorage({

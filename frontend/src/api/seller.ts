@@ -38,6 +38,16 @@ export const getCategories = async () => {
   return data;
 };
 
+export const getCompanyInfo = async () => {
+  const { data } = await axios.get(`${API}/get-my-profile`, {
+    headers: {
+      Authorization: `Bearer ${token()}`,
+    },
+  });
+
+  return data.profile;
+};
+
 export const getSubcategories = async () => {
   const { data } = await axios.get(
     `http://localhost:5000/api/products/subcategories`,
@@ -51,8 +61,8 @@ export const getSubcategories = async () => {
   return data;
 };
 
-export const createStore = async (storeData: any) => {
-  const { data } = await axios.post(`${API}/products`, storeData, {
+export const createStore = async (storeData: FormData) => {
+  const { data } = await axios.post(`${API}/create`, storeData, {
     headers: {
       Authorization: `Bearer ${token()}`,
     },
@@ -85,6 +95,17 @@ export const deleteProduct = async (id: number) => {
   });
 
   return data;
+};
+
+export const editProfile = async (data: FormData) => {
+  const response = await axios.patch("/seller/edit-profile", data, {
+    headers: {
+      Authorization: `Bearer ${token()}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
 };
 
 export const getOrders = async () => {
