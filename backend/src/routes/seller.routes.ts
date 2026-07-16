@@ -7,7 +7,9 @@ import {
   addProduct,
   deleteProduct,
   editSeller,
+  uploadProductImagesController,
 } from "../controllers/seller.controller";
+
 import { uploadSellerLogo, uploadProductImages } from "../multer";
 
 const router = Router();
@@ -20,15 +22,22 @@ router.post(
 );
 
 router.get("/products", verifyToken, getProducts);
+
 router.delete("/products/:id", verifyToken, deleteProduct);
 
+
+router.post("/products", verifyToken, addProduct);
+
+
 router.post(
-  "/products",
+  "/products/:id/images",
   verifyToken,
   uploadProductImages.array("images", 8),
-  addProduct,
+  uploadProductImagesController,
 );
-router.get("/get-my-profile/", verifyToken, getProfile);
+
+router.get("/get-my-profile", verifyToken, getProfile);
+
 router.patch(
   "/edit-profile",
   verifyToken,

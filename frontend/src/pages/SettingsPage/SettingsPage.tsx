@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Navbar from "../../components/layout/Navbar";
+import Navbar from "../../components/layout/Navbar/Navbar";
 import { useAuth } from "../../context/AuthContext";
 
 import { Addresses } from "./Addresses/Addresses";
@@ -33,12 +33,12 @@ const AccountPage = () => {
           <div>
             <button
               onClick={() => setActiveTab("orders")}
-              className="text-sm text-gray-500 mb-4 hover:underline"
+              className="hover:underline mb-4 text-sm text-gray-500"
             >
               ← Powrót
             </button>
 
-            <h2 className="text-2xl font-bold mb-4">
+            <h2 className="mb-4 text-2xl font-bold">
               Zamówienie #{selectedOrderId}
             </h2>
 
@@ -67,13 +67,13 @@ const AccountPage = () => {
   return (
     <>
       <Navbar />
-      <section className="bg-orange-500 text-white py-14 text-center">
+      <section className="py-14 text-center text-white bg-orange-500">
         <h1 className="text-4xl font-bold">Moje konto</h1>
         <p className="mt-2">Zarządzaj swoim profilem i zamówieniami</p>
       </section>
 
-      <main className="container mx-auto px-6 py-10 grid grid-cols-12 gap-8">
-        <aside className="col-span-3 bg-white shadow-md h-fit ">
+      <main className="container grid grid-cols-12 gap-8 px-6 py-10 mx-auto">
+        <aside className="h-fit  col-span-3 bg-white shadow-md">
           <button
             onClick={() => setActiveTab("orders")}
             className={`w-full text-left p-4 border-b border-gray-200 cursor-pointer ${
@@ -120,7 +120,7 @@ const AccountPage = () => {
           </button>
         </aside>
 
-        <section className="col-span-9 bg-white shadow-md p-6 min-h-150 border-gray-200">
+        <section className="min-h-150 col-span-9 p-6 bg-white border-gray-200 shadow-md">
           {renderContent()}
         </section>
       </main>

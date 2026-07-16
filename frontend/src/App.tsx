@@ -11,7 +11,7 @@ import OfferDetails from "./components/ui/OfertDetails";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import CheckoutLayout from "./pages/CartPage/checkout/CheckoutLayout";
 
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import { FavoriteProvider } from "./context/FavoritesContext";
 import { CheckoutProvider } from "./context/CheckoutContext";
 import { ThemeProvider } from "./context/ThemeProvider";
@@ -20,20 +20,13 @@ import {
   CheckIsEmptyCart,
   CheckIsLoggedIn,
   CheckIsLoggedOut,
+  CheckIsSeller,
 } from "./components/ProtectetRoutes";
 
 import BecomeSellerPage from "./pages/SellerPage/BecomeSellerPage";
 import SellerDashboard from "./pages/SellerDashboardPage/SellerDashboard";
 
-import LoadingScreen from "./components/LoadingScreen";
-
 const AppContent = () => {
-  const { isPending, user } = useAuth();
-
-  if (user && isPending) {
-    return <LoadingScreen />;
-  }
-
   return (
     <BrowserRouter>
       <div className="flex flex-col min-h-screen">
@@ -95,9 +88,11 @@ const AppContent = () => {
             <Route
               path="/seller/dashboard"
               element={
-                <CheckIsLoggedIn>
-                  <SellerDashboard />
-                </CheckIsLoggedIn>
+                <CheckIsSeller>
+                  <CheckIsLoggedIn>
+                    <SellerDashboard />
+                  </CheckIsLoggedIn>
+                </CheckIsSeller>
               }
             />
 

@@ -68,6 +68,16 @@ export const useSeller = () => {
     queryKey: ["categories"],
   });
 
+  const uploadImage = useMutation({
+    mutationFn: ({
+      productId,
+      formData,
+    }: {
+      productId: string;
+      formData: FormData;
+    }) => sellerApi.uploadImage(productId, formData),
+  });
+
   const getCompanyInfo = useQuery({
     queryFn: sellerApi.getCompanyInfo,
     queryKey: ["company-info"],
@@ -88,5 +98,6 @@ export const useSeller = () => {
     getSubcategories,
     editProfile,
     getCompanyInfo,
+    uploadImage,
   };
 };

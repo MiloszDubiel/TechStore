@@ -9,36 +9,34 @@ type OfferCardProps = {
   product: any;
 };
 
-const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
-  const category = product.category_name || "Brak kategorii";
-
+const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
   const { toggleFavorite, isFavorite } = useFavorite();
   const { isAuthenticated } = useAuth();
 
   const addToCart = useCartStore((state) => state.addToCart);
 
-  const favorite = isFavorite(product.id as string);
+  const favorite = isFavorite(product.id);
+
   const [favoriteMessage, setFavoriteMessage] = useState<string | null>(null);
 
-  const importantParams = [
-    "Marka",
-    "Model",
-    "Przekątna ekranu",
-    "Pojemność dysku",
-    "Pamięć RAM",
-  ];
+  const importantParams = ["RAM", "Procesor", "Dysk", "Karta graficzna"];
+
   const displayedParams: string[] = [];
 
-  importantParams.forEach((paramName) => {
-    const param = product.product_data.parameters?.find(
-      (p: any) => p.name === paramName
-    );
-    if (param) {
-      const value = param.valuesLabels?.[0] || param.values?.[0];
-      if (value && displayedParams.length < 3)
-        displayedParams.push(`${paramName}: ${value}`);
+  const attributes =
+    typeof product.attributes === "string"
+      ? JSON.parse(product.attributes)
+      : product.attributes ?? [];
+
+  importantParams.forEach((name) => {
+    const param = attributes.find((item: any) => item.name === name);
+
+    if (param && displayedParams.length < 3) {
+      displayedParams.push(`${param.name}: ${param.value}`);
     }
   });
+
+  console.log();
 
   const createSlug = (name: string) =>
     name
@@ -46,28 +44,35 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
       .replace(/[^a-z0-9\s-]/g, "")
       .replace(/\s+/g, "-");
 
+
+
   return (
-    <Link
-      to={`/offers/${createSlug(product.product_data.name)}/${product.id}`}
-      className="hover:shadow-lg block p-4 transition bg-white border border-gray-200"
-    >
+    <div className=" hover:shadow-lg block p-4 transition bg-white border border-gray-200">
       <div className="flex items-start gap-6">
-        <div className="fshrink-0 w-40 h-32">
-          <img
-            src={product.product_data.images[0]?.url}
-            alt={product.product_data.name}
-            className="object-contain w-full h-full"
-          />
-        </div>
+        <img
+          src={
+            product.images?.[0]
+              ? `${import.meta.env.VITE_API_URL}uploads/products/${
+                  product.seller_id
+                }/${product.id}/${product.images[0].image}`
+              : "/no-image.png"
+          }
+          alt={product.name}
+          className=" object-contain w-48 h-48 bg-white"
+        />
 
         <div className="flex-1">
-          <h3 className="hover:underline line-clamp-2 hover:text-orange-600 text-lg font-semibold transition">
-            {product.product_data.name}
-          </h3>
+          <Link to={`/offers/${createSlug(product.name)}/${product.id}`}>
+            <h3 className=" hover:underline line-clamp-2 hover:text-orange-600 text-lg font-semibold">
+              {product.name}
+            </h3>
+          </Link>
 
-          <p className="mt-1 text-sm text-gray-500">Kategoria: {category}</p>
+          <p className="mt-1 text-sm text-gray-500">
+            Kategoria: {product.category_name ?? "Brak"}
+          </p>
 
-          <ul className="mt-1 space-y-1 text-sm text-gray-600">
+          <ul className="mt-2 space-y-1 text-sm text-gray-600">
             {displayedParams.map((param) => (
               <li key={param}>{param}</li>
             ))}
@@ -78,15 +83,15 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
           </p>
         </div>
 
-        <div
-          className="flex flex-col items-end gap-3"
-          onClick={(e) => e.preventDefault()}
-        >
-          <p className="text-2xl font-bold text-gray-900">{product.price} zł</p>
+        <div className="flex flex-col items-end gap-3">
+          <p className="text-2xl font-bold">{product.price} zł</p>
+
           <p
-            className={`text-sm font-small ${
-              product.stock > 0 ? "text-green-600" : "text-red-500"
-            }`}
+            className={
+              product.stock > 0
+                ? "text-green-600 text-sm"
+                : "text-red-500 text-sm"
+            }
           >
             {product.stock > 0
               ? `Dostępne: ${product.stock} szt.`
@@ -94,10 +99,8 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
           </p>
 
           <button
-            className="hover:bg-orange-600 px-6 py-2 font-semibold text-white transition bg-orange-500 cursor-pointer"
-            onClick={() => {
-              addToCart(product);
-            }}
+            className=" hover:bg-orange-600 px-6 py-2 font-semibold text-white bg-orange-500 cursor-pointer"
+            onClick={() => addToCart(product)}
           >
             Dodaj do koszyka
           </button>
@@ -105,19 +108,15 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
           {isAuthenticated && (
             <button
               onClick={() => {
-                toggleFavorite(id);
-
+                toggleFavorite(product.id);
                 const message = favorite
                   ? "Usunięto z ulubionych"
                   : "Dodano do ulubionych";
-
                 setFavoriteMessage(message);
-
                 setTimeout(() => {
                   setFavoriteMessage(null);
                 }, 2000);
               }}
-              className="transition cursor-pointer"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -137,13 +136,13 @@ const OfferCard: React.FC<OfferCardProps> = ({ id, product }) => {
           )}
         </div>
       </div>
+
       {favoriteMessage && (
-        <div className="bottom-6 right-6 fixed z-50 px-4 py-2 text-black border border-orange-400 shadow-lg">
+        <div className=" bottom-6 right-6 fixed z-50 px-4 py-2 bg-white border border-orange-400">
           {favoriteMessage}
         </div>
       )}
-    </Link>
+    </div>
   );
 };
-
 export default OfferCard;

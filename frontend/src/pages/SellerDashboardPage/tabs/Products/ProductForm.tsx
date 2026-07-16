@@ -10,6 +10,7 @@ import { useFieldArray } from "react-hook-form";
 import { useSeller } from "../../../../hooks/useSeller";
 import NotificationCard from "../../../../components/ui/NotificationCard";
 import ImageUploader from "../../../../components/ui/ImageUploader";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ProductFormProps = {
   mode: "create" | "edit";
@@ -67,17 +68,47 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
     addProduct: { mutate, isSuccess },
     getCategories: { data: categories = [] },
     getSubcategories: { data: subcategories = [] },
+    uploadImage,
   } = useSeller();
 
+  const queryClient = useQueryClient();
+
   const onSubmit = (data: ProductForm) => {
-    mutate(data, {
-      onSuccess: () => {
+    const productData = {
+      name: data.name,
+      brand: data.brand,
+      model: data.model,
+      description: data.description,
+      price: data.price,
+      stock: data.stock,
+      category_id: data.category_id,
+      subcategory_id: data.subcategory_id,
+      attributes: data.attributes,
+    };
+
+    mutate(productData, {
+      onSuccess: (product) => {
+        const productId = product.id;
+
+        if (data.images.length > 0) {
+          const imagesForm = new FormData();
+
+          data.images.forEach((file) => {
+            imagesForm.append("images", file);
+          });
+
+          uploadImage.mutate({
+            productId,
+            formData: imagesForm,
+          });
+        }
+
         setInfo("Produkt został dodany");
         reset();
+        queryClient.invalidateQueries({ queryKey: ["products"] });
       },
     });
   };
-
   const selectedCategoryId = watch("category_id");
 
   const filteredSubcategories = subcategories.filter(

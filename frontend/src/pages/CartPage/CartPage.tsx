@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import Navbar from "../../components/layout/Navbar";
+import Navbar from "../../components/layout/Navbar/Navbar";
 import { useCartStore } from "../../zustand/states/cartState";
 import { useNavigate } from "react-router-dom";
 
@@ -16,20 +16,22 @@ const CartPage = () => {
         .reduce((sum, item) => sum + item.price * item.quantity, 0)
         .toFixed(2),
 
-    [cart],
+    [cart]
   );
+
+  console.log(cart);
 
   return (
     <>
       <Navbar />
 
-      <section className="bg-orange-500 text-white py-16 text-center">
-        <h1 className="text-4xl font-bold mb-4">Twój koszyk</h1>
+      <section className="py-16 text-center text-white bg-orange-500">
+        <h1 className="mb-4 text-4xl font-bold">Twój koszyk</h1>
 
         <p>Sprawdź produkty przed zakupem</p>
       </section>
 
-      <main className="container mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="lg:grid-cols-3 container grid grid-cols-1 gap-8 px-6 py-12 mx-auto">
         <div className="lg:col-span-2 space-y-4">
           {cart.length === 0 && (
             <p className="text-gray-500">Koszyk jest pusty</p>
@@ -38,26 +40,22 @@ const CartPage = () => {
           {cart.map((item: any) => (
             <div
               key={item.id}
-              className="
-                bg-white
-                shadow-md
-                p-4
-                flex
-                gap-4
-                items-center
-                "
+              className="flex items-center gap-4 p-4 bg-white shadow-md"
             >
               <img
-                src={item.product_data.images?.[0]?.url || "/no-image.png"}
-                className="
-                  w-24
-                  h-24
-                  object-cover
-                  "
+                src={
+                  item.images?.[0]
+                    ? `${import.meta.env.VITE_API_URL}uploads/products/${
+                        item.seller_id
+                      }/${item.id}/${item.images[0].image}`
+                    : "/no-image.png"
+                }
+                className="object-cover w-24 h-24"
+                alt={item.name}
               />
 
               <div className="flex-1">
-                <h3 className="font-semibold">{item.product_data.name}</h3>
+                <h3 className="font-semibold">{item.name}</h3>
 
                 <p className="text-gray-500">Ilość: {item.quantity}</p>
 
@@ -71,11 +69,7 @@ const CartPage = () => {
 
                 <button
                   onClick={() => removeFromCart(item.id)}
-                  className="
-                    text-red-500
-                    text-sm
-                    hover:underline
-                    "
+                  className="hover:underline text-sm text-red-500"
                 >
                   Usuń
                 </button>
@@ -84,17 +78,8 @@ const CartPage = () => {
           ))}
         </div>
 
-        {/* PODSUMOWANIE */}
-
-        <div
-          className="
-          bg-white
-          shadow-md
-          p-6
-          h-fit
-          "
-        >
-          <h2 className="text-xl font-bold mb-6">Podsumowanie</h2>
+        <div className="h-fit p-6 bg-white shadow-md">
+          <h2 className="mb-6 text-xl font-bold">Podsumowanie</h2>
 
           <div className="flex justify-between mb-3">
             <span>Produkty</span>
@@ -118,31 +103,15 @@ const CartPage = () => {
 
           <button
             disabled={cart.length === 0}
-            onClick={() => {
-              navigate("/cart/checkout");
-            }}
-            className="
-            w-full
-            mt-6
-            bg-orange-500
-            text-white
-            py-3
-            hover:bg-orange-600
-            disabled:bg-gray-300
-            "
+            onClick={() => navigate("/cart/checkout")}
+            className=" hover:bg-orange-600 disabled:bg-gray-300 w-full py-3 mt-6 text-white bg-orange-500"
           >
             Przejdź do kasy
           </button>
 
           <button
             onClick={clearCart}
-            className="
-            w-full
-            mt-3
-            text-red-500
-            hover:underline
-            cursor-pointer
-            "
+            className=" hover:underline w-full mt-3 text-red-500 cursor-pointer"
           >
             Wyczyść koszyk
           </button>
@@ -151,5 +120,4 @@ const CartPage = () => {
     </>
   );
 };
-
 export default CartPage;

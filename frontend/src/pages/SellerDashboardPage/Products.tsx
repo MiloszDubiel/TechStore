@@ -94,7 +94,7 @@ const Products = () => {
                     }
                     `}
                     >
-                      {product.status}
+                      {product.stock > 0 ? `Dostępny` : "Brak"}
                     </span>
                   </td>
 

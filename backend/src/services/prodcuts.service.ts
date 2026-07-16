@@ -55,61 +55,182 @@ function mapMainCategory(categoryName: string | null) {
 export const getProducts = async (params: any) => {
   const { categories, brands, min, max, stock, search } = params;
 
-  let query = "SELECT * FROM products WHERE 1=1";
+  let query = `
+    SELECT
+      p.*,
+
+      c.name AS category_name,
+      sc.name AS subcategory_name,
+
+      sp.shop_name,
+      sp.company_name,
+      sp.logo,
+      sp.slug,
+      sp.created_at AS seller_created_at,
+      sp.is_verified,
+
+      COALESCE(
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'image', pi.image_url
+          )
+        ),
+        JSON_ARRAY()
+      ) AS images
+
+    FROM products p
+
+    LEFT JOIN categories c
+      ON c.id = p.category_id
+
+    LEFT JOIN subcategories sc
+      ON sc.id = p.subcategory_id
+
+    LEFT JOIN product_images pi
+      ON pi.product_id = p.id
+
+    LEFT JOIN seller_profiles sp
+      ON sp.user_id = p.seller_id
+
+    WHERE 1 = 1
+  `;
+
   const queryParams: any[] = [];
 
   if (categories) {
-    const cats = (categories as string).split(",");
-    query += ` AND category_name IN (${cats.map(() => "?").join(",")})`;
+    const cats = categories.split(",");
+
+    query += `
+      AND c.name IN (${cats.map(() => "?").join(",")})
+    `;
+
     queryParams.push(...cats);
   }
 
   if (brands) {
-    const b = (brands as string).split(",");
-    query += ` AND brand IN (${b.map(() => "?").join(",")})`;
+    const b = brands.split(",");
+
+    query += `
+      AND p.brand IN (${b.map(() => "?").join(",")})
+    `;
+
     queryParams.push(...b);
   }
 
   if (min) {
-    query += " AND price >= ?";
+    query += `
+      AND p.price >= ?
+    `;
+
     queryParams.push(Number(min));
   }
 
   if (max) {
-    query += " AND price <= ?";
+    query += `
+      AND p.price <= ?
+    `;
+
     queryParams.push(Number(max));
   }
 
   if (stock === "1") {
-    query += " AND stock > 0";
+    query += `
+      AND p.stock > 0
+    `;
   }
 
   if (search) {
-    query += " AND product_data LIKE ?";
+    query += `
+      AND p.name LIKE ?
+    `;
+
     queryParams.push(`%${search}%`);
   }
 
+  query += `
+    GROUP BY
+      p.id,
+      c.name,
+      sc.name,
+      sp.shop_name,
+      sp.company_name,
+      sp.logo,
+      sp.slug,
+      sp.created_at,
+      sp.is_verified
+
+    ORDER BY p.created_at DESC
+  `;
+
   const [rows]: any = await connection.query(query, queryParams);
 
-  return rows.map((product: any) => {
-    const mapped = mapMainCategory(product.category_name);
-    return {
-      ...product,
-      main_category: mapped?.main,
-      sub_category: mapped?.sub,
-    };
-  });
+  return rows.map((product: any) => ({
+    ...product,
+    images:
+      typeof product.images === "string"
+        ? JSON.parse(product.images)
+        : product.images,
+  }));
 };
 
 export const getCurrtentProdcut = async (id: string) => {
-  const [rows] = await connection.query("SELECT * FROM products WHERE id = ?", [
-    id,
-  ]);
-  const row = (rows as any[])[0];
-  if (!row) {
-    return null;
-  }
-  return row;
+  const [rows] = await connection.query(
+    `
+    SELECT
+      p.*,
+
+      c.name AS category_name,
+      sc.name AS subcategory_name,
+
+      sp.shop_name,
+      sp.company_name,
+      sp.logo,
+      sp.slug,
+      sp.created_at AS seller_created_at,
+      sp.is_verified,
+      sp.description,
+sp.banner,
+
+      COALESCE(
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'image', pi.image_url
+          )
+        ),
+        JSON_ARRAY()
+      ) AS images
+
+    FROM products p
+
+    LEFT JOIN categories c
+      ON c.id = p.category_id
+
+    LEFT JOIN subcategories sc
+      ON sc.id = p.subcategory_id
+
+    LEFT JOIN product_images pi
+      ON pi.product_id = p.id
+
+    LEFT JOIN seller_profiles sp
+      ON sp.user_id = p.seller_id
+
+    WHERE p.id = ?
+
+    GROUP BY
+      p.id,
+      c.name,
+      sc.name,
+      sp.shop_name,
+      sp.company_name,
+      sp.logo,
+      sp.slug,
+      sp.created_at,
+      sp.is_verified
+    `,
+    [id],
+  );
+
+  return (rows as any[])[0] ?? null;
 };
 
 export const getCurrtentProdcutByID = async (id: string) => {

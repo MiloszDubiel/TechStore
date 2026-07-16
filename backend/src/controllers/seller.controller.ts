@@ -122,10 +122,6 @@ export const addProduct = async (req: Request, res: Response) => {
 
     const product = await createProduct(sellerId, req.body);
 
-    if (req.files) {
-      await saveProductImages(product.id, req.files as Express.Multer.File[]);
-    }
-
     res.status(201).json(product);
   } catch (error) {
     console.log(error);
@@ -161,6 +157,31 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const uploadProductImagesController = async (req: any, res: any) => {
+  try {
+    const productId = Number(req.params.id);
+
+    const files = req.files;
+
+    console.log(files);
+
+    if (!files || files.length === 0) {
+      return res.status(400).json({
+        message: "Brak zdjęć",
+      });
+    }
+
+    await saveProductImages(productId, files);
+
+    res.json({
+      message: "Zdjęcia dodane",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Błąd serwera",
+    });
+  }
+};
 export const editSeller = async (req: any, res: any) => {
   try {
     const userId = req.user.id;
@@ -171,10 +192,6 @@ export const editSeller = async (req: any, res: any) => {
 
     const newLogo = req.file ? req.file.filename : oldLogo;
 
-
-    
-    
-    
     await editSellerProfile({
       userId,
       shop_name: req.body.shop_name,

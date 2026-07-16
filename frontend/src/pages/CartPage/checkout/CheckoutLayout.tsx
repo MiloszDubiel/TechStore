@@ -8,7 +8,7 @@ import DeliveryStep from "./DeliveryStep";
 import PaymentStep from "./PaymentStep";
 import SummaryStep from "./SummaryStep";
 import { useCheckout } from "../../../context/CheckoutContext";
-import Navbar from "../../../components/layout/Navbar";
+import Navbar from "../../../components/layout/Navbar/Navbar";
 import OrderSuccess from "./OrderSuccess";
 
 export default function CheckoutLayout() {
@@ -100,14 +100,7 @@ export default function CheckoutLayout() {
         <CheckoutSteps steps={steps} current={step} />
 
         <div className=" lg:grid-cols-3 grid grid-cols-1 gap-8 mt-10">
-          <div
-            className="
-          lg:col-span-2
-          bg-white
-          p-6
-          shadow
-          "
-          >
+          <div className=" lg:col-span-2 p-6 bg-white shadow">
             {renderStep()}
           </div>
 

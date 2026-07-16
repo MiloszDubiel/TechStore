@@ -231,7 +231,7 @@ export const saveProductImages = async (
 
     VALUES (?,?)
     `,
-      [productId, `/uploads/products/${productId}/${file.filename}`],
+      [productId, file.filename],
     );
   }
 };

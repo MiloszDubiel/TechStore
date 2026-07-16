@@ -38,6 +38,14 @@ export const getCategories = async () => {
   return data;
 };
 
+export const uploadImage = async (productId: string, formData: FormData) => {
+  axios.post(`${API}/products/${productId}/images`, formData, {
+    headers: {
+      Authorization: `Bearer ${token()}`,
+    },
+  });
+};
+
 export const getCompanyInfo = async () => {
   const { data } = await axios.get(`${API}/get-my-profile`, {
     headers: {

@@ -39,12 +39,18 @@ export const uploadSellerLogo = multer({
     }
   },
 });
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const productId: unknown = req.params.id;
 
-    if (typeof productId !== "string") return;
-    const folder = path.join("uploads", "products", productId);
+const storage = multer.diskStorage({
+  destination: (req: any, file, cb) => {
+    const sellerId = req.user.id;
+    const productId = req.params.id;
+
+    const folder = path.join(
+      "uploads",
+      "products",
+      String(sellerId),
+      String(productId),
+    );
 
     fs.mkdirSync(folder, {
       recursive: true,
@@ -56,10 +62,11 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
 
-    cb(null, `${Date.now()}${ext}`);
+    const filename = `${Date.now()}-${Math.round(Math.random() * 999999)}${ext}`;
+
+    cb(null, filename);
   },
 });
-
 export const uploadProductImages = multer({
   storage,
 

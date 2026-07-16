@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import Navbar from "../../components/layout/Navbar";
+import Navbar from "../../components/layout/Navbar/Navbar";
 import { Link } from "react-router-dom";
 import { useCartStore } from "../../zustand/states/cartState";
 
@@ -31,25 +31,25 @@ const HomePage = () => {
   return (
     <>
       <Navbar />
-      <section className="bg-orange-500 text-white py-16 text-center">
-        <h1 className="text-4xl font-bold mb-4">Aktualne Oferty</h1>
+      <section className="py-16 text-center text-white bg-orange-500">
+        <h1 className="mb-4 text-4xl font-bold">Aktualne Oferty</h1>
         <p className="text-lg">Najlepsze promocje w My IT Store</p>
       </section>
 
-      <main className="flex-1 container mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <main className="container flex-1 px-6 py-12 mx-auto">
+        <div className="sm:grid-cols-2 lg:grid-cols-4 grid grid-cols-1 gap-8">
           {isLoading &&
             [...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="bg-white  shadow-md overflow-hidden flex flex-col h-95 animate-pulse"
+                className="h-95 animate-pulse flex flex-col overflow-hidden bg-white shadow-md"
               >
-                <div className="bg-gray-300 h-48 w-full object-cover" />
-                <div className="p-4 flex flex-col flex-1">
-                  <div className="h-5 bg-gray-300 rounded w-3/4 mb-2"></div>
-                  <div className="h-5 bg-gray-300 rounded w-1/2 mb-2"></div>
-                  <div className="h-5 bg-gray-300 rounded w-1/3 mb-2 mt-auto"></div>
-                  <div className="h-10 bg-gray-300 rounded mt-2"></div>
+                <div className="object-cover w-full h-48 bg-gray-300" />
+                <div className="flex flex-col flex-1 p-4">
+                  <div className="w-3/4 h-5 mb-2 bg-gray-300 rounded"></div>
+                  <div className="w-1/2 h-5 mb-2 bg-gray-300 rounded"></div>
+                  <div className="w-1/3 h-5 mt-auto mb-2 bg-gray-300 rounded"></div>
+                  <div className="h-10 mt-2 bg-gray-300 rounded"></div>
                 </div>
               </div>
             ))}
@@ -58,25 +58,30 @@ const HomePage = () => {
             products.map((product: any) => (
               <Link
                 key={product.id}
-                to={`/offers/${createSlug(product.product_data.name)}/${product.id}`}
+                to={`/offers/${createSlug(product.name)}/${product.id}`}
               >
-                <div className="bg-white  shadow-md overflow-hidden hover:shadow-xl transition flex flex-col h-95">
+                <div className="hover:shadow-xl h-95 flex flex-col overflow-hidden transition bg-white shadow-md">
                   <div className="relative flex justify-center">
                     <img
                       src={
-                        product.product_data.images[0]?.url || "/no-image.png"
+                        product.images?.[0]
+                          ? `${import.meta.env.VITE_API_URL}uploads/products/${
+                              product.seller_id
+                            }/${product.id}/${product.images[0].image}`
+                          : "/no-image.png"
                       }
-                      alt={product.product_data.name}
-                      className="h-48 object-cover"
+                      alt={product.name}
+                      className="object-cover h-48"
                     />
-                    <span className="absolute top-3 left-3 bg-orange-500 text-white text-xs px-3 py-1 rounded-full">
+
+                    <span className="top-3 left-3 absolute px-3 py-1 text-xs text-white bg-orange-500 rounded-full">
                       PROMOCJA
                     </span>
                   </div>
 
-                  <div className="p-4 flex flex-col flex-1">
-                    <h3 className="font-semibold text-lg mb-2 line-clamp-2 min-h-14 hover:underline hover:text-orange-600">
-                      {product.product_data.name}
+                  <div className="flex flex-col flex-1 p-4">
+                    <h3 className="line-clamp-2 min-h-14 hover:underline hover:text-orange-600 mb-2 text-lg font-semibold">
+                      {product.name}
                     </h3>
 
                     <div className="mb-2">
@@ -85,12 +90,12 @@ const HomePage = () => {
                       </span>
                     </div>
 
-                    <div className="text-gray-500 text-sm mb-2">
+                    <div className="mb-2 text-sm text-gray-500">
                       {product.stock} szt. dostępnych
                     </div>
 
                     <button
-                      className="mt-auto w-full bg-orange-500 text-white py-2  hover:bg-orange-600 transition cursor-pointer"
+                      className=" hover:bg-orange-600 w-full py-2 mt-auto text-white transition bg-orange-500 cursor-pointer"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -108,5 +113,4 @@ const HomePage = () => {
     </>
   );
 };
-
 export default HomePage;

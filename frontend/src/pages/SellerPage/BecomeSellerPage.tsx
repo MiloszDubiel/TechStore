@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../components/layout/Navbar";
+import Navbar from "../../components/layout/Navbar/Navbar";
 import SellerProfileForm from "../../components/ui/SellerForm";
 import { useSeller } from "../../hooks/useSeller";
 import { useQueryClient } from "@tanstack/react-query";
-
 
 const BecomeSellerForm = () => {
   const queryClient = useQueryClient();
@@ -36,7 +35,7 @@ const BecomeSellerForm = () => {
     createProfile.mutate(formData, {
       onSuccess: () => {
         queryClient.invalidateQueries({
-          queryKey: ["seller"],
+          queryKey: ["company-info"],
         });
 
         navigate("/seller/dashboard");
