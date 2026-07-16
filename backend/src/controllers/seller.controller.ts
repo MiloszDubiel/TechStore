@@ -8,7 +8,10 @@ import {
   createProduct,
   saveProductImages,
   deleteProductFromDB,
+  editSellerProfile,
 } from "../services/seller.services";
+import path from "node:path";
+import fs from "fs";
 
 export const createProfile = async (req: Request, res: Response) => {
   try {
@@ -80,7 +83,6 @@ export const getProfile = async (req: Request, res: Response) => {
   try {
     const profile = await getSellerByUserId(userId);
 
-    console.log(profile);
     res.status(200).json({
       profile,
       success: true,
@@ -155,6 +157,51 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
     return res.status(500).json({
       message: "Nie udało się usunąć produktu.",
+    });
+  }
+};
+
+export const editSeller = async (req: any, res: any) => {
+  try {
+    const userId = req.user.id;
+
+    const seller = await getSellerByUserId(userId);
+
+    const oldLogo = seller!.logo;
+
+    const newLogo = req.file ? req.file.filename : oldLogo;
+
+
+    
+    
+    
+    await editSellerProfile({
+      userId,
+      shop_name: req.body.shop_name,
+      slug: req.body.slug,
+      description: req.body.description,
+      logo: newLogo,
+      nip: req.body.nip,
+      city: req.body.city,
+      postal_code: req.body.postal_code,
+      street: req.body.street,
+      company_name: req.body.company_name,
+    });
+
+    if (req.file && oldLogo && oldLogo !== newLogo) {
+      const oldPath = path.join(process.cwd(), "uploads", "sellers", oldLogo);
+
+      await fs.promises.unlink(oldPath).catch(() => {
+        console.log("Stare logo nie istnieje");
+      });
+    }
+
+    res.json({
+      message: "Profil zaktualizowany",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Błąd aktualizacji",
     });
   }
 };

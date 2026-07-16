@@ -1,5 +1,6 @@
 import { connection } from "../config/db.config";
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import slugify from "slugify";
 
 export interface CreateProductDTO {
   name: string;
@@ -249,4 +250,61 @@ export const deleteProductFromDB = async (
   );
 
   return result;
+};
+
+export const editSellerProfile = async (data: {
+  userId: number;
+  shop_name: string;
+  slug: string;
+  description: string;
+  logo: string | null;
+  nip: string | null;
+  city?: string;
+  postal_code?: string;
+  street?: string;
+  company_name: string;
+}) => {
+  try {
+    const slug = slugify(
+      data.shop_name + " " + data.company_name + " " + data.userId,
+      {
+        lower: true,
+        strict: true,
+        trim: true,
+      },
+    );
+
+    const [result] = await connection.query(
+      `
+    UPDATE seller_profiles
+    SET
+      shop_name = ?,
+      slug = ?,
+      description = ?,
+      logo = ?,
+      nip = ?,
+      city = ?,
+      postal_code = ?,
+      street = ?,
+      company_name = ?
+    WHERE user_id = ?
+    `,
+      [
+        data.shop_name,
+        slug,
+        data.description,
+        data.logo,
+        data.nip,
+        data.city,
+        data.postal_code,
+        data.street,
+        data.company_name,
+        data.userId,
+      ],
+    );
+
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
 };

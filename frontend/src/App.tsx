@@ -28,9 +28,9 @@ import SellerDashboard from "./pages/SellerDashboardPage/SellerDashboard";
 import LoadingScreen from "./components/LoadingScreen";
 
 const AppContent = () => {
-  const { isPending } = useAuth();
+  const { isPending, user } = useAuth();
 
-  if (isPending) {
+  if (user && isPending) {
     return <LoadingScreen />;
   }
 

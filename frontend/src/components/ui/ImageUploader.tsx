@@ -5,33 +5,34 @@ import { useEffect, useState } from "react";
 type Props = {
   value?: File[];
   images?: string[];
+
   onChange: (files: File[]) => void;
 
   onRemoveExisting?: (image: string) => void;
 
   multiple?: boolean;
   maxFiles?: number;
-  isEdit?: boolean;
 };
 
 const ImageUploader = ({
   value = [],
   images = [],
   onChange,
+  onRemoveExisting,
   multiple = true,
   maxFiles = 5,
 }: Props) => {
   const [preview, setPreview] = useState<string[]>([]);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
-
   useEffect(() => {
     const urls = value
-      .filter((file) => file instanceof File)
+      .filter((file): file is File => file instanceof File)
       .map((file) => URL.createObjectURL(file));
 
-    const activeImages = images.filter(
-      (image) => !removedImages.includes(image)
-    );
+    const activeImages =
+      value.length > 0
+        ? []
+        : images.filter((image) => !removedImages.includes(image));
 
     setPreview([...activeImages, ...urls]);
 
@@ -39,9 +40,13 @@ const ImageUploader = ({
       urls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [
-    value.map((file) => file.name).join(","),
-    images.join(","),
-    removedImages.join(","),
+    value
+      .map((file) => `${file.name}-${file.size}-${file.lastModified}`)
+      .join("|"),
+
+    images.join("|"),
+
+    removedImages.join("|"),
   ]);
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -49,6 +54,9 @@ const ImageUploader = ({
 
     if (!multiple) {
       files = acceptedFiles.slice(0, 1);
+
+      onChange(files);
+      return;
     }
 
     const merged = [...value, ...files].slice(0, maxFiles);
@@ -58,25 +66,32 @@ const ImageUploader = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+
     multiple,
+
     maxFiles,
-    maxSize: 2 * 1024 * 1024,
+
+    maxSize: 5 * 1024 * 1024,
 
     accept: {
-      "image/*": [".png", ".jpg", ".jpeg", ".webp"],
+      "image/*": [".png", ".jpeg", ".webp"],
     },
   });
 
   const removeImage = (index: number) => {
-    if (index < images.length) {
-      const removed = images[index];
+    const activeImages = images.filter(
+      (image) => !removedImages.includes(image)
+    );
+    if (index < activeImages.length) {
+      const removed = activeImages[index];
 
       setRemovedImages((prev) => [...prev, removed]);
 
+      onRemoveExisting?.(removed);
+
       return;
     }
-
-    const fileIndex = index - images.length;
+    const fileIndex = index - activeImages.length;
 
     onChange(value.filter((_, i) => i !== fileIndex));
   };
@@ -86,10 +101,10 @@ const ImageUploader = ({
       <div
         {...getRootProps()}
         className={`
-          p-10 
-          text-center 
-          border-2 
-          border-dashed 
+          p-10
+          text-center
+          border-2
+          border-dashed
           cursor-pointer
           border-gray-300
 
@@ -122,7 +137,7 @@ const ImageUploader = ({
                 onClick={() => removeImage(index)}
                 className=" top-2 right-2 absolute p-1 text-white bg-red-500"
               >
-                <X size={16} />
+                <X size={16} className="cursor-pointer" />
               </button>
             </div>
           ))}

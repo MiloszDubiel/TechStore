@@ -6,6 +6,7 @@ import {
   getProducts,
   addProduct,
   deleteProduct,
+  editSeller,
 } from "../controllers/seller.controller";
 import { uploadSellerLogo, uploadProductImages } from "../multer";
 
@@ -28,5 +29,11 @@ router.post(
   addProduct,
 );
 router.get("/get-my-profile/", verifyToken, getProfile);
+router.patch(
+  "/edit-profile",
+  verifyToken,
+  uploadSellerLogo.single("logo"),
+  editSeller,
+);
 
 export default router;

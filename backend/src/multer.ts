@@ -2,26 +2,31 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 
-const storage1 = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/sellers");
+const storageSellerLogo = multer.diskStorage({
+  destination: (req: any, file, cb) => {
+    const userId = req.user.id;
+
+    const uploadPath = path.join("uploads", "sellers", String(userId));
+
+    fs.mkdirSync(uploadPath, {
+      recursive: true,
+    });
+
+    cb(null, uploadPath);
   },
 
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
 
-    const filename =
-      Date.now() + "-" + Math.round(Math.random() * 100000) + ext;
-
-    cb(null, filename);
+    cb(null, `logo${ext}`);
   },
 });
 
 export const uploadSellerLogo = multer({
-  storage: storage1,
+  storage: storageSellerLogo,
 
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 5 * 1024 * 1024, // 5MB
   },
 
   fileFilter: (req, file, cb) => {
@@ -34,7 +39,6 @@ export const uploadSellerLogo = multer({
     }
   },
 });
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const productId: unknown = req.params.id;

@@ -98,7 +98,7 @@ export const deleteProduct = async (id: number) => {
 };
 
 export const editProfile = async (data: FormData) => {
-  const response = await axios.patch("/seller/edit-profile", data, {
+  const response = await axios.patch(`${API}/edit-profile`, data, {
     headers: {
       Authorization: `Bearer ${token()}`,
       "Content-Type": "multipart/form-data",

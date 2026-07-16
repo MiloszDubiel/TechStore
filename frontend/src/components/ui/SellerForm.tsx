@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploader from "../ui/ImageUploader";
 import {
@@ -27,8 +27,6 @@ const SellerProfileForm = ({
     getCompanyInfo: { data },
   } = useSeller();
 
-  console.log(defaultValues);
-
   const {
     register,
     handleSubmit,
@@ -54,6 +52,8 @@ const SellerProfileForm = ({
     }
   }, [data]);
   const isEdit = mode === "edit";
+  const [values, setValues] = useState<File[]>([]);
+  const [removedLogo, setRemovedLogo] = useState<string | null>(null);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -106,16 +106,23 @@ const SellerProfileForm = ({
                 data?.logo
                   ? [
                       `${import.meta.env.VITE_API_URL}uploads/sellers/${
-                        data?.logo
-                      }`,
+                        data.user_id
+                      }/${data.logo}`,
                     ]
                   : []
               }
-              value={[]}
+              value={values}
               onChange={(files) => {
-                setValue("logo", files[0]);
+                setValues(files);
+
+                setValue("logo", files[0] ?? undefined, {
+                  shouldValidate: true,
+                });
               }}
-              isEdit={true}
+              onRemoveExisting={(image) => {
+                setRemovedLogo(image);
+              }}
+              multiple={false}
             />
 
             {errors.logo && (
