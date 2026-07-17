@@ -29,6 +29,7 @@ import SellerDashboard from "./pages/SellerPage/SellerDashboardPage/SellerDashbo
 import SellerPage from "./pages/SellerPage/SellerPage";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import NotificationCard from "./components/ui/NotificationCard";
 
 const AppContent = () => {
   return (
@@ -87,20 +88,24 @@ const AppContent = () => {
             <Route
               path="/seller/create"
               element={
-                <CheckIsLoggedIn>
-                  <BecomeSellerPage />
-                </CheckIsLoggedIn>
+                <ProtectedRoute allowedRoles={["USER"]}>
+                  <CheckIsLoggedIn>
+                    <BecomeSellerPage />
+                  </CheckIsLoggedIn>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path="/seller/dashboard"
               element={
-                <CheckIsLoggedIn>
-                  <CheckIsSeller>
-                    <SellerDashboard />
-                  </CheckIsSeller>
-                </CheckIsLoggedIn>
+                <ProtectedRoute allowedRoles={["SELLER"]}>
+                  <CheckIsLoggedIn>
+                    <CheckIsSeller>
+                      <SellerDashboard />
+                    </CheckIsSeller>
+                  </CheckIsLoggedIn>
+                </ProtectedRoute>
               }
             />
 
@@ -118,6 +123,7 @@ const AppContent = () => {
         </div>
 
         <Footer />
+        <NotificationCard />
       </div>
     </BrowserRouter>
   );

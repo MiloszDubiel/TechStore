@@ -1,15 +1,47 @@
 import { useSearchParams } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Users as UsersIcon,
+  Package,
+  Store,
+  ShoppingCart,
+  Shield,
+} from "lucide-react";
 
-// import Overview from "./tabs/Overview";
-import Users from "./tabs/Users";
-// import Sellers from "./tabs/Sellers";
-// import Products from "./tabs/Products";
-// import Orders from "./tabs/Orders";
+import Users from "./tabs/Users/Users";
 
 const AdminDashboard = () => {
   const [params, setParams] = useSearchParams();
 
   const tab = params.get("tab") || "overview";
+
+  const menu = [
+    {
+      id: "overview",
+      name: "Dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      id: "users",
+      name: "Użytkownicy",
+      icon: UsersIcon,
+    },
+    {
+      id: "products",
+      name: "Produkty",
+      icon: Package,
+    },
+    {
+      id: "sellers",
+      name: "Sprzedawcy",
+      icon: Store,
+    },
+    {
+      id: "orders",
+      name: "Zamówienia",
+      icon: ShoppingCart,
+    },
+  ];
 
   const render = () => {
     switch (tab) {
@@ -17,42 +49,85 @@ const AdminDashboard = () => {
         return <Users />;
 
       case "products":
-        return 
+        return <div>Produkty</div>;
 
       case "sellers":
-        return 
+        return <div>Sprzedawcy</div>;
 
       case "orders":
-        return 
+        return <div>Zamówienia</div>;
 
       default:
-        return 
+        return <div>Dashboard</div>;
     }
   };
 
   return (
-    <div className="flex">
-      <aside className=" w-64 min-h-screen p-5 text-white bg-gray-900">
-        <h2 className="mb-8 text-xl font-bold">Panel Admina</h2>
+    <div className="flex min-h-screen bg-gray-100">
+      <aside className=" w-72 flex flex-col min-h-screen p-6 text-white bg-gray-900">
+        <div className="flex items-center gap-3 mb-10">
+          <div className="p-2 bg-orange-500">
+            <Shield size={22} />
+          </div>
 
-        <button onClick={() => setParams({ tab: "overview" })}>
-          Dashboard
-        </button>
+          <div>
+            <h1 className="text-xl font-bold">Admin Panel</h1>
 
-        <button onClick={() => setParams({ tab: "users" })}>Użytkownicy</button>
+            <p className="text-sm text-gray-400">My IT Store</p>
+          </div>
+        </div>
 
-        <button onClick={() => setParams({ tab: "products" })}>Produkty</button>
+        <nav className="space-y-2">
+          {menu.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setParams({ tab: item.id })}
+                className={`
+            w-full
+            flex
+            items-center
+            gap-3
+            px-4
+            py-3
+            transition
+            cursor-pointer
 
-        <button onClick={() => setParams({ tab: "sellers" })}>
-          Sprzedawcy
-        </button>
+            ${
+              tab === item.id
+                ? "bg-orange-500 text-white"
+                : "text-gray-300 hover:bg-gray-800"
+            }
+          `}
+              >
+                <Icon size={20} />
 
-        <button onClick={() => setParams({ tab: "orders" })}>Zamówienia</button>
+                <span>{item.name}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className=" pt-6 mt-auto text-sm text-gray-400 border-t border-gray-800">
+          Panel administracyjny
+        </div>
       </aside>
 
-      <main className="flex-1 p-8">{render()}</main>
+      <main className=" flex-1 p-8">
+        <div className="mb-8">
+          <h2 className=" text-3xl font-bold text-gray-800">
+            {menu.find((item) => item.id === tab)?.name}
+          </h2>
+
+          <p className="mt-1 text-gray-500">Zarządzaj swoją platformą</p>
+        </div>
+
+        <div className=" p-6 bg-white border border-gray-200 shadow-sm">
+          {render()}
+        </div>
+      </main>
     </div>
   );
 };
-
 export default AdminDashboard;

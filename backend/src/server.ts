@@ -7,6 +7,7 @@ import favoriteRoutes from "./routes/favorite.routes";
 import reviewsRoutes from "./routes/reviews.routes";
 import settingsRoutes from "./routes/settings.routes";
 import sellerRoutes from "./routes/seller.routes";
+import adminRoutes from "./routes/admin.routes";
 import path from "node:path";
 import cors from "cors";
 
@@ -22,6 +23,7 @@ app.use("/api/products", productsRoutes);
 app.use("/api/favorite", favoriteRoutes);
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/seller", sellerRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 

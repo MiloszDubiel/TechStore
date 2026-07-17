@@ -15,7 +15,6 @@ const AccountDropdown = ({
   close,
   seller = [],
 }: Props) => {
-  console.log(seller);
   return (
     <div className=" top-10 absolute right-0 z-50 w-56 bg-white border border-gray-300 shadow-lg">
       {!isAuthenticated ? (
@@ -55,6 +54,12 @@ const AccountDropdown = ({
               className="block px-4 py-2"
             >
               Panel sprzedawcy
+            </Link>
+          )}
+
+          {user?.role === "ADMIN" && (
+            <Link to="/admin" onClick={close} className="block px-4 py-2">
+              Panel Administratora
             </Link>
           )}
 

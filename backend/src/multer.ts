@@ -74,3 +74,4 @@ export const uploadProductImages = multer({
     fileSize: 5 * 1024 * 1024,
   },
 });
+
