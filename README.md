@@ -64,6 +64,33 @@ fullstack-ecommerce/
 └── README.md
 ```
 
+## Hierarchia uprawnień
+
+```text
+USER
+ ├── przegląda produkty
+ ├── kupuje
+ ├── składa zamówienia
+ └── zarządza profilem
+
+
+SELLER
+ ├── wszystko co USER
+ ├── wystawia produkty
+ ├── zarządza sklepem
+ └── obsługuje zamówienia
+
+
+ADMIN
+ ├── wszystko co USER (opcjonalnie)
+ ├── panel administracyjny
+ ├── zarządza użytkownikami
+ ├── zarządza sprzedawcami
+ ├── moderuje produkty
+ └── zarządza całym systemem
+
+```
+
 ---
 
 ## Uruchomienie projektu
