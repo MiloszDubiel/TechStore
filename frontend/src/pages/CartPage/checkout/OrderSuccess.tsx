@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
-  orderId: string | null;
+  order_number: string | null;
 };
 
-const OrderSuccess = ({ orderId }: Props) => {
+const OrderSuccess = ({ order_number }: Props) => {
   const clearCart = useCartStore((state) => state.clearCart);
   const querClient = useQueryClient();
   useEffect(() => {
@@ -33,7 +33,7 @@ const OrderSuccess = ({ orderId }: Props) => {
       <div className="bg-gray-50 p-4 mb-6 border border-gray-200 rounded-lg">
         <p className="mb-1 text-sm text-gray-500">Numer zamówienia</p>
 
-        <p className="text-xl font-bold text-orange-500">#{orderId}</p>
+        <p className="text-xl font-bold text-orange-500">#{order_number}</p>
       </div>
 
       <p className="mb-6 text-sm text-gray-500">

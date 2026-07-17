@@ -252,6 +252,10 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
 
     const { customer, address, delivery, payment, products } = data;
 
+  
+
+    const deliveryMethod = delivery.method.toUpperCase();
+
     let totalPrice = 0;
 
     const productsData: any[] = [];
@@ -259,153 +263,157 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
     for (const item of products) {
       const [rows]: any = await conn.query(
         `
-SELECT
-id,
-model,
-price,
-stock,
-product_data
-
-FROM products
-
-WHERE id=?
-
-FOR UPDATE
-`,
-
+        SELECT
+          id,
+          name,
+          model,
+          price,
+          stock,
+          product_data
+        FROM products
+        WHERE id = ?
+        FOR UPDATE
+        `,
         [item.id],
       );
 
-      if (!rows.length) throw new Error("PRODUCT_NOT_FOUND");
+      if (!rows.length) {
+        throw new Error("PRODUCT_NOT_FOUND");
+      }
 
       const product = rows[0];
 
-      if (product.stock < item.quantity) throw new Error("OUT_OF_STOCK");
+      if (product.stock < item.quantity) {
+        throw new Error("OUT_OF_STOCK");
+      }
 
-      totalPrice += product.price * item.quantity;
+      totalPrice += Number(product.price) * item.quantity;
 
       productsData.push({
         id: product.id,
-
-        name: product.model,
-
+        name: product.name,
         price: product.price,
-
         image: product.product_data?.image ?? null,
-
         quantity: item.quantity,
       });
     }
 
-    // adres
+    let addressId = null;
 
-    const [addressResult]: any = await conn.query(
-      `
-INSERT INTO order_addresses
-(
-user_id,
-first_name,
-last_name,
-street,
-postal_code,
-city,
-country,
-phone
-)
+    console.log(deliveryMethod);
 
-VALUES(?,?,?,?,?,?,?,?)
+    if (deliveryMethod === "COURIER") {
+      if (!address) {
+        throw new Error("ADDRESS_REQUIRED");
+      }
 
-`,
+      const [addressResult]: any = await conn.query(
+        `
+        INSERT INTO order_addresses
+        (
+          user_id,
+          first_name,
+          last_name,
+          street,
+          postal_code,
+          city,
+          country,
+          phone
+        )
 
-      [
-        userId,
+        VALUES(?,?,?,?,?,?,?,?)
+        `,
+        [
+          userId,
 
-        customer.name,
+          customer.name,
 
-        customer.last_name,
+          customer.last_name,
 
-        address.street,
+          address.street,
 
-        address.postal_code,
+          address.postal_code,
 
-        address.city,
+          address.city,
 
-        address.country ?? "Polska",
+          address.country ?? "Polska",
 
-        customer.phone,
-      ],
-    );
+          customer.phone,
+        ],
+      );
 
-    const addressId = addressResult.insertId;
+      addressId = addressResult.insertId;
+    }
 
-    // order
+    // =========================
+    // TWORZENIE ZAMÓWIENIA
+    // =========================
 
     const orderNumber = await generateOrderNumber();
 
     const [orderResult]: any = await conn.query(
       `
-INSERT INTO orders
-(
-user_id,
-address_id,
-delivery_method,
-delivery_price,
-payment_method,
-locker_id,
-locker_name,
-locker_address,
-total_price,
-order_number,
-status
-)
+      INSERT INTO orders
+      (
+        user_id,
+        address_id,
+        delivery_method,
+        delivery_price,
+        payment_method,
+        locker_id,
+        locker_name,
+        locker_address,
+        total_price,
+        order_number,
+        status
+      )
 
-VALUES(?,?,?,?,?,?,?,?,?,?,'PENDING')
-
-`,
-
+      VALUES(?,?,?,?,?,?,?,?,?,?,'PENDING')
+      `,
       [
         userId,
 
         addressId,
 
-        delivery.method,
+        deliveryMethod,
 
         delivery.price,
 
         payment.method,
 
-        delivery.locker?.id ?? null,
+        deliveryMethod === "LOCKER" ? delivery.locker?.id : null,
 
-        delivery.locker?.name ?? null,
+        deliveryMethod === "LOCKER" ? delivery.locker?.name : null,
 
-        delivery.locker?.address ?? null,
+        deliveryMethod === "LOCKER" ? delivery.locker?.address : null,
 
-        totalPrice + delivery.price,
+        totalPrice + Number(delivery.price),
+
         orderNumber,
       ],
     );
 
     const orderId = orderResult.insertId;
 
-    // produkty
+    // =========================
+    // PRODUKTY ZAMÓWIENIA
+    // =========================
 
     for (const product of productsData) {
       await conn.query(
         `
-INSERT INTO order_items
-(
-order_id,
-product_id,
-product_name,
-quantity,
-price,
-image
-)
+        INSERT INTO order_items
+        (
+          order_id,
+          product_id,
+          product_name,
+          quantity,
+          price,
+          image
+        )
 
-VALUES(?,?,?,?,?,?)
-
-`,
-
+        VALUES(?,?,?,?,?,?)
+        `,
         [
           orderId,
 
@@ -421,17 +429,27 @@ VALUES(?,?,?,?,?,?)
         ],
       );
 
+      // zmniejszenie magazynu
+
       await conn.query(
         `
-UPDATE products
-
-SET stock = stock - ?
-
-WHERE id=?
-
-`,
-
+        UPDATE products
+        SET stock = stock - ?
+        WHERE id = ?
+        `,
         [product.quantity, product.id],
+      );
+
+      // automatyczne ukrycie produktu po braku magazynu
+
+      await conn.query(
+        `
+        UPDATE products
+        SET is_visible = 0
+        WHERE id = ?
+        AND stock <= 0
+        `,
+        [product.id],
       );
     }
 
@@ -440,6 +458,7 @@ WHERE id=?
     return {
       success: true,
       orderId,
+      orderNumber,
     };
   } catch (err) {
     await conn.rollback();

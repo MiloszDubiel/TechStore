@@ -10,18 +10,25 @@ interface CartStore {
   toggleShowCart: boolean;
 
   addToCart: (product: Product) => void;
-  removeFromCart: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  removeFromCart: (id: number) => void;
+  updateQuantity: (id: number, quantity: number) => void;
   clearCart: () => void;
+
   setToggleShowCart: (show: boolean) => void;
+
+  removeSellerProducts: (sellerId: number) => void;
 }
 
 const getStoredCart = (): CartItem[] => {
-  const cart = localStorage.getItem("cart");
+  try {
+    const cart = localStorage.getItem("cart");
 
-  if (!cart) return [];
+    if (!cart) return [];
 
-  return JSON.parse(cart);
+    return JSON.parse(cart);
+  } catch {
+    return [];
+  }
 };
 
 const saveCart = (cart: CartItem[]) => {
@@ -46,11 +53,12 @@ export const useCartStore = create<CartStore>((set) => ({
                 ...item,
                 quantity: item.quantity + 1,
               }
-            : item,
+            : item
         );
       } else {
         updatedCart = [
           ...state.cart,
+
           {
             ...product,
             quantity: 1,
@@ -110,5 +118,18 @@ export const useCartStore = create<CartStore>((set) => ({
   setToggleShowCart: (show) =>
     set({
       toggleShowCart: show,
+    }),
+
+  removeSellerProducts: (sellerId) =>
+    set((state) => {
+      const updatedCart = state.cart.filter(
+        (product) => product.seller_id !== sellerId
+      );
+
+      saveCart(updatedCart);
+
+      return {
+        cart: updatedCart,
+      };
     }),
 }));

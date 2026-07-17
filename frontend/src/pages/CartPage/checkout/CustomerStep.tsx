@@ -78,14 +78,14 @@ export default function CustomerStep({ next }: Props) {
           </p>
 
           <button
-            className=" px-5 py-3 mr-3 text-white bg-orange-500"
-            onClick={() => navigate("/login")}
+            className=" px-5 py-3 mr-3 text-white bg-orange-500 cursor-pointer"
+            onClick={() => navigate("/login?cart=1")}
           >
             Zaloguj się
           </button>
 
           <button
-            className=" px-5 py-3 border"
+            className=" px-5 py-3 border border-gray-300 cursor-pointer"
             onClick={() => setGuestCheckout(true)}
           >
             Kontynuuj jako gość
@@ -99,7 +99,7 @@ export default function CustomerStep({ next }: Props) {
           checkoutData?.customer?.last_name &&
           checkoutData?.customer?.email ? (
             <div className=" bg-gray-50 p-5 border border-gray-200">
-              <h2 className="font-semibold mb-3">Dane do zamówienia</h2>
+              <h2 className="mb-3 font-semibold">Dane do zamówienia</h2>
 
               <p>
                 {checkoutData?.customer?.name}{" "}
@@ -111,7 +111,7 @@ export default function CustomerStep({ next }: Props) {
             </div>
           ) : (
             <div className=" bg-gray-50 p-5 border border-gray-200">
-              <h2 className="font-semibold mb-3">Dane do zamówienia</h2>
+              <h2 className="mb-3 font-semibold">Dane do zamówienia</h2>
 
               <p>
                 {currentUser?.name} {currentUser?.last_name}
@@ -158,7 +158,7 @@ export default function CustomerStep({ next }: Props) {
             />
 
             {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name.message}</p>
+              <p className="text-sm text-red-500">{errors.name.message}</p>
             )}
           </div>
 
@@ -170,7 +170,7 @@ export default function CustomerStep({ next }: Props) {
               className=" w-full p-3 border border-gray-200"
             />
             {errors.last_name && (
-              <p className="text-red-500 text-sm">{errors.last_name.message}</p>
+              <p className="text-sm text-red-500">{errors.last_name.message}</p>
             )}
           </div>
 
@@ -182,7 +182,7 @@ export default function CustomerStep({ next }: Props) {
               className=" w-full p-3 border border-gray-200"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
+              <p className="text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
 
@@ -195,7 +195,7 @@ export default function CustomerStep({ next }: Props) {
               maxLength={9}
             />
             {errors.phone && (
-              <p className="text-red-500 text-sm">{errors.phone.message}</p>
+              <p className="text-sm text-red-500">{errors.phone.message}</p>
             )}
           </div>
 

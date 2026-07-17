@@ -15,7 +15,7 @@ export default function CheckoutLayout() {
   const { checkoutData } = useCheckout();
 
   const [step, setStep] = useState(0);
-  const [orderId, setOrderId] = useState<string | null>(null);
+  const [order_number, setOrderNumber] = useState<string | null>(null);
 
   const steps =
     checkoutData.delivery?.method === "locker"
@@ -47,14 +47,14 @@ export default function CheckoutLayout() {
             <SummaryStep
               back={back}
               onSuccess={(id: string) => {
-                setOrderId(id);
+                setOrderNumber(id);
                 next();
               }}
             />
           );
 
         case 4:
-          return <OrderSuccess orderId={orderId} />;
+          return <OrderSuccess order_number={order_number} />;
 
         default:
           return null;
@@ -79,14 +79,14 @@ export default function CheckoutLayout() {
           <SummaryStep
             back={back}
             onSuccess={(id: string) => {
-              setOrderId(id);
+              setOrderNumber(id);
               next();
             }}
           />
         );
 
       case 5:
-        return <OrderSuccess orderId={orderId} />;
+        return <OrderSuccess order_number={order_number} />;
 
       default:
         return null;

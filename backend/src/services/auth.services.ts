@@ -118,6 +118,7 @@ export const loginUser = async (email: string, password: string) => {
   return {
     accessToken,
     refreshToken,
+    id: user.id,
   };
 };
 

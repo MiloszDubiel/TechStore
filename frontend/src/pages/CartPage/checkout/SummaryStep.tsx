@@ -24,7 +24,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
 
   const productsPrice = cartItems.reduce(
     (sum: number, item: any) => sum + item.price * item.quantity,
-    0,
+    0
   );
 
   const deliveryPrice = checkoutData.delivery?.price ?? 0;
@@ -35,6 +35,8 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     if (orderCompleted) {
       return;
     }
+
+    console.log(checkoutData);
 
     mutate({
       ...checkoutData,
@@ -65,17 +67,17 @@ const SummaryStep = ({ back, onSuccess }: any) => {
 
     onError: (error: any) => {
       console.log(
-        error.response?.data?.message ?? "Nie udało się utworzyć zamówienia",
+        error.response?.data?.message ?? "Nie udało się utworzyć zamówienia"
       );
     },
   });
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Podsumowanie zamówienia</h2>
+      <h2 className="mb-6 text-2xl font-bold">Podsumowanie zamówienia</h2>
       {isSuccess && <NotificationCard message={"Zamówienie złożone"} />}
       <section className="mb-5">
-        <h3 className="font-semibold text-lg mb-2">Dane klienta</h3>
+        <h3 className="mb-2 text-lg font-semibold">Dane klienta</h3>
 
         <p>
           {checkoutData.customer?.name} {checkoutData.customer?.last_name}
@@ -86,7 +88,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
 
       {checkoutData.delivery?.method === "courier" && (
         <section className="mb-5">
-          <h3 className="font-semibold text-lg mb-2">Adres zamieszkania</h3>
+          <h3 className="mb-2 text-lg font-semibold">Adres zamieszkania</h3>
 
           <p>{checkoutData.address?.street}</p>
 
@@ -97,7 +99,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       )}
 
       <section className="mb-5">
-        <h3 className="font-semibold text-lg mb-2">Dostawa</h3>
+        <h3 className="mb-2 text-lg font-semibold">Dostawa</h3>
 
         {checkoutData.delivery?.method === "courier" && (
           <p>
@@ -120,7 +122,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       </section>
 
       <section className="mb-5">
-        <h3 className="font-semibold text-lg mb-2">Płatność</h3>
+        <h3 className="mb-2 text-lg font-semibold">Płatność</h3>
 
         <p>{methods[checkoutData!.payment!.method || "blik"]}</p>
       </section>
@@ -153,16 +155,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
           <button
             onClick={order}
             disabled={isPending}
-            className="
-    bg-orange-500
-    text-white
-    px-6
-    py-3
-    hover:bg-orange-600
-    cursor-pointer
-    disabled:bg-gray-400
-    disabled:cursor-not-allowed
- "
+            className=" hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed px-6 py-3 text-white bg-orange-500 cursor-pointer"
           >
             {isPending ? "Tworzenie zamówienia..." : "Zamawiam"}
           </button>
@@ -171,5 +164,4 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     </div>
   );
 };
-
 export default SummaryStep;

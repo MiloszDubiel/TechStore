@@ -6,22 +6,20 @@ interface LoginResponse {
   rememberMe: boolean | undefined;
   accessToken: string;
   refreshToken: string;
+  id: string;
 }
 
 const loginUser = async (data: LoginFormData): Promise<LoginResponse> => {
-  
-  
   const response = await axios.post("/api/auth/login", {
     email: data.email,
     password: data.password,
   });
 
-
-
   return {
     accessToken: response.data.accessToken,
     refreshToken: response.data.refreshToken,
     rememberMe: data.rememberMe,
+    id: response.data.id,
   };
 };
 
