@@ -2,6 +2,7 @@ import { useCartStore } from "../../../zustand/states/cartState";
 import { useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   orderId: string | null;
@@ -9,13 +10,14 @@ type Props = {
 
 const OrderSuccess = ({ orderId }: Props) => {
   const clearCart = useCartStore((state) => state.clearCart);
-
+  const querClient = useQueryClient();
   useEffect(() => {
     clearCart();
+    querClient.invalidateQueries({ queryKey: ["products"] });
   }, [clearCart]);
 
   return (
-    <div className="flex flex-col items-center justify-center py-16">
+    <div className="flex flex-col items-center justify-center w-full py-16">
       <div className="flex items-center justify-center mb-5">
         <CheckCircle size={72} className="text-green-500" />
       </div>

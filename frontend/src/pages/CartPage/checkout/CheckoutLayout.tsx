@@ -93,19 +93,25 @@ export default function CheckoutLayout() {
     }
   };
 
+  console.log(step);
+
   return (
     <>
       <Navbar />
       <div className="container px-6 py-10 mx-auto">
         <CheckoutSteps steps={steps} current={step} />
 
-        <div className=" lg:grid-cols-3 grid grid-cols-1 gap-8 mt-10">
+        <div
+          className={`lg:grid-cols-${
+            step !== 5 ? 3 : 2
+          } grid grid-cols-1 gap-8 mt-10`}
+        >
           <div className=" lg:col-span-2 p-6 bg-white shadow">
             {renderStep()}
           </div>
 
           <div className="lg:order-last order-first">
-            <OrderSummary />
+            {step !== 5 && <OrderSummary />}
           </div>
         </div>
       </div>

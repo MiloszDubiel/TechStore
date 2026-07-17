@@ -51,9 +51,32 @@ const NavbarActions = ({
       </div>
 
       <div className="relative">
-        <User
+        <button
           onClick={() => setActive(active === "account" ? null : "account")}
-        />
+          className="hover:text-orange-500 flex items-center gap-3"
+        >
+          {isAuthenticated ? (
+            <>
+              <div className="lg:block hidden text-left">
+                <p className="font-medium leading-none">
+                  {user?.name} {user?.last_name}
+                </p>
+
+                <p className="mt-1 text-xs text-gray-500">{user?.email}</p>
+              </div>
+              <div className="flex items-center justify-center w-10 h-10 font-semibold text-white bg-orange-500 rounded-full">
+                {user?.name?.[0]}
+                {user?.last_name?.[0]}
+
+                {!user?.name?.[0] && !user?.last_name?.[0] && (
+                  <User size={22} />
+                )}
+              </div>
+            </>
+          ) : (
+            <User size={22} />
+          )}
+        </button>
 
         {active === "account" && (
           <AccountDropdown

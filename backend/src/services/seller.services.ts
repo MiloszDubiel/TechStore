@@ -120,7 +120,8 @@ export const getSellerProducts = async (sellerId: number) => {
       p.created_at,
       p.brand,
       p.model,
-
+      p.is_deleted,
+      p.is_visible,
 
       c.name AS category,
 
@@ -154,6 +155,7 @@ export const getSellerProducts = async (sellerId: number) => {
 export const createProduct = async (
   sellerId: number,
   data: CreateProductDTO,
+  slug: string,
 ) => {
   const {
     name,
@@ -180,10 +182,14 @@ export const createProduct = async (
       subcategory_id,
       attributes,
       brand,
-      model
+      model,
+      slug,
+      is_visible,
+      is_deleted
+
     )
 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0)
     `,
     [
       sellerId,
@@ -196,6 +202,7 @@ export const createProduct = async (
       JSON.stringify(attributes),
       brand,
       model,
+      slug,
     ],
   );
 
@@ -242,8 +249,10 @@ export const deleteProductFromDB = async (
 ) => {
   const [result] = await connection.query(
     `
-    DELETE FROM products
-    WHERE id = ?
+    UPDATE products
+SET is_deleted = 1,
+    is_visible = 0
+ WHERE id = ?
       AND seller_id = ?
     `,
     [productId, sellerId],
@@ -307,4 +316,94 @@ export const editSellerProfile = async (data: {
   } catch (err) {
     console.log(err);
   }
+};
+
+export const getSellerById = async (id: number, slug: string) => {
+  const [rows]: any = await connection.query(
+    `
+SELECT
+    sp.user_id AS seller_id,
+    sp.shop_name,
+    sp.slug,
+    sp.description,
+    sp.logo,
+    sp.company_name,
+    sp.is_verified,
+    sp.created_at,
+
+
+    COALESCE(
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id',p.id,
+                'name',p.name,
+                'price',p.price,
+                'stock',p.stock,
+                'brand',p.brand,
+                'model',p.model,
+                
+                'images',
+                (
+                    SELECT 
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'image',
+                            pi2.image_url
+                        )
+                    )
+
+                    FROM product_images pi2
+                    WHERE pi2.product_id = p.id
+                )
+
+            )
+        ),
+        JSON_ARRAY()
+    ) AS products
+
+
+
+FROM seller_profiles sp
+
+
+LEFT JOIN products p
+    ON p.seller_id = sp.user_id
+
+
+
+WHERE 
+    sp.user_id = ?
+AND
+    sp.slug = ?
+
+
+
+GROUP BY sp.id
+
+`,
+    [id, slug],
+  );
+
+  if (!rows.length) {
+    return null;
+  }
+
+  const seller = rows[0];
+
+
+  seller.products =
+    typeof seller.products === "string"
+      ? JSON.parse(seller.products)
+      : seller.products;
+
+  seller.products = seller.products.map((product: any) => ({
+    ...product,
+
+    images:
+      typeof product.images === "string"
+        ? JSON.parse(product.images)
+        : product.images,
+  }));
+
+  return seller;
 };

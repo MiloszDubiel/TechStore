@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFavorite } from "../../context/FavoritesContext";
 import { useAuth } from "../../context/AuthContext";
 import { useCartStore } from "../../zustand/states/cartState";
+import { Edit } from "lucide-react";
 
 type OfferCardProps = {
   id: string;
@@ -11,7 +12,8 @@ type OfferCardProps = {
 
 const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
   const { toggleFavorite, isFavorite } = useFavorite();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
 
   const addToCart = useCartStore((state) => state.addToCart);
 
@@ -36,16 +38,6 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
     }
   });
 
-  console.log();
-
-  const createSlug = (name: string) =>
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
-
-
-
   return (
     <div className=" hover:shadow-lg block p-4 transition bg-white border border-gray-200">
       <div className="flex items-start gap-6">
@@ -62,7 +54,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
         />
 
         <div className="flex-1">
-          <Link to={`/offers/${createSlug(product.name)}/${product.id}`}>
+          <Link to={`/offers/${product.slug}/${product.id}`}>
             <h3 className=" hover:underline line-clamp-2 hover:text-orange-600 text-lg font-semibold">
               {product.name}
             </h3>
@@ -98,14 +90,28 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
               : "Brak w magazynie"}
           </p>
 
-          <button
-            className=" hover:bg-orange-600 px-6 py-2 font-semibold text-white bg-orange-500 cursor-pointer"
-            onClick={() => addToCart(product)}
-          >
-            Dodaj do koszyka
-          </button>
+          {product?.seller_id != user?.id && (
+            <button
+              className=" hover:bg-orange-600 px-6 py-2 font-semibold text-white bg-orange-500 cursor-pointer"
+              onClick={() => addToCart(product)}
+            >
+              Dodaj do koszyka
+            </button>
+          )}
 
-          {isAuthenticated && (
+          {product?.seller_id == user?.id && (
+            <button
+              className=" hover:bg-orange-600 flex items-center gap-2 px-6 py-2 font-semibold text-white bg-orange-500 cursor-pointer"
+              onClick={() => {
+                navigate(`/seller/dashboard?tab=products&edit=${product.id}`);
+              }}
+            >
+              <Edit size={13} />
+              Edytuj
+            </button>
+          )}
+
+          {isAuthenticated && product?.seller_id !== user?.id && (
             <button
               onClick={() => {
                 toggleFavorite(product.id);

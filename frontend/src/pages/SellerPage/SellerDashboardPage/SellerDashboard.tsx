@@ -13,7 +13,7 @@ import {
   BarChart3,
   Store,
 } from "lucide-react";
-import Navbar from "../../components/layout/Navbar/Navbar";
+import Navbar from "../../../components/layout/Navbar/Navbar";
 
 const tabs = [
   {

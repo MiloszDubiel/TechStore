@@ -8,6 +8,7 @@ import {
   deleteProduct,
   editSeller,
   uploadProductImagesController,
+  getSellerPage,
 } from "../controllers/seller.controller";
 
 import { uploadSellerLogo, uploadProductImages } from "../multer";
@@ -44,5 +45,7 @@ router.patch(
   uploadSellerLogo.single("logo"),
   editSeller,
 );
+
+router.get("/:slug/:id", getSellerPage);
 
 export default router;

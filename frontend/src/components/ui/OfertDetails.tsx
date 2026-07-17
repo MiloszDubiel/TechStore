@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import Navbar from "../layout/Navbar/Navbar";
@@ -7,9 +7,12 @@ import AddReview from "./AddReview";
 import { useQuery } from "@tanstack/react-query";
 import { useCartStore } from "../../zustand/states/cartState";
 import { ShoppingCart, Store } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import { Edit } from "lucide-react";
 
 const OfferDetails = () => {
   const { slug, id } = useParams();
+  const { user } = useAuth();
 
   const [selectedImage, setSelectedImage] = useState(0);
 
@@ -26,8 +29,8 @@ const OfferDetails = () => {
     queryFn: fetchOffer,
   });
 
-  console.log(product);
-  console.log(selectedImage);
+  const navigate = useNavigate();
+
   if (isLoading) {
     return (
       <>
@@ -117,15 +120,32 @@ const OfferDetails = () => {
                   </span>
                 </div>
 
-                <button
-                  disabled={!product.stock}
-                  onClick={() => addToCart(product)}
-                  className=" disabled:bg-gray-300 hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 mt-6 font-semibold text-white bg-orange-500 cursor-pointer"
-                >
-                  <ShoppingCart size={20} />
+                {product?.seller_id !== user?.id && (
+                  <button
+                    disabled={!product.stock}
+                    onClick={() => addToCart(product)}
+                    className=" disabled:bg-gray-300 hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 mt-6 font-semibold text-white bg-orange-500 cursor-pointer"
+                  >
+                    <ShoppingCart size={20} />
 
-                  {product.stock ? "Dodaj do koszyka" : "Brak produktu"}
-                </button>
+                    {product.stock ? "Dodaj do koszyka" : "Brak produktu"}
+                  </button>
+                )}
+
+                {product?.seller_id === user?.id && (
+                  <button
+                    disabled={!product.stock}
+                    onClick={() => {
+                      navigate(
+                        `/seller/dashboard?tab=products&edit=${product.id}`
+                      );
+                    }}
+                    className=" disabled:bg-gray-300 hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 mt-6 font-semibold text-white bg-orange-500 cursor-pointer"
+                  >
+                    <Edit size={20} />
+                    Edytuj
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -232,7 +252,7 @@ const OfferDetails = () => {
 
               <button
                 onClick={() => {
-                  window.location.href = `/store/${product.slug}`;
+                  navigate(`/seller/${product.slug}/${product.seller_id}`);
                 }}
                 className=" hover:bg-orange-600 px-6 py-3 text-white bg-orange-500"
               >

@@ -37,6 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
   const { data: user, isPending } = useUser(token);
 
+  console.log(user);
+
   const login = (
     accessToken: string,
     refreshToken: string,

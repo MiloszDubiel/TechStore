@@ -1,11 +1,10 @@
 import type React from "react";
-import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { useCartStore } from "../zustand/states/cartState";
 import { useCheckout } from "../context/CheckoutContext";
-import { useUser } from "../hooks/useUser";
-import { useLogin } from "../hooks/useLogin";
 import { useSeller } from "../hooks/useSeller";
+import { useUser } from "../hooks/useUser";
 
 type Props = {
   children: React.ReactNode;
@@ -18,19 +17,27 @@ export const CheckIsLoggedOut = ({ children }: Props) => {
     return <Navigate to="/" replace />;
   }
 
-  return <>{children}</>;
+  return children;
 };
-export const CheckIsLoggedIn = ({ children }: Props) => {
-  const { user } = useAuth();
 
+export const CheckIsLoggedIn = ({ children }: Props) => {
+  const { user, isPending } = useAuth();
+
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Ładowanie...
+      </div>
+    );
+  }
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  return children;
 };
 
-export const CheckIsEmptyCart = ({ children }: any) => {
+export const CheckIsEmptyCart = ({ children }: Props) => {
   const cart = useCartStore((state) => state.cart);
   const { isComplete } = useCheckout();
 
@@ -41,15 +48,53 @@ export const CheckIsEmptyCart = ({ children }: any) => {
   return children;
 };
 
-export const CheckIsSeller = ({ children }: any) => {
+export const CheckIsSeller = ({ children }: Props) => {
   const { user } = useAuth();
+
   const {
-    getCompanyInfo: { data },
+    getCompanyInfo: { data: seller, isPending },
   } = useSeller();
 
-  if (user?.id === data?.seller_id) {
+  if (isPending) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Ładowanie...
+      </div>
+    );
+  }
+
+  if (user?.role === "SELLER" && !seller) {
     return <Navigate to="/seller/create" replace />;
   }
 
   return children;
+};
+
+type ProtectedProps = {
+  children: React.ReactNode;
+  allowedRoles?: string[];
+};
+
+export const ProtectedRoute = ({ children, allowedRoles }: ProtectedProps) => {
+  const { token } = useAuth();
+
+  const { data: user, isLoading } = useUser(token);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Ładowanie...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
 };

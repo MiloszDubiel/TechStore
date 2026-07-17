@@ -1,9 +1,27 @@
 import { Search, Edit, Trash2, Plus } from "lucide-react";
-import { useSeller } from "../../hooks/useSeller";
+import { useSeller } from "../../../hooks/useSeller";
 import EditProduct from "./tabs/Products/EditProduct";
-import { useState } from "react";
-import ConfirmModal from "../../components/ui/ConfirmModal";
-import NotificationCard from "../../components/ui/NotificationCard";
+import { useEffect, useState } from "react";
+import ConfirmModal from "../../../components/ui/ConfirmModal";
+import NotificationCard from "../../../components/ui/NotificationCard";
+import { useSearchParams } from "react-router-dom";
+
+const getStatus = (product: any) => {
+  if (product.is_deleted) {
+    return "Usunięty";
+  }
+
+  if (!product.is_visible) {
+    return "Ukryty";
+  }
+
+  if (product.stock <= 0) {
+    return "Brak magazynu";
+  }
+
+  return "Aktywny";
+};
+
 const Products = () => {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [productData, setProductData] = useState<any>();
@@ -14,11 +32,33 @@ const Products = () => {
     deleteProduct: { mutate, isSuccess },
   } = useSeller();
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const editId = searchParams.get("edit") || null;
+
+  useEffect(() => {
+    if (!editId || !data.length) {
+      setEditingProduct(null);
+      return;
+    }
+
+    const product = data.find(
+      (product: any) => Number(product.id) === Number(editId)
+    );
+
+    setEditingProduct(product);
+  }, [editId, data]);
+
   if (editingProduct) {
     return (
       <EditProduct
         product={editingProduct}
-        onBack={() => setEditingProduct(null)}
+        onBack={() => {
+          setEditingProduct(null);
+
+          searchParams.delete("edit");
+          setSearchParams(searchParams);
+        }}
       />
     );
   }
@@ -94,7 +134,7 @@ const Products = () => {
                     }
                     `}
                     >
-                      {product.stock > 0 ? `Dostępny` : "Brak"}
+                      {getStatus(product)}
                     </span>
                   </td>
 

@@ -9,7 +9,7 @@ export const GrayButton = ({ onClick, disabled = false, children }: Props) => {
     <button
       onClick={onClick}
       disabled={disabled}
-      className=" hover:bg-gray-100 w-full px-6 py-3 border border-gray-200 cursor-pointer"
+      className=" hover:bg-gray-100 px-6 py-3 border border-gray-200 cursor-pointer"
     >
       {children}
     </button>
@@ -24,7 +24,7 @@ export const OrangeButton = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className=" hover:bg-orange-600 disabled:bg-gray-300 w-full px-6 py-3 text-white bg-orange-500 cursor-pointer"
+      className=" hover:bg-orange-600 disabled:bg-gray-300 px-6 py-3 text-white bg-orange-500 cursor-pointer"
     >
       {children}
     </button>

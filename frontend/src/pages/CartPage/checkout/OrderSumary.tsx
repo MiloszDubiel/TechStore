@@ -14,7 +14,7 @@ export default function OrderSummary() {
 
       {cart.map((item) => (
         <div key={item.id} className=" flex justify-between mb-2">
-          <span>{item.product_data.name}</span>
+          <span>{item.name}</span>
 
           <span>
             {(item.price * item.quantity).toFixed(2)}

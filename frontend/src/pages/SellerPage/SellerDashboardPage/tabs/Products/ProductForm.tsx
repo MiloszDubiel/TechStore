@@ -5,11 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   productSchema,
   type ProductForm,
-} from "../../../../schemas/productSchema";
+} from "../../../../../schemas/productSchema";
 import { useFieldArray } from "react-hook-form";
-import { useSeller } from "../../../../hooks/useSeller";
-import NotificationCard from "../../../../components/ui/NotificationCard";
-import ImageUploader from "../../../../components/ui/ImageUploader";
+import { useSeller } from "../../../../../hooks/useSeller";
+import NotificationCard from "../../../../../components/ui/NotificationCard";
+import ImageUploader from "../../../../../components/ui/ImageUploader";
 import { useQueryClient } from "@tanstack/react-query";
 
 type ProductFormProps = {

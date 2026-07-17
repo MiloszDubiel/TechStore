@@ -6,8 +6,8 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { GrayButton, OrangeButton } from "../../components/ui/Buttons";
-import { useSeller } from "../../hooks/useSeller";
+import { GrayButton, OrangeButton } from "../../../components/ui/Buttons";
+import { useSeller } from "../../../hooks/useSeller";
 
 const stats = [
   {

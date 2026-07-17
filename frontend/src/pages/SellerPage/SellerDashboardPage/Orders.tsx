@@ -1,5 +1,5 @@
 import { Search, Eye, PackageCheck } from "lucide-react";
-import { useSeller } from "../../hooks/useSeller";
+import { useSeller } from "../../../hooks/useSeller";
 
 const getStatusClasses = (status: string) => {
   switch (status) {

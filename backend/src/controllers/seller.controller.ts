@@ -9,6 +9,7 @@ import {
   saveProductImages,
   deleteProductFromDB,
   editSellerProfile,
+  getSellerById,
 } from "../services/seller.services";
 import path from "node:path";
 import fs from "fs";
@@ -120,7 +121,15 @@ export const addProduct = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Brak id" });
     }
 
-    const product = await createProduct(sellerId, req.body);
+    console.log(req.body);
+
+    const slug = slugify(req.body.name + " " + sellerId, {
+      lower: true,
+      strict: true,
+      trim: true,
+    });
+
+    const product = await createProduct(sellerId, req.body, slug);
 
     res.status(201).json(product);
   } catch (error) {
@@ -219,6 +228,27 @@ export const editSeller = async (req: any, res: any) => {
   } catch (error) {
     res.status(500).json({
       message: "Błąd aktualizacji",
+    });
+  }
+};
+export const getSellerPage = async (req: Request, res: Response) => {
+  try {
+    const { id, slug } = req.params;
+
+    const seller = await getSellerById(Number(id), slug as string);
+
+    if (!seller) {
+      return res.status(404).json({
+        message: "Nie znaleziono sprzedawcy",
+      });
+    }
+
+    res.json(seller);
+  } catch (error) {
+    console.log(error);
+
+    res.status(500).json({
+      message: "Błąd pobierania sklepu",
     });
   }
 };

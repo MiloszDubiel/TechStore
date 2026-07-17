@@ -21,22 +21,28 @@ import {
   CheckIsLoggedIn,
   CheckIsLoggedOut,
   CheckIsSeller,
+  ProtectedRoute,
 } from "./components/ProtectetRoutes";
 
 import BecomeSellerPage from "./pages/SellerPage/BecomeSellerPage";
-import SellerDashboard from "./pages/SellerDashboardPage/SellerDashboard";
+import SellerDashboard from "./pages/SellerPage/SellerDashboardPage/SellerDashboard";
+import SellerPage from "./pages/SellerPage/SellerPage";
+
+import AdminDashboard from "./pages/Admin/AdminDashboard";
 
 const AppContent = () => {
   return (
     <BrowserRouter>
       <div className="flex flex-col min-h-screen">
-        <div className="h-fit flex-1">
+        <div className="flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />
 
             <Route path="/offers" element={<OffersList />} />
 
             <Route path="/offers/:slug/:id" element={<OfferDetails />} />
+
+            <Route path="/seller/:slug/:id" element={<SellerPage />} />
 
             <Route
               path="/login"
@@ -56,7 +62,7 @@ const AppContent = () => {
               }
             />
 
-            <Route path="/cart" element={<CartPage />} />
+            {/* USER */}
 
             <Route
               path="/profile"
@@ -66,6 +72,8 @@ const AppContent = () => {
                 </CheckIsLoggedIn>
               }
             />
+
+            <Route path="/cart" element={<CartPage />} />
 
             <Route
               path="/cart/checkout"
@@ -88,15 +96,24 @@ const AppContent = () => {
             <Route
               path="/seller/dashboard"
               element={
-                <CheckIsSeller>
-                  <CheckIsLoggedIn>
+                <CheckIsLoggedIn>
+                  <CheckIsSeller>
                     <SellerDashboard />
-                  </CheckIsLoggedIn>
-                </CheckIsSeller>
+                  </CheckIsSeller>
+                </CheckIsLoggedIn>
               }
             />
 
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route
+              path="/admin/*"
+              element={
+                <ProtectedRoute allowedRoles={["ADMIN"]}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
 

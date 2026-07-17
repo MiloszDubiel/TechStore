@@ -268,46 +268,129 @@ export const getOrdersFromDB = async (userId: string | null) => {
   }
 };
 
-export const getOrderDetailsFromDB = async (id: string, userId: string) => {
-  try {
-    const [orderRows]: any = await connection.query(
-      `
-      SELECT *
-      FROM orders
-      WHERE id = ?
-      AND user_id = ?
-      `,
-      [id, userId],
-    );
+export const getOrderDetailsFromDB = async (
+  orderId: string,
+  userId: number,
+) => {
+  const [rows]: any = await connection.query(
+    `
+    SELECT
 
-    if (!orderRows.length) {
-      return {
-        message: "Nie znaleziono zamówienia",
-        success: false,
-      };
-    }
+      o.id AS order_id,
+      o.order_number,
+      o.total_price,
+      o.status,
+      o.created_at,
 
-    const order = orderRows[0];
+      oi.quantity,
+      oi.price AS item_price,
 
-    const [items] = await connection.query(
-      `
-      SELECT
-        oi.quantity,
-        oi.price,
-        p.product_data
-      FROM order_items oi
-      JOIN products p
-        ON p.id = oi.product_id
-      WHERE oi.order_id = ?
-      `,
-      [id],
-    );
 
-    return {
-      ...order,
-      items,
-    };
-  } catch (er) {
-    console.log(er);
+      JSON_OBJECT(
+        'id', p.id,
+        'name', p.name,
+        'description', p.description,
+        'brand', p.brand,
+        'model', p.model,
+        'stock', p.stock,
+        'attributes', p.attributes,
+
+        'category_name', c.name,
+        'subcategory_name', sc.name,
+
+        'images',
+        COALESCE(
+          JSON_ARRAYAGG(
+            CASE 
+              WHEN pi.image_url IS NOT NULL THEN
+                JSON_OBJECT(
+                  'image', pi.image_url
+                )
+            END
+          ),
+          JSON_ARRAY()
+        )
+      ) AS product,
+
+
+      JSON_OBJECT(
+        'seller_id', sp.user_id,
+        'shop_name', sp.shop_name,
+        'company_name', sp.company_name,
+        'logo', sp.logo,
+        'slug', sp.slug,
+        'is_verified', sp.is_verified
+      ) AS seller
+
+
+    FROM orders o
+
+
+    LEFT JOIN order_items oi
+      ON oi.order_id = o.id
+
+
+    LEFT JOIN products p
+      ON p.id = oi.product_id
+
+
+    LEFT JOIN categories c
+      ON c.id = p.category_id
+
+
+    LEFT JOIN subcategories sc
+      ON sc.id = p.subcategory_id
+
+
+    LEFT JOIN product_images pi
+      ON pi.product_id = p.id
+
+
+    LEFT JOIN seller_profiles sp
+      ON sp.user_id = p.seller_id
+
+
+    WHERE o.id = ?
+    AND o.user_id = ?
+
+
+    GROUP BY
+      o.id,
+      oi.id,
+      p.id,
+      sp.id
+
+    `,
+    [orderId, userId],
+  );
+
+  if (!rows.length) {
+    return null;
   }
+
+  const order = {
+    id: rows[0].order_id,
+    order_number: rows[0].order_number,
+    total_price: rows[0].total_price,
+    status: rows[0].status,
+    created_at: rows[0].created_at,
+  };
+
+  const items = rows.map((item: any) => ({
+    quantity: item.quantity,
+    price: item.item_price,
+
+    product:
+      typeof item.product === "string"
+        ? JSON.parse(item.product)
+        : item.product,
+
+    seller:
+      typeof item.seller === "string" ? JSON.parse(item.seller) : item.seller,
+  }));
+
+  return {
+    order,
+    items,
+  };
 };

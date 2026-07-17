@@ -3,15 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import Navbar from "../../components/layout/Navbar/Navbar";
 import { Link } from "react-router-dom";
 import { useCartStore } from "../../zustand/states/cartState";
-
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { Edit } from "lucide-react";
 const HomePage = () => {
   const addToCart = useCartStore((state) => state.addToCart);
-
-  const createSlug = (name: string) =>
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
+  const { user } = useAuth();
 
   const fetchOffers = async () => {
     try {
@@ -27,6 +24,8 @@ const HomePage = () => {
     queryFn: fetchOffers,
     staleTime: 5 * 60 * 1000,
   });
+
+  const navigate = useNavigate();
 
   return (
     <>
@@ -58,7 +57,7 @@ const HomePage = () => {
             products.map((product: any) => (
               <Link
                 key={product.id}
-                to={`/offers/${createSlug(product.name)}/${product.id}`}
+                to={`/offers/${product.slug}/${product.id}`}
               >
                 <div className="hover:shadow-xl h-95 flex flex-col overflow-hidden transition bg-white shadow-md">
                   <div className="relative flex justify-center">
@@ -94,16 +93,32 @@ const HomePage = () => {
                       {product.stock} szt. dostępnych
                     </div>
 
-                    <button
-                      className=" hover:bg-orange-600 w-full py-2 mt-auto text-white transition bg-orange-500 cursor-pointer"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        addToCart(product);
-                      }}
-                    >
-                      Dodaj do koszyka
-                    </button>
+                    {product?.seller_id != user?.id && (
+                      <button
+                        className=" hover:bg-orange-600 w-full py-2 mt-auto text-white transition bg-orange-500 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          addToCart(product);
+                        }}
+                      >
+                        Dodaj do koszyka
+                      </button>
+                    )}
+
+                    {product?.seller_id == user?.id && (
+                      <button
+                        className=" hover:bg-orange-600 flex items-center justify-center w-full gap-2 py-2 mt-auto text-white transition bg-orange-500 cursor-pointer"
+                        onClick={() => {
+                          navigate(
+                            `/seller/dashboard?tab=products&edit=${product.id}`
+                          );
+                        }}
+                      >
+                        <Edit size={18} />
+                        Edytuj
+                      </button>
+                    )}
                   </div>
                 </div>
               </Link>

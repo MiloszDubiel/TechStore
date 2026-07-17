@@ -1,4 +1,4 @@
-import type { ProductForm } from "../../../../schemas/productSchema";
+import type { ProductForm } from "../../../../../schemas/productSchema";
 import ProductForms from "./ProductForm";
 type Props = {
   product: ProductForm;
