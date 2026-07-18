@@ -10,8 +10,11 @@ import {
   hideProductController,
   showProductController,
   deleteProductController,
-  updateAdminProductController,
+  updateAdminProduct,
+  updateSellerByAdmin,
 } from "../controllers/admin.controller";
+
+import { uploadProductImages, uploadSellerLogo } from "../multer";
 
 import { verifyAdmin } from "../middleware/admin.middleware";
 import { verifyToken } from "../middleware/auth.middleware";
@@ -54,10 +57,21 @@ router.patch(
   verifyAdmin,
   deleteProductController,
 );
+
 router.patch(
-  "/products/edit/:id",
+  "/products/:id",
   verifyToken,
   verifyAdmin,
-  updateAdminProductController,
+
+  uploadProductImages.array("images", 8),
+  updateAdminProduct,
 );
+router.patch(
+  "/users/:id/seller",
+  verifyToken,
+  verifyAdmin,
+  uploadSellerLogo.single("logo"),
+  updateSellerByAdmin,
+);
+
 export default router;

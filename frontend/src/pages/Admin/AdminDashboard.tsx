@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Users as UsersIcon,
   Package,
-  Store,
   ShoppingCart,
   Shield,
 } from "lucide-react";
@@ -36,11 +35,6 @@ const AdminDashboard = () => {
       id: "products",
       name: "Produkty",
       icon: Package,
-    },
-    {
-      id: "sellers",
-      name: "Sprzedawcy",
-      icon: Store,
     },
     {
       id: "orders",

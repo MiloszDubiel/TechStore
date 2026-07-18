@@ -35,22 +35,24 @@ const EditUser = ({ user, onSuccess, onBack }: any) => {
     editUser.mutate(
       { ...data, id: user?.id },
       {
-        onSuccess: onSuccess,
+        onSuccess: () => {
+          onSuccess();
+          onBack();
+        },
       }
     );
   };
 
   return (
     <div className=" w-full space-y-6">
-      <button
-        type="button"
-        onClick={onBack}
-        className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500 cursor-pointer"
-      >
-        ← Powrót
-      </button>
-
       <div>
+        <button
+          type="button"
+          onClick={onBack}
+          className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500 cursor-pointer"
+        >
+          ← Powrót
+        </button>
         <h1 className="text-2xl font-bold">Edytuj użytkownika</h1>
 
         <p className="mt-1 text-gray-500">

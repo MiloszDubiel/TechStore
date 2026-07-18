@@ -1,244 +1,135 @@
-import { Save } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { toast } from "react-toastify";
 
-import {
-  productEditSchema,
-  type EditProductForm,
-} from "../../../../schemas/productSchema";
+import { productEditSchema } from "../../../../schemas/productSchema";
+import ProductForm from "../../../SellerPage/SellerDashboardPage/tabs/Products/ProductForm";
 
-import ImageUploader from "../../../../components/ui/ImageUploader";
 import { useSeller } from "../../../../hooks/useSeller";
+import { useAdmin } from "../../../../hooks/useAdmin";
+import { useAuth } from "../../../../context/AuthContext";
 
 type Props = {
   product: any;
 };
 
-const ProductEditForm = ({ product }: Props) => {
-  console.log(product);
+const ProductEditForm = ({ product, onBack }: any) => {
+  const [newImages] = useState<File[]>([]);
 
-  const [newImages, setNewImages] = useState<File[]>([]);
+  const { token } = useAuth();
 
   const {
-    updateProduct: { mutate: updateProduct },
-    uploadImage,
+    getCategories: { data: categories },
+    getSubcategories: { data: subcategories },
   } = useSeller();
 
   const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<EditProductForm>({
-    resolver: zodResolver(productEditSchema),
-
-    defaultValues: {
-      name: product.name ?? "",
-
-      brand: product.brand ?? "",
-
-      model: product.model ?? "",
-
-      description: product.description ?? "",
-
-      price: String(product.price ?? ""),
-
-      stock: Number(product.stock ?? ""),
-
-      category_id: String(product.category_id ?? ""),
-
-      subcategory_id: String(product.subcategory_id ?? ""),
-
-      attributes:
-        typeof product.attributes === "string"
-          ? JSON.parse(product.attributes)
-          : product.attributes ?? [],
-
-      images: [],
-      existingImages: [],
-      removedImages: [],
-    },
-  });
+    updateProduct: { mutate: updateProducts },
+  } = useAdmin(token!);
 
   const getImages = () => {
-    if (!product.images) return [];
+    if (!product?.images) return [];
 
-    const base = `${import.meta.env.VITE_API_URL}uploads/products/${
-      product.seller_id
-    }/${product.id}/`;
+    const check = product?.images.some((el: any) => !el.id);
+    if (check) return [];
 
-    return product.images.split(",").map((img: string) => `${base}${img}`);
+    return product.images.map(
+      (img: any) => `${import.meta.env.VITE_API_URL}${img.url}`
+    );
   };
 
+  console.log(product);
+
   const onSubmit = (data: any) => {
-    updateProduct(
+    const formData = new FormData();
+
+    formData.append("name", data.name);
+
+    formData.append("description", data.description);
+
+    formData.append("price", data.price);
+
+    formData.append("stock", data.stock);
+
+    formData.append("brand", data.brand);
+
+    formData.append("model", data.model);
+
+    formData.append("category_id", data.category_id);
+
+    formData.append("subcategory_id", data.subcategory_id);
+
+    formData.append("attributes", JSON.stringify(data.attributes));
+
+    formData.append("removedImages", JSON.stringify(removedImages));
+
+    data.images?.forEach((file: any) => formData.append("images", file));
+
+    updateProducts(
       {
         id: product.id,
-
-        product: {
-          ...data,
-
-          removedImages: data.removedImages,
-        },
+        formData,
       },
-
       {
-        onSuccess() {
-          if (newImages.length) {
-            const formData = new FormData();
+        onSuccess: () => {
+          toast.success("Produkt został zaktualizowany");
 
-            newImages.forEach((file) => {
-              formData.append("images", file);
-            });
+          onBack();
+        },
 
-            uploadImage.mutate({
-              productId: product.id,
-              formData,
-            });
-          }
-          toast.success("Pomyślnie zapisano zmiany");
+        onError: () => {
+          toast.error("Błąd aktualizacji");
         },
       }
     );
   };
 
+  const [removedImages, setRemovedImages] = useState<string[]>([]);
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <section className="p-6 bg-white border border-gray-300">
-        <h2 className="mb-6 text-xl font-semibold">Informacje o produkcie</h2>
+    <div className="space-y-6">
+      <button
+        onClick={onBack}
+        className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500"
+      >
+        ← Powrót
+      </button>
 
-        <div className="space-y-5">
-          <div>
-            <label className="block mb-2 font-medium">Nazwa produktu</label>
+      <ProductForm
+        mode="edit"
+        schema={productEditSchema}
+        defaultValues={{
+          name: product.name,
+          description: product.description,
+          brand: product.brand,
+          model: product.model,
+          price: String(product.price),
+          stock: String(product.stock),
+          category_id: String(product.category_id),
+          subcategory_id: String(product.subcategory_id),
 
-            <input
-              {...register("name")}
-              className="input"
-              placeholder="Np. Lenovo Legion 5"
-            />
+          attributes:
+            typeof product.attributes === "string"
+              ? JSON.parse(product.attributes)
+              : product.attributes ?? [],
 
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-            )}
-          </div>
+          images: [],
+          existingImages: getImages(),
+          removedImages: [],
+        }}
+        categories={categories}
+        subcategories={subcategories}
+        existingImages={getImages()}
+        onRemoveExisting={(image) => {
+          const filename = image.split("/").pop();
 
-          <div>
-            <label className="block mb-2 font-medium">Opis produktu</label>
-
-            <textarea
-              {...register("description")}
-              rows={5}
-              className="input resize-none"
-              placeholder="Opis produktu..."
-            />
-
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="p-6 bg-white border border-gray-300">
-        <h2 className="mb-6 text-xl font-semibold">Sprzedaż</h2>
-
-        <div className="md:grid-cols-2 grid gap-5">
-          <div>
-            <label className="block mb-2 font-medium">Cena</label>
-
-            <div className="relative">
-              <input
-                {...register("price")}
-                type="number"
-                className="input pr-12"
-                placeholder="0.00"
-              />
-
-              <span className="right-4 top-3 absolute text-gray-500">zł</span>
-            </div>
-
-            {errors.price && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.price.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block mb-2 font-medium">Stan magazynu</label>
-
-            <input
-              {...register("stock")}
-              type="number"
-              className="input"
-              placeholder="0"
-            />
-
-            {errors.stock && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.stock.message}
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="p-6 bg-white border border-gray-300">
-        <div className="flex items-center justify-between mb-5">
-          <div>
-            <h2 className="text-xl font-semibold">Zdjęcia produktu</h2>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Pierwsze zdjęcie będzie zdjęciem głównym produktu.
-            </p>
-          </div>
-        </div>
-
-        <ImageUploader
-          images={getImages()}
-          value={watch("images")}
-          onChange={(files) => {
-            setNewImages(files);
-
-            setValue("images", files, {
-              shouldValidate: true,
-            });
-          }}
-          onRemoveExisting={(image) => {
-            const filename = image.split("/").pop();
-
-            if (filename) {
-              const current = watch("removedImages") ?? [];
-
-              setValue("removedImages", [...current, filename], {
-                shouldValidate: true,
-              });
-            }
-          }}
-          multiple
-          maxFiles={8}
-        />
-
-        {errors.images && (
-          <p className="mt-2 text-sm text-red-500">{errors.images.message}</p>
-        )}
-      </section>
-
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          className=" hover:bg-orange-600 flex items-center gap-2 px-8 py-3 font-semibold text-white transition bg-orange-500"
-        >
-          <Save size={18} />
-          Zapisz zmiany
-        </button>
-      </div>
-    </form>
+          if (filename) {
+            setRemovedImages((prev) => [...prev, filename]);
+          }
+        }}
+        onSubmit={onSubmit}
+      />
+    </div>
   );
 };
 

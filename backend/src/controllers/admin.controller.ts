@@ -10,8 +10,15 @@ import {
   hideProduct,
   showProduct,
   deleteProduct,
-  updateAdminProduct,
+  updateProductService,
+  deleteProductImagesService,
+  addProductImagesService,
+  getSellerByUserId,
+  updateSellerProfileAdmin,
 } from "../services/admin.services";
+import { getCurrtentProdcutByID } from "../services/prodcuts.service";
+import fs from "fs";
+import path from "path";
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
@@ -19,6 +26,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
     res.json(users);
   } catch (error) {
+    console.log(error);
     res.status(500).json({
       message: "Błąd pobierania użytkowników",
     });
@@ -170,27 +178,126 @@ export const deleteProductController = async (req: Request, res: Response) => {
   }
 };
 
-export const updateAdminProductController = async (
-  req: Request,
-  res: Response,
-) => {
+export const updateAdminProduct = async (req: Request, res: Response) => {
   try {
     const productId = Number(req.params.id);
+
+    const product = await getCurrtentProdcutByID(String(productId));
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Produkt nie istnieje",
+      });
+    }
+
+    const sellerId = product.seller_id;
+
+    const removedImages = req.body.removedImages
+      ? JSON.parse(req.body.removedImages)
+      : [];
+
+    await updateProductService(productId, {
+      name: req.body.name,
+
+      description: req.body.description,
+
+      price: Number(req.body.price),
+
+      stock: Number(req.body.stock),
+
+      brand: req.body.brand,
+
+      model: req.body.model,
+
+      category_id: Number(req.body.category_id),
+
+      subcategory_id: Number(req.body.subcategory_id),
+
+      attributes:
+        typeof req.body.attributes === "string"
+          ? JSON.parse(req.body.attributes)
+          : req.body.attributes,
+    });
+
+    await deleteProductImagesService(productId, removedImages);
+
+    const files = req.files as Express.Multer.File[];
+
+    if (files?.length) {
+      await addProductImagesService(productId, sellerId, files);
+    }
+
+    res.json({
+      message: "Produkt zaktualizowany",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Błąd aktualizacji produktu",
+    });
+  }
+};
+export const updateSellerByAdmin = async (req: Request, res: Response) => {
+  try {
+    const userId = Number(req.params.id);
+
+    const seller = await getSellerByUserId(userId);
+
+    if (!seller) {
+      return res.status(404).json({
+        message: "Ten użytkownik nie posiada sklepu",
+      });
+    }
+
     console.log(req.body);
 
-    
-    await updateAdminProduct(productId, req.body);
+    const oldLogo = seller.logo;
 
-    return res.status(200).json({
-      success: true,
-      message: "Produkt został zaktualizowany.",
+    const newLogo = req.file ? req.file.filename : oldLogo;
+
+    await updateSellerProfileAdmin(userId, {
+      shop_name: req.body.shop_name,
+
+      description: req.body.description,
+
+      company_name: req.body.company_name,
+
+      nip: req.body.nip,
+
+      street: req.body.street,
+
+      city: req.body.city,
+
+      postal_code: req.body.postal_code,
+
+      logo: newLogo,
     });
-  } catch (err) {
-    console.error(err);
 
-    return res.status(500).json({
-      success: false,
-      message: "Nie udało się zaktualizować produktu.",
+    // usuwanie starego logo
+
+    if (req.file && oldLogo && oldLogo !== newLogo) {
+      const oldPath = path.join(
+        process.cwd(),
+        "uploads",
+        "sellers",
+        String(userId),
+        oldLogo,
+      );
+
+      await fs.promises.unlink(oldPath).catch(() => {
+        console.log("Stare logo nie istnieje");
+      });
+    }
+
+    res.json({
+      message: "Sklep został zaktualizowany",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Błąd aktualizacji sklepu",
     });
   }
 };

@@ -31,8 +31,8 @@ const ProductForm = ({
   schema,
   defaultValues,
   onSubmit,
-  categories,
-  subcategories,
+  categories = [],
+  subcategories = [],
   existingImages = [],
   onRemoveExisting,
   isSuccess,
@@ -57,7 +57,7 @@ const ProductForm = ({
 
   const selectedCategory = watch("category_id");
 
-  const filteredSubcategories = subcategories.filter(
+  const filteredSubcategories = subcategories?.filter(
     (item) => Number(item.category_id) === Number(selectedCategory)
   );
 

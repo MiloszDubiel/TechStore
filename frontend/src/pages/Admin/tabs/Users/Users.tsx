@@ -1,15 +1,22 @@
-import { Search, CheckCircle, UserCog, Ban } from "lucide-react";
+import { Search, CheckCircle, UserCog, Ban, Store } from "lucide-react";
 import { useState } from "react";
 import { useAdmin } from "../../../../hooks/useAdmin";
 import { useAuth } from "../../../../context/AuthContext";
 import EditUser from "./EditUser";
 import ConfirmModal from "../../../../components/ui/ConfirmModal";
 import { toast } from "react-toastify";
+import SellerForm from "../../../../components/ui/SellerForm";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Users = () => {
   const [search, setSearch] = useState("");
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [editSeller, setEditSeller] = useState(false);
+  const [editUser, setEditUser] = useState(false);
+
+  const queryClient = useQueryClient();
+
   const [confirmData, setConfirmData] = useState({
     title: "",
     message: "",
@@ -21,24 +28,70 @@ const Users = () => {
     users: { data = [] },
     activeUser,
     BanUser,
+    updateSeller,
   } = useAdmin(token!);
 
   const filteredUsers = data.filter((user: any) =>
     user.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  console.log(data);
   const numberOfAdmins = data.filter((user: any) => user.role === "ADMIN");
   const numberOfSellers = data.filter((user: any) => user.role === "SELLER");
-  if (selectedUser) {
+  if (editUser) {
     return (
       <EditUser
         user={selectedUser}
-        onBack={() => setSelectedUser(null)}
+        onBack={() => setEditUser(false)}
         onSuccess={() => {
-          toast.success("Pomyślnie zaktualizowano użytkownika");
+          toast.success(
+            `Pomyślnie zaktualizowano profil użytkownika: ${selectedUser.name} `
+          );
           setSelectedUser(null);
         }}
+      />
+    );
+  }
+
+  if (editSeller) {
+    return (
+      <SellerForm
+        storeData={selectedUser}
+        onBack={() => {
+          setEditSeller(false);
+          setSelectedUser(null);
+        }}
+        onSubmit={(data) => {
+          const formData = new FormData();
+
+          formData.append("shop_name", data.shop_name);
+          formData.append("description", data.description);
+          formData.append("company_name", data.company_name);
+          formData.append("nip", data.nip);
+          formData.append("street", data.street);
+          formData.append("city", data.city);
+          formData.append("postal_code", data.postal_code);
+
+          if (data.logo) {
+            formData.append("logo", data.removedLogo);
+          }
+
+          updateSeller.mutate(
+            {
+              id: selectedUser.id,
+              data: formData,
+            },
+            {
+              onSuccess: () => {
+                setEditSeller(false);
+                queryClient.invalidateQueries({ queryKey: ["admin-stores"] });
+                toast.success(
+                  `Pomyślnie edytowano dane sklepu '${selectedUser.shop_name}', użytkownika: ${selectedUser.name}`
+                );
+              },
+            }
+          );
+        }}
+        mode="edit"
       />
     );
   }
@@ -146,7 +199,10 @@ const Users = () => {
                 <td className=" flex gap-3 px-5 py-4">
                   <button
                     className=" hover:text-blue-800 text-blue-600"
-                    onClick={() => setSelectedUser(user)}
+                    onClick={() => {
+                      setSelectedUser(user);
+                      setEditUser(true);
+                    }}
                   >
                     <UserCog size={19} />
                   </button>
@@ -162,6 +218,18 @@ const Users = () => {
                       <Trash2 size={19} />
                     </button>
                   )} */}
+
+                  {user.role === "SELLER" && user.seller_id && (
+                    <button
+                      className="hover:text-orange-800 text-orange-600"
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setEditSeller(true);
+                      }}
+                    >
+                      <Store size={19} />
+                    </button>
+                  )}
 
                   {user.role !== "ADMIN" &&
                     (user.is_active ? (

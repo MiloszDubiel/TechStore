@@ -3,7 +3,6 @@ import ProductForm from "./ProductForm";
 import { productEditSchema } from "../../../../../schemas/productSchema";
 import { useSeller } from "../../../../../hooks/useSeller";
 import { toast } from "react-toastify";
-import { uploadImage } from "../../../../../api/seller";
 
 type Props = {
   product: any;
@@ -13,7 +12,7 @@ type Props = {
 const EditProduct = ({ product, onBack }: Props) => {
   const [removedImages, setRemovedImages] = useState<string[]>([]);
 
-  console.log(product.images);
+  console.log(product);
 
   const {
     getCategories: { data: categories = [] },
@@ -96,7 +95,7 @@ const EditProduct = ({ product, onBack }: Props) => {
             },
             {
               onSuccess: () => {
-                // jeżeli są nowe zdjęcia
+            
                 if (data.images?.length) {
                   const imagesFormData = new FormData();
 
@@ -141,7 +140,6 @@ const EditProduct = ({ product, onBack }: Props) => {
             }
           );
         }}
-        isLoading={isPending}
       />
     </div>
   );

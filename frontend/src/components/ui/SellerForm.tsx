@@ -9,12 +9,17 @@ import {
 
 import { Save, Store, Building2 } from "lucide-react";
 import { useSeller } from "../../hooks/useSeller";
+import { OrangeButton } from "./Buttons";
 
 type Props = {
   mode: "create" | "edit";
   defaultValues?: Partial<SellerProfileType>;
-  onSubmit: (data: SellerProfileType) => void;
+  onSubmit: (data: any) => void;
   isLoading?: boolean;
+  hideButton?: boolean;
+  storeData?: any;
+  onBack?: any;
+  onSuccess?: any;
 };
 
 const SellerProfileForm = ({
@@ -22,10 +27,12 @@ const SellerProfileForm = ({
   defaultValues,
   onSubmit,
   isLoading,
+  hideButton = false,
+  storeData = null,
+  onBack,
 }: Props) => {
-  const {
-    getCompanyInfo: { data },
-  } = useSeller();
+  let data = storeData;
+  if (!data) data = useSeller().getCompanyInfo.data;
 
   const {
     register,
@@ -37,7 +44,7 @@ const SellerProfileForm = ({
     resolver: zodResolver(sellerProfileSchema),
     defaultValues,
   });
-
+  const [removedLogo, setRemovedLogo] = useState<string | null>(null);
   useEffect(() => {
     if (data) {
       reset({
@@ -51,13 +58,26 @@ const SellerProfileForm = ({
       });
     }
   }, [data]);
+  const handleFormSubmit = (data: SellerProfileType) => {
+    onSubmit({
+      ...data,
+      removedLogo,
+    });
+  };
+
   const isEdit = mode === "edit";
   const [values, setValues] = useState<File[]>([]);
-  const [removedLogo, setRemovedLogo] = useState<string | null>(null);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
       <section className="p-6">
+        <button
+          type="button"
+          onClick={onBack}
+          className="hover:bg-orange-600 px-4 py-3 mb-2 text-white bg-orange-500 cursor-pointer"
+        >
+          ← Powrót
+        </button>
         <div className="flex items-center gap-3 mb-6">
           <Store size={22} className="text-orange-500" />
 
@@ -106,7 +126,7 @@ const SellerProfileForm = ({
                 data?.logo
                   ? [
                       `${import.meta.env.VITE_API_URL}uploads/sellers/${
-                        data.user_id
+                        data.id
                       }/${data.logo}`,
                     ]
                   : []
@@ -209,22 +229,24 @@ const SellerProfileForm = ({
         </div>
       </section>
 
-      <button
-        disabled={isLoading}
-        className=" hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white bg-orange-500"
-      >
-        {isEdit ? (
-          <>
-            <Save size={18} />
-            Zapisz zmiany
-          </>
-        ) : (
-          <>
-            <Store size={18} />
-            Załóż sklep
-          </>
-        )}
-      </button>
+      {!hideButton && (
+        <button
+          disabled={isLoading}
+          className="hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white bg-orange-500"
+        >
+          {isEdit ? (
+            <>
+              <Save size={18} />
+              Zapisz zmiany
+            </>
+          ) : (
+            <>
+              <Store size={18} />
+              Załóż sklep
+            </>
+          )}
+        </button>
+      )}
     </form>
   );
 };

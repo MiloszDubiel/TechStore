@@ -30,7 +30,12 @@ const Products = () => {
   );
 
   if (editingProduct) {
-    return <EditProduct product={editingProduct} />;
+    return (
+      <EditProduct
+        product={editingProduct}
+        onBack={() => setEditingProduct(null)}
+      />
+    );
   }
 
   return (

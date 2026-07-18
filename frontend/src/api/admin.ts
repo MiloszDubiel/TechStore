@@ -132,17 +132,49 @@ export const deleteAdminProduct = async (id: number, token: string) => {
   return data;
 };
 
-export const updateAdminProduct = async (
+export const updateSellerData = async (
   id: number,
-  editData: any,
+  sdata: any,
   token: string
 ) => {
-  console.log(editData);
-  const { data } = await axios.patch(`${API}/products/edit/${id}`, editData, {
+  const { data } = await axios.patch(`${API}/users/${id}/seller`, sdata, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return data;
+};
+
+export const updateAdminProduct = async (
+  {
+    id,
+    formData,
+  }: {
+    id: number;
+    formData: FormData;
+  },
+  token: string
+) => {
+  const { data } = await axios.patch(`${API}/products/${id}`, formData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
   return data;
+};
+
+export const uploadImage = async (
+  productId: string,
+  seller_id: string,
+  formData: FormData,
+  token: string
+) => {
+  axios.post(`${API}/products/${seller_id}/${productId}/images/`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };
