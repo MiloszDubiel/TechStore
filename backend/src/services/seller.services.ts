@@ -123,11 +123,17 @@ export const getSellerProducts = async (sellerId: number) => {
       p.is_deleted,
       p.is_visible,
 
-      c.name AS category,
+      c.id AS category_id,
+      s.id AS subcategory_id,
 
       COALESCE(
         JSON_ARRAYAGG(
-          pi.image_url
+          JSON_OBJECT(
+            'id', pi.id,
+            'image', pi.image,
+            'url', pi.url,
+            'is_main', pi.is_main
+          )
         ),
         JSON_ARRAY()
       ) AS images
@@ -136,6 +142,8 @@ export const getSellerProducts = async (sellerId: number) => {
 
     LEFT JOIN categories c 
       ON p.category_id = c.id
+      LEFT JOIN subcategories s
+      ON p.subcategory_id = s.id
 
     LEFT JOIN product_images pi
       ON p.id = pi.product_id
@@ -150,77 +158,6 @@ export const getSellerProducts = async (sellerId: number) => {
   );
 
   return products;
-};
-
-export const createProduct = async (
-  sellerId: number,
-  data: CreateProductDTO,
-  slug: string,
-) => {
-  const {
-    name,
-    brand,
-    model,
-    description,
-    price,
-    stock,
-    category_id,
-    subcategory_id,
-    attributes,
-  } = data;
-
-  const [result] = await connection.query(
-    `
-    INSERT INTO products
-    (
-      seller_id,
-      name,
-      description,
-      price,
-      stock,
-      category_id,
-      subcategory_id,
-      attributes,
-      brand,
-      model,
-      slug,
-      is_visible,
-      is_deleted
-
-    )
-
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0)
-    `,
-    [
-      sellerId,
-      name,
-      description,
-      price,
-      stock,
-      category_id,
-      subcategory_id ?? null,
-      JSON.stringify(attributes),
-      brand,
-      model,
-      slug,
-    ],
-  );
-
-  const productId = (result as any).insertId;
-
-  return {
-    id: productId,
-
-    name,
-    description,
-    price,
-    stock,
-    category_id,
-    subcategory_id,
-    model,
-    brand,
-    attributes,
-  };
 };
 
 export const saveProductImages = async (
@@ -390,7 +327,6 @@ GROUP BY sp.id
 
   const seller = rows[0];
 
-
   seller.products =
     typeof seller.products === "string"
       ? JSON.parse(seller.products)
@@ -406,4 +342,201 @@ GROUP BY sp.id
   }));
 
   return seller;
+};
+export const createProduct = async (
+  sellerId: number,
+  data: CreateProductDTO,
+  slug: string,
+) => {
+  const {
+    name,
+    brand,
+    model,
+    description,
+    price,
+    stock,
+    category_id,
+    subcategory_id,
+    attributes,
+  } = data;
+
+  const [result] = await connection.query(
+    `
+    INSERT INTO products
+    (
+      seller_id,
+      name,
+      description,
+      price,
+      stock,
+      category_id,
+      subcategory_id,
+      attributes,
+      brand,
+      model,
+      slug,
+      is_visible,
+      is_deleted
+    )
+
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0)
+    `,
+    [
+      sellerId,
+      name,
+      description,
+      price,
+      stock,
+      category_id,
+      subcategory_id ?? null,
+      JSON.stringify(attributes),
+      brand,
+      model,
+      slug,
+    ],
+  );
+
+  const productId = (result as any).insertId;
+
+  return {
+    id: productId,
+    name,
+    description,
+    price,
+    stock,
+    category_id,
+    subcategory_id,
+    brand,
+    model,
+    attributes,
+  };
+};
+
+export const updateProductService = async (data: any) => {
+  const {
+    id,
+    sellerId,
+    name,
+    description,
+    price,
+    stock,
+    brand,
+    model,
+    category_id,
+    subcategory_id,
+    attributes,
+    product_data,
+  } = data;
+
+  const [result] = await connection.query(
+    `
+    UPDATE products
+    SET
+      name = ?,
+      description = ?,
+      price = ?,
+      stock = ?,
+      brand = ?,
+      model = ?,
+      category_id = ?,
+      subcategory_id = ?,
+      attributes = ?,
+      product_data = ?,
+      updated_at = NOW()
+
+    WHERE id = ?
+    AND seller_id = ?
+    `,
+    [
+      name,
+      description,
+      price,
+      stock,
+      brand,
+      model,
+      category_id,
+      subcategory_id,
+      JSON.stringify(attributes),
+      JSON.stringify(product_data),
+
+      id,
+      sellerId,
+    ],
+  );
+
+  return result;
+};
+
+export const updateProductImages = async (
+  productId: number,
+  sellerId: number,
+  images: Express.Multer.File[],
+) => {
+  const [products]: any = await connection.query(
+    `
+    SELECT id
+    FROM products
+    WHERE id = ?
+    AND seller_id = ?
+    `,
+    [productId, sellerId],
+  );
+
+  if (products.length === 0) {
+    throw new Error("Produkt nie istnieje");
+  }
+
+  if (!images.length) {
+    return [];
+  }
+
+  console.log(images);
+
+  const values = images.map((file, index) => [
+    productId,
+
+    file.filename,
+
+    `/uploads/products/${sellerId}/${productId}/${file.filename}`,
+
+    index === 0 ? 1 : 0,
+  ]);
+
+  await connection.query(
+    `
+    INSERT INTO product_images
+    (
+      product_id,
+      image,
+      url,
+      is_main
+    )
+    VALUES ?
+    `,
+    [values],
+  );
+
+  return values;
+};
+export const deleteProductImagesService = async (
+  productId: number,
+  sellerId: number,
+  images: string[],
+) => {
+  if (!images.length) return;
+
+  await connection.query(
+    `
+    DELETE pi
+    FROM product_images pi
+
+    INNER JOIN products p
+    ON p.id = pi.product_id
+
+    WHERE pi.product_id = ?
+    AND p.seller_id = ?
+    AND pi.image IN (?)
+    `,
+    [productId, sellerId, images],
+  );
 };

@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   LayoutDashboard,
   Users as UsersIcon,
@@ -9,12 +9,18 @@ import {
 } from "lucide-react";
 
 import Users from "./tabs/Users/Users";
-
+import Products from "./tabs/Products/Products";
+import { useAuth } from "../../context/AuthContext";
 const AdminDashboard = () => {
   const [params, setParams] = useSearchParams();
-
+  const { logout } = useAuth();
   const tab = params.get("tab") || "overview";
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
   const menu = [
     {
       id: "overview",
@@ -49,7 +55,7 @@ const AdminDashboard = () => {
         return <Users />;
 
       case "products":
-        return <div>Produkty</div>;
+        return <Products />;
 
       case "sellers":
         return <div>Sprzedawcy</div>;
@@ -109,8 +115,15 @@ const AdminDashboard = () => {
           })}
         </nav>
 
-        <div className=" pt-6 mt-auto text-sm text-gray-400 border-t border-gray-800">
-          Panel administracyjny
+        <div className="pt-6 mt-auto text-sm text-gray-400 border-t border-gray-800">
+          <p className="mb-4">Panel administracyjny</p>
+
+          <button
+            onClick={handleLogout}
+            className="hover:bg-orange-600 w-full px-4 py-2 text-sm font-medium text-white transition bg-orange-500 cursor-pointer"
+          >
+            Wyloguj
+          </button>
         </div>
       </aside>
 

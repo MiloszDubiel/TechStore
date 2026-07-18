@@ -1,22 +1,149 @@
-import type { ProductForm } from "../../../../../schemas/productSchema";
-import ProductForms from "./ProductForm";
+import { useState } from "react";
+import ProductForm from "./ProductForm";
+import { productEditSchema } from "../../../../../schemas/productSchema";
+import { useSeller } from "../../../../../hooks/useSeller";
+import { toast } from "react-toastify";
+import { uploadImage } from "../../../../../api/seller";
+
 type Props = {
-  product: ProductForm;
+  product: any;
   onBack: () => void;
 };
+
 const EditProduct = ({ product, onBack }: Props) => {
-  console.log(product);
+  const [removedImages, setRemovedImages] = useState<string[]>([]);
+
+  console.log(product.images);
+
+  const {
+    getCategories: { data: categories = [] },
+    getSubcategories: { data: subcategories = [] },
+
+    updateProduct: { mutate: updateProduct, isPending },
+
+    uploadImage: { mutate: uploadAnotherImage },
+  } = useSeller();
+
+  const getImages = () => {
+    if (!product?.images) return [];
+
+    return product.images.map(
+      (img: any) => `${import.meta.env.VITE_API_URL}${img.url}`
+    );
+  };
+
   return (
-    <>
+    <div className="space-y-6">
       <button
         onClick={onBack}
-        className="focus:ring-2 hover:bg-orange-600 px-4 py-3 text-white bg-orange-500 border-none outline-none cursor-pointer resize-none"
+        className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500"
       >
         ← Powrót
       </button>
 
-      <ProductForms mode="edit" defaultValues={product} />
-    </>
+      <ProductForm
+        mode="edit"
+        schema={productEditSchema}
+        defaultValues={{
+          name: product.name,
+          description: product.description,
+          brand: product.brand,
+          model: product.model,
+          price: String(product.price),
+          stock: String(product.stock),
+          category_id: String(product.category_id),
+          subcategory_id: String(product.subcategory_id),
+
+          attributes:
+            typeof product.attributes === "string"
+              ? JSON.parse(product.attributes)
+              : product.attributes ?? [],
+
+          images: [],
+          existingImages: getImages(),
+          removedImages: [],
+        }}
+        categories={categories}
+        subcategories={subcategories}
+        existingImages={getImages()}
+        onRemoveExisting={(image) => {
+          const filename = image.split("/").pop();
+
+          if (filename) {
+            setRemovedImages((prev) => [...prev, filename]);
+          }
+        }}
+        onSubmit={(data) => {
+          const formData = new FormData();
+
+          console.log(data);
+
+          formData.append("name", data.name);
+          formData.append("description", data.description);
+          formData.append("brand", data.brand);
+          formData.append("model", data.model);
+          formData.append("price", data.price);
+          formData.append("stock", data.stock);
+          formData.append("category_id", data.category_id);
+          formData.append("subcategory_id", data.subcategory_id);
+          formData.append("attributes", JSON.stringify(data.attributes));
+          formData.append("removedImages", JSON.stringify(removedImages));
+
+          updateProduct(
+            {
+              id: product.id,
+              product: formData,
+            },
+            {
+              onSuccess: () => {
+                // jeżeli są nowe zdjęcia
+                if (data.images?.length) {
+                  const imagesFormData = new FormData();
+
+                  data.images.forEach((file: any) => {
+                    imagesFormData.append("images", file);
+                  });
+
+                  uploadAnotherImage(
+                    {
+                      productId: product.id,
+                      formData: imagesFormData,
+                    },
+
+                    {
+                      onSuccess: () => {
+                        toast.success(
+                          "Produkt oraz zdjęcia zostały zaktualizowane"
+                        );
+
+                        onBack();
+                      },
+
+                      onError: () => {
+                        toast.warning(
+                          "Produkt zapisany, ale zdjęcia nie zostały dodane"
+                        );
+
+                        onBack();
+                      },
+                    }
+                  );
+                } else {
+                  toast.success("Produkt został zaktualizowany");
+
+                  onBack();
+                }
+              },
+
+              onError: () => {
+                toast.error("Nie udało się zaktualizować produktu");
+              },
+            }
+          );
+        }}
+        isLoading={isPending}
+      />
+    </div>
   );
 };
 

@@ -5,8 +5,7 @@ import { useCartStore } from "../../../zustand/states/cartState";
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../../context/AuthContext";
-
-import NotificationCard from "../../../components/ui/NotificationCard";
+import { toast } from "react-toastify";
 
 const methods = {
   blik: "Kod BLIK",
@@ -62,6 +61,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
 
       setIsComplete(true);
 
+      toast.success("Zamówienie złożone");
       onSuccess(response.data.order_number);
     },
 
@@ -74,8 +74,6 @@ const SummaryStep = ({ back, onSuccess }: any) => {
 
   return (
     <div>
-      <h2 className="mb-6 text-2xl font-bold">Podsumowanie zamówienia</h2>
-      {isSuccess && <NotificationCard message={"Zamówienie złożone"} />}
       <section className="mb-5">
         <h3 className="mb-2 text-lg font-semibold">Dane klienta</h3>
 

@@ -6,13 +6,13 @@ import { useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import axios from "axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import NotificationCard from "../../../components/ui/NotificationCard";
+import { toast } from "react-toastify";
 
 export const PersonalData = () => {
   const queryClient = useQueryClient();
   const { user, token } = useAuth();
 
-  console
+  console;
 
   const {
     register,
@@ -61,20 +61,19 @@ export const PersonalData = () => {
     console.log(er);
   };
   const onSubmit = (data: ProfileFormData) => {
-    mutate(data);
+    mutate(data, { onSuccess: () => toast.success("Zmieniono dane") });
   };
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-4">Dane osobowe</h2>
+      <h2 className="mb-4 text-2xl font-bold">Dane osobowe</h2>
 
       <div className="space-y-3">
         <div>
-          <p className="text-gray-500 mb-2">Zarządzaj swoimi danymi konta</p>
-          {isSuccess && <NotificationCard message={"Dane zostały zapisane"} />}
+          <p className="mb-2 text-gray-500">Zarządzaj swoimi danymi konta</p>
 
           {isError && (
-            <div className=" p-4 border-l-4 border-orange-500 bg-orange-50 text-sm text-red-700">
+            <div className=" bg-orange-50 p-4 text-sm text-red-700 border-l-4 border-orange-500">
               Wystąpił błąd podczas zapisu
             </div>
           )}
@@ -85,16 +84,16 @@ export const PersonalData = () => {
           >
             <fieldset>
               <div>
-                <label className="text-sm text-gray-600 border-">Imię</label>
+                <label className="border- text-sm text-gray-600">Imię</label>
 
                 <input
                   {...register("name")}
                   placeholder="Imię"
-                  className="w-full border p-3 focus:outline-none focus:border-orange-500 border-gray-200"
+                  className="focus:outline-none focus:border-orange-500 w-full p-3 border border-gray-200"
                 />
               </div>
               {errors.name && (
-                <p className="text-red-500 text-sm">{errors.name.message}</p>
+                <p className="text-sm text-red-500">{errors.name.message}</p>
               )}
 
               <div>
@@ -103,11 +102,11 @@ export const PersonalData = () => {
                 <input
                   placeholder="Nazwisko"
                   {...register("last_name")}
-                  className="w-full border p-3 focus:outline-none focus:border-orange-500 border-gray-200"
+                  className="focus:outline-none focus:border-orange-500 w-full p-3 border border-gray-200"
                 />
               </div>
               {errors.last_name && (
-                <p className="text-red-500 text-sm">
+                <p className="text-sm text-red-500">
                   {errors.last_name.message}
                 </p>
               )}
@@ -118,11 +117,11 @@ export const PersonalData = () => {
                 <input
                   {...register("email")}
                   placeholder="Email"
-                  className="w-full border p-3 border-gray-200"
+                  className="w-full p-3 border border-gray-200"
                 />
 
                 {errors.email && (
-                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
                 )}
               </div>
 
@@ -135,16 +134,16 @@ export const PersonalData = () => {
                   {...register("phone")}
                   placeholder="Telefon"
                   maxLength={9}
-                  className="w-full border p-3 focus:outline-none focus:border-orange-500 border-gray-200"
+                  className="focus:outline-none focus:border-orange-500 w-full p-3 border border-gray-200"
                 />
                 {errors.phone && (
-                  <p className="text-red-500 text-sm">{errors.phone.message}</p>
+                  <p className="text-sm text-red-500">{errors.phone.message}</p>
                 )}
               </div>
 
-              <div className="pt-4 flex gap-3">
+              <div className="flex gap-3 pt-4">
                 <button
-                  className="flex-1 bg-orange-500 text-white py-3 hover:bg-orange-600 transition"
+                  className="hover:bg-orange-600 flex-1 py-3 text-white transition bg-orange-500"
                   disabled={isSubmitting}
                   type="submit"
                 >
@@ -152,7 +151,7 @@ export const PersonalData = () => {
                 </button>
 
                 <button
-                  className="flex-1 border py-3 hover:bg-gray-100 transition"
+                  className="hover:bg-gray-100 flex-1 py-3 transition border"
                   type="reset"
                 >
                   Anuluj

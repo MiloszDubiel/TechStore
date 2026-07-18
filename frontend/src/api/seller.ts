@@ -50,6 +50,7 @@ export const getCompanyInfo = async () => {
   const { data } = await axios.get(`${API}/get-my-profile`, {
     headers: {
       Authorization: `Bearer ${token()}`,
+      "Content-Type": "multipart/form-data",
     },
   });
 

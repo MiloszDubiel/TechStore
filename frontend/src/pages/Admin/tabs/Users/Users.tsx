@@ -1,27 +1,25 @@
-import { Search, ShieldCheck, Trash2, UserCog, Ban } from "lucide-react";
+import { Search, CheckCircle, UserCog, Ban } from "lucide-react";
 import { useState } from "react";
 import { useAdmin } from "../../../../hooks/useAdmin";
 import { useAuth } from "../../../../context/AuthContext";
 import EditUser from "./EditUser";
-import { useNotificationStore } from "../../../../zustand/states/NotificationState";
 import ConfirmModal from "../../../../components/ui/ConfirmModal";
+import { toast } from "react-toastify";
 
 const Users = () => {
   const [search, setSearch] = useState("");
-  const [currentUser, setCurrentUser] = useState<any>();
-  const { token } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState<any>();
-  const [editUser, setEditUser] = useState<boolean>();
-
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [confirmData, setConfirmData] = useState({
+    title: "",
+    message: "",
+  });
   const [onConfirm, setOnConfirm] = useState<(() => void) | undefined>();
-  const showNotification = useNotificationStore(
-    (state) => state.showNotification
-  );
 
+  const { token } = useAuth();
   const {
     users: { data = [] },
-    removeUser,
+    activeUser,
     BanUser,
   } = useAdmin(token!);
 
@@ -29,9 +27,21 @@ const Users = () => {
     user.email.toLowerCase().includes(search.toLowerCase())
   );
 
+  console.log(data);
   const numberOfAdmins = data.filter((user: any) => user.role === "ADMIN");
   const numberOfSellers = data.filter((user: any) => user.role === "SELLER");
-
+  if (selectedUser) {
+    return (
+      <EditUser
+        user={selectedUser}
+        onBack={() => setSelectedUser(null)}
+        onSuccess={() => {
+          toast.success("Pomyślnie zaktualizowano użytkownika");
+          setSelectedUser(null);
+        }}
+      />
+    );
+  }
   return (
     <div>
       <div className=" flex items-center justify-between mb-6">
@@ -90,6 +100,8 @@ const Users = () => {
 
               <th className="px-5 py-4">Data rejestracji</th>
 
+              <th className="px-5 py-4">Status</th>
+
               <th className="px-5 py-4">Akcje</th>
             </tr>
           </thead>
@@ -124,20 +136,22 @@ const Users = () => {
                   </span>
                 </td>
 
-                <td className="px-5 py-4 text-gray-600">{user.created}</td>
+                <td className="px-5 py-4 text-gray-600">
+                  {new Date(user.created_at).toLocaleDateString("pl-PL")}
+                </td>
+                <td className="px-5 py-4 text-gray-600">
+                  {user.is_active == 1 ? "Aktywny" : "Nieaktywny"}
+                </td>
 
                 <td className=" flex gap-3 px-5 py-4">
                   <button
                     className=" hover:text-blue-800 text-blue-600"
-                    onClick={() => {
-                      setEditUser(true);
-                      setCurrentUser(user);
-                    }}
+                    onClick={() => setSelectedUser(user)}
                   >
                     <UserCog size={19} />
                   </button>
 
-                  {user.role !== "ADMIN" && (
+                  {/* {user.role !== "ADMIN" && (
                     <button
                       className=" hover:text-red-800 text-red-600"
                       onClick={() => {
@@ -147,62 +161,58 @@ const Users = () => {
                     >
                       <Trash2 size={19} />
                     </button>
-                  )}
+                  )} */}
 
-                  {user.role !== "ADMIN" && (
-                    <button
-                      className="hover:text-orange-800 text-orange-600"
-                      onClick={() => {
-                        setCurrentUser(user);
+                  {user.role !== "ADMIN" &&
+                    (user.is_active ? (
+                      <button
+                        className="hover:text-red-800 text-red-600"
+                        onClick={() => {
+                          setConfirmData({
+                            title: "Zdezaktywować użytkownika?",
+                            message:
+                              "Czy na pewno chcesz dezaktywować tego użytkownika?",
+                          });
 
-                        setMessage({
-                          title: "Dezaktywować użytkownika?",
-                          message:
-                            "Czy na pewno chcesz zdezaktywować tego użytkownika? Będzie mógł ponownie korzystać z konta dopiero po ponownej aktywacji.",
-                        });
+                          setIsConfirmOpen(true);
 
-                        setOnConfirm(() => () => {
-                          BanUser.mutate(user.id as number, {
+                          setOnConfirm(() => () => {
+                            BanUser.mutate(user.id, {
+                              onSuccess: () => {
+                                toast.success("Użytkownik został zablokowany");
+                                setIsConfirmOpen(false);
+                              },
+                            });
+                          });
+                        }}
+                      >
+                        <Ban size={19} />
+                      </button>
+                    ) : (
+                      <button
+                        className="hover:text-green-800 text-green-600"
+                        onClick={() => {
+                          activeUser.mutate(user.id, {
                             onSuccess: () => {
-                              showNotification(
-                                "Użytkownik został zdezaktywowany.",
-                                "success"
-                              );
-
-                              setIsOpen(false);
+                              toast.success("Użytkownik został odblokowany");
                             },
                           });
-                        });
-
-                        setIsOpen(true);
-                      }}
-                    >
-                      <Ban size={19} />
-                    </button>
-                  )}
+                        }}
+                      >
+                        <CheckCircle size={19} />
+                      </button>
+                    ))}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {editUser && (
-          <EditUser
-            user={currentUser}
-            onClose={() => {
-              setCurrentUser(null);
-            }}
-            onSuccess={() => {
-              setCurrentUser(null);
-              setEditUser(false);
-              showNotification("Pomyślnie edytowano użytkownika", "success");
-            }}
-          />
-        )}
+
         <ConfirmModal
-          isOpen={isOpen}
-          title={message?.title}
-          message={message?.message}
-          onCancel={() => setIsOpen(false)}
+          isOpen={isConfirmOpen}
+          title={confirmData.title}
+          message={confirmData.message}
+          onCancel={() => setIsConfirmOpen(false)}
           onConfirm={onConfirm ?? (() => {})}
         />
       </div>

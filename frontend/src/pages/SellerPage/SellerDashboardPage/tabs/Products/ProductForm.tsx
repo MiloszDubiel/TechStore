@@ -1,133 +1,85 @@
 import { Save, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  productSchema,
-  type ProductForm,
-} from "../../../../../schemas/productSchema";
-import { useFieldArray } from "react-hook-form";
-import { useSeller } from "../../../../../hooks/useSeller";
-import NotificationCard from "../../../../../components/ui/NotificationCard";
-import ImageUploader from "../../../../../components/ui/ImageUploader";
-import { useQueryClient } from "@tanstack/react-query";
 
-type ProductFormProps = {
-  mode: "create" | "edit";
-  defaultValues: any;
+import ImageUploader from "../../../../../components/ui/ImageUploader";
+import { useEffect } from "react";
+
+type PropsEr = {
+  message?: any;
 };
 
-const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
-  const isEdit = mode === "edit";
-  const [info, setInfo] = useState("");
+const FormError = ({ message }: PropsEr) => {
+  if (!message) return null;
+  return <p className="mt-1 text-sm text-red-500">{message}</p>;
+};
 
-  const defaultValues1 = defaultValues
-    ? defaultValues
-    : {
-        name: "",
-        brand: "",
-        model: "",
-        description: "",
+type Props = {
+  mode: "create" | "edit";
+  schema: any;
+  defaultValues: any;
+  onSubmit: (data: any) => void;
+  categories: any[];
+  subcategories: any[];
+  existingImages?: string[];
+  onRemoveExisting?: (image: string) => void;
+  isSuccess?: boolean;
+};
 
-        price: "",
-        stock: "",
-
-        category_id: "",
-        subcategory_id: "",
-
-        images: [],
-        attributes: [
-          {
-            name: "",
-            value: "",
-          },
-        ],
-      };
-
+const ProductForm = ({
+  mode,
+  schema,
+  defaultValues,
+  onSubmit,
+  categories,
+  subcategories,
+  existingImages = [],
+  onRemoveExisting,
+  isSuccess,
+}: Props) => {
   const {
     register,
     handleSubmit,
     control,
+    watch,
     setValue,
     reset,
-    watch,
     formState: { errors },
-  } = useForm<ProductForm>({
-    resolver: zodResolver(productSchema),
-
-    defaultValues: defaultValues1,
+  } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues,
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
-
     name: "attributes",
   });
 
-  const {
-    addProduct: { mutate, isSuccess },
-    getCategories: { data: categories = [] },
-    getSubcategories: { data: subcategories = [] },
-    uploadImage,
-  } = useSeller();
-
-  const queryClient = useQueryClient();
-
-  const onSubmit = (data: ProductForm) => {
-    const productData = {
-      name: data.name,
-      brand: data.brand,
-      model: data.model,
-      description: data.description,
-      price: data.price,
-      stock: data.stock,
-      category_id: data.category_id,
-      subcategory_id: data.subcategory_id,
-      attributes: data.attributes,
-    };
-
-    mutate(productData, {
-      onSuccess: (product) => {
-        const productId = product.id;
-
-        if (data.images.length > 0) {
-          const imagesForm = new FormData();
-
-          data.images.forEach((file) => {
-            imagesForm.append("images", file);
-          });
-
-          uploadImage.mutate({
-            productId,
-            formData: imagesForm,
-          });
-        }
-
-        setInfo("Produkt został dodany");
-        reset();
-        queryClient.invalidateQueries({ queryKey: ["products"] });
-      },
-    });
-  };
-  const selectedCategoryId = watch("category_id");
+  const selectedCategory = watch("category_id");
 
   const filteredSubcategories = subcategories.filter(
-    (sub: any) => sub.category_id === Number(selectedCategoryId)
+    (item) => Number(item.category_id) === Number(selectedCategory)
   );
+
+  useEffect(() => {
+    reset();
+  }, [isSuccess]);
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form
+      onSubmit={handleSubmit(onSubmit, (err) => console.log(err))}
+      className="space-y-6"
+    >
       <div>
         <label className="block mb-2 font-medium">Nazwa produktu</label>
-        {isSuccess && <NotificationCard message={info} />}
+
         <input
           {...register("name")}
           placeholder="Np. Lenovo Legion 5"
           className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
         />
 
-        {errors.name && (
-          <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
-        )}
+        <FormError message={errors.name?.message} />
       </div>
 
       <div>
@@ -139,9 +91,7 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
           className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
         />
 
-        {errors.brand && (
-          <p className="mt-1 text-sm text-red-500">{errors.brand.message}</p>
-        )}
+        <FormError message={errors?.brand?.message} />
       </div>
 
       <div>
@@ -153,9 +103,7 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
           className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
         />
 
-        {errors.model && (
-          <p className="mt-1 text-sm text-red-500">{errors.model.message}</p>
-        )}
+        <FormError message={errors?.model?.message} />
       </div>
 
       <div>
@@ -168,11 +116,7 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
           className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none resize-none"
         />
 
-        {errors.description && (
-          <p className="mt-1 text-sm text-red-500">
-            {errors.description.message}
-          </p>
-        )}
+        <FormError message={errors?.description?.message} />
       </div>
 
       <div className="md:grid-cols-2 grid grid-cols-1 gap-6">
@@ -186,9 +130,7 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
             className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300"
           />
 
-          {errors.price && (
-            <p className="mt-1 text-sm text-red-500">{errors.price.message}</p>
-          )}
+          <FormError message={errors?.price?.message} />
         </div>
 
         <div>
@@ -201,9 +143,7 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
             className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300"
           />
 
-          {errors.stock && (
-            <p className="mt-1 text-sm text-red-500">{errors.stock.message}</p>
-          )}
+          <FormError message={errors?.stock?.message} />
         </div>
       </div>
 
@@ -228,11 +168,7 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
           ))}
         </select>
 
-        {errors.category_id && (
-          <p className="mt-1 text-sm text-red-500">
-            {errors.category_id.message}
-          </p>
-        )}
+        <FormError message={errors?.category_id?.message} />
       </div>
 
       <div>
@@ -251,11 +187,7 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
           ))}
         </select>
 
-        {errors.subcategory_id && (
-          <p className="mt-1 text-sm text-red-500">
-            {errors.subcategory_id.message}
-          </p>
-        )}
+        <FormError message={errors?.subcategory_id?.message} />
       </div>
 
       <div className="p-5 border border-gray-300">
@@ -297,12 +229,6 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
                   placeholder="Np. RAM"
                   className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-2 border border-gray-300"
                 />
-
-                {errors.attributes?.[index]?.name && (
-                  <p className="text-sm text-red-500">
-                    {errors.attributes[index]?.name?.message}
-                  </p>
-                )}
               </div>
 
               <div>
@@ -311,12 +237,6 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
                   placeholder="Np. 16GB"
                   className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-2 border border-gray-300"
                 />
-
-                {errors.attributes?.[index]?.value && (
-                  <p className="text-sm text-red-500">
-                    {errors.attributes[index]?.value?.message}
-                  </p>
-                )}
               </div>
 
               <button
@@ -330,36 +250,29 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
           ))}
         </div>
 
-        {errors.attributes?.message && (
+        {typeof errors.attributes?.message === "string" && (
           <p className="mt-2 text-sm text-red-500">
             {errors.attributes.message}
           </p>
         )}
       </div>
-      <div>
-        {mode === "create" && (
-          <>
-            <label className="block mb-2 font-medium">Zdjęcia</label>
-            <label className="text-xs">
-              Pierwsze zdjecie staje sie głównym zdjeciem produktu
-            </label>
-            <ImageUploader
-              value={watch("images")}
-              onChange={(files) =>
-                setValue("images", files, {
-                  shouldValidate: true,
-                })
-              }
-              multiple
-              maxFiles={8}
-            />
-            {errors.images && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.images.message}
-              </p>
-            )}
-          </>
-        )}
+      <div className="p-6 bg-white border border-gray-300">
+        <h2 className="mb-3 text-xl font-semibold">Zdjęcia</h2>
+
+        <ImageUploader
+          images={existingImages}
+          value={watch("images") || []}
+          onChange={(files: File[]) => {
+            setValue("images", files, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+          }}
+          onRemoveExisting={onRemoveExisting}
+          multiple
+          maxFiles={8}
+        />
+        <FormError message={errors?.images?.message} />
       </div>
 
       <div className="flex justify-end">
@@ -368,11 +281,10 @@ const ProductForms = ({ mode, defaultValues }: ProductFormProps) => {
           className="hover:bg-orange-600 flex items-center gap-2 px-6 py-3 text-white transition bg-orange-500"
         >
           <Save size={18} />
-          {isEdit ? "Zapisz zmiany" : "Dodaj produkt do sprzedaży"}
+          {mode === "edit" ? "Zapisz zmiany" : "Dodaj produkt do sprzedaży"}
         </button>
       </div>
     </form>
   );
 };
-
-export default ProductForms;
+export default ProductForm;

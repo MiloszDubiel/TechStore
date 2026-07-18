@@ -1,6 +1,86 @@
-import ProductForms from "./ProductForm";
+import ProductForm from "./ProductForm";
+import { productCreateSchema } from "../../../../../schemas/productSchema";
+import { useSeller } from "../../../../../hooks/useSeller";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 const AddProduct = () => {
+  const {
+    addProduct: { mutate, isSuccess },
+    uploadImage,
+    getCategories: { data: categories = [] },
+    getSubcategories: { data: subcategories = [] },
+    getCompanyInfo: { data: sellerData },
+  } = useSeller();
+
+  const queryClient = useQueryClient();
+
+  const defaultValues = {
+    name: "",
+    brand: "",
+    model: "",
+    description: "",
+    price: "",
+    stock: "",
+    category_id: "",
+    subcategory_id: "",
+    attributes: [
+      {
+        name: "",
+        value: "",
+      },
+    ],
+    images: [],
+  };
+
+  const onSubmit = (data: any) => {
+    const productData = {
+      name: data.name,
+      brand: data.brand,
+      model: data.model,
+      description: data.description,
+      price: data.price,
+      stock: data.stock,
+      category_id: data.category_id,
+      subcategory_id: data.subcategory_id,
+      attributes: data.attributes,
+      seller_id: sellerData.seller_id,
+    };
+
+    mutate(productData, {
+      onSuccess(product) {
+        const formData = new FormData();
+
+        data.images.forEach((file: File) => {
+          formData.append("images", file);
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["products", "seller-products"],
+        });
+
+        uploadImage.mutate(
+          {
+            productId: product.id,
+            formData,
+          },
+          {
+            onSuccess() {
+              queryClient.invalidateQueries({
+                queryKey: ["products"],
+              });
+
+              toast.success("Produkt został dodany");
+            },
+          }
+        );
+      },
+
+      onError() {
+        toast.error("Nie udało się dodać produktu");
+      },
+    });
+  };
+
   return (
     <div>
       <div className="mb-8">
@@ -9,8 +89,17 @@ const AddProduct = () => {
         <p className="text-gray-500">Utwórz nową ofertę w swoim sklepie</p>
       </div>
 
-      <ProductForms mode="create" defaultValues={null} />
+      <ProductForm
+        mode="create"
+        schema={productCreateSchema}
+        defaultValues={defaultValues}
+        isSuccess={isSuccess}
+        categories={categories}
+        subcategories={subcategories}
+        onSubmit={onSubmit}
+      />
     </div>
   );
 };
+
 export default AddProduct;

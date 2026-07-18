@@ -6,11 +6,12 @@ import {
   type ChangePasswordSchema,
 } from "../../../schemas/seciuritySchema";
 import { useEditUserSecurity } from "../../../hooks/useEditUserSeciurity";
-import NotificationCard from "../../../components/ui/NotificationCard";
+
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 const Security = () => {
   const [successMessage, setSuccessMessage] = useState("");
@@ -42,8 +43,8 @@ const Security = () => {
   const onSubmit = (data: ChangePasswordSchema) => {
     mutate(data, {
       onSuccess: () => {
-        setSuccessMessage(
-          "Hasło zostało pomyślnie zmienione. Za chwilę nastąpi wylogowanie...",
+        toast.success(
+          "Hasło zostało pomyślnie zmienione. Za chwilę nastąpi wylogowanie..."
         );
         localStorage.removeItem("token");
         localStorage.removeItem("refreshToken");
@@ -57,51 +58,46 @@ const Security = () => {
           navigate("/login");
         }, 3000);
       },
+      onError: () =>
+        toast.error(
+          (error as AxiosError<{ message: string }>).response?.data.message ||
+            "Wystąpił błąd"
+        ),
     });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {isSuccess && <NotificationCard message={successMessage} />}
-      {isError && (
-        <NotificationCard
-          message={
-            (error as AxiosError<{ message: string }>).response?.data.message ||
-            "Wystąpił błąd"
-          }
-        />
-      )}
-
       <div>
-        <h2 className="text-2xl font-bold mb-6">Bezpieczeństwo</h2>
+        <h2 className="mb-6 text-2xl font-bold">Bezpieczeństwo</h2>
 
-        <div className="space-y-4 max-w-lg">
+        <div className="max-w-lg space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block mb-1 text-sm font-medium">
               Aktualne hasło
             </label>
 
             <input
               type="password"
               {...register("currentPassword")}
-              className="w-full border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="focus:outline-none focus:ring-2 focus:ring-orange-500 w-full p-3 border border-gray-300"
               placeholder="Wprowadź aktualne hasło"
             />
 
             {errors.currentPassword && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="mt-1 text-sm text-red-500">
                 {errors.currentPassword.message}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Nowe hasło</label>
+            <label className="block mb-1 text-sm font-medium">Nowe hasło</label>
 
             <input
               type="password"
               {...register("newPassword")}
-              className="w-full border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="focus:outline-none focus:ring-2 focus:ring-orange-500 w-full p-3 border border-gray-300"
               placeholder="Wprowadź nowe hasło"
             />
 
@@ -111,44 +107,44 @@ const Security = () => {
             </p>
 
             {errors.newPassword && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="mt-1 text-sm text-red-500">
                 {errors.newPassword.message}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
+            <label className="block mb-1 text-sm font-medium">
               Potwierdź nowe hasło
             </label>
 
             <input
               type="password"
               {...register("confirmPassword")}
-              className="w-full border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="focus:outline-none focus:ring-2 focus:ring-orange-500 w-full p-3 border border-gray-300"
               placeholder="Powtórz nowe hasło"
             />
 
             {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="mt-1 text-sm text-red-500">
                 {errors.confirmPassword.message}
               </p>
             )}
           </div>
 
-          <div className="bg-gray-50 border border-gray-200 p-4">
+          <div className="bg-gray-50 p-4 border border-gray-200">
             <p className="text-sm text-gray-700">Ostatnia zmiana hasła:</p>
 
             {isLoading
               ? "Ładowanie..."
               : !passwordUpdatedAt
-                ? "Nieznana"
-                : new Date(passwordUpdatedAt).toLocaleDateString("pl-PL")}
+              ? "Nieznana"
+              : new Date(passwordUpdatedAt).toLocaleDateString("pl-PL")}
           </div>
 
           <button
             type="submit"
-            className="bg-orange-500 px-5 py-3 text-white font-medium hover:bg-orange-600 transition"
+            className="hover:bg-orange-600 px-5 py-3 font-medium text-white transition bg-orange-500"
           >
             Zmień hasło
           </button>

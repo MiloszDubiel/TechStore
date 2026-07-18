@@ -4,11 +4,12 @@ import {
   createProfile,
   getProfile,
   getProducts,
-  addProduct,
   deleteProduct,
   editSeller,
-  uploadProductImagesController,
   getSellerPage,
+  createProduct,
+  uploadProductImages as uploadProductImagesController,
+  updateProduct,
 } from "../controllers/seller.controller";
 
 import { uploadSellerLogo, uploadProductImages } from "../multer";
@@ -26,9 +27,7 @@ router.get("/products", verifyToken, getProducts);
 
 router.delete("/products/:id", verifyToken, deleteProduct);
 
-
-router.post("/products", verifyToken, addProduct);
-
+router.post("/products", verifyToken, createProduct);
 
 router.post(
   "/products/:id/images",
@@ -47,5 +46,12 @@ router.patch(
 );
 
 router.get("/:slug/:id", getSellerPage);
+
+router.patch(
+  "/products/:id",
+  verifyToken,
+  uploadProductImages.array("images", 8),
+  updateProduct,
+);
 
 export default router;

@@ -1,19 +1,16 @@
 import { type SellerProfileType } from "../../../schemas/sellerSchemta";
 import { useSeller } from "../../../hooks/useSeller";
-
+import { toast } from "react-toastify";
 import SellerProfileForm from "../../../components/ui/SellerForm";
-import { useState } from "react";
-import NotificationCard from "../../../components/ui/NotificationCard";
 import { useQueryClient } from "@tanstack/react-query";
 
 const SellerSettings = () => {
   const {
-    editProfile: { isSuccess, mutate, isPending },
+    editProfile: { mutate, isPending },
     getCompanyInfo: { data },
   } = useSeller();
 
   const queryClient = useQueryClient();
-  const [message, setMessage] = useState("");
 
   const onSubmit = (values: SellerProfileType) => {
     const formData = new FormData();
@@ -26,7 +23,7 @@ const SellerSettings = () => {
 
     mutate(formData, {
       onSuccess: () => {
-        setMessage("Zaaktualizowano dane");
+        toast.success("Pomyślnie zmieniono dane profilu");
         queryClient.invalidateQueries({ queryKey: ["company-info"] });
       },
     });
@@ -34,7 +31,6 @@ const SellerSettings = () => {
 
   return (
     <>
-      {isSuccess && <NotificationCard message={message} />}
       <SellerProfileForm
         mode="edit"
         defaultValues={data}

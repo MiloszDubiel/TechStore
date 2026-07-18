@@ -6,6 +6,12 @@ import {
   updateUserRole,
   updateUser,
   banUser,
+  active,
+  getAdminProducts,
+  hideAdminProduct,
+  showAdminProduct,
+  deleteAdminProduct,
+  updateAdminProduct,
 } from "../api/admin";
 
 export const useAdmin = (token: string) => {
@@ -47,6 +53,16 @@ export const useAdmin = (token: string) => {
     },
   });
 
+  const activeUser = useMutation({
+    mutationFn: (id: number) => active(id, token),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-users"],
+      });
+    },
+  });
+
   const BanUser = useMutation({
     mutationFn: (id: number) => banUser(id, token),
 
@@ -56,12 +72,63 @@ export const useAdmin = (token: string) => {
       });
     },
   });
+  const products = useQuery({
+    queryKey: ["admin-products"],
+
+    queryFn: () => getAdminProducts(token),
+
+    enabled: !!token,
+  });
+  const hideProduct = useMutation({
+    mutationFn: (id: number) => hideAdminProduct(id, token),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-products"],
+      });
+    },
+  });
+  const showProduct = useMutation({
+    mutationFn: (id: number) => showAdminProduct(id, token),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-products"],
+      });
+    },
+  });
+  const deleteProduct = useMutation({
+    mutationFn: (id: number) => deleteAdminProduct(id, token),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-products"],
+      });
+    },
+  });
+
+  const editProduct = useMutation({
+    mutationFn: ({ id, editData }: any) =>
+      updateAdminProduct(id, editData, token),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-products"],
+      });
+    },
+  });
   return {
+    editProduct,
     users,
     BanUser,
     editUser,
     removeUser,
-
+    activeUser,
     changeRole,
+    products,
+    banUser,
+    hideProduct,
+    showProduct,
+    deleteProduct,
   };
 };

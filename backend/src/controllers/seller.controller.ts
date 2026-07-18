@@ -5,12 +5,16 @@ import {
   getSellerByUserId,
   updateUserRoleToSeller,
   getSellerProducts,
-  createProduct,
-  saveProductImages,
+  createProduct as createProductService,
+  updateProductImages,
   deleteProductFromDB,
   editSellerProfile,
   getSellerById,
+  updateProductService,
+  deleteProductImagesService,
 } from "../services/seller.services";
+
+import { getCurrtentProdcutByID } from "../services/prodcuts.service";
 import path from "node:path";
 import fs from "fs";
 
@@ -113,34 +117,23 @@ export const getProducts = async (req: Request, res: Response) => {
   }
 };
 
-export const addProduct = async (req: Request, res: Response) => {
+export const createProduct = async (req: Request, res: Response) => {
   try {
     const sellerId = (req as any).user.id;
 
-    if (!sellerId) {
-      res.status(404).json({ message: "Brak id" });
-    }
+    const slug = slugify(req.body.name + " " + sellerId);
 
-    console.log(req.body);
-
-    const slug = slugify(req.body.name + " " + sellerId, {
-      lower: true,
-      strict: true,
-      trim: true,
-    });
-
-    const product = await createProduct(sellerId, req.body, slug);
+    const product = await createProductService(sellerId, req.body, slug);
 
     res.status(201).json(product);
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     res.status(500).json({
-      message: "Nie udało się dodać produktu",
+      message: "Nie udało się utworzyć produktu",
     });
   }
 };
-
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const sellerId = (req as any).user.id;
@@ -166,31 +159,6 @@ export const deleteProduct = async (req: Request, res: Response) => {
   }
 };
 
-export const uploadProductImagesController = async (req: any, res: any) => {
-  try {
-    const productId = Number(req.params.id);
-
-    const files = req.files;
-
-    console.log(files);
-
-    if (!files || files.length === 0) {
-      return res.status(400).json({
-        message: "Brak zdjęć",
-      });
-    }
-
-    await saveProductImages(productId, files);
-
-    res.json({
-      message: "Zdjęcia dodane",
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Błąd serwera",
-    });
-  }
-};
 export const editSeller = async (req: any, res: any) => {
   try {
     const userId = req.user.id;
@@ -249,6 +217,126 @@ export const getSellerPage = async (req: Request, res: Response) => {
 
     res.status(500).json({
       message: "Błąd pobierania sklepu",
+    });
+  }
+};
+
+export const uploadProductImages = async (req: Request, res: Response) => {
+  try {
+    const sellerId = (req as any).user.id;
+
+    const productId = Number(req.params.id);
+
+    const files = req.files as Express.Multer.File[];
+
+    const images = await updateProductImages(productId, sellerId, files);
+
+    res.status(201).json({
+      message: "Zdjęcia dodane",
+      images,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Nie udało się dodać zdjęć",
+    });
+  }
+};
+export const updateProduct = async (req: Request, res: Response) => {
+  try {
+    const sellerId = (req as any).user.id;
+
+    const productId = Number(req.params.id);
+
+    const files = req.files as Express.Multer.File[];
+
+    const product = await getCurrtentProdcutByID(String(productId));
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Produkt nie istnieje",
+      });
+    }
+
+    const removedImages = req.body.removedImages
+      ? JSON.parse(req.body.removedImages)
+      : [];
+
+    const oldImages = product.product_data?.images ?? [];
+
+    const filteredImages = oldImages.filter(
+      (img: any) => !removedImages.includes(img.image),
+    );
+
+    const uploadedImages =
+      files?.map((file) => ({
+        image: file.filename,
+        url: `/uploads/products/${sellerId}/${productId}/${file.filename}`,
+      })) ?? [];
+
+    const finalImages = [...filteredImages, ...uploadedImages];
+
+    const attributes =
+      typeof req.body.attributes === "string"
+        ? JSON.parse(req.body.attributes)
+        : req.body.attributes;
+
+    await updateProductService({
+      id: productId,
+
+      sellerId,
+
+      name: req.body.name,
+
+      description: req.body.description,
+
+      price: Number(req.body.price),
+
+      stock: Number(req.body.stock),
+
+      brand: req.body.brand,
+
+      model: req.body.model,
+
+      category_id: Number(req.body.category_id),
+
+      subcategory_id: Number(req.body.subcategory_id),
+
+      attributes,
+
+      product_data: {
+        ...product.product_data,
+
+        images: finalImages,
+      },
+    });
+
+    for (const image of removedImages) {
+      const filePath = path.join(
+        process.cwd(),
+        "uploads",
+        "products",
+        String(sellerId),
+        String(productId),
+        image,
+      );
+
+      await fs.promises.unlink(filePath).catch(() => {
+        console.log("Nie znaleziono pliku", image);
+      });
+    }
+
+    await deleteProductImagesService(productId, sellerId, removedImages);
+
+    res.json({
+      message: "Produkt zaktualizowany",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Błąd aktualizacji produktu",
     });
   }
 };

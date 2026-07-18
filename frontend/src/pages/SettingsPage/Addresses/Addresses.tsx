@@ -5,7 +5,7 @@ import { useState } from "react";
 import useAdresses from "../../../hooks/useAdresses";
 import type { AddressFrom } from "../../../schemas/addressSchema";
 import { useAuth } from "../../../context/AuthContext";
-import NotificationCard from "../../../components/ui/NotificationCard";
+
 
 export const Addresses = () => {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
@@ -29,7 +29,6 @@ export const Addresses = () => {
     saveAddress,
     updateAddress,
     deleteAddress,
-    addressDeleteSuccess,
   } = useAdresses(user?.id, token);
 
   return (
@@ -52,9 +51,7 @@ export const Addresses = () => {
       >
         Dodaj adres dostawy
       </button>
-      {addressDeleteSuccess && (
-        <NotificationCard message={"Dane zostały zapisane"} />
-      )}
+      
       {userAddresses && userAddresses.length > 0 ? (
         userAddresses?.map((address: any) => (
           <AddressCard

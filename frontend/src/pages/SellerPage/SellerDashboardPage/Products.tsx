@@ -3,8 +3,9 @@ import { useSeller } from "../../../hooks/useSeller";
 import EditProduct from "./tabs/Products/EditProduct";
 import { useEffect, useState } from "react";
 import ConfirmModal from "../../../components/ui/ConfirmModal";
-import NotificationCard from "../../../components/ui/NotificationCard";
-import { useSearchParams } from "react-router-dom";
+
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const getStatus = (product: any) => {
   if (product.is_deleted) {
@@ -26,10 +27,9 @@ const Products = () => {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [productData, setProductData] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
   const {
     products: { data = [] },
-    deleteProduct: { mutate, isSuccess },
+    deleteProduct: { mutate },
   } = useSeller();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -48,6 +48,8 @@ const Products = () => {
 
     setEditingProduct(product);
   }, [editId, data]);
+
+  const navigate = useNavigate();
 
   if (editingProduct) {
     return (
@@ -71,7 +73,12 @@ const Products = () => {
           <p className="text-gray-500">Zarządzaj produktami w swoim sklepie</p>
         </div>
 
-        <button className=" hover:bg-orange-600 flex items-center gap-2 px-4 py-2 text-white bg-orange-500">
+        <button
+          className=" hover:bg-orange-600 flex items-center gap-2 px-4 py-2 text-white bg-orange-500"
+          onClick={() => {
+            navigate("/seller/dashboard?tab=add-product");
+          }}
+        >
           <Plus size={18} />
           Dodaj produkt
         </button>
@@ -89,8 +96,6 @@ const Products = () => {
       </div>
 
       <div className=" overflow-x-auto border border-gray-300">
-        {isSuccess && <NotificationCard message={message} />}
-
         <table className=" w-full text-left">
           <thead className=" bg-gray-100">
             <tr>
@@ -175,8 +180,10 @@ const Products = () => {
         message={`Czy napewno chcesz usunąć produkt: ${productData?.name}`}
         onConfirm={() => {
           mutate(productData!.id, {
-            onSuccess: (data) => setMessage(data.message),
-            onError: (data) => setMessage(data.message),
+            onSuccess: (data) => {
+              toast.success(data.message);
+            },
+            onError: (data) => toast.error(data.message),
           });
           setIsOpen(false);
         }}

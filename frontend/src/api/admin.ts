@@ -21,13 +21,25 @@ export const deleteUser = async (id: number, token: string) => {
 
   return data;
 };
-export const banUser = (id: number, token: string) =>
-  axios.patch(`/api/admin/users/ban/${id}/`, null, {
+export const banUser = async (id: number, token: string) => {
+  const { data } = await axios.patch(`${API}/users/ban/${id}/`, null, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
+  return data;
+};
+
+export const active = async (id: number, token: string) => {
+  const { data } = await axios.patch(`${API}/users/activate/${id}/`, null, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
+};
 export const updateUserRole = async (
   payload: { id: number; role: string },
   token: string
@@ -67,4 +79,70 @@ export const unactiveUser = async (id: any, token: string) => {
   });
 
   return response.data;
+};
+export const getAdminProducts = async (token: string) => {
+  const { data } = await axios.get(`${API}/products`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
+};
+
+export const hideAdminProduct = async (id: number, token: string) => {
+  const { data } = await axios.patch(
+    `${API}/products/${id}/hide`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return data;
+};
+
+export const showAdminProduct = async (id: number, token: string) => {
+  const { data } = await axios.patch(
+    `${API}/products/${id}/show`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return data;
+};
+
+export const deleteAdminProduct = async (id: number, token: string) => {
+  const { data } = await axios.patch(
+    `${API}/products/${id}/delete`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return data;
+};
+
+export const updateAdminProduct = async (
+  id: number,
+  editData: any,
+  token: string
+) => {
+  console.log(editData);
+  const { data } = await axios.patch(`${API}/products/edit/${id}`, editData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
 };

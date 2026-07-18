@@ -29,7 +29,7 @@ import SellerDashboard from "./pages/SellerPage/SellerDashboardPage/SellerDashbo
 import SellerPage from "./pages/SellerPage/SellerPage";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
-import NotificationCard from "./components/ui/NotificationCard";
+
 
 const AppContent = () => {
   return (
@@ -123,7 +123,6 @@ const AppContent = () => {
         </div>
 
         <Footer />
-        <NotificationCard />
       </div>
     </BrowserRouter>
   );
