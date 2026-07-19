@@ -15,6 +15,9 @@ import {
   addProductImagesService,
   getSellerByUserId,
   updateSellerProfileAdmin,
+  getAdminOrdersService,
+  getAdminOrderDetailsService,
+  updateAdminOrderStatusService,
 } from "../services/admin.services";
 import { getCurrtentProdcutByID } from "../services/prodcuts.service";
 import fs from "fs";
@@ -252,7 +255,6 @@ export const updateSellerByAdmin = async (req: Request, res: Response) => {
 
     const oldLogo = seller.logo ? path.basename(seller.logo) : null;
 
-  
     if (req.file && oldLogo) {
       const oldPath = path.join(
         process.cwd(),
@@ -280,6 +282,60 @@ export const updateSellerByAdmin = async (req: Request, res: Response) => {
 
     res.status(500).json({
       message: "Błąd aktualizacji sklepu",
+    });
+  }
+};
+export const getAdminOrders = async (req: Request, res: Response) => {
+  try {
+    const orders = await getAdminOrdersService();
+
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Wystąpił błąd podczas pobierania zamówień.",
+    });
+  }
+};
+export const getAdminOrderDetails = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    if (!id) {
+      return res.status(200).json({ message: "Brak id" });
+    }
+
+    const orders = await getAdminOrderDetailsService(id as string);
+
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: "Wystąpił błąd podczas pobierania zamówień.",
+    });
+  }
+};
+
+export const updateAdminOrderStatus = async (req: Request, res: Response) => {
+  try {
+    const orderId = Number(req.params.id);
+
+    const { status } = req.body;
+
+    console.log(status);
+
+    await updateAdminOrderStatusService(orderId, status);
+
+    res.json({
+      message: "Status zamówienia zmieniony",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Błąd aktualizacji statusu",
     });
   }
 };

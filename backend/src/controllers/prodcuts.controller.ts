@@ -23,9 +23,12 @@ export const getOffersFromDatabase = async (req: Request, res: Response) => {
 export const orderProdcuts = async (req: Request, res: Response) => {
   const userId = (req as any).user.id;
 
-  const { orderId, success } = await saveOrderToDB(userId, req.body);
+  const { orderId, success, orderNumber } = await saveOrderToDB(
+    userId,
+    req.body,
+  );
 
-  if (success) return res.status(200).json({ orderId, success });
+  if (success) return res.status(200).json({ orderId, success, orderNumber });
 
   return res.status(500).json({ success });
 };

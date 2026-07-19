@@ -12,6 +12,46 @@ export const getUsers = async (token: string) => {
   return data;
 };
 
+export const getOrders = async (token: string) => {
+  const { data } = await axios.get(`${API}/orders`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
+};
+
+export const getAdminOrderDetailsApi = async (id: number, token: string) => {
+  const { data } = await axios.get(`${API}/orders/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
+};
+
+export const updateAdminOrderStatus = async (
+  { id, status }: any,
+  token: string
+) => {
+  const { data } = await axios.patch(
+    `${API}/orders/${id}/status`,
+
+    {
+      status,
+    },
+
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return data;
+};
 export const deleteUser = async (id: number, token: string) => {
   const { data } = await axios.delete(`${API}/users/${id}`, {
     headers: {
@@ -62,7 +102,7 @@ export const updateUserRole = async (
 export const updateUser = async (data: any, token: string) => {
   console.log(data);
 
-  const response = await axios.patch(`/api/admin/users/${data.id}`, data, {
+  const response = await axios.patch(`${API}/users/${data.id}`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -72,7 +112,7 @@ export const updateUser = async (data: any, token: string) => {
 };
 
 export const unactiveUser = async (id: any, token: string) => {
-  const response = await axios.patch(`/api/admin/users/unactive/${id}`, {
+  const response = await axios.patch(`${API}/users/unactive/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

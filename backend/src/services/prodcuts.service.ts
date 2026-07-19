@@ -94,7 +94,7 @@ export const getProducts = async (params: any) => {
     LEFT JOIN seller_profiles sp
       ON sp.user_id = p.seller_id
 
-    WHERE 1 = 1
+    WHERE 1 = 1 AND p.stock > 0
   `;
 
   const queryParams: any[] = [];
@@ -300,8 +300,6 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
 
     let addressId = null;
 
-    console.log(deliveryMethod);
-
     if (deliveryMethod === "COURIER") {
       if (!address) {
         throw new Error("ADDRESS_REQUIRED");
@@ -345,10 +343,6 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
       addressId = addressResult.insertId;
     }
 
-    // =========================
-    // TWORZENIE ZAMÓWIENIA
-    // =========================
-
     const orderNumber = await generateOrderNumber();
 
     const [orderResult]: any = await conn.query(
@@ -368,7 +362,7 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
         status
       )
 
-      VALUES(?,?,?,?,?,?,?,?,?,?,'PENDING')
+      VALUES(?,?,?,?,?,?,?,?,?,?,'NEW')
       `,
       [
         userId,
@@ -394,10 +388,6 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
     );
 
     const orderId = orderResult.insertId;
-
-    // =========================
-    // PRODUKTY ZAMÓWIENIA
-    // =========================
 
     for (const product of productsData) {
       await conn.query(
@@ -429,8 +419,6 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
         ],
       );
 
-      // zmniejszenie magazynu
-
       await conn.query(
         `
         UPDATE products
@@ -439,8 +427,6 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
         `,
         [product.quantity, product.id],
       );
-
-      // automatyczne ukrycie produktu po braku magazynu
 
       await conn.query(
         `

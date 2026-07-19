@@ -15,6 +15,14 @@ const OrderDetails = ({ id, onBack }: any) => {
     return <p>Nie znaleziono zamówienia</p>;
   }
 
+  const orderStatusLabels: Record<string, string> = {
+    NEW: "Nowe",
+    PROCESSING: "W realizacji",
+    SHIPPED: "Wysłane",
+    COMPLETED: "Zakończone",
+    CANCELLED: "Anulowane",
+  };
+
   const { order, items } = data;
 
   const imageUrl = (productId: number, image: string, seller_id: string) =>
@@ -49,7 +57,7 @@ const OrderDetails = ({ id, onBack }: any) => {
           <div>
             <p className="text-sm text-gray-500">Status</p>
 
-            <p className="font-semibold">{order.status}</p>
+            <p className="font-semibold">{orderStatusLabels[order.status]}</p>
           </div>
 
           <div>

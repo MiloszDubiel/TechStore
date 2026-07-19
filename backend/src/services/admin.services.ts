@@ -223,8 +223,6 @@ export const updateProductImages = async (
     return [];
   }
 
-  console.log(images);
-
   const values = images.map((file, index) => [
     productId,
 
@@ -421,4 +419,144 @@ WHERE user_id=?
   );
 
   return rows[0];
+};
+export const getAdminOrdersService = async () => {
+  const [orders] = await connection.query(
+    `
+    SELECT
+      o.id,
+      o.order_number,
+      o.user_id,
+
+      oa.first_name,
+      oa.last_name,
+      oa.phone,
+
+      o.payment_method,
+      o.delivery_method,
+      o.delivery_price,
+      o.total_price,
+      o.status,
+      o.created_at
+
+    FROM orders o
+
+    LEFT JOIN order_addresses oa
+      ON oa.id = o.address_id
+
+    ORDER BY o.created_at DESC
+    `,
+  );
+
+  return orders;
+};
+export const getAdminOrderDetailsService = async (id: string) => {
+  const [rows]: any = await connection.query(
+    `
+    SELECT
+
+      o.id AS order_id,
+      o.order_number,
+      o.status,
+      o.total_price,
+      o.delivery_method,
+      o.delivery_price,
+      o.locker_id,
+      o.locker_name,
+      o.locker_address,
+      o.payment_method,
+      o.created_at,
+
+      u.id AS user_id,
+      u.email,
+
+      oa.first_name,
+      oa.last_name,
+      oa.street,
+      oa.postal_code,
+      oa.city,
+      oa.country,
+      oa.phone,
+
+      oi.id AS item_id,
+      oi.product_id,
+      oi.product_name,
+      oi.quantity,
+      oi.price,
+      oi.image
+
+
+    FROM orders o
+
+
+    JOIN users u
+    ON u.id = o.user_id
+
+
+    LEFT JOIN order_addresses oa
+    ON oa.id = o.address_id
+
+
+    LEFT JOIN order_items oi
+    ON oi.order_id = o.id
+
+
+    WHERE o.id = ?
+
+    `,
+    [id],
+  );
+
+  if (!rows.length) {
+    return null;
+  }
+
+  const order = {
+    order_id: rows[0].order_id,
+    order_number: rows[0].order_number,
+    status: rows[0].status,
+    total_price: rows[0].total_price,
+    delivery_method: rows[0].delivery_method,
+    delivery_price: rows[0].delivery_price,
+    payment_method: rows[0].payment_method,
+    created_at: rows[0].created_at,
+
+    customer: {
+      email: rows[0].email,
+      first_name: rows[0].first_name,
+      last_name: rows[0].last_name,
+      street: rows[0].street,
+      postal_code: rows[0].postal_code,
+      city: rows[0].city,
+      country: rows[0].country,
+      phone: rows[0].phone,
+    },
+
+    items: rows.map((item: any) => ({
+      id: item.item_id,
+      product_id: item.product_id,
+      product_name: item.product_name,
+      quantity: item.quantity,
+      price: item.price,
+      image: item.image,
+    })),
+  };
+
+  return order;
+};
+export const updateAdminOrderStatusService = async (
+  orderId: number,
+  status: string,
+) => {
+  await connection.query(
+    `
+ UPDATE orders
+
+ SET status = ?
+
+ WHERE id = ?
+
+ `,
+    [status, orderId],
+  );
 };

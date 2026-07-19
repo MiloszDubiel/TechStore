@@ -12,6 +12,9 @@ import {
   deleteProductController,
   updateAdminProduct,
   updateSellerByAdmin,
+  getAdminOrders,
+  getAdminOrderDetails,
+  updateAdminOrderStatus,
 } from "../controllers/admin.controller";
 
 import { uploadProductImages, uploadSellerLogo } from "../multer";
@@ -72,6 +75,14 @@ router.patch(
   verifyAdmin,
   uploadSellerLogo.single("logo"),
   updateSellerByAdmin,
+);
+router.get("/orders", verifyToken, verifyAdmin, getAdminOrders);
+router.get("/orders/:id", verifyToken, verifyAdmin, getAdminOrderDetails);
+router.patch(
+  "/orders/:id/status",
+  verifyToken,
+  verifyAdmin,
+  updateAdminOrderStatus,
 );
 
 export default router;

@@ -273,20 +273,19 @@ export const getOrderDetailsFromDB = async (
   userId: number,
 ) => {
   const [rows]: any = await connection.query(
-    `
-    SELECT
+    `SELECT
 
-      o.id AS order_id,
-      o.order_number,
-      o.total_price,
-      o.status,
-      o.created_at,
+    o.id AS order_id,
+    o.order_number,
+    o.total_price,
+    o.status,
+    o.created_at,
 
-      oi.quantity,
-      oi.price AS item_price,
+    oi.quantity,
+    oi.price AS item_price,
 
 
-      JSON_OBJECT(
+    JSON_OBJECT(
         'id', p.id,
         'name', p.name,
         'description', p.description,
@@ -299,68 +298,66 @@ export const getOrderDetailsFromDB = async (
         'subcategory_name', sc.name,
 
         'images',
-        COALESCE(
-          JSON_ARRAYAGG(
-            CASE 
-              WHEN pi.image_url IS NOT NULL THEN
-                JSON_OBJECT(
-                  'image', pi.image_url
-                )
-            END
-          ),
-          JSON_ARRAY()
+        (
+            SELECT COALESCE(
+                JSON_ARRAYAGG(
+                    JSON_OBJECT(
+                        'image', pi.image,
+                        'url', pi.url
+                    )
+                ),
+                JSON_ARRAY()
+            )
+            FROM product_images pi
+            WHERE pi.product_id = p.id
         )
-      ) AS product,
+
+    ) AS product,
 
 
-      JSON_OBJECT(
+    JSON_OBJECT(
         'seller_id', sp.user_id,
         'shop_name', sp.shop_name,
         'company_name', sp.company_name,
         'logo', sp.logo,
         'slug', sp.slug,
         'is_verified', sp.is_verified
-      ) AS seller
+    ) AS seller
 
 
-    FROM orders o
+FROM orders o
 
 
-    LEFT JOIN order_items oi
-      ON oi.order_id = o.id
+LEFT JOIN order_items oi
+    ON oi.order_id = o.id
 
 
-    LEFT JOIN products p
-      ON p.id = oi.product_id
+LEFT JOIN products p
+    ON p.id = oi.product_id
 
 
-    LEFT JOIN categories c
-      ON c.id = p.category_id
+LEFT JOIN categories c
+    ON c.id = p.category_id
 
 
-    LEFT JOIN subcategories sc
-      ON sc.id = p.subcategory_id
+LEFT JOIN subcategories sc
+    ON sc.id = p.subcategory_id
 
 
-    LEFT JOIN product_images pi
-      ON pi.product_id = p.id
+LEFT JOIN seller_profiles sp
+    ON sp.user_id = p.seller_id
 
 
-    LEFT JOIN seller_profiles sp
-      ON sp.user_id = p.seller_id
-
-
-    WHERE o.id = ?
+WHERE 
+    o.id = ?
     AND o.user_id = ?
 
 
-    GROUP BY
-      o.id,
-      oi.id,
-      p.id,
-      sp.id
-
-    `,
+GROUP BY
+    o.id,
+    oi.id,
+    p.id,
+    sp.id`,
     [orderId, userId],
   );
 

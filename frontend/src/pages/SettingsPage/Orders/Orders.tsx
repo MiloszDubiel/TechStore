@@ -22,6 +22,7 @@ const Orders = () => {
     return <p>Ładowanie...</p>;
   }
 
+  
   return (
     <>
       <h2 className="mb-6 text-2xl font-bold">Moje zamówienia</h2>

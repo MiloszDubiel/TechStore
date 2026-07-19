@@ -46,7 +46,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     });
   };
 
-  const { mutate, isSuccess, isPending } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data: any) =>
       axios.post("/api/products/products/order", data, {
         headers: {
@@ -62,7 +62,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       setIsComplete(true);
 
       toast.success("Zamówienie złożone");
-      onSuccess(response.data.order_number);
+      onSuccess(response.data.orderNumber);
     },
 
     onError: (error: any) => {

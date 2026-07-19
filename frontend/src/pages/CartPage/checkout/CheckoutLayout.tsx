@@ -15,7 +15,7 @@ export default function CheckoutLayout() {
   const { checkoutData } = useCheckout();
 
   const [step, setStep] = useState(0);
-  const [order_number, setOrderNumber] = useState<string | null>(null);
+  const [orderNumber, setOrderNumber] = useState<string | null>(null);
 
   const steps =
     checkoutData.delivery?.method === "locker"
@@ -54,7 +54,7 @@ export default function CheckoutLayout() {
           );
 
         case 4:
-          return <OrderSuccess order_number={order_number} />;
+          return <OrderSuccess orderNumber={orderNumber} />;
 
         default:
           return null;
@@ -86,7 +86,7 @@ export default function CheckoutLayout() {
         );
 
       case 5:
-        return <OrderSuccess order_number={order_number} />;
+        return <OrderSuccess orderNumber={orderNumber} />;
 
       default:
         return null;

@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 type Props = {
-  order_number: string | null;
+  orderNumber: string | null;
 };
 
-const OrderSuccess = ({ order_number }: Props) => {
+const OrderSuccess = ({ orderNumber }: Props) => {
   const clearCart = useCartStore((state) => state.clearCart);
   const querClient = useQueryClient();
   useEffect(() => {
@@ -30,10 +30,10 @@ const OrderSuccess = ({ order_number }: Props) => {
         Dziękujemy za zakup. Twoje zamówienie zostało przyjęte do realizacji.
       </p>
 
-      <div className="bg-gray-50 p-4 mb-6 border border-gray-200 rounded-lg">
+      <div className="bg-gray-50 p-4 mb-6 border border-gray-200 ">
         <p className="mb-1 text-sm text-gray-500">Numer zamówienia</p>
 
-        <p className="text-xl font-bold text-orange-500">#{order_number}</p>
+        <p className="text-xl font-bold text-orange-500">#{orderNumber}</p>
       </div>
 
       <p className="mb-6 text-sm text-gray-500">
@@ -42,7 +42,7 @@ const OrderSuccess = ({ order_number }: Props) => {
 
       <Link
         to="/"
-        className=" hover:bg-orange-600 inline-block px-6 py-3 font-medium text-white transition bg-orange-500 rounded-lg"
+        className=" hover:bg-orange-600 inline-block px-6 py-3 font-medium text-white transition bg-orange-500 "
       >
         Wróć do sklepu
       </Link>

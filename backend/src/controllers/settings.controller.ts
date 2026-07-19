@@ -291,9 +291,10 @@ export const getOrderDetails = async (req: Request, res: Response) => {
 
     res.status(200).json({
       order,
-      message: "Błąd pobierania zamówienia",
+      message: "Pobrano zamówienia ",
     });
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       message: "Błąd pobierania zamówienia",
     });

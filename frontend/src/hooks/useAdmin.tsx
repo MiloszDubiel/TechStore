@@ -14,6 +14,9 @@ import {
   updateAdminProduct,
   updateSellerData,
   getSellerById,
+  getOrders,
+  updateAdminOrderStatus,
+  getAdminOrderDetailsApi,
 } from "../api/admin";
 
 export const useAdmin = (token: string) => {
@@ -23,6 +26,32 @@ export const useAdmin = (token: string) => {
     queryKey: ["admin-users"],
 
     queryFn: () => getUsers(token),
+  });
+
+  const orders = useQuery({
+    queryKey: ["admin-orders"],
+
+    queryFn: () => getOrders(token),
+  });
+
+  const getAdminOrderDetails = (id?: number) => {
+    return useQuery({
+      queryKey: ["admin-order-details", id],
+
+      queryFn: () => getAdminOrderDetailsApi(id!, token),
+
+      enabled: !!id && !!token,
+    });
+  };
+
+  const updateOrderStatus = useMutation({
+    mutationFn: (data: any) => updateAdminOrderStatus(data, token),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["admin-orders"],
+      });
+    },
   });
 
   const removeUser = useMutation({
@@ -158,5 +187,8 @@ export const useAdmin = (token: string) => {
     showProduct,
     deleteProduct,
     getAdminSeller,
+    updateOrderStatus,
+    getAdminOrderDetails,
+    orders,
   };
 };
