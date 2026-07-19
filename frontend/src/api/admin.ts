@@ -133,18 +133,22 @@ export const deleteAdminProduct = async (id: number, token: string) => {
 };
 
 export const updateSellerData = async (
-  id: number,
-  sdata: any,
+  {
+    id,
+    data,
+  }: {
+    id: number;
+    data: FormData;
+  },
   token: string
 ) => {
-  const { data } = await axios.patch(`${API}/users/${id}/seller`, sdata, {
+  const response = await axios.patch(`${API}/users/${id}/seller`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
     },
   });
 
-  return data;
+  return response.data;
 };
 
 export const updateAdminProduct = async (
@@ -153,7 +157,7 @@ export const updateAdminProduct = async (
     formData,
   }: {
     id: number;
-    formData: FormData;
+    formData: any;
   },
   token: string
 ) => {
@@ -177,4 +181,14 @@ export const uploadImage = async (
       Authorization: `Bearer ${token}`,
     },
   });
+};
+
+export const getSellerById = async (id: number, token: string) => {
+  const { data } = await axios.get(`${API}/users/${id}/seller`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return data;
 };

@@ -117,6 +117,7 @@ export const getAllAdminProducts = async () => {
       p.model,
       p.is_deleted,
       p.is_visible,
+      p.seller_id,
 
       c.id AS category_id,
       s.id AS subcategory_id,
@@ -229,7 +230,7 @@ export const updateProductImages = async (
 
     file.filename,
 
-    `/uploads/products/${sellerId}/${productId}/${file.filename}`,
+    `uploads/products/${sellerId}/${productId}/${file.filename}`,
 
     index === 0 ? 1 : 0,
   ]);
@@ -321,7 +322,7 @@ export const addProductImagesService = async (
   const values = files.map((file, index) => [
     productId,
     file.filename,
-    `/uploads/products/${sellerId}/${productId}/${file.filename}`,
+    `uploads/products/${sellerId}/${productId}/${file.filename}`,
     index === 0 ? 1 : 0,
   ]);
 
@@ -397,7 +398,7 @@ WHERE user_id=?
 
       postal_code,
 
-      logo,
+      logo || "",
 
       userId,
     ],

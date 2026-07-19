@@ -4,9 +4,11 @@ import fs from "fs";
 
 const storageSellerLogo = multer.diskStorage({
   destination: (req: any, file, cb) => {
-    const userId = req.user.id;
+    const userId = req.params.id;
 
     const uploadPath = path.join("uploads", "sellers", String(userId));
+
+    console.log(req.file);
 
     fs.mkdirSync(uploadPath, {
       recursive: true,
@@ -18,7 +20,7 @@ const storageSellerLogo = multer.diskStorage({
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
 
-    cb(null, `logo${ext}`);
+    cb(null, `logo-${Date.now()}${ext}`);
   },
 });
 
@@ -26,7 +28,7 @@ export const uploadSellerLogo = multer({
   storage: storageSellerLogo,
 
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB
+    fileSize: 5 * 1024 * 1024,
   },
 
   fileFilter: (req, file, cb) => {
@@ -42,8 +44,10 @@ export const uploadSellerLogo = multer({
 
 const storage = multer.diskStorage({
   destination: (req: any, file, cb) => {
-    const sellerId = req.user.id;
-    const productId = req.params.id;
+    console.log(req.query);
+
+    const sellerId = Number(req.body.seller_id || req.user.id);
+    const productId = Number(req.params.id);
 
     const folder = path.join(
       "uploads",
@@ -51,6 +55,8 @@ const storage = multer.diskStorage({
       String(sellerId),
       String(productId),
     );
+
+    console.log("FOLDER:", folder);
 
     fs.mkdirSync(folder, {
       recursive: true,
@@ -64,9 +70,12 @@ const storage = multer.diskStorage({
 
     const filename = `${Date.now()}-${Math.round(Math.random() * 999999)}${ext}`;
 
+    console.log("FILENAME:", filename);
+
     cb(null, filename);
   },
 });
+
 export const uploadProductImages = multer({
   storage,
 
@@ -74,4 +83,3 @@ export const uploadProductImages = multer({
     fileSize: 5 * 1024 * 1024,
   },
 });
-

@@ -12,6 +12,8 @@ type Props = {
 
   multiple?: boolean;
   maxFiles?: number;
+
+  replace?: boolean;
 };
 
 const ImageUploader = ({
@@ -21,6 +23,7 @@ const ImageUploader = ({
   onRemoveExisting,
   multiple = true,
   maxFiles = 5,
+  replace = false,
 }: Props) => {
   const [preview, setPreview] = useState<string[]>([]);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
@@ -29,10 +32,9 @@ const ImageUploader = ({
       .filter((file): file is File => file instanceof File)
       .map((file) => URL.createObjectURL(file));
 
-    const activeImages =
-      value.length > 0
-        ? []
-        : images.filter((image) => !removedImages.includes(image));
+    const activeImages = images.filter(
+      (image) => !removedImages.includes(image)
+    );
 
     setPreview([...activeImages, ...urls]);
 
@@ -47,6 +49,8 @@ const ImageUploader = ({
     images.join("|"),
 
     removedImages.join("|"),
+
+    replace,
   ]);
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -54,7 +58,9 @@ const ImageUploader = ({
 
     if (!multiple) {
       files = acceptedFiles.slice(0, 1);
+    }
 
+    if (replace) {
       onChange(files);
       return;
     }

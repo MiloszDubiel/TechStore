@@ -55,11 +55,11 @@ const Users = () => {
   if (editSeller) {
     return (
       <SellerForm
-        storeData={selectedUser}
         onBack={() => {
           setEditSeller(false);
           setSelectedUser(null);
         }}
+        storeData={selectedUser}
         onSubmit={(data) => {
           const formData = new FormData();
 
@@ -70,9 +70,10 @@ const Users = () => {
           formData.append("street", data.street);
           formData.append("city", data.city);
           formData.append("postal_code", data.postal_code);
+          formData.append("seller_id", selectedUser.id);
 
-          if (data.logo) {
-            formData.append("logo", data.removedLogo);
+          if (data.logo instanceof File) {
+            formData.append("logo", data.logo);
           }
 
           updateSeller.mutate(
@@ -83,7 +84,10 @@ const Users = () => {
             {
               onSuccess: () => {
                 setEditSeller(false);
-                queryClient.invalidateQueries({ queryKey: ["admin-stores"] });
+                queryClient.invalidateQueries({
+                  queryKey: ["admin-users"],
+                });
+
                 toast.success(
                   `Pomyślnie edytowano dane sklepu '${selectedUser.shop_name}', użytkownika: ${selectedUser.name}`
                 );

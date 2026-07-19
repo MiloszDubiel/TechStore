@@ -250,33 +250,10 @@ export const updateSellerByAdmin = async (req: Request, res: Response) => {
       });
     }
 
-    console.log(req.body);
+    const oldLogo = seller.logo ? path.basename(seller.logo) : null;
 
-    const oldLogo = seller.logo;
-
-    const newLogo = req.file ? req.file.filename : oldLogo;
-
-    await updateSellerProfileAdmin(userId, {
-      shop_name: req.body.shop_name,
-
-      description: req.body.description,
-
-      company_name: req.body.company_name,
-
-      nip: req.body.nip,
-
-      street: req.body.street,
-
-      city: req.body.city,
-
-      postal_code: req.body.postal_code,
-
-      logo: newLogo,
-    });
-
-    // usuwanie starego logo
-
-    if (req.file && oldLogo && oldLogo !== newLogo) {
+  
+    if (req.file && oldLogo) {
       const oldPath = path.join(
         process.cwd(),
         "uploads",
@@ -285,10 +262,15 @@ export const updateSellerByAdmin = async (req: Request, res: Response) => {
         oldLogo,
       );
 
-      await fs.promises.unlink(oldPath).catch(() => {
-        console.log("Stare logo nie istnieje");
-      });
+      await fs.promises.unlink(oldPath).catch(() => {});
     }
+
+    const newLogo = req.file ? req.file.filename : oldLogo;
+
+    await updateSellerProfileAdmin(userId, {
+      ...req.body,
+      logo: newLogo,
+    });
 
     res.json({
       message: "Sklep został zaktualizowany",

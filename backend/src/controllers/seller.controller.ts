@@ -12,6 +12,7 @@ import {
   getSellerById,
   updateProductService,
   deleteProductImagesService,
+  getSellerByUserIdService,
 } from "../services/seller.services";
 
 import { getCurrtentProdcutByID } from "../services/prodcuts.service";
@@ -337,6 +338,28 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     res.status(500).json({
       message: "Błąd aktualizacji produktu",
+    });
+  }
+};
+
+export const getSellerData = async (req: Request, res: Response) => {
+  try {
+    const userId = Number(req.params.id);
+
+    const seller = await getSellerByUserIdService(userId);
+
+    if (!seller) {
+      return res.status(404).json({
+        message: "Sklep nie istnieje",
+      });
+    }
+
+    res.json(seller);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Błąd pobierania sklepu",
     });
   }
 };

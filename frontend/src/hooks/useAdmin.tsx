@@ -13,6 +13,7 @@ import {
   deleteAdminProduct,
   updateAdminProduct,
   updateSellerData,
+  getSellerById,
 } from "../api/admin";
 
 export const useAdmin = (token: string) => {
@@ -119,7 +120,7 @@ export const useAdmin = (token: string) => {
   });
 
   const updateSeller = useMutation({
-    mutationFn: ({ id, data }: any) => updateSellerData(id, data, token),
+    mutationFn: ({ id, data }: any) => updateSellerData({ id, data }, token),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -127,6 +128,20 @@ export const useAdmin = (token: string) => {
       });
     },
   });
+
+  const getAdminSeller = (token: string, sellerId?: number) => {
+    const getSeller = useQuery({
+      queryKey: ["seller", sellerId],
+
+      queryFn: () => getSellerById(sellerId!, token),
+
+      enabled: !!sellerId && !!token,
+    });
+
+    return {
+      getSeller,
+    };
+  };
 
   return {
     updateSeller,
@@ -142,5 +157,6 @@ export const useAdmin = (token: string) => {
     hideProduct,
     showProduct,
     deleteProduct,
+    getAdminSeller,
   };
 };

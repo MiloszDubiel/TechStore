@@ -39,30 +39,20 @@ const ProductEditForm = ({ product, onBack }: any) => {
   };
 
   console.log(product);
-
   const onSubmit = (data: any) => {
     const formData = new FormData();
 
     formData.append("name", data.name);
-
+    formData.append("seller_id", product.seller_id);
     formData.append("description", data.description);
-
     formData.append("price", data.price);
-
     formData.append("stock", data.stock);
-
     formData.append("brand", data.brand);
-
     formData.append("model", data.model);
-
     formData.append("category_id", data.category_id);
-
     formData.append("subcategory_id", data.subcategory_id);
-
     formData.append("attributes", JSON.stringify(data.attributes));
-
     formData.append("removedImages", JSON.stringify(removedImages));
-
     data.images?.forEach((file: any) => formData.append("images", file));
 
     updateProducts(

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from "../middleware/auth.middleware";
+import { verifyAdmin } from "../middleware/admin.middleware";
 import {
   createProfile,
   getProfile,
@@ -10,6 +11,7 @@ import {
   createProduct,
   uploadProductImages as uploadProductImagesController,
   updateProduct,
+  getSellerData,
 } from "../controllers/seller.controller";
 
 import { uploadSellerLogo, uploadProductImages } from "../multer";
@@ -23,6 +25,7 @@ router.post(
   createProfile,
 );
 
+router.get("/users/:id/seller", verifyToken, verifyAdmin, getSellerData);
 router.get("/products", verifyToken, getProducts);
 
 router.delete("/products/:id", verifyToken, deleteProduct);

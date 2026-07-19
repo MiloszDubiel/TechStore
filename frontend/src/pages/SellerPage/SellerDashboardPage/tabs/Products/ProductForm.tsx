@@ -270,6 +270,7 @@ const ProductForm = ({
           }}
           onRemoveExisting={onRemoveExisting}
           multiple
+          replace={false}
           maxFiles={8}
         />
         <FormError message={errors?.images?.message} />

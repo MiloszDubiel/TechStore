@@ -497,7 +497,7 @@ export const updateProductImages = async (
 
     file.filename,
 
-    `/uploads/products/${sellerId}/${productId}/${file.filename}`,
+    `uploads/products/${sellerId}/${productId}/${file.filename}`,
 
     index === 0 ? 1 : 0,
   ]);
@@ -539,4 +539,28 @@ export const deleteProductImagesService = async (
     `,
     [productId, sellerId, images],
   );
+};
+export const getSellerByUserIdService = async (userId: number) => {
+  const [rows]: any = await connection.query(
+    `
+    SELECT
+      sp.id,
+      sp.user_id,
+      sp.shop_name,
+      sp.description,
+      sp.company_name,
+      sp.nip,
+      sp.street,
+      sp.city,
+      sp.postal_code,
+      sp.logo,
+      sp.created_at,
+      sp.updated_at
+    FROM seller_profiles sp
+    WHERE sp.user_id = ?
+    `,
+    [userId],
+  );
+
+  return rows[0] ?? null;
 };

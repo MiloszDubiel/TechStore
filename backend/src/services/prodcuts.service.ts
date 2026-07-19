@@ -72,7 +72,9 @@ export const getProducts = async (params: any) => {
       COALESCE(
         JSON_ARRAYAGG(
           JSON_OBJECT(
-            'image', pi.image_url
+            'image', pi.image,
+            'url', pi.url
+
           )
         ),
         JSON_ARRAY()
@@ -251,8 +253,6 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
     await conn.beginTransaction();
 
     const { customer, address, delivery, payment, products } = data;
-
-  
 
     const deliveryMethod = delivery.method.toUpperCase();
 

@@ -8,8 +8,6 @@ import {
 } from "../../schemas/sellerSchemta";
 
 import { Save, Store, Building2 } from "lucide-react";
-import { useSeller } from "../../hooks/useSeller";
-import { OrangeButton } from "./Buttons";
 
 type Props = {
   mode: "create" | "edit";
@@ -32,7 +30,8 @@ const SellerProfileForm = ({
   onBack,
 }: Props) => {
   let data = storeData;
-  if (!data) data = useSeller().getCompanyInfo.data;
+
+  console.log(data);
 
   const {
     register,
@@ -62,8 +61,13 @@ const SellerProfileForm = ({
     onSubmit({
       ...data,
       removedLogo,
+      logo: values[0] ?? null,
     });
   };
+
+  console.log(
+    `${import.meta.env.VITE_API_URL}uploads/sellers/${data.id}/${data.logo}`
+  );
 
   const isEdit = mode === "edit";
   const [values, setValues] = useState<File[]>([]);
@@ -142,6 +146,7 @@ const SellerProfileForm = ({
               onRemoveExisting={(image) => {
                 setRemovedLogo(image);
               }}
+              replace={true}
               multiple={false}
             />
 
