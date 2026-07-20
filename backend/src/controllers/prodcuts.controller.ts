@@ -21,16 +21,27 @@ export const getOffersFromDatabase = async (req: Request, res: Response) => {
 };
 
 export const orderProdcuts = async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
+  const userId = (req as any).user?.id ?? null;
 
-  const { orderId, success, orderNumber } = await saveOrderToDB(
-    userId,
-    req.body,
-  );
+  try {
+    const { orderId, success, orderNumber } = await saveOrderToDB(
+      userId,
+      req.body,
+    );
 
-  if (success) return res.status(200).json({ orderId, success, orderNumber });
+    return res.status(200).json({
+      orderId,
+      success,
+      orderNumber,
+    });
+  } catch (error: any) {
+    console.error(error);
 
-  return res.status(500).json({ success });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 export const getProductByExternalID = async (req: Request, res: Response) => {

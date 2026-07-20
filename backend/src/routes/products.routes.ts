@@ -15,7 +15,7 @@ const router = Router();
 router.get("/products", getOffersFromDatabase);
 router.get("/products/:slug/:id", getProductByExternalID);
 router.get("/products/:id", getProductByID);
-router.post("/products/order", verifyToken, orderProdcuts);
+router.post("/products/order", orderProdcuts);
 router.get("/orders/", verifyToken, getOrders);
 router.get("/orders/:id", verifyToken, getOrderDetails);
 router.get("/categories", verifyToken, getCategories);

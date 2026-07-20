@@ -15,6 +15,16 @@ export const getProducts = async () => {
   return data;
 };
 
+export const getSellerOverview = async () => {
+  const { data } = await axios.get(`${API}/dashboard/overview`, {
+    headers: {
+      Authorization: `Bearer ${token()}`,
+    },
+  });
+
+  return data;
+};
+
 export const addProduct = async (product: any) => {
   const { data } = await axios.post(`${API}/products`, product, {
     headers: {
@@ -135,7 +145,7 @@ export const updateOrderStatus = async ({
   status: string;
 }) => {
   const { data } = await axios.patch(
-    `${API}/orders/${id}`,
+    `${API}/orders/${id}/status`,
     { status },
     {
       headers: {
@@ -143,6 +153,15 @@ export const updateOrderStatus = async ({
       },
     }
   );
+
+  return data;
+};
+export const getOrderDetails = async (id: number) => {
+  const { data } = await axios.get(`${API}/orders/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token()}`,
+    },
+  });
 
   return data;
 };

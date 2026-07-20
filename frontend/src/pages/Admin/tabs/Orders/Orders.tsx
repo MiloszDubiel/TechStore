@@ -66,10 +66,11 @@ const Orders = () => {
           <tbody>
             {filtered.map((order: any) => (
               <tr key={order.id} className="border-t border-gray-200">
-                <td className="p-4 font-semibold">#{order.id}</td>
+                <td className="p-4 font-semibold">#{order.order_number}</td>
 
                 <td className="p-4">
-                  {order.customer_name} {order.customer_last_name}
+                  {order.user_name || order.first_name}{" "}
+                  {order.user_last_name || order.last_name}
                 </td>
 
                 <td className="p-4">{order.email}</td>

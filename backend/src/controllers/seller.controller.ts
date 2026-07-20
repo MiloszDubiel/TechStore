@@ -13,6 +13,10 @@ import {
   updateProductService,
   deleteProductImagesService,
   getSellerByUserIdService,
+  getSellerOverviewService,
+  getSellerOrderDetailsService,
+  getSellerOrdersService,
+  updateSellerOrderStatusService,
 } from "../services/seller.services";
 
 import { getCurrtentProdcutByID } from "../services/prodcuts.service";
@@ -202,20 +206,16 @@ export const editSeller = async (req: any, res: any) => {
 };
 export const getSellerPage = async (req: Request, res: Response) => {
   try {
-    const { id, slug } = req.params;
-
-    const seller = await getSellerById(Number(id), slug as string);
-
+    const { seller_id, slug } = req.params;
+    const seller = await getSellerById(Number(seller_id), slug as string);
     if (!seller) {
       return res.status(404).json({
         message: "Nie znaleziono sprzedawcy",
       });
     }
-
     res.json(seller);
   } catch (error) {
     console.log(error);
-
     res.status(500).json({
       message: "Błąd pobierania sklepu",
     });
@@ -344,10 +344,13 @@ export const updateProduct = async (req: Request, res: Response) => {
 
 export const getSellerData = async (req: Request, res: Response) => {
   try {
+    console.log("PARAM:", req.params.id);
+
     const userId = Number(req.params.id);
 
     const seller = await getSellerByUserIdService(userId);
 
+    console.log("SELLER:", seller);
     if (!seller) {
       return res.status(404).json({
         message: "Sklep nie istnieje",
@@ -360,6 +363,83 @@ export const getSellerData = async (req: Request, res: Response) => {
 
     res.status(500).json({
       message: "Błąd pobierania sklepu",
+    });
+  }
+};
+export const getSellerOverview = async (req: any, res: Response) => {
+  try {
+    const sellerId = req.user.id;
+
+    const overview = await getSellerOverviewService(sellerId);
+
+    res.json(overview);
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      message: "Błąd pobierania statystyk",
+    });
+  }
+};
+export const getSellerOrders = async (req: Request, res: Response) => {
+  try {
+    const sellerId = (req as any).user.id;
+
+    const orders = await getSellerOrdersService(sellerId);
+
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({
+      message: "Błąd pobierania zamówień",
+    });
+  }
+};
+export const getSellerOrderDetails = async (req: Request, res: Response) => {
+  try {
+    const sellerId = (req as any).user.id;
+
+    const orderId = Number(req.params.id);
+
+    const order = await getSellerOrderDetailsService(orderId, sellerId);
+
+    if (!order)
+      return res.status(404).json({
+        message: "Nie znaleziono zamówienia",
+      });
+
+    res.json(order);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Błąd",
+    });
+  }
+};
+export const updateSellerOrderStatus = async (req: Request, res: Response) => {
+  try {
+    const sellerId = (req as any).user.id;
+
+    const orderId = Number(req.params.id);
+
+    const { status } = req.body;
+
+    const updated = await updateSellerOrderStatusService(
+      orderId,
+      sellerId,
+      status,
+    );
+
+    if (!updated)
+      return res.status(404).json({
+        message: "Nie można zmienić statusu",
+      });
+
+    res.json({
+      success: true,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Błąd",
     });
   }
 };

@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import Products from "./Products";
-import Orders from "./Orders";
+import Orders from "./tabs/Orders/Orders";
 import AddProduct from "./tabs/Products/AddProduct";
 import SellerSettings from "./SellerSettings";
 import Overview from "./Overview";

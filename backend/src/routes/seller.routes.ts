@@ -12,6 +12,10 @@ import {
   uploadProductImages as uploadProductImagesController,
   updateProduct,
   getSellerData,
+  getSellerOverview,
+  getSellerOrderDetails,
+  getSellerOrders,
+  updateSellerOrderStatus,
 } from "../controllers/seller.controller";
 
 import { uploadSellerLogo, uploadProductImages } from "../multer";
@@ -48,13 +52,25 @@ router.patch(
   editSeller,
 );
 
-router.get("/:slug/:id", getSellerPage);
+router.get("/:slug/seller_id", getSellerPage);
 
 router.patch(
   "/products/:id",
   verifyToken,
   uploadProductImages.array("images", 8),
   updateProduct,
+);
+
+router.get("/dashboard/overview", verifyToken, getSellerOverview);
+router.get("/orders", verifyToken, getSellerOrders);
+
+router.get("/orders/:id", verifyToken, getSellerOrderDetails);
+
+router.patch(
+  "/orders/:id/status",
+  verifyToken,
+
+  updateSellerOrderStatus,
 );
 
 export default router;

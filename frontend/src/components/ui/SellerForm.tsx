@@ -31,7 +31,7 @@ const SellerProfileForm = ({
 }: Props) => {
   let data = storeData;
 
-  console.log(data);
+  console.log(storeData);
 
   const {
     register,
@@ -47,13 +47,13 @@ const SellerProfileForm = ({
   useEffect(() => {
     if (data) {
       reset({
-        shop_name: data.shop_name ?? "",
-        description: data.description ?? "",
-        company_name: data.company_name ?? "",
-        nip: data.nip ?? "",
-        street: data.street ?? "",
-        city: data.city ?? "",
-        postal_code: data.postal_code ?? "",
+        shop_name: data?.shop_name ?? "",
+        description: data?.description ?? "",
+        company_name: data?.company_name ?? "",
+        nip: data?.nip ?? "",
+        street: data?.street ?? "",
+        city: data?.city ?? "",
+        postal_code: data?.postal_code ?? "",
       });
     }
   }, [data]);
@@ -130,7 +130,7 @@ const SellerProfileForm = ({
                 data?.logo
                   ? [
                       `${import.meta.env.VITE_API_URL}uploads/sellers/${
-                        data.id
+                        data.user_id || data.id
                       }/${data.logo}`,
                     ]
                   : []

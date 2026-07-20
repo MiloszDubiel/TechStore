@@ -1,28 +1,29 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { CheckCircle, Store } from "lucide-react";
-import Navbar from "../../components/layout/Navbar/Navbar";
+import { CheckCircle, Store, Edit } from "lucide-react";
 
+import Navbar from "../../components/layout/Navbar/Navbar";
 import { useAuth } from "../../context/AuthContext";
-import { Edit } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
 const SellerPage = () => {
-  const { slug, id } = useParams();
+  const { slug } = useParams();
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const fetchSeller = async () => {
-    const { data } = await axios.get(`/api/seller/${slug}/${id}`);
+    const { data } = await axios.get(`/api/seller/${slug}/${user?.id}`);
 
     return data;
   };
 
   const { data: seller, isLoading } = useQuery({
-    queryKey: ["seller", id],
+    queryKey: ["seller", slug],
     queryFn: fetchSeller,
+    enabled: !!slug,
   });
 
-  const { user } = useAuth();
-  const navigate = useNavigate();
   if (isLoading) {
     return (
       <>
@@ -42,9 +43,8 @@ const SellerPage = () => {
   }
 
   const imageUrl = (productId: number, sellerId: number, image: string) =>
-    `${
-      import.meta.env.VITE_API_URL
-    }uploads/products/${sellerId}/${productId}/${image}`;
+    `${import.meta.env.VITE_API_URL}
+    uploads/products/${sellerId}/${productId}/${image}`;
 
   return (
     <>
@@ -54,12 +54,11 @@ const SellerPage = () => {
         <div className="max-w-7xl px-6 mx-auto space-y-10">
           <section className="p-8 bg-white border border-gray-300">
             <div className="flex items-center gap-6">
-              <div className="flex items-center justify-center w-32 h-32 bg-gray-100 border border-gray-300">
+              <div className="flex items-center justify-center w-32 h-32 bg-gray-100 border">
                 {seller.logo ? (
                   <img
-                    src={`${import.meta.env.VITE_API_URL}uploads/sellers/${
-                      seller.seller_id
-                    }/${seller.logo}`}
+                    src={`${import.meta.env.VITE_API_URL}
+                      uploads/sellers/${seller.seller_id}/${seller.logo}`}
                     className="object-cover w-full h-full"
                   />
                 ) : (
@@ -102,14 +101,12 @@ const SellerPage = () => {
             </div>
           </section>
 
-          {/* PRODUKTY */}
-
           <section>
             <h2 className="mb-6 text-2xl font-bold">Produkty sprzedawcy</h2>
 
-            <div className="xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid grid-cols-1 gap-6">
+            <div className=" xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid grid-cols-1 gap-6">
               {seller.products
-                .filter((p: any) => p.id !== null)
+                .filter((p: any) => p.id)
                 .map((product: any) => (
                   <div
                     key={product.id}

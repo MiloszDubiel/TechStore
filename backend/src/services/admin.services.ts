@@ -422,29 +422,47 @@ WHERE user_id=?
 };
 export const getAdminOrdersService = async () => {
   const [orders] = await connection.query(
-    `
-    SELECT
-      o.id,
-      o.order_number,
-      o.user_id,
+    `SELECT
+    o.id,
+    o.order_number,
+    o.user_id,
 
-      oa.first_name,
-      oa.last_name,
-      oa.phone,
+    -- użytkownik
+    u.email,
+    u.name AS user_name,
+    u.last_name AS user_last_name,
 
-      o.payment_method,
-      o.delivery_method,
-      o.delivery_price,
-      o.total_price,
-      o.status,
-      o.created_at
+    -- dane z zamówienia (snapshot)
+    oa.first_name,
+    oa.last_name,
+    oa.phone,
 
-    FROM orders o
+    oa.street,
+    oa.postal_code,
+    oa.city,
+    oa.country,
 
-    LEFT JOIN order_addresses oa
-      ON oa.id = o.address_id
+    -- zamówienie
+    o.payment_method,
+    o.delivery_method,
+    o.delivery_price,
+    o.total_price,
+    o.status,
+    o.created_at
 
-    ORDER BY o.created_at DESC
+
+FROM orders o
+
+
+LEFT JOIN users u
+    ON u.id = o.user_id
+
+
+LEFT JOIN order_addresses oa
+    ON oa.id = o.address_id
+
+
+ORDER BY o.created_at DESC;
     `,
   );
 
@@ -470,7 +488,7 @@ export const getAdminOrderDetailsService = async (id: string) => {
       u.id AS user_id,
       u.email,
 
-      oa.first_name,
+      oa.name,
       oa.last_name,
       oa.street,
       oa.postal_code,
@@ -523,7 +541,7 @@ export const getAdminOrderDetailsService = async (id: string) => {
 
     customer: {
       email: rows[0].email,
-      first_name: rows[0].first_name,
+      name: rows[0].name,
       last_name: rows[0].last_name,
       street: rows[0].street,
       postal_code: rows[0].postal_code,

@@ -12,7 +12,7 @@ type Props = {
 
 export default function AddressStep({ next, back }: Props) {
   const { user } = useAuth();
-
+  const [guestAddress, setGuestAddress] = useState<any | null>(null);
   const token =
     localStorage.getItem("token") ?? sessionStorage.getItem("token");
 
@@ -39,9 +39,9 @@ export default function AddressStep({ next, back }: Props) {
     }
   }, [userAddresses]);
 
-  const currentAddress = userAddresses?.find(
-    (address: any) => address.id === selectedAddressId
-  );
+  const currentAddress = user
+    ? userAddresses?.find((address: any) => address.id === selectedAddressId)
+    : guestAddress;
 
   return (
     <div>
@@ -50,7 +50,7 @@ export default function AddressStep({ next, back }: Props) {
       {currentAddress ? (
         <div className="mb-4 space-y-6">
           <div className=" bg-gray-50 p-5 border border-gray-200">
-            <h2 className="font-semibold mb-3">Dane do zamówienia</h2>
+            <h2 className="mb-3 font-semibold">Dane do zamówienia</h2>
 
             <p className="font-medium">{currentAddress.street}</p>
 
@@ -69,7 +69,7 @@ export default function AddressStep({ next, back }: Props) {
         </div>
       )}
 
-      {userAddresses && userAddresses.length > 0 ? (
+      {user && userAddresses && userAddresses.length > 0 ? (
         <div className="space-y-4">
           {userAddresses.map((address: any) => (
             <label
@@ -111,10 +111,12 @@ export default function AddressStep({ next, back }: Props) {
             </label>
           ))}
         </div>
-      ) : (
+      ) : guestAddress ? (
         <div className="p-6 text-center text-gray-500 border border-gray-300 border-dashed">
           Nie masz zapisanych adresów.
         </div>
+      ) : (
+        ""
       )}
 
       <button
@@ -122,7 +124,7 @@ export default function AddressStep({ next, back }: Props) {
         className="hover:bg-orange-50 px-5 py-3 mt-6 text-orange-500 transition border border-orange-500 cursor-pointer"
         onClick={() => setCloseModal(true)}
       >
-        + Dodaj nowy adres
+        {user ? "+ Dodaj nowy adres" : "Zmień adres"}
       </button>
 
       <div className="flex justify-between mt-8">
@@ -137,14 +139,37 @@ export default function AddressStep({ next, back }: Props) {
         <AddressModal
           closeModal={() => setCloseModal(false)}
           saveAddress={(data) => {
-            saveAddress(data, {
-              onSuccess: (response) => {
-                const newAddress = response.data.address;
-                setSelectedAddressId(newAddress.id);
-                updateCheckout({ address: newAddress });
-                setCloseModal(false);
-              },
+            if (user) {
+              saveAddress(data, {
+                onSuccess: (response) => {
+                  const newAddress = response.data.address;
+
+                  setSelectedAddressId(newAddress.id);
+
+                  updateCheckout({
+                    address: newAddress,
+                  });
+
+                  setCloseModal(false);
+                },
+              });
+
+              return;
+            }
+            const newAddress = {
+              id: crypto.randomUUID(),
+              ...data,
+              is_default: true,
+            };
+            setGuestAddress(newAddress);
+
+            setSelectedAddressId(newAddress.id);
+
+            updateCheckout({
+              address: newAddress,
             });
+
+            setCloseModal(false);
           }}
           defaultValues={{
             city: "",

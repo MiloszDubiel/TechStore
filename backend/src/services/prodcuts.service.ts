@@ -301,10 +301,9 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
     let addressId = null;
 
     if (deliveryMethod === "COURIER") {
-      if (!address) {
+      if (!address || !customer) {
         throw new Error("ADDRESS_REQUIRED");
       }
-
       const [addressResult]: any = await conn.query(
         `
         INSERT INTO order_addresses

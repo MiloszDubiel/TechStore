@@ -36,6 +36,7 @@ const SellerSettings = () => {
         defaultValues={data}
         onSubmit={onSubmit}
         isLoading={isPending}
+        storeData={data}
       />
     </>
   );

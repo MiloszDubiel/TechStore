@@ -10,6 +10,11 @@ export const useSeller = () => {
     queryFn: sellerApi.getProducts,
   });
 
+  const getOverview = useQuery({
+    queryKey: ["seller-overview"],
+    queryFn: sellerApi.getSellerOverview,
+  });
+
   const orders = useQuery({
     queryKey: ["seller-orders"],
     queryFn: sellerApi.getOrders,
@@ -86,6 +91,12 @@ export const useSeller = () => {
     queryFn: sellerApi.getSubcategories,
     queryKey: ["subcategories"],
   });
+  const getOrderDetails = (id: number) =>
+    useQuery({
+      queryKey: ["seller-order-details", id],
+      queryFn: () => sellerApi.getOrderDetails(id),
+    });
+
   return {
     products,
     orders,
@@ -99,5 +110,7 @@ export const useSeller = () => {
     editProfile,
     getCompanyInfo,
     uploadImage,
+    getOverview,
+    getOrderDetails,
   };
 };
