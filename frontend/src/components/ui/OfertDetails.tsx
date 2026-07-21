@@ -62,9 +62,10 @@ const OfferDetails = () => {
 
       <main className=" bg-gray-50 min-h-screen py-10">
         <div className=" max-w-7xl px-6 mx-auto">
-          <div className=" lg:grid-cols-12 grid gap-10">
-            <div className=" lg:col-span-7">
-              <div className=" p-6 bg-white border border-gray-300">
+          <div className="lg:grid-cols-12 grid gap-10">
+  
+            <div className="lg:col-span-7">
+              <div className="p-6 bg-white border border-gray-300 shadow-sm">
                 <img
                   src={
                     product.images?.[selectedImage]
@@ -72,80 +73,113 @@ const OfferDetails = () => {
                       : "/no-image.png"
                   }
                   alt={product.name}
-                  className=" h-130 object-contain w-full"
+                  className="
+          w-full
+          h-[520px]
+          object-contain
+        "
                 />
               </div>
 
               {product.images?.length > 1 && (
-                <div className=" flex gap-4 mt-5">
+                <div className="flex flex-wrap gap-4 mt-5">
                   {product.images.map((img: any, index: number) => (
                     <button
                       key={img.image}
                       onClick={() => setSelectedImage(index)}
                       className={`
-                              border
-                              p-1
-                              
-                              ${
-                                selectedImage === index
-                                  ? "border-orange-500"
-                                  : "border-gray-300"
-                              }
-                            `}
+              p-1
+              border
+              transition
+              ${
+                selectedImage === index
+                  ? "border-orange-500"
+                  : "border-gray-300 hover:border-gray-400"
+              }
+            `}
                     >
                       <img
                         src={imageUrl(img.image)}
-                        className=" object-cover w-20 h-20 cursor-pointer"
+                        alt=""
+                        className=" object-cover w-20 h-20"
                       />
                     </button>
                   ))}
                 </div>
               )}
             </div>
-
-            <div className=" lg:col-span-5">
-              <div className=" top-20 sticky p-6 bg-white border border-gray-300">
-                <h1 className=" text-3xl font-bold text-gray-900">
+            <div className="lg:col-span-5">
+              <div className=" top-20 sticky p-6 bg-white border border-gray-300 shadow-sm">
+                <h1 className=" text-3xl font-bold leading-tight text-gray-900">
                   {product.name}
                 </h1>
 
                 <div className=" mt-6 text-4xl font-bold text-orange-500">
-                  {product.price} zł
+                  {Number(product.price).toFixed(2)} zł
                 </div>
 
-                <div className=" mt-4 text-gray-600">
-                  Dostępność:
-                  <span className=" ml-2 font-medium text-green-600">
-                    {product.stock} szt.
+                <div className=" bg-gray-50 flex items-center justify-between p-4 mt-6 border border-gray-200">
+                  <span className="text-gray-600">Dostępność</span>
+
+                  <span
+                    className={`
+            font-semibold
+            ${product.stock > 0 ? "text-green-600" : "text-red-600"}
+          `}
+                  >
+                    {product.stock > 0
+                      ? `${product.stock} szt.`
+                      : "Brak produktu"}
                   </span>
                 </div>
 
-                {product?.seller_id !== user?.id && (
-                  <button
-                    disabled={!product.stock}
-                    onClick={() => addToCart(product)}
-                    className=" disabled:bg-gray-300 hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 mt-6 font-semibold text-white bg-orange-500 cursor-pointer"
-                  >
-                    <ShoppingCart size={20} />
+                <div className="flex flex-col gap-3 mt-6">
+                  {product?.seller_id !== user?.id && (
+                    <button
+                      disabled={!product.stock}
+                      onClick={() => addToCart(product)}
+                      className=" disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 font-semibold text-white transition bg-orange-500"
+                    >
+                      <ShoppingCart size={20} />
 
-                    {product.stock ? "Dodaj do koszyka" : "Brak produktu"}
-                  </button>
-                )}
+                      {product.stock ? "Dodaj do koszyka" : "Brak produktu"}
+                    </button>
+                  )}
 
-                {product?.seller_id === user?.id && (
-                  <button
-                    disabled={!product.stock}
-                    onClick={() => {
-                      navigate(
-                        `/seller/dashboard?tab=products&edit=${product.id}`
-                      );
-                    }}
-                    className=" disabled:bg-gray-300 hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 mt-6 font-semibold text-white bg-orange-500 cursor-pointer"
-                  >
-                    <Edit size={20} />
-                    Edytuj
-                  </button>
-                )}
+                  {product?.seller_id !== user?.id && user && (
+                    <button
+                      onClick={() => {
+                        navigate("/chat", {
+                          state: { seller_id: product.seller_id },
+                        });
+                      }}
+                      className=" disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-orange-500 hover:text-white hover:border-b-orange-500 flex items-center justify-center w-full gap-3 py-4 font-semibold text-black transition border border-gray-300 cursor-pointer"
+                    >
+                      Napisz do sprzedawcy
+                    </button>
+                  )}
+
+                  {product?.seller_id === user?.id && (
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/seller/dashboard?tab=products&edit=${product.id}`
+                        )
+                      }
+                      className=" hover:bg-orange-400 flex items-center justify-center w-full gap-3 py-4 font-semibold text-gray-900 transition bg-white border border-gray-300"
+                    >
+                      <Edit size={20} />
+                      Edytuj produkt
+                    </button>
+                  )}
+                </div>
+
+                <div className=" pt-5 mt-6 text-sm text-gray-500 border-t border-gray-200">
+                  Sprzedawca:
+                  <span className=" ml-2 font-semibold text-gray-900">
+                    {product.shop_name}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -263,10 +297,8 @@ const OfferDetails = () => {
 
           <section className=" mt-12">
             <h2 className=" mb-6 text-2xl font-semibold">Opinie klientów</h2>
-
+            <AddReview productId={id as string} seller_id={product.seller_id} />
             <ReviewsList productId={id as string} />
-
-            <AddReview productId={id as string} />
           </section>
         </div>
       </main>

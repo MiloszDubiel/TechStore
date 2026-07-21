@@ -10,7 +10,6 @@ import {
   ShoppingCart,
   Plus,
   Settings,
-  BarChart3,
   Store,
 } from "lucide-react";
 import Navbar from "../../../components/layout/Navbar/Navbar";
@@ -36,11 +35,7 @@ const tabs = [
     name: "Dodaj produkt do sprzedaży",
     icon: Plus,
   },
-  {
-    id: "analytics",
-    name: "Statystyki",
-    icon: BarChart3,
-  },
+
   {
     id: "settings",
     name: "Ustawienia sklepu",

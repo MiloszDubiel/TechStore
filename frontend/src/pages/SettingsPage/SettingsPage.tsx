@@ -8,7 +8,7 @@ import Security from "./Security/Security";
 import Preferences from "./Preferences/Preferrences";
 import { PersonalData } from "./PersonalData/PersonalData";
 import Orders from "./Orders/Orders";
-
+import { Package, User, MapPinned, ShieldCheck, Settings } from "lucide-react";
 type Tab =
   | "orders"
   | "order-details"
@@ -73,49 +73,54 @@ const AccountPage = () => {
       </section>
 
       <main className="container grid grid-cols-12 gap-8 px-6 py-10 mx-auto">
-        <aside className="h-fit  col-span-3 bg-white shadow-md">
+        <aside className="h-fit col-span-3 bg-white shadow-md">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`w-full text-left p-4 border-b border-gray-200 cursor-pointer ${
+            className={`flex w-full items-center gap-3 border-b border-gray-200 p-4 text-left cursor-pointer ${
               activeTab === "orders" ? "bg-orange-500 text-white" : ""
             }`}
           >
+            <Package size={20} />
             Zamówienia i dane dostaw
           </button>
 
           <button
             onClick={() => setActiveTab("profile")}
-            className={`w-full text-left p-4 border-b border-gray-200 cursor-pointer ${
+            className={`flex w-full items-center gap-3 border-b border-gray-200 p-4 text-left cursor-pointer ${
               activeTab === "profile" ? "bg-orange-500 text-white" : ""
             }`}
           >
+            <User size={20} />
             Dane osobowe
           </button>
 
           <button
             onClick={() => setActiveTab("addresses")}
-            className={`w-full text-left p-4 border-b border-gray-200 cursor-pointer ${
+            className={`flex w-full items-center gap-3 border-b border-gray-200 p-4 text-left cursor-pointer ${
               activeTab === "addresses" ? "bg-orange-500 text-white" : ""
             }`}
           >
+            <MapPinned size={20} />
             Adresy
           </button>
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`w-full text-left p-4 border-b border-gray-200 cursor-pointer ${
+            className={`flex w-full items-center gap-3 border-b border-gray-200 p-4 text-left cursor-pointer ${
               activeTab === "security" ? "bg-orange-500 text-white" : ""
             }`}
           >
+            <ShieldCheck size={20} />
             Bezpieczeństwo
           </button>
 
           <button
             onClick={() => setActiveTab("settings")}
-            className={`w-full text-left p-4 border-gray-200 cursor-pointer ${
+            className={`flex w-full items-center gap-3 p-4 text-left cursor-pointer ${
               activeTab === "settings" ? "bg-orange-500 text-white" : ""
             }`}
           >
+            <Settings size={20} />
             Ustawienia
           </button>
         </aside>

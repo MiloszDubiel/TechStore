@@ -14,8 +14,6 @@ export const registerSchema = z
       .regex(/[\W_]/, "Hasło musi zawierać znak specjalny"),
 
     confirmPassword: z.string(),
-
-    role: z.enum(["USER", "SELLER"]),
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],

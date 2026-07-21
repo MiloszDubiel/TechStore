@@ -196,7 +196,7 @@ sp.banner,
       COALESCE(
         JSON_ARRAYAGG(
           JSON_OBJECT(
-            'image', pi.image_url
+            'image', pi.url
           )
         ),
         JSON_ARRAY()

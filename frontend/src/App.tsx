@@ -10,7 +10,7 @@ import CartPage from "./pages/CartPage/CartPage";
 import OfferDetails from "./components/ui/OfertDetails";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import CheckoutLayout from "./pages/CartPage/checkout/CheckoutLayout";
-
+import Chat from "./pages/ChatPage/Chat";
 import { AuthProvider } from "./context/AuthContext";
 import { FavoriteProvider } from "./context/FavoritesContext";
 import { CheckoutProvider } from "./context/CheckoutContext";
@@ -29,7 +29,6 @@ import SellerDashboard from "./pages/SellerPage/SellerDashboardPage/SellerDashbo
 import SellerPage from "./pages/SellerPage/SellerPage";
 
 import AdminDashboard from "./pages/Admin/AdminDashboard";
-
 
 const AppContent = () => {
   return (
@@ -63,8 +62,6 @@ const AppContent = () => {
               }
             />
 
-            {/* USER */}
-
             <Route
               path="/profile"
               element={
@@ -93,6 +90,15 @@ const AppContent = () => {
                     <BecomeSellerPage />
                   </CheckIsLoggedIn>
                 </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/chat"
+              element={
+                <CheckIsLoggedIn>
+                  <Chat />
+                </CheckIsLoggedIn>
               }
             />
 

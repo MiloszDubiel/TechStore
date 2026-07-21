@@ -4,6 +4,7 @@ import Navbar from "../../components/layout/Navbar/Navbar";
 import SellerProfileForm from "../../components/ui/SellerForm";
 import { useSeller } from "../../hooks/useSeller";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../../context/AuthContext";
 
 const BecomeSellerForm = () => {
   const queryClient = useQueryClient();
@@ -19,6 +20,8 @@ const BecomeSellerForm = () => {
     }
   }, [seller, navigate]);
 
+  const { user } = useAuth();
+
   const submit = (data: any) => {
     const formData = new FormData();
 
@@ -32,12 +35,15 @@ const BecomeSellerForm = () => {
       }
     });
 
+    formData.append("user_id", String(user!.id));
+
+    console.log([...formData]);
+
     createProfile.mutate(formData, {
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ["company-info"],
         });
-
         navigate("/seller/dashboard");
       },
     });

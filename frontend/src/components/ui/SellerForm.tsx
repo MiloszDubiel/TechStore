@@ -17,7 +17,6 @@ type Props = {
   hideButton?: boolean;
   storeData?: any;
   onBack?: any;
-  onSuccess?: any;
 };
 
 const SellerProfileForm = ({
@@ -25,13 +24,12 @@ const SellerProfileForm = ({
   defaultValues,
   onSubmit,
   isLoading,
-  hideButton = false,
+  hideButton,
   storeData = null,
   onBack,
 }: Props) => {
   let data = storeData;
 
-  console.log(storeData);
 
   const {
     register,
@@ -43,7 +41,9 @@ const SellerProfileForm = ({
     resolver: zodResolver(sellerProfileSchema),
     defaultValues,
   });
+
   const [removedLogo, setRemovedLogo] = useState<string | null>(null);
+
   useEffect(() => {
     if (data) {
       reset({
@@ -65,9 +65,6 @@ const SellerProfileForm = ({
     });
   };
 
-  console.log(
-    `${import.meta.env.VITE_API_URL}uploads/sellers/${data.id}/${data.logo}`
-  );
 
   const isEdit = mode === "edit";
   const [values, setValues] = useState<File[]>([]);
@@ -75,13 +72,15 @@ const SellerProfileForm = ({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
       <section className="p-6">
-        <button
-          type="button"
-          onClick={onBack}
-          className="hover:bg-orange-600 px-4 py-3 mb-2 text-white bg-orange-500 cursor-pointer"
-        >
-          ← Powrót
-        </button>
+        {hideButton && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="hover:bg-orange-600 px-4 py-3 mb-2 text-white bg-orange-500 cursor-pointer"
+          >
+            ← Powrót
+          </button>
+        )}
         <div className="flex items-center gap-3 mb-6">
           <Store size={22} className="text-orange-500" />
 

@@ -37,6 +37,7 @@ const SellerSettings = () => {
         onSubmit={onSubmit}
         isLoading={isPending}
         storeData={data}
+        hideButton={false}
       />
     </>
   );

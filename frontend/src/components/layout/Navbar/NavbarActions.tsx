@@ -27,7 +27,7 @@ const NavbarActions = ({
         {language === "pl" ? "EN" : "PL"}
       </button>
 
-      <div className="relative">
+      <div className="relative cursor-pointer">
         <Heart onClick={() => setActive(active === "fav" ? null : "fav")} />
 
         {active === "fav" && (
@@ -38,22 +38,23 @@ const NavbarActions = ({
         )}
       </div>
 
-      <MessageCircle />
+      <MessageCircle className="cursor-pointer" />
 
-      <Bell />
+      <Bell className="cursor-pointer" />
 
       <div className="relative">
         <ShoppingCart
+          className="cursor-pointer"
           onClick={() => setActive(active === "cart" ? null : "cart")}
         />
 
         {active === "cart" && <CartDropdown />}
       </div>
 
-      <div className="relative">
+      <div className=" relative">
         <button
           onClick={() => setActive(active === "account" ? null : "account")}
-          className="hover:text-orange-500 flex items-center gap-3"
+          className="hover:text-orange-500 flex items-center gap-3 cursor-pointer"
         >
           {isAuthenticated ? (
             <>
@@ -74,7 +75,7 @@ const NavbarActions = ({
               </div>
             </>
           ) : (
-            <User size={22} />
+            <User size={22}  />
           )}
         </button>
 

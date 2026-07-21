@@ -1,53 +1,83 @@
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { Star } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import SellerReply from "./../layout/SellerReply";
 
 const ReviewsList = ({ productId }: { productId: string }) => {
   const { user } = useAuth();
+
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ["reviews", productId],
     queryFn: async () => {
       const res = await axios.get(`/api/reviews/product/${productId}`);
+
       return Array.isArray(res.data) ? res.data : [];
     },
   });
 
-  if (isLoading) return <div>Ładowanie opinii...</div>;
+ 
+
+  if (isLoading) {
+    return (
+      <div className="p-6 text-center text-gray-500">Ładowanie opinii...</div>
+    );
+  }
+
+  if (!reviews.length) {
+    return (
+      <div className="p-6 text-center border border-gray-200">
+        <p className="text-gray-500">Ten produkt nie posiada jeszcze opinii.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      {reviews?.map((review: any) => (
-        <div key={review.id} className="p-4 border border-gray-200">
-          <div className="flex justify-between">
-            <span className="font-bold">{review.email}</span>
-            <div className="flex items-center gap-1">
+    <div className="mb-5 space-y-5">
+      {reviews.map((review: any) => (
+        <div key={review.id} className="p-5 bg-white border border-gray-200">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className=" flex items-center justify-center w-10 h-10 font-bold text-white bg-orange-500 rounded-full">
+                {review.email?.charAt(0).toUpperCase()}
+              </div>
+
+              <div>
+                <p className="font-semibold">{review.email}</p>
+
+                <p className="text-xs text-gray-500">
+                  {new Date(review.created_at).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex">
               {[1, 2, 3, 4, 5].map((star) => (
-                <svg
+                <Star
                   key={star}
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  className={`w-5 h-5 ${
-                    review.rating ? "fill-yellow-400" : "fill-gray-300"
-                  }`}
-                >
-                  <path d="M12 17.3l6.18 3.73-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.76-1.64 7.03z" />
-                </svg>
+                  size={20}
+                  className={
+                    star <= review.rating
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-gray-300"
+                  }
+                />
               ))}
             </div>
           </div>
 
-          <p className="mt-2">{review.comment}</p>
+          <p className="mt-4 text-gray-700">{review.comment}</p>
 
           {review.seller_reply && (
-            <div className="p-3 mt-3 bg-gray-100 rounded">
-              <b>Odpowiedź sprzedawcy:</b>
-              <p>{review.seller_reply}</p>
+            <div className=" bg-gray-50 p-4 mt-4 border-l-4 border-orange-500">
+              <p className="font-semibold">Odpowiedź sprzedawcy</p>
+
+              <p className="mt-1 text-gray-700">{review.seller_reply}</p>
             </div>
           )}
 
           {user?.role === "SELLER" && !review.seller_reply && (
-            <SellerReply reviewId={review.id} />
+            <SellerReply reviewId={review.id}  />
           )}
         </div>
       ))}

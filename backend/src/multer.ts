@@ -4,11 +4,10 @@ import fs from "fs";
 
 const storageSellerLogo = multer.diskStorage({
   destination: (req: any, file, cb) => {
-    const userId = req.params.id;
+    const userId = req.params.id || req.user.id;
+
 
     const uploadPath = path.join("uploads", "sellers", String(userId));
-
-    console.log(req.file);
 
     fs.mkdirSync(uploadPath, {
       recursive: true,

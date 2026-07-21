@@ -27,6 +27,11 @@ export const createProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
 
+    if (!userId) {
+      return res.status(404).json({message: "Brak Id"})
+    }
+
+
     const {
       shop_name,
       description,

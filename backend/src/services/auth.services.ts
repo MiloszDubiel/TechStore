@@ -40,7 +40,7 @@ export const registerUser = async (data: any) => {
       )
       VALUES (?, ?, ?, ?, ?)
       `,
-    [email, hashedPassword, name, last_name, role],
+    [email, hashedPassword, name, last_name, "USER"],
   );
 
   return {
