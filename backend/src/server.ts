@@ -11,11 +11,10 @@ import adminRoutes from "./routes/admin.routes";
 import path from "node:path";
 import cors from "cors";
 import chatRoutes from "./routes/chat.router";
-import { Server } from "socket.io";
+import { initSocket } from "./socket/indext";
 import http from "http";
 
 const app = express();
-const server = http.createServer(app);
 
 app.use(cors());
 
@@ -32,14 +31,13 @@ app.use("/api/socket", chatRoutes);
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
+const server = http.createServer(app);
+initSocket(server);
+
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.listen(5000, () => {
   console.log("Serwer działa na porcie 5000");
 });
-
-export const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-    credentials: true,
-  },
+server.listen(5001, () => {
+  console.log("Socket działa na 5001");
 });

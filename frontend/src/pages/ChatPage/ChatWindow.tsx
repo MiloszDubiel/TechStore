@@ -1,32 +1,22 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import { socket } from "../../socket";
 
 const ChatWindow = ({ conversation }: any) => {
   const [message, setMessage] = useState("");
   const { user, token } = useAuth();
 
-  const { mutate: sendMessage } = useMutation({
-    mutationFn: () =>
-      axios.post(
-        "/api/socket/messages",
-        {
-          sender_id: user?.id,
-          message,
-          conversationId: conversation.id,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ),
-  });
-
-  const { data: messages, isLoading } = useQuery({
+  const {
+    data: messages = [],
+    refetch,
+    isLoading,
+  } = useQuery({
     queryKey: ["messages", conversation?.id],
+
+    enabled: !!conversation?.id,
 
     queryFn: async () => {
       const { data } = await axios.get(
@@ -42,14 +32,35 @@ const ChatWindow = ({ conversation }: any) => {
     },
   });
 
-  console.log(messages);
-
   const send = () => {
     if (!message) {
       return toast.error("Nie można wysłać pustej wiadomości.");
     }
-    sendMessage();
+
+    socket.emit("sendMessage", {
+      conversationId: conversation.id,
+      senderId: user?.id,
+      message,
+    });
+
+    setMessage("");
   };
+
+  useEffect(() => {
+    if (!conversation?.id) return;
+
+    socket.emit("joinConversation", conversation.id);
+
+    const handleMessage = () => {
+      refetch();
+    };
+
+    socket.on("newMessage", handleMessage);
+
+    return () => {
+      socket.off("newMessage", handleMessage);
+    };
+  }, [conversation?.id]);
 
   if (!conversation) {
     return (
@@ -68,7 +79,7 @@ const ChatWindow = ({ conversation }: any) => {
       <div className="flex-1 p-5 space-y-3 overflow-y-auto">
         {isLoading ? (
           <p className="text-gray-400">Ładowanie wiadomości...</p>
-        ) : messages.length ? (
+        ) : messages?.length ? (
           messages.map((msg: any) => {
             const mine = msg.sender_id === user?.id;
 

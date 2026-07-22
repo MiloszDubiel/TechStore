@@ -14,6 +14,8 @@ type User = {
   phone: string;
 };
 
+
+
 export const registerUser = async (data: any) => {
   const { email, password, name, last_name, role } = data;
 
