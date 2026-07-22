@@ -8,7 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useCartStore } from "../../zustand/states/cartState";
 import { ShoppingCart, Store } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import { Edit } from "lucide-react";
+import { Edit, Flag } from "lucide-react";
+import { OrangeButton } from "./Buttons";
 
 const OfferDetails = () => {
   const { slug, id } = useParams();
@@ -63,7 +64,6 @@ const OfferDetails = () => {
       <main className=" bg-gray-50 min-h-screen py-10">
         <div className=" max-w-7xl px-6 mx-auto">
           <div className="lg:grid-cols-12 grid gap-10">
-  
             <div className="lg:col-span-7">
               <div className="p-6 bg-white border border-gray-300 shadow-sm">
                 <img
@@ -118,18 +118,29 @@ const OfferDetails = () => {
                   {Number(product.price).toFixed(2)} zł
                 </div>
 
-                <div className=" bg-gray-50 flex items-center justify-between p-4 mt-6 border border-gray-200">
-                  <span className="text-gray-600">Dostępność</span>
-
-                  <span
-                    className={`
-            font-semibold
-            ${product.stock > 0 ? "text-green-600" : "text-red-600"}
-          `}
-                  >
-                    {product.stock > 0
-                      ? `${product.stock} szt.`
-                      : "Brak produktu"}
+                <div className="flex items-center justify-between gap-2 mt-6">
+                  <span className=" p-4 text-gray-600">
+                    Dostępność
+                    <span
+                      className={`font-semibold   ${
+                        product.stock > 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {" "}
+                      {product.stock > 0
+                        ? `${product.stock} szt.`
+                        : "Brak produktu"}
+                    </span>
+                  </span>
+                  <span className="flex">
+                    <button
+                      disabled={!product.stock}
+                      onClick={() => addToCart(product)}
+                      className=" hover:bg-orange-600 flex items-center justify-center w-full gap-3 p-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
+                    >
+                      <Flag size={18} />
+                      Zgłoś
+                    </button>
                   </span>
                 </div>
 
@@ -138,7 +149,7 @@ const OfferDetails = () => {
                     <button
                       disabled={!product.stock}
                       onClick={() => addToCart(product)}
-                      className=" disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 font-semibold text-white transition bg-orange-500"
+                      className=" disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
                     >
                       <ShoppingCart size={20} />
 
@@ -149,9 +160,7 @@ const OfferDetails = () => {
                   {product?.seller_id !== user?.id && user && (
                     <button
                       onClick={() => {
-                        navigate("/chat", {
-                          state: { seller_id: product.seller_id },
-                        });
+                        navigate(`/chat?seller_id=${product?.seller_id}`);
                       }}
                       className=" disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-orange-500 hover:text-white hover:border-b-orange-500 flex items-center justify-center w-full gap-3 py-4 font-semibold text-black transition border border-gray-300 cursor-pointer"
                     >

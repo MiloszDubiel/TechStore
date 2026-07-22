@@ -10,7 +10,7 @@ import sellerRoutes from "./routes/seller.routes";
 import adminRoutes from "./routes/admin.routes";
 import path from "node:path";
 import cors from "cors";
-import socket from "./socket";
+import chatRoutes from "./routes/chat.router";
 import { Server } from "socket.io";
 import http from "http";
 
@@ -28,7 +28,7 @@ app.use("/api/favorite", favoriteRoutes);
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/seller", sellerRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/socket");
+app.use("/api/socket", chatRoutes);
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 

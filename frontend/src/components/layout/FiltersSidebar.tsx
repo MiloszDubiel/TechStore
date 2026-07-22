@@ -18,13 +18,13 @@ interface FiltersSidebarProps {
 }
 
 const FiltersSidebar = ({
-  categories = [],
+
   brands = [],
 }: FiltersSidebarProps) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+  const [selectedCategories,] = useState<string[]>(
     searchParams.get("categories")?.split(",") || []
   );
   const [selectedBrands, setSelectedBrands] = useState<string[]>(
