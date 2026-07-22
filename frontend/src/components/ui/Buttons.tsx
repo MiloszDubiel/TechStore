@@ -1,5 +1,5 @@
 type Props = {
-  onClick?: () => void;
+  onClick?: (data?: any) => void;
   disabled?: boolean;
   children: React.ReactNode;
 };

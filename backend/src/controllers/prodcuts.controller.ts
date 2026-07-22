@@ -21,14 +21,12 @@ export const getOffersFromDatabase = async (req: Request, res: Response) => {
 };
 
 export const orderProdcuts = async (req: Request, res: Response) => {
-  const userId = (req as any).user?.id ?? null;
+  // console.log(req.body);
 
   try {
     const { orderId, success, orderNumber } = await saveOrderToDB(
-      userId,
       req.body,
     );
-
     return res.status(200).json({
       orderId,
       success,

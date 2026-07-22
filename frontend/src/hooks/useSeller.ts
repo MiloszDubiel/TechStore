@@ -91,6 +91,7 @@ export const useSeller = () => {
     queryFn: sellerApi.getSubcategories,
     queryKey: ["subcategories"],
   });
+  
   const getOrderDetails = (id: number) =>
     useQuery({
       queryKey: ["seller-order-details", id],

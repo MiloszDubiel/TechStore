@@ -92,7 +92,10 @@ const Orders = () => {
                 >
                   <td className="p-4 font-semibold">{order.order_number}</td>
 
-                  <td className="p-4">{order.customer_name}</td>
+                  <td className="p-4">
+                    {order.customer_name || order.name}{" "}
+                    {order.last_name || order.customer_last_name}
+                  </td>
 
                   <td className="p-4">
                     {new Date(order.created_at).toLocaleDateString()}

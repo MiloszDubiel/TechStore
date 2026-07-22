@@ -40,6 +40,8 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
     CANCELLED: "Anulowane",
   };
 
+  console.log(order);
+
   const saveStatus = () => {
     updateOrderStatus.mutate(
       {

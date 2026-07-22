@@ -18,7 +18,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
   const { checkoutData, setIsComplete } = useCheckout();
   const cartItems = useCartStore((state) => state.cart);
   const clearCart = useCartStore((state) => state.clearCart);
-  const { token } = useAuth();
+  const { user, token } = useAuth();
   const [orderCompleted] = useState(false);
 
   const productsPrice = cartItems.reduce(
@@ -35,7 +35,10 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       return;
     }
 
-    console.log(checkoutData);
+    let user_id = user?.id || null;
+    if (checkoutData.customer?.email != user?.email) user_id = null;
+
+    console.log({ ...checkoutData, user_id: user?.id });
 
     mutate({
       ...checkoutData,
@@ -43,6 +46,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       products: cartItems,
 
       total: totalPrice,
+      user_id: user?.id,
     });
   };
 

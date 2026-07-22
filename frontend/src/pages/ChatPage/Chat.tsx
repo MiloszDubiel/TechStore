@@ -9,6 +9,7 @@ const ChatPage = () => {
 
   const [searchParams] = useSearchParams();
   const seller_ID = searchParams.get("seller_id") || "";
+  
 
   return (
     <>

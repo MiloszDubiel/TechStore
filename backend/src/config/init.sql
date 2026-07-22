@@ -36,7 +36,7 @@ CREATE TABLE `addresses` (
   PRIMARY KEY (`id`),
   KEY `idx_addresses_user` (`user_id`),
   CONSTRAINT `addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `addresses` (
 
 LOCK TABLES `addresses` WRITE;
 /*!40000 ALTER TABLE `addresses` DISABLE KEYS */;
-INSERT INTO `addresses` VALUES (10,21,'Piastów 7',NULL,NULL,'35-317','Rzeszów','Polska',1,'2026-07-17 09:53:44'),(11,15,'Senatorska 109',NULL,NULL,'35-317','Rzeszów','Polska',1,'2026-07-17 12:12:38');
+INSERT INTO `addresses` VALUES (1,15,'Senatorska 109',NULL,NULL,'35-317','Rzeszów','Polska',0,'2026-07-23 11:22:50');
 /*!40000 ALTER TABLE `addresses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -159,29 +159,36 @@ INSERT INTO `categories` VALUES (1,'Komputery','komputery','2026-07-14 16:27:23'
 UNLOCK TABLES;
 
 --
--- Table structure for table `chats`
+-- Table structure for table `conversations`
 --
 
-DROP TABLE IF EXISTS `chats`;
+DROP TABLE IF EXISTS `conversations`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `chats` (
+CREATE TABLE `conversations` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
+  `seller_id` int NOT NULL,
+  `product_id` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `chats_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `seller_id` (`seller_id`),
+  KEY `product_id` (`product_id`),
+  KEY `conversations_ibfk_1` (`user_id`),
+  CONSTRAINT `conversations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `conversations_ibfk_2` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `conversations_ibfk_3` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `chats`
+-- Dumping data for table `conversations`
 --
 
-LOCK TABLES `chats` WRITE;
-/*!40000 ALTER TABLE `chats` DISABLE KEYS */;
-/*!40000 ALTER TABLE `chats` ENABLE KEYS */;
+LOCK TABLES `conversations` WRITE;
+/*!40000 ALTER TABLE `conversations` DISABLE KEYS */;
+INSERT INTO `conversations` VALUES (3,22,21,NULL,'2026-07-22 11:15:57');
+/*!40000 ALTER TABLE `conversations` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -201,7 +208,7 @@ CREATE TABLE `favorites` (
   KEY `fk_favorite_product` (`product_id`),
   CONSTRAINT `fk_favorite_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_favorite_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -210,6 +217,7 @@ CREATE TABLE `favorites` (
 
 LOCK TABLES `favorites` WRITE;
 /*!40000 ALTER TABLE `favorites` DISABLE KEYS */;
+INSERT INTO `favorites` VALUES (2,22,2070,'2026-07-23 08:35:00');
 /*!40000 ALTER TABLE `favorites` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -222,17 +230,17 @@ DROP TABLE IF EXISTS `messages`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `messages` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `chat_id` int NOT NULL,
+  `conversation_id` int NOT NULL,
   `sender_id` int NOT NULL,
-  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text NOT NULL,
   `is_read` tinyint(1) DEFAULT '0',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
+  KEY `conversation_id` (`conversation_id`),
   KEY `sender_id` (`sender_id`),
-  KEY `idx_messages_chat` (`chat_id`),
-  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`chat_id`) REFERENCES `chats` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`),
+  CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,6 +249,7 @@ CREATE TABLE `messages` (
 
 LOCK TABLES `messages` WRITE;
 /*!40000 ALTER TABLE `messages` DISABLE KEYS */;
+INSERT INTO `messages` VALUES (14,3,22,'Dzień dobry anna ',0,'2026-07-22 17:59:16'),(15,3,21,'Chuj Ci w dupe ',0,'2026-07-22 17:59:23');
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -258,10 +267,11 @@ CREATE TABLE `notifications` (
   `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `is_read` tinyint(1) DEFAULT '0',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_notifications_user` (`user_id`),
   CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -270,6 +280,7 @@ CREATE TABLE `notifications` (
 
 LOCK TABLES `notifications` WRITE;
 /*!40000 ALTER TABLE `notifications` DISABLE KEYS */;
+INSERT INTO `notifications` VALUES (1,15,'Zmiana statusu zamówienia','Twoja przesyłka została wysłana',0,'2026-07-23 10:32:33','ORDER_STATUS'),(2,15,'Zmiana statusu zamówienia','Status zamówienia został zmieniony',0,'2026-07-23 19:01:19','ORDER_STATUS');
 /*!40000 ALTER TABLE `notifications` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,7 +293,6 @@ DROP TABLE IF EXISTS `order_addresses`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order_addresses` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `user_id` int DEFAULT NULL,
   `first_name` varchar(100) NOT NULL,
   `last_name` varchar(100) NOT NULL,
   `street` varchar(255) NOT NULL,
@@ -291,10 +301,10 @@ CREATE TABLE `order_addresses` (
   `country` varchar(100) NOT NULL DEFAULT 'Polska',
   `phone` varchar(20) NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `fk_order_addresses_users` (`user_id`),
-  CONSTRAINT `fk_order_addresses_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `user_id` int DEFAULT NULL,
+  `order_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -303,7 +313,6 @@ CREATE TABLE `order_addresses` (
 
 LOCK TABLES `order_addresses` WRITE;
 /*!40000 ALTER TABLE `order_addresses` DISABLE KEYS */;
-INSERT INTO `order_addresses` VALUES (1,NULL,'Miłosz ','Dubiel','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-12 11:07:27'),(2,NULL,'Miłosz ','Dubiel','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-12 11:12:17'),(3,NULL,'Miłosz ','Dubiel','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-12 11:13:20'),(4,NULL,'Miłosz ','Dubiel','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-12 11:15:36'),(5,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 12:11:31'),(6,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 12:11:36'),(7,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 12:19:18'),(8,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 16:54:26'),(9,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:16:42'),(10,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:18:00'),(11,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:23:24'),(12,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:25:38'),(13,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:30:07'),(14,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:30:20'),(15,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:32:16'),(16,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:33:43'),(17,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:41:19'),(18,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:41:50'),(19,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:42:22'),(20,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:44:20'),(21,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:47:19'),(22,NULL,'Miłosz','Nowak','Senatorska 109','35-317','Rzeszów','Polska','791417050','2026-07-13 17:54:25'),(23,21,'Miłosz','Dubiel','Piastów 7','35-317','Rzeszów','Polska','791417050','2026-07-17 09:53:50'),(24,21,'Miłosz','Dubiel','Piastów 7','35-317','Rzeszów','Polska','791417050','2026-07-17 09:55:48'),(25,21,'Miłosz','Dubiel','Piastów 7','35-317','Rzeszów','Polska','791417050','2026-07-17 09:56:57'),(26,15,'Miłosz','Kowalski','Senatorska 109','35-317','Rzeszów','Polska','123456789','2026-07-19 18:01:18'),(27,15,'Miłosz','Kowalski','Senatorska 109','35-317','Rzeszów','Polska','123456789','2026-07-19 18:37:34'),(28,15,'Miłosz','Kowalski','Senatorska 109','35-317','Rzeszów','Polska','123456789','2026-07-19 18:41:14'),(29,15,'Miłosz','Kowalski','Senatorska 109','35-317','Rzeszów','Polska','123456789','2026-07-19 18:42:13'),(30,15,'Miłosz','Kowalski','Senatorska 109','35-317','Rzeszów','Polska','123456789','2026-07-19 18:43:57'),(31,15,'Miłosz','Kowalski','Senatorska 109','35-317','Rzeszów','Polska','123456789','2026-07-19 18:51:25');
 /*!40000 ALTER TABLE `order_addresses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -325,7 +334,7 @@ CREATE TABLE `order_items` (
   PRIMARY KEY (`id`),
   KEY `fk_order_items_orders` (`order_id`),
   CONSTRAINT `fk_order_items_orders` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -334,7 +343,7 @@ CREATE TABLE `order_items` (
 
 LOCK TABLES `order_items` WRITE;
 /*!40000 ALTER TABLE `order_items` DISABLE KEYS */;
-INSERT INTO `order_items` VALUES (29,32,2069,'Lenovo',5,550.00,NULL);
+INSERT INTO `order_items` VALUES (3,40,2070,'Lenovo ThinkPad T14 Gen 4',1,3499.00,NULL),(4,41,2070,'Lenovo ThinkPad T14 Gen 4',1,3499.00,NULL);
 /*!40000 ALTER TABLE `order_items` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -359,13 +368,21 @@ CREATE TABLE `orders` (
   `status` enum('NEW','PROCESSING','SHIPPED','COMPLETED','CANCELLED') NOT NULL DEFAULT 'NEW',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `order_number` varchar(30) NOT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `customer_name` varchar(100) DEFAULT NULL,
+  `customer_last_name` varchar(100) DEFAULT NULL,
+  `customer_phone` varchar(50) DEFAULT NULL,
+  `customer_street` varchar(255) DEFAULT NULL,
+  `customer_postal_code` varchar(20) DEFAULT NULL,
+  `customer_city` varchar(100) DEFAULT NULL,
+  `customer_country` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `order_number` (`order_number`),
   KEY `fk_orders_users` (`user_id`),
   KEY `fk_orders_addresses` (`address_id`),
-  CONSTRAINT `fk_orders_addresses` FOREIGN KEY (`address_id`) REFERENCES `order_addresses` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `fk_orders_addresses` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`) ON DELETE RESTRICT,
   CONSTRAINT `fk_orders_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -374,7 +391,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
-INSERT INTO `orders` VALUES (32,15,31,'COURIER',15.00,NULL,NULL,NULL,'BLIK',2765.00,'NEW','2026-07-19 18:51:25','MITS-20260719-00001');
+INSERT INTO `orders` VALUES (40,NULL,1,'COURIER',15.00,NULL,NULL,NULL,'BLIK',3514.00,'NEW','2026-07-23 11:42:18','MITS-20260723-00001','admin@example.com','Miłosz','Kowalski','123456789',NULL,NULL,NULL,NULL),(41,15,1,'COURIER',15.00,NULL,NULL,NULL,'BLIK',3514.00,'PROCESSING','2026-07-23 11:55:12','MITS-20260723-00002','admin@example.com','Miłosz','Kowalski','123456789',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -395,7 +412,7 @@ CREATE TABLE `product_images` (
   PRIMARY KEY (`id`),
   KEY `fk_product_images_product` (`product_id`),
   CONSTRAINT `fk_product_images_product` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -404,8 +421,41 @@ CREATE TABLE `product_images` (
 
 LOCK TABLES `product_images` WRITE;
 /*!40000 ALTER TABLE `product_images` DISABLE KEYS */;
-INSERT INTO `product_images` VALUES (37,2068,'1784459859912-462988.jpg','uploads/products/21/2068/1784459859912-462988.jpg',1,'2026-07-19 13:17:39'),(39,2069,'1784468295166-229697.JPG','uploads/products/21/2069/1784468295166-229697.JPG',1,'2026-07-19 15:38:15'),(40,2069,'1784468295173-490141.jpg','uploads/products/21/2069/1784468295173-490141.jpg',0,'2026-07-19 15:38:15');
+INSERT INTO `product_images` VALUES (37,2068,'1784459859912-462988.jpg','uploads/products/21/2068/1784459859912-462988.jpg',1,'2026-07-19 13:17:39'),(39,2069,'1784468295166-229697.JPG','uploads/products/21/2069/1784468295166-229697.JPG',1,'2026-07-19 15:38:15'),(40,2069,'1784468295173-490141.jpg','uploads/products/21/2069/1784468295173-490141.jpg',0,'2026-07-19 15:38:15'),(41,2070,'1784556533985-611123.jpg','uploads/products/21/2070/1784556533985-611123.jpg',1,'2026-07-20 16:08:53');
 /*!40000 ALTER TABLE `product_images` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `product_reports`
+--
+
+DROP TABLE IF EXISTS `product_reports`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product_reports` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `product_id` int NOT NULL,
+  `reporter_id` int NOT NULL,
+  `reason` enum('SCAM','FAKE','COPYRIGHT','WRONG_CATEGORY','OFFENSIVE','OTHER') NOT NULL,
+  `description` text,
+  `status` enum('PENDING','IN_REVIEW','RESOLVED','REJECTED') DEFAULT 'PENDING',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `product_id` (`product_id`),
+  KEY `reporter_id` (`reporter_id`),
+  CONSTRAINT `product_reports_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `product_reports_ibfk_2` FOREIGN KEY (`reporter_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `product_reports`
+--
+
+LOCK TABLES `product_reports` WRITE;
+/*!40000 ALTER TABLE `product_reports` DISABLE KEYS */;
+INSERT INTO `product_reports` VALUES (1,2067,22,'FAKE','aa','PENDING','2026-07-23 08:56:22');
+/*!40000 ALTER TABLE `product_reports` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -430,7 +480,7 @@ CREATE TABLE `product_reviews` (
   CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `product_reviews_chk_1` CHECK ((`rating` between 1 and 5))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -439,6 +489,7 @@ CREATE TABLE `product_reviews` (
 
 LOCK TABLES `product_reviews` WRITE;
 /*!40000 ALTER TABLE `product_reviews` DISABLE KEYS */;
+INSERT INTO `product_reviews` VALUES (1,2070,21,5,'Bardzo dobry produkt ','','2026-07-20 18:35:43');
 /*!40000 ALTER TABLE `product_reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -479,7 +530,7 @@ CREATE TABLE `products` (
   CONSTRAINT `fk_products_category` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `fk_products_seller` FOREIGN KEY (`seller_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_products_subcategory` FOREIGN KEY (`subcategory_id`) REFERENCES `subcategories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2070 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2071 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -488,7 +539,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES (2067,NULL,'Lenovo IdeaPad','Lenovo IdeaPadLenovo IdeaPadLenovo IdeaPadLenovo IdeaPadLenovo IdeaPadLenovo IdeaPad',2200.00,5,1,0,'2026-07-18 15:48:23','2026-07-19 20:51:06',NULL,'[{\"name\": \"RAM\", \"value\": \"16GB\"}]','Lenovo','IdeaPad',21,2,8,'Lenovo-IdeaPad-21'),(2068,NULL,'Lenovo G510','seller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-products',1234.00,5,1,1,'2026-07-18 15:50:15','2026-07-19 20:51:06',NULL,'[{\"name\": \"RAM\", \"value\": \"8GB\"}]','Lenovo','IdeaPad',21,1,3,'Lenovo-G510-21'),(2069,NULL,'Lenovo','Opis laptopa Lenovo G510. Opis laptopa Lenovo G510. ',550.00,0,0,0,'2026-07-18 17:15:04','2026-07-19 20:51:25',NULL,'[{\"name\": \"RAM\", \"value\": \"8GB\"}]','Lenovo',' IdeaPad',21,2,8,'Lenovo-21');
+INSERT INTO `products` VALUES (2067,NULL,'Lenovo IdeaPad','Lenovo IdeaPadLenovo IdeaPadLenovo IdeaPadLenovo IdeaPadLenovo IdeaPadLenovo IdeaPad',2200.00,3,1,1,'2026-07-18 15:48:23','2026-07-23 13:25:47',NULL,'[{\"name\": \"RAM\", \"value\": \"16GB\"}]','Lenovo','IdeaPad',21,2,8,'Lenovo-IdeaPad-21'),(2068,NULL,'Lenovo G510','seller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-productsseller-products',1234.00,4,1,1,'2026-07-18 15:50:15','2026-07-23 13:03:40',NULL,'[{\"name\": \"RAM\", \"value\": \"8GB\"}]','Lenovo','IdeaPad',21,1,3,'Lenovo-G510-21'),(2069,NULL,'Lenovo','Opis laptopa Lenovo G510. Opis laptopa Lenovo G510. ',550.00,0,0,1,'2026-07-18 17:15:04','2026-07-20 16:08:59',NULL,'[{\"name\": \"RAM\", \"value\": \"8GB\"}]','Lenovo',' IdeaPad',21,2,8,'Lenovo-21'),(2070,NULL,'Lenovo ThinkPad T14 Gen 4','Profesjonalny laptop biznesowy przeznaczony do pracy biurowej, programowania i zastosowań korporacyjnych. Wydajny procesor, szybki dysk SSD oraz solidna konstrukcja.',3499.00,11,1,0,'2026-07-20 16:08:53','2026-07-23 20:49:01','{\"images\": []}','[{\"name\": \"RAM\", \"value\": \"8GB\"}, {\"name\": \"CPU\", \"value\": \"Intel Core i5-1345U\"}, {\"name\": \"Dysk\", \"value\": \"512GB SSD\"}]','Lenovo','ThinkPad T14 Gen 4',21,2,8,'Lenovo-ThinkPad-T14-Gen-4-21');
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -532,7 +583,7 @@ CREATE TABLE `refresh_tokens` (
   PRIMARY KEY (`id`),
   KEY `idx_refresh_user` (`user_id`),
   CONSTRAINT `refresh_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=87 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -541,7 +592,7 @@ CREATE TABLE `refresh_tokens` (
 
 LOCK TABLES `refresh_tokens` WRITE;
 /*!40000 ALTER TABLE `refresh_tokens` DISABLE KEYS */;
-INSERT INTO `refresh_tokens` VALUES (26,12,'409f950e-c486-4d0a-acd4-ba97b4d6e8e2','2026-07-21 12:59:32',1,'2026-07-14 10:59:32'),(30,12,'56294c60-9b4f-444b-bf75-1b9952abc439','2026-07-21 13:22:57',0,'2026-07-14 11:22:57'),(35,21,'73d67a18-bb4b-4e7e-a64f-6852439fad26','2026-07-22 16:20:12',1,'2026-07-15 14:20:12'),(36,21,'f40b2eb7-130d-4c7b-b72b-f404ce84f06f','2026-07-22 19:15:26',0,'2026-07-15 17:15:26'),(37,21,'152e49bd-b469-4cf1-95a2-c3bfd590a4fe','2026-07-23 11:45:00',0,'2026-07-16 09:45:00'),(39,21,'fa68a931-a2d7-4b9d-98b2-8a338b41b31f','2026-07-23 18:08:16',1,'2026-07-16 16:08:16'),(43,21,'6b7d7490-17e5-47e7-90b1-405efbd33b39','2026-07-24 11:44:46',1,'2026-07-17 09:44:46'),(44,21,'2b5cf987-5f42-49ea-8ae0-2ee477f8619f','2026-07-24 11:50:22',1,'2026-07-17 09:50:22'),(45,21,'9ae5dc00-5b5a-4593-a533-23149b8abe10','2026-07-24 11:52:07',0,'2026-07-17 09:52:07'),(46,21,'c078d8ca-d446-4df8-a8b3-31b9edede79f','2026-07-24 13:07:40',1,'2026-07-17 11:07:40'),(47,21,'76bdd2b4-70b6-41ed-9a23-ab170e5c0ad7','2026-07-24 13:30:37',1,'2026-07-17 11:30:37'),(48,21,'ec851114-383e-478f-8393-e6a88441bce9','2026-07-24 13:52:03',1,'2026-07-17 11:52:03'),(49,15,'8b8bd0fa-0e19-405e-993b-c768d0af0494','2026-07-24 14:01:23',1,'2026-07-17 12:01:23'),(50,15,'955385b6-d95c-4b01-baa4-4c7db64d857b','2026-07-24 14:03:17',1,'2026-07-17 12:03:17'),(51,21,'c9c3cdaa-99b4-4f72-9818-5ebaac7ba9b1','2026-07-24 14:14:23',1,'2026-07-17 12:14:23'),(52,21,'87096c1b-7dd6-4e87-a66d-d55df076de3c','2026-07-24 14:19:22',1,'2026-07-17 12:19:22'),(53,21,'f4190be1-0d80-4ced-a4a6-2e2605c6ec47','2026-07-24 14:43:40',1,'2026-07-17 12:43:40'),(54,21,'577ec332-82ee-4b9b-bf9a-fcf70ffbd1dd','2026-07-24 14:44:27',1,'2026-07-17 12:44:27'),(55,21,'1c7ab897-49f3-4bb6-b636-f4d2ccf809a3','2026-07-24 14:47:15',1,'2026-07-17 12:47:15'),(56,21,'18795982-513a-4b02-a2f0-9a46e656b6a7','2026-07-24 14:49:18',1,'2026-07-17 12:49:18'),(57,21,'7a8a9743-7a9a-4c50-a347-662a0a7de480','2026-07-24 14:49:51',1,'2026-07-17 12:49:51'),(58,21,'a0ecc92b-442c-4bb3-b719-3e3fe86f1b6c','2026-07-24 14:50:11',1,'2026-07-17 12:50:11'),(59,21,'84184eaa-2a08-4e3d-a05d-2b38e1cc19d9','2026-07-24 14:50:31',1,'2026-07-17 12:50:31'),(60,21,'d0a2c0aa-830b-4db0-af9d-dbae74643b36','2026-07-24 14:51:27',1,'2026-07-17 12:51:27'),(61,21,'34c30046-aa64-40f7-95e5-5e2485f4f64b','2026-07-24 14:56:25',1,'2026-07-17 12:56:25'),(62,21,'19db9a79-9c30-4f12-b863-35e35e20a511','2026-07-24 14:56:54',1,'2026-07-17 12:56:54'),(63,21,'ec14ad9d-4610-4854-92ef-ba7590326a8f','2026-07-24 14:57:12',1,'2026-07-17 12:57:12'),(64,21,'a0b11acf-dd66-48eb-aa26-bf7e34c55ece','2026-07-24 14:58:18',1,'2026-07-17 12:58:18'),(65,21,'5144ea72-9ca6-4a61-a469-155e7a6d4059','2026-07-24 14:59:19',1,'2026-07-17 12:59:19'),(66,21,'8d8b461a-eca7-46ae-83f8-aa74c9e6c64e','2026-07-24 14:59:52',0,'2026-07-17 12:59:52'),(68,15,'c4aa1c54-a322-4dc7-9219-5d744a5cc8d8','2026-07-24 15:51:31',1,'2026-07-17 13:51:31'),(69,21,'71dcd2d8-3e6a-4359-9ff2-2fff37a0d280','2026-07-24 15:53:05',1,'2026-07-17 13:53:05'),(70,15,'1338b516-ee2a-4419-9f3a-b745f37c2872','2026-07-24 15:53:18',0,'2026-07-17 13:53:18'),(71,15,'2b7514d8-b70a-4d74-b567-e70a1ece7eb4','2026-07-24 18:27:49',0,'2026-07-17 16:27:49'),(72,15,'4fc65f19-7c75-4555-85ec-4bc86052474b','2026-07-25 10:27:40',1,'2026-07-18 08:27:40'),(73,21,'07813f9e-ffd4-4d64-a247-89e457f7f05a','2026-07-25 11:31:13',0,'2026-07-18 09:31:13'),(74,21,'4dabdbcb-f567-450e-a328-dc87dd057d55','2026-07-25 14:28:33',1,'2026-07-18 12:28:33'),(75,15,'d1a0af88-461f-44d2-bc30-2e6e662a492f','2026-07-25 15:27:46',1,'2026-07-18 13:27:46'),(76,15,'1a7f5408-6dfe-44ec-b69c-5e9de9dac406','2026-07-25 15:30:21',1,'2026-07-18 13:30:21'),(77,21,'cab525af-eb04-4fd3-b818-d809f30e1f6a','2026-07-25 15:41:12',0,'2026-07-18 13:41:12'),(78,15,'b9e9cab8-7794-4bcb-a300-e187c362b71f','2026-07-25 17:12:06',1,'2026-07-18 15:12:06'),(79,15,'b885a4ef-73cb-47e4-9f4c-e9e8ac97534a','2026-07-25 17:12:18',1,'2026-07-18 15:12:18'),(80,21,'4bed5357-94dd-42c3-b29b-e7530a002236','2026-07-25 17:14:00',1,'2026-07-18 15:14:00'),(81,15,'101a2774-2d76-44b6-af79-59749f25d044','2026-07-25 17:15:29',1,'2026-07-18 15:15:29'),(82,21,'dcf61fcc-eb79-4cb1-b432-b9689de5dc4c','2026-07-25 17:25:52',1,'2026-07-18 15:25:52'),(83,15,'0e59c92c-e6b1-4a44-9788-8122cc95332e','2026-07-25 17:27:46',0,'2026-07-18 15:27:46'),(84,15,'3e122fb7-5cf8-464a-afab-c1b389ec4bd3','2026-07-26 12:45:33',0,'2026-07-19 10:45:33'),(85,15,'f031bc1c-811b-40e7-bea5-c60ecd4937d6','2026-07-26 15:26:57',0,'2026-07-19 13:26:57'),(86,15,'42d2f6e3-4cbb-4db2-9dda-2a8041254f08','2026-07-26 19:55:34',0,'2026-07-19 17:55:34');
+INSERT INTO `refresh_tokens` VALUES (26,12,'409f950e-c486-4d0a-acd4-ba97b4d6e8e2','2026-07-21 12:59:32',1,'2026-07-14 10:59:32'),(30,12,'56294c60-9b4f-444b-bf75-1b9952abc439','2026-07-21 13:22:57',0,'2026-07-14 11:22:57'),(35,21,'73d67a18-bb4b-4e7e-a64f-6852439fad26','2026-07-22 16:20:12',1,'2026-07-15 14:20:12'),(36,21,'f40b2eb7-130d-4c7b-b72b-f404ce84f06f','2026-07-22 19:15:26',0,'2026-07-15 17:15:26'),(37,21,'152e49bd-b469-4cf1-95a2-c3bfd590a4fe','2026-07-23 11:45:00',0,'2026-07-16 09:45:00'),(39,21,'fa68a931-a2d7-4b9d-98b2-8a338b41b31f','2026-07-23 18:08:16',1,'2026-07-16 16:08:16'),(43,21,'6b7d7490-17e5-47e7-90b1-405efbd33b39','2026-07-24 11:44:46',1,'2026-07-17 09:44:46'),(44,21,'2b5cf987-5f42-49ea-8ae0-2ee477f8619f','2026-07-24 11:50:22',1,'2026-07-17 09:50:22'),(45,21,'9ae5dc00-5b5a-4593-a533-23149b8abe10','2026-07-24 11:52:07',0,'2026-07-17 09:52:07'),(46,21,'c078d8ca-d446-4df8-a8b3-31b9edede79f','2026-07-24 13:07:40',1,'2026-07-17 11:07:40'),(47,21,'76bdd2b4-70b6-41ed-9a23-ab170e5c0ad7','2026-07-24 13:30:37',1,'2026-07-17 11:30:37'),(48,21,'ec851114-383e-478f-8393-e6a88441bce9','2026-07-24 13:52:03',1,'2026-07-17 11:52:03'),(49,15,'8b8bd0fa-0e19-405e-993b-c768d0af0494','2026-07-24 14:01:23',1,'2026-07-17 12:01:23'),(50,15,'955385b6-d95c-4b01-baa4-4c7db64d857b','2026-07-24 14:03:17',1,'2026-07-17 12:03:17'),(51,21,'c9c3cdaa-99b4-4f72-9818-5ebaac7ba9b1','2026-07-24 14:14:23',1,'2026-07-17 12:14:23'),(52,21,'87096c1b-7dd6-4e87-a66d-d55df076de3c','2026-07-24 14:19:22',1,'2026-07-17 12:19:22'),(53,21,'f4190be1-0d80-4ced-a4a6-2e2605c6ec47','2026-07-24 14:43:40',1,'2026-07-17 12:43:40'),(54,21,'577ec332-82ee-4b9b-bf9a-fcf70ffbd1dd','2026-07-24 14:44:27',1,'2026-07-17 12:44:27'),(55,21,'1c7ab897-49f3-4bb6-b636-f4d2ccf809a3','2026-07-24 14:47:15',1,'2026-07-17 12:47:15'),(56,21,'18795982-513a-4b02-a2f0-9a46e656b6a7','2026-07-24 14:49:18',1,'2026-07-17 12:49:18'),(57,21,'7a8a9743-7a9a-4c50-a347-662a0a7de480','2026-07-24 14:49:51',1,'2026-07-17 12:49:51'),(58,21,'a0ecc92b-442c-4bb3-b719-3e3fe86f1b6c','2026-07-24 14:50:11',1,'2026-07-17 12:50:11'),(59,21,'84184eaa-2a08-4e3d-a05d-2b38e1cc19d9','2026-07-24 14:50:31',1,'2026-07-17 12:50:31'),(60,21,'d0a2c0aa-830b-4db0-af9d-dbae74643b36','2026-07-24 14:51:27',1,'2026-07-17 12:51:27'),(61,21,'34c30046-aa64-40f7-95e5-5e2485f4f64b','2026-07-24 14:56:25',1,'2026-07-17 12:56:25'),(62,21,'19db9a79-9c30-4f12-b863-35e35e20a511','2026-07-24 14:56:54',1,'2026-07-17 12:56:54'),(63,21,'ec14ad9d-4610-4854-92ef-ba7590326a8f','2026-07-24 14:57:12',1,'2026-07-17 12:57:12'),(64,21,'a0b11acf-dd66-48eb-aa26-bf7e34c55ece','2026-07-24 14:58:18',1,'2026-07-17 12:58:18'),(65,21,'5144ea72-9ca6-4a61-a469-155e7a6d4059','2026-07-24 14:59:19',1,'2026-07-17 12:59:19'),(66,21,'8d8b461a-eca7-46ae-83f8-aa74c9e6c64e','2026-07-24 14:59:52',0,'2026-07-17 12:59:52'),(68,15,'c4aa1c54-a322-4dc7-9219-5d744a5cc8d8','2026-07-24 15:51:31',1,'2026-07-17 13:51:31'),(69,21,'71dcd2d8-3e6a-4359-9ff2-2fff37a0d280','2026-07-24 15:53:05',1,'2026-07-17 13:53:05'),(70,15,'1338b516-ee2a-4419-9f3a-b745f37c2872','2026-07-24 15:53:18',0,'2026-07-17 13:53:18'),(71,15,'2b7514d8-b70a-4d74-b567-e70a1ece7eb4','2026-07-24 18:27:49',0,'2026-07-17 16:27:49'),(72,15,'4fc65f19-7c75-4555-85ec-4bc86052474b','2026-07-25 10:27:40',1,'2026-07-18 08:27:40'),(73,21,'07813f9e-ffd4-4d64-a247-89e457f7f05a','2026-07-25 11:31:13',0,'2026-07-18 09:31:13'),(74,21,'4dabdbcb-f567-450e-a328-dc87dd057d55','2026-07-25 14:28:33',1,'2026-07-18 12:28:33'),(75,15,'d1a0af88-461f-44d2-bc30-2e6e662a492f','2026-07-25 15:27:46',1,'2026-07-18 13:27:46'),(76,15,'1a7f5408-6dfe-44ec-b69c-5e9de9dac406','2026-07-25 15:30:21',1,'2026-07-18 13:30:21'),(77,21,'cab525af-eb04-4fd3-b818-d809f30e1f6a','2026-07-25 15:41:12',0,'2026-07-18 13:41:12'),(78,15,'b9e9cab8-7794-4bcb-a300-e187c362b71f','2026-07-25 17:12:06',1,'2026-07-18 15:12:06'),(79,15,'b885a4ef-73cb-47e4-9f4c-e9e8ac97534a','2026-07-25 17:12:18',1,'2026-07-18 15:12:18'),(80,21,'4bed5357-94dd-42c3-b29b-e7530a002236','2026-07-25 17:14:00',1,'2026-07-18 15:14:00'),(81,15,'101a2774-2d76-44b6-af79-59749f25d044','2026-07-25 17:15:29',1,'2026-07-18 15:15:29'),(82,21,'dcf61fcc-eb79-4cb1-b432-b9689de5dc4c','2026-07-25 17:25:52',1,'2026-07-18 15:25:52'),(83,15,'0e59c92c-e6b1-4a44-9788-8122cc95332e','2026-07-25 17:27:46',0,'2026-07-18 15:27:46'),(84,15,'3e122fb7-5cf8-464a-afab-c1b389ec4bd3','2026-07-26 12:45:33',0,'2026-07-19 10:45:33'),(85,15,'f031bc1c-811b-40e7-bea5-c60ecd4937d6','2026-07-26 15:26:57',0,'2026-07-19 13:26:57'),(86,15,'42d2f6e3-4cbb-4db2-9dda-2a8041254f08','2026-07-26 19:55:34',0,'2026-07-19 17:55:34'),(87,15,'7409daf2-f919-4105-932e-cedf9ccb0773','2026-07-27 14:08:49',0,'2026-07-20 12:08:49'),(88,21,'180fd290-21e7-469f-8972-dd83e41cc1d3','2026-07-27 15:43:00',1,'2026-07-20 13:43:00'),(89,15,'859ec557-27a2-4de7-8aa8-9874bd476e0c','2026-07-27 16:09:36',1,'2026-07-20 14:09:36'),(90,21,'c53aa42d-ba24-45f9-ae7f-47da63778f50','2026-07-27 16:36:48',1,'2026-07-20 14:36:48'),(91,21,'9625ce25-777e-4706-98dc-71de056592f0','2026-07-27 16:37:27',0,'2026-07-20 14:37:27'),(92,21,'fca40fdc-c854-4657-99ca-327670e20d95','2026-07-27 20:31:58',1,'2026-07-20 18:31:58'),(93,21,'a0b5c5c8-e024-4e8a-99e7-99fd0c5a5416','2026-07-27 20:35:34',0,'2026-07-20 18:35:34'),(94,21,'3d2530be-5c24-4a27-9637-8f601a6bdecb','2026-07-28 11:32:41',1,'2026-07-21 09:32:41'),(95,22,'c0b4891e-c066-4ad0-81c2-739f1d6b2398','2026-07-28 11:48:50',1,'2026-07-21 09:48:50'),(96,21,'c7992b13-e61c-405c-82b0-552344aac204','2026-07-28 11:52:12',1,'2026-07-21 09:52:12'),(99,25,'55d20bf8-5e55-4cae-9bfe-76695ccb4dab','2026-07-28 12:08:07',0,'2026-07-21 10:08:07'),(100,15,'388d2ccb-1be7-4df8-b349-6a2533ca6e90','2026-07-28 15:51:55',0,'2026-07-21 13:51:55'),(101,22,'22f06144-b0dd-433f-8ad6-5e435f575f2e','2026-07-29 11:51:55',1,'2026-07-22 09:51:55'),(102,21,'6425e315-a5d3-4fd9-ab73-dd3ff93e0ea3','2026-07-29 13:50:40',0,'2026-07-22 11:50:40'),(103,21,'664d6f92-46e8-4e9e-b207-948d41e3f587','2026-07-29 17:56:53',0,'2026-07-22 15:56:53'),(104,22,'463d728f-2fd2-4398-9ec9-373510d102f6','2026-07-29 19:00:49',0,'2026-07-22 17:00:49'),(105,22,'e6ace89d-972b-458b-ad26-b443e9acffb1','2026-07-29 19:58:28',0,'2026-07-22 17:58:28'),(106,21,'f950f056-26bb-4397-88b0-5b27b453a0bc','2026-07-29 19:58:36',1,'2026-07-22 17:58:36'),(107,21,'37b6174d-b225-4ca2-aae9-d95603bbe629','2026-07-29 21:04:35',1,'2026-07-22 19:04:35'),(108,21,'a076c88d-0728-4763-8949-c90e70ccb9b1','2026-07-30 10:34:40',1,'2026-07-23 08:34:40'),(109,22,'082d7965-6b86-45c6-a9f0-c6df26c20b4f','2026-07-30 10:34:55',1,'2026-07-23 08:34:55'),(110,21,'431bfc60-720d-4a7d-ba0e-fbf61c7433d3','2026-07-30 12:03:17',1,'2026-07-23 10:03:17'),(111,15,'caee4f13-4efe-43bb-a458-0ba6c5e45657','2026-07-30 12:33:35',1,'2026-07-23 10:33:35'),(112,15,'e71a8b38-8c05-4974-bb76-68fe1eefc63d','2026-07-30 12:40:52',1,'2026-07-23 10:40:52'),(113,21,'eec8fb3b-bc2b-4a3d-b4c0-cf42b9bd99e0','2026-07-30 13:20:26',1,'2026-07-23 11:20:26'),(114,15,'43bf6b08-0bb0-48be-b143-1fe01dd7b943','2026-07-30 13:20:37',1,'2026-07-23 11:20:37'),(115,15,'ea68e677-1945-43d3-a4dd-3cda053bbe49','2026-07-30 13:35:37',0,'2026-07-23 11:35:37'),(116,21,'55cecab1-0aff-497b-b3ba-590271a0af87','2026-07-30 19:55:51',0,'2026-07-23 17:55:51');
 /*!40000 ALTER TABLE `refresh_tokens` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -575,7 +626,7 @@ CREATE TABLE `seller_profiles` (
   UNIQUE KEY `slug` (`slug`),
   KEY `fk_seller_user` (`user_id`),
   CONSTRAINT `fk_seller_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -584,7 +635,7 @@ CREATE TABLE `seller_profiles` (
 
 LOCK TABLES `seller_profiles` WRITE;
 /*!40000 ALTER TABLE `seller_profiles` DISABLE KEYS */;
-INSERT INTO `seller_profiles` VALUES (5,21,'Sklep internetowy','sklep-internetowy-firma-sklep-komputerowy-21','Sklep Komputerowy Sklep Komputerowy 1111111','logo-1784467920815.jpg',NULL,NULL,NULL,'1234567890','Firma Sklep Komputerowy ',0,1,'2026-07-15 17:56:25','2026-07-19 13:32:06','Senatorska 1111','Rzeszów','35-317');
+INSERT INTO `seller_profiles` VALUES (5,21,'Sklep internetowy','sklep-internetowy-firma-sklep-komputerowy-21','Sklep Komputerowy Sklep Komputerowy ','logo-1784467920815.jpg',NULL,NULL,NULL,'1234567890','Firma Sklep Komputerowy ',0,1,'2026-07-15 17:56:25','2026-07-20 13:48:34','Senatorska 1111','Rzeszów','35-317'),(9,25,'Sklep internetowy','sklep-internetowy-firma-sklep-komputerowy-25','wsdasdasdsadsadasdasd','logo-1784629173474.jpeg',NULL,NULL,NULL,'1234567890','Firma Sklep Komputerowy ',0,1,'2026-07-21 10:19:33','2026-07-21 10:19:33','Senatorska 109','Rzeszów','35-317');
 /*!40000 ALTER TABLE `seller_profiles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -639,7 +690,7 @@ CREATE TABLE `users` (
   `password_updated_at` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -648,7 +699,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (12,'milosz@example.com','$2b$10$i4/CGG1ocaWkKkd3JIEVOObA5pNpR4YG0FizcCMX9yxnHz9RrRGqW','Miłosz','','SELLER',0,1,'2026-07-14 10:59:21',NULL,NULL),(15,'admin@example.com','$2b$10$gEblIL8uejvniTKujA1Qo.MX3tr4Ht3CmJWF63T8JkzRkPRgHDPU6','Miłosz','Kowalski','ADMIN',1,1,'2026-07-14 11:11:16','123456789',NULL),(21,'miloszdubiel02@wp.pl','$2b$10$0Z68p8MBNJAHGrBmkBjfoe4lU/d1lUT7cTyT1UDtJczczMpy0dPc6','Miłoszek','Dubiel','SELLER',0,1,'2026-07-15 14:20:06','791417050',NULL);
+INSERT INTO `users` VALUES (12,'milosz@example.com','$2b$10$i4/CGG1ocaWkKkd3JIEVOObA5pNpR4YG0FizcCMX9yxnHz9RrRGqW','Miłosz','','SELLER',0,1,'2026-07-14 10:59:21',NULL,NULL),(15,'admin@example.com','$2b$10$gEblIL8uejvniTKujA1Qo.MX3tr4Ht3CmJWF63T8JkzRkPRgHDPU6','Miłosz','Kowalski','ADMIN',1,1,'2026-07-14 11:11:16','123456789',NULL),(21,'miloszdubiel02@wp.pl','$2b$10$0Z68p8MBNJAHGrBmkBjfoe4lU/d1lUT7cTyT1UDtJczczMpy0dPc6','Miłoszek','Dubiel','SELLER',0,1,'2026-07-15 14:20:06','791417050',NULL),(22,'anna@example.com','$2b$10$FM7PjWFcSvAl5yaw1E1l0el7kwvKggXsXFP7FxeNZp45Ut0r0SHwq','Anna','Nowak','SELLER',0,1,'2026-07-21 09:48:43','123467787',NULL),(25,'andrzej@example.com','$2b$10$0toGRGIROQgCnD.7UAlNIO8y4NqUtGIStu5In9qzmB0Cs74ogmRo6','Andrzej',NULL,'SELLER',0,1,'2026-07-21 10:07:55',NULL,NULL);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -669,4 +720,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-19 21:07:00
+-- Dump completed on 2026-07-23 21:03:55

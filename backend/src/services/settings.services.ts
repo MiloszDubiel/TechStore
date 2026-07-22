@@ -273,25 +273,42 @@ export const getOrderDetailsFromDB = async (
   userId: number,
 ) => {
   const [rows]: any = await connection.query(
-    `SELECT
+    `
+    SELECT
 
-    o.id AS order_id,
-    o.order_number,
-    o.total_price,
-    o.status,
-    o.created_at,
+      o.id AS order_id,
+      o.order_number,
+      o.total_price,
+      o.status,
+      o.created_at,
 
-    oi.quantity,
-    oi.price AS item_price,
+      o.customer_name,
+      o.customer_last_name,
+      o.email,
+      o.customer_phone,
+
+      o.delivery_method,
+      o.delivery_price,
+
+      o.payment_method,
+
+      o.locker_id,
+      o.locker_name,
+      o.locker_address,
 
 
-    JSON_OBJECT(
+      oi.quantity,
+      oi.price AS item_price,
+      oi.product_name,
+      oi.image AS item_image,
+
+
+      JSON_OBJECT(
         'id', p.id,
-        'name', p.name,
+        'name', COALESCE(p.name, oi.product_name),
         'description', p.description,
         'brand', p.brand,
         'model', p.model,
-        'stock', p.stock,
         'attributes', p.attributes,
 
         'category_name', c.name,
@@ -299,65 +316,62 @@ export const getOrderDetailsFromDB = async (
 
         'images',
         (
-            SELECT COALESCE(
-                JSON_ARRAYAGG(
-                    JSON_OBJECT(
-                        'image', pi.image,
-                        'url', pi.url
-                    )
-                ),
-                JSON_ARRAY()
-            )
-            FROM product_images pi
-            WHERE pi.product_id = p.id
+          SELECT COALESCE(
+            JSON_ARRAYAGG(
+              JSON_OBJECT(
+                'image', pi.image,
+                'url', pi.url
+              )
+            ),
+            JSON_ARRAY()
+          )
+
+          FROM product_images pi
+
+          WHERE pi.product_id = p.id
         )
 
-    ) AS product,
+      ) AS product,
 
 
-    JSON_OBJECT(
+      JSON_OBJECT(
         'seller_id', sp.user_id,
         'shop_name', sp.shop_name,
         'company_name', sp.company_name,
         'logo', sp.logo,
         'slug', sp.slug,
         'is_verified', sp.is_verified
-    ) AS seller
+      ) AS seller
 
 
-FROM orders o
+    FROM orders o
 
 
-LEFT JOIN order_items oi
-    ON oi.order_id = o.id
+    LEFT JOIN order_items oi
+      ON oi.order_id = o.id
 
 
-LEFT JOIN products p
-    ON p.id = oi.product_id
+    LEFT JOIN products p
+      ON p.id = oi.product_id
 
 
-LEFT JOIN categories c
-    ON c.id = p.category_id
+    LEFT JOIN categories c
+      ON c.id = p.category_id
 
 
-LEFT JOIN subcategories sc
-    ON sc.id = p.subcategory_id
+    LEFT JOIN subcategories sc
+      ON sc.id = p.subcategory_id
 
 
-LEFT JOIN seller_profiles sp
-    ON sp.user_id = p.seller_id
+    LEFT JOIN seller_profiles sp
+      ON sp.user_id = p.seller_id
 
 
-WHERE 
-    o.id = ?
-    AND o.user_id = ?
+    WHERE 
+      o.id = ?
+      AND o.user_id = ?
 
-
-GROUP BY
-    o.id,
-    oi.id,
-    p.id,
-    sp.id`,
+    `,
     [orderId, userId],
   );
 
@@ -368,14 +382,38 @@ GROUP BY
   const order = {
     id: rows[0].order_id,
     order_number: rows[0].order_number,
+
     total_price: rows[0].total_price,
     status: rows[0].status,
     created_at: rows[0].created_at,
+
+    customer: {
+      firstName: rows[0].customer_name,
+      lastName: rows[0].customer_lastname,
+      email: rows[0].customer_email,
+      phone: rows[0].customer_phone,
+    },
+
+    delivery: {
+      method: rows[0].delivery_method,
+      price: rows[0].delivery_price,
+
+      locker: rows[0].locker_id
+        ? {
+            id: rows[0].locker_id,
+            name: rows[0].locker_name,
+            address: rows[0].locker_address,
+          }
+        : null,
+    },
+
+    payment_method: rows[0].payment_method,
   };
 
   const items = rows.map((item: any) => ({
     quantity: item.quantity,
     price: item.item_price,
+    image: item.item_image,
 
     product:
       typeof item.product === "string"

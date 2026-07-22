@@ -69,7 +69,7 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
           const isSeller = user?.id === c.seller_id;
 
           const name = isSeller
-            ? `${c.buyer_first_name} ${c.buyer_last_name}`
+            ? `${c.buyer_first_name} ${c.buyer_last_name || "Klient"}`
             : c.shop_name;
 
           const avatar = isSeller ? null : c.logo;

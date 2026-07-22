@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import { LogIn, UserPlus, User, Store, Shield, LogOut } from "lucide-react";
 import { useSeller } from "../../../hooks/useSeller";
-import { useAuth } from "../../../context/AuthContext";
+import { useEffect, useRef } from "react";
 
 type Props = {
   isAuthenticated: boolean;
   user: any;
   logout: () => void;
-  close: () => void;
+  onClose: () => void;
   seller: [];
 };
 
@@ -15,15 +15,33 @@ const AccountDropdown = ({
   isAuthenticated,
   user,
   logout,
-  close,
+  onClose,
   seller = [],
 }: Props) => {
   const {
     getCompanyInfo: { data },
   } = useSeller();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
-    <div className="top-10 absolute right-0 z-50 w-56 bg-white border border-gray-300 shadow-lg">
+    <div
+      className="top-10 absolute right-0 z-50 w-56 bg-white border border-gray-300 shadow-lg"
+      ref={dropdownRef}
+    >
       {!isAuthenticated ? (
         <>
           <Link

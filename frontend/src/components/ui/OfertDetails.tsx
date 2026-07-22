@@ -4,17 +4,18 @@ import axios from "axios";
 import Navbar from "../layout/Navbar/Navbar";
 import ReviewsList from "../layout/ReviewList";
 import AddReview from "./AddReview";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCartStore } from "../../zustand/states/cartState";
 import { ShoppingCart, Store } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { Edit, Flag } from "lucide-react";
-import { OrangeButton } from "./Buttons";
+import ReportOffer from "./ReportOffert";
+import { toast } from "react-toastify";
 
 const OfferDetails = () => {
   const { slug, id } = useParams();
-  const { user } = useAuth();
-
+  const { user, token } = useAuth();
+  const [openReport, setOpenReport] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
 
   const addToCart = useCartStore((state) => state.addToCart);
@@ -28,6 +29,15 @@ const OfferDetails = () => {
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id, slug],
     queryFn: fetchOffer,
+  });
+
+  const { mutate: sendReport } = useMutation({
+    mutationFn: (data) =>
+      axios.post("/api/report/", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
   });
 
   const navigate = useNavigate();
@@ -52,10 +62,7 @@ const OfferDetails = () => {
     );
   }
 
-  const imageUrl = (image: string) =>
-    `${import.meta.env.VITE_API_URL}uploads/products/${product.seller_id}/${
-      product.id
-    }/${image}`;
+  const imageUrl = (image: string) => `${import.meta.env.VITE_API_URL}${image}`;
 
   return (
     <>
@@ -135,7 +142,7 @@ const OfferDetails = () => {
                   <span className="flex">
                     <button
                       disabled={!product.stock}
-                      onClick={() => addToCart(product)}
+                      onClick={() => setOpenReport(true)}
                       className=" hover:bg-orange-600 flex items-center justify-center w-full gap-3 p-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
                     >
                       <Flag size={18} />
@@ -310,6 +317,18 @@ const OfferDetails = () => {
             <ReviewsList productId={id as string} />
           </section>
         </div>
+        <ReportOffer
+          open={openReport}
+          onClose={() => setOpenReport(false)}
+          product={product}
+          onSubmit={(data: any) => {
+            sendReport(data, {
+              onSuccess: () => {
+                toast.success("Wysłano zgłoszenie");
+              },
+            });
+          }}
+        />
       </main>
     </>
   );

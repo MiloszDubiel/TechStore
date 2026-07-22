@@ -62,14 +62,21 @@ const ProductForm = ({
   );
 
   useEffect(() => {
-    reset();
+    reset({
+      ...defaultValues,
+      attributes: defaultValues.attributes.length
+        ? defaultValues.attributes
+        : [
+            { name: "CPU", value: "" },
+            { name: "RAM", value: "" },
+            { name: "DYSK", value: "" },
+          ],
+    });
   }, [isSuccess]);
 
+  console.log(errors);
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit, (err) => console.log(err))}
-      className="space-y-6"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
         <label className="block mb-2 font-medium">Nazwa produktu</label>
 
@@ -218,43 +225,62 @@ const ProductForm = ({
             <div />
           </div>
 
-          {fields.map((field, index) => (
-            <div
-              key={field.id}
-              className="grid items-center grid-cols-[1fr_1fr_60px] gap-3 p-3 border-b border-gray-300"
-            >
-              <div>
-                <input
-                  {...register(`attributes.${index}.name`)}
-                  placeholder="Np. RAM"
-                  className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-2 border border-gray-300"
-                />
-              </div>
-
-              <div>
-                <input
-                  {...register(`attributes.${index}.value`)}
-                  placeholder="Np. 16GB"
-                  className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-2 border border-gray-300"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => remove(index)}
-                className="text-red-500"
+          {fields.map((field: any, index) => {
+            return (
+              <div
+                key={field.id}
+                className="grid grid-cols-[1fr_1fr_60px] items-start gap-3 p-3 border-b border-gray-300"
               >
-                <Trash2 size={20} />
-              </button>
-            </div>
-          ))}
-        </div>
+                <div>
+                  <input
+                    {...register(`attributes.${index}.name`)}
+                    placeholder="Np. RAM"
+                    disabled={index < 3}
+                    className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-2 border border-gray-300"
+                  />
 
-        {typeof errors.attributes?.message === "string" && (
-          <p className="mt-2 text-sm text-red-500">
-            {errors.attributes.message}
-          </p>
-        )}
+                  {(errors as any).attributes?.[index]?.name?.message && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {(errors as any)?.attributes[index]?.name?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <input
+                    {...register(`attributes.${index}.value`)}
+                    placeholder="Np. 16GB"
+                    className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-2 border border-gray-300"
+                  />
+
+                  {(errors as any).attributes?.[index]?.value?.message && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {(errors as any)?.attributes[index]?.value?.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex justify-center pt-2">
+                  {index > 2 && (
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="text-red-500"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          {errors.attributes?.root?.message && (
+            <p className="p-3 text-sm text-red-500">
+              {(errors as any)?.attributes?.root?.message}
+            </p>
+          )}
+        </div>
       </div>
       <div className="p-6 bg-white border border-gray-300">
         <h2 className="mb-3 text-xl font-semibold">Zdjęcia</h2>

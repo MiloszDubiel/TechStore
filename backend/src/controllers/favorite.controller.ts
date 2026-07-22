@@ -37,10 +37,30 @@ export const getFavorites = async (req: Request, res: Response) => {
   try {
     const [rows] = await connection.query(
       `
-      SELECT p.*
-      FROM favorites f
-      JOIN products p ON p.id = f.product_id
-      WHERE f.user_id = ?
+      SELECT 
+    p.*,
+
+    COALESCE(
+        JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'image', pi.image,
+                'url', pi.url
+            )
+        ),
+        JSON_ARRAY()
+    ) AS images
+
+FROM favorites f
+
+JOIN products p 
+    ON p.id = f.product_id
+
+LEFT JOIN product_images pi
+    ON pi.product_id = p.id
+
+WHERE f.user_id = ?
+
+GROUP BY p.id;
       `,
       [userId],
     );

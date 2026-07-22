@@ -22,17 +22,26 @@ const baseProductSchema = {
 
   subcategory_id: z.string().min(1, "Wybierz podkategorię"),
 
-  attributes: z.array(attributesSchema),
+  attributes: z.array(attributesSchema).refine(
+    (attributes) => {
+      const names = attributes.map((a) => a.name.toUpperCase());
+
+      return names.length == new Set(names).size;
+    },
+    {
+      message: "Każdy parametr może wystąpić tylko raz.",
+    }
+  ),
 };
 
-// CREATE
+
 export const productCreateSchema = z.object({
   ...baseProductSchema,
 
   images: z.array(z.instanceof(File)).min(1, "Dodaj minimum jedno zdjęcie"),
 });
 
-// EDIT
+
 export const productEditSchema = z
   .object({
     ...baseProductSchema,

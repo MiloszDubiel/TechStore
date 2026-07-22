@@ -12,7 +12,7 @@ export const getMessages = async (req: Request, res: Response) => {
 
     const userId = (req as any).user.id;
 
-    console.log("Wywołanie");
+ 
     if (!id) {
       return res.status(400).json({
         message: "Brak id konwersacji",

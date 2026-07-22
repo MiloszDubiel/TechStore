@@ -1,6 +1,7 @@
 import { connection } from "../config/db.config";
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import slugify from "slugify";
+import { createNotificationService } from "./notification.service";
 
 export interface CreateProductDTO {
   name: string;
@@ -651,10 +652,13 @@ o.total_price,
 o.delivery_method,
 o.created_at,
 
-oa.first_name,
-oa.last_name,
+o.customer_name,
+o.customer_last_name,
+o.email,
 
-u.email
+u.email as user_email,
+u.name as user_name,
+u.last_name as user_last_name
 
 
 FROM orders o
@@ -704,22 +708,21 @@ export const getSellerOrderDetailsService = async (
     o.payment_method,
     o.created_at,
 
-
     -- DOSTAWA
     o.locker_id,
     o.locker_name,
     o.locker_address,
 
+    -- KLIENT
+    o.customer_name,
+    o.customer_last_name,
+    o.customer_phone,
 
-    -- ADRES KLIENTA
-    oa.first_name,
-    oa.last_name,
-    oa.street,
-    oa.postal_code,
-    oa.city,
-    oa.country,
-    oa.phone,
-
+    -- ADRES
+    a.street,
+    a.postal_code,
+    a.city,
+    a.country,
 
     -- PRODUKT
     oi.id AS item_id,
@@ -728,8 +731,7 @@ export const getSellerOrderDetailsService = async (
     oi.price,
     oi.image,
 
-
-    -- ZDJĘCIA PRODUKTU
+    -- ZDJĘCIA
     (
         SELECT 
             JSON_ARRAYAGG(
@@ -747,17 +749,14 @@ export const getSellerOrderDetailsService = async (
 
 FROM orders o
 
-
 JOIN order_items oi
     ON oi.order_id = o.id
-
 
 JOIN products p
     ON p.id = oi.product_id
 
-
-LEFT JOIN order_addresses oa
-    ON oa.id = o.address_id
+LEFT JOIN addresses a
+    ON a.id = o.address_id
 
 
 WHERE 
@@ -765,8 +764,7 @@ WHERE
 AND 
     p.seller_id = ?
 
-
-ORDER BY oi.id ASC;
+ORDER BY oi.id ASC;;
 
     `,
     [orderId, sellerId],
@@ -799,8 +797,8 @@ ORDER BY oi.id ASC;
     payment_method: rows[0].payment_method,
 
     customer: {
-      first_name: rows[0].first_name,
-      last_name: rows[0].last_name,
+      first_name: rows[0].name || rows[0].customer_name,
+      last_name: rows[0].last_name || rows[0].customer_last_name,
       phone: rows[0].phone,
 
       address: {
@@ -852,8 +850,49 @@ AND p.seller_id = ?
     [status, orderId, sellerId],
   );
 
+  await connection.query(
+    `
+UPDATE orders
+SET status=?
+WHERE id=?
+`,
+    [status, orderId],
+  );
+
+  const [order]: any = await connection.query(
+    `
+SELECT *
+FROM orders
+WHERE id=?
+`,
+    [orderId],
+  );
+
+  const messages: any = {
+    CONFIRMED: "Sprzedawca potwierdził Twoje zamówienie",
+
+    SHIPPED: "Twoja przesyłka została wysłana",
+
+    DELIVERED: "Twoje zamówienie zostało dostarczone",
+
+    CANCELLED: "Twoje zamówienie zostało anulowane",
+  };
+
+  //TODO - jesli user_id === null to wyslij email bo nie ma konta
+
+  await createNotificationService({
+    userId: order[0].user_id,
+
+    type: "ORDER_STATUS",
+
+    title: "Zmiana statusu zamówienia",
+
+    message: messages[status] || "Status zamówienia został zmieniony",
+  });
+
   return result.affectedRows > 0;
 };
+
 export const getSellerBySlug = async (slug: string) => {
   const [rows]: any = await connection.query(
     `

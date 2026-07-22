@@ -7,7 +7,6 @@ const registerUser = async (data: RegisterSchema) => {
     name: data.name,
     email: data.email,
     password: data.password,
-    role: data.role,
   });
 
   return response.data;

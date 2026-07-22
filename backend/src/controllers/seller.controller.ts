@@ -28,9 +28,8 @@ export const createProfile = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
 
     if (!userId) {
-      return res.status(404).json({message: "Brak Id"})
+      return res.status(404).json({ message: "Brak Id" });
     }
-
 
     const {
       shop_name,
@@ -394,6 +393,7 @@ export const getSellerOrders = async (req: Request, res: Response) => {
 
     res.json(orders);
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       message: "Błąd pobierania zamówień",
     });
@@ -443,6 +443,7 @@ export const updateSellerOrderStatus = async (req: Request, res: Response) => {
       success: true,
     });
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       message: "Błąd",
     });

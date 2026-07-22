@@ -1,16 +1,34 @@
 import { Link } from "react-router-dom";
 import { useFavorite } from "../../../context/FavoritesContext";
-
+import { useEffect, useRef } from "react";
 type Props = {
-  createSlug: (name: string) => string;
-  close: () => void;
+  onClose: () => void;
 };
 
-const FavoritesDropdown = ({ createSlug, close }: Props) => {
+const FavoritesDropdown = ({ onClose }: Props) => {
   const { favorites } = useFavorite();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <div className=" top-10 w-125 absolute right-0 z-50 p-4 bg-white border border-gray-300 shadow-xl">
+    <div
+      className=" top-10 w-125 absolute right-0 z-50 p-4 bg-white border border-gray-300 shadow-xl"
+      ref={dropdownRef}
+    >
       <h3 className="mb-3 text-lg font-bold">Ulubione produkty</h3>
 
       {favorites.length === 0 ? (
@@ -20,13 +38,13 @@ const FavoritesDropdown = ({ createSlug, close }: Props) => {
           {favorites.map((product: any) => (
             <li
               key={product.id}
-              className=" flex items-center gap-3 pb-2 border-b"
+              className=" flex items-center gap-3 pb-2 border-b border-gray-300"
             >
               <img
                 src={
                   product.images?.[0]
-                    ? `${import.meta.env.VITE_API_URL}/uploads/products/${
-                        product.images[0]
+                    ? `${import.meta.env.VITE_API_URL}${
+                        product.images.at(-1).url
                       }`
                     : "/no-image.png"
                 }
@@ -40,8 +58,8 @@ const FavoritesDropdown = ({ createSlug, close }: Props) => {
               </div>
 
               <Link
-                onClick={close}
-                to={`/offers/${createSlug(product.name)}/${product.id}`}
+                onClick={onClose}
+                to={`/offers/${product.slug}/${product.id}`}
                 className="text-sm text-orange-500"
               >
                 Zobacz

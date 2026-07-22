@@ -26,7 +26,15 @@ const AddProduct = () => {
     subcategory_id: "",
     attributes: [
       {
-        name: "",
+        name: "RAM",
+        value: "",
+      },
+      {
+        name: "Dysk",
+        value: "",
+      },
+      {
+        name: "CPU",
         value: "",
       },
     ],

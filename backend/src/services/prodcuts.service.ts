@@ -246,27 +246,34 @@ export const getCurrtentProdcutByID = async (id: string) => {
   return row;
 };
 
-export const saveOrderToDB = async (userId: string | null, data: any) => {
+export const saveOrderToDB = async (data: any) => {
   const conn = await connection.getConnection();
 
   try {
     await conn.beginTransaction();
 
-    const { customer, address, delivery, payment, products } = data;
+    const {
+      customer,
+      address,
+      delivery,
+      payment,
+      products,
+      user_id: userId = null,
+    } = data;
 
     const deliveryMethod = delivery.method.toUpperCase();
 
-    let totalPrice = 0;
+    let productsTotal = 0;
 
     const productsData: any[] = [];
 
+    // 1. Sprawdzenie produktów i blokada rekordów
     for (const item of products) {
       const [rows]: any = await conn.query(
         `
         SELECT
           id,
           name,
-          model,
           price,
           stock,
           product_data
@@ -287,89 +294,61 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
         throw new Error("OUT_OF_STOCK");
       }
 
-      totalPrice += Number(product.price) * item.quantity;
+      productsTotal += Number(product.price) * item.quantity;
 
       productsData.push({
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.product_data?.image ?? null,
         quantity: item.quantity,
+        image: product.product_data?.image ?? null,
       });
     }
 
-    let addressId = null;
-
-    if (deliveryMethod === "COURIER") {
-      if (!address || !customer) {
-        throw new Error("ADDRESS_REQUIRED");
-      }
-      const [addressResult]: any = await conn.query(
-        `
-        INSERT INTO order_addresses
-        (
-          user_id,
-          first_name,
-          last_name,
-          street,
-          postal_code,
-          city,
-          country,
-          phone
-        )
-
-        VALUES(?,?,?,?,?,?,?,?)
-        `,
-        [
-          userId,
-
-          customer.name,
-
-          customer.last_name,
-
-          address.street,
-
-          address.postal_code,
-
-          address.city,
-
-          address.country ?? "Polska",
-
-          customer.phone,
-        ],
-      );
-
-      addressId = addressResult.insertId;
-    }
+    const finalTotal = productsTotal + Number(delivery.price);
 
     const orderNumber = await generateOrderNumber();
 
+    // 2. Tworzenie zamówienia
     const [orderResult]: any = await conn.query(
       `
       INSERT INTO orders
       (
         user_id,
         address_id,
+
+        customer_name,
+        customer_last_name,
+        email,
+        customer_phone,
+
         delivery_method,
         delivery_price,
+
         payment_method,
+
         locker_id,
         locker_name,
         locker_address,
+
         total_price,
         order_number,
         status
       )
 
-      VALUES(?,?,?,?,?,?,?,?,?,?,'NEW')
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
       `,
       [
         userId,
 
-        addressId,
+        address?.id ?? null,
+
+        customer.name,
+        customer.last_name,
+        customer.email,
+        customer.phone,
 
         deliveryMethod,
-
         delivery.price,
 
         payment.method,
@@ -380,14 +359,20 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
 
         deliveryMethod === "LOCKER" ? delivery.locker?.address : null,
 
-        totalPrice + Number(delivery.price),
+        finalTotal,
 
         orderNumber,
+        "NEW",
       ],
     );
 
     const orderId = orderResult.insertId;
 
+    if (!orderId) {
+      throw new Error("ORDER_CREATION_FAILED");
+    }
+
+    // 3. Dodanie produktów do zamówienia
     for (const product of productsData) {
       await conn.query(
         `
@@ -405,18 +390,15 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
         `,
         [
           orderId,
-
           product.id,
-
           product.name,
-
           product.quantity,
-
           product.price,
-
           product.image,
         ],
       );
+
+      // 4. Aktualizacja magazynu
 
       await conn.query(
         `
@@ -426,6 +408,8 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
         `,
         [product.quantity, product.id],
       );
+
+      // 5. Ukrycie produktu gdy brak sztuk
 
       await conn.query(
         `
@@ -441,14 +425,15 @@ export const saveOrderToDB = async (userId: string | null, data: any) => {
     await conn.commit();
 
     return {
-      success: true,
       orderId,
       orderNumber,
+      total: finalTotal,
+      success: true,
     };
-  } catch (err) {
+  } catch (error) {
     await conn.rollback();
 
-    throw err;
+    throw error;
   } finally {
     conn.release();
   }

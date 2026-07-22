@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { useUser } from "../hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLogout } from "../hooks/useLogin";
+import { socket } from "../socket";
 export type User = {
   id: number;
   email: string;
@@ -11,7 +12,7 @@ export type User = {
   role: "USER" | "SELLER";
 };
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
   login: (
     accessToken: string,
@@ -22,7 +23,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
   isPending: boolean;
-}
+};
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -36,7 +37,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.getItem("token") ?? sessionStorage.getItem("token")
   );
   const { data: user, isPending } = useUser(token);
-
 
   const login = (
     accessToken: string,
@@ -53,6 +53,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     queryClient.invalidateQueries({ queryKey: ["user"] });
     setToken(accessToken);
+
+    socket.auth = {
+      token: token,
+    };
+    socket.connect();
   };
 
   const logout = () => {
@@ -67,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setToken(null);
 
         queryClient.clear();
+        socket.disconnect();
       },
     });
   };

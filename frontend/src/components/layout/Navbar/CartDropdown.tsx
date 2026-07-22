@@ -1,13 +1,36 @@
 import { useCartStore } from "../../../zustand/states/cartState";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
 
-const CartDropdown = () => {
+const CartDropdown = ({ onClose }: any) => {
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { cart, updateQuantity, removeFromCart, clearCart } = useCartStore();
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+      
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
+
   return (
-    <div className=" top-10 w-125 absolute right-0 z-50 p-4 bg-white border border-gray-300 shadow-xl">
+    <div
+      className=" top-10 w-125 absolute right-0 z-50 p-4 bg-white border border-gray-300 shadow-xl"
+      ref={dropdownRef}
+    >
       <h2 className="mb-4 text-xl font-bold">Twój koszyk</h2>
 
       {cart.length === 0 ? (

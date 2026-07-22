@@ -1,10 +1,11 @@
 import { Heart, ShoppingCart, Bell, MessageCircle, User } from "lucide-react";
 
-import { useState, useCallback } from "react";
-
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import FavoritesDropdown from "./FavoriteDropdown";
 import CartDropdown from "./CartDropdown";
 import AccountDropdown from "./AccountDropdown";
+import BellDropdown from "./BellDropdown";
 
 const NavbarActions = ({
   toggleLanguage,
@@ -16,44 +17,72 @@ const NavbarActions = ({
 }: any) => {
   const [active, setActive] = useState<any>(null);
 
-  const createSlug = useCallback(
-    (name: string) => name.toLowerCase().replace(/\s+/g, "-"),
-    []
-  );
-
   return (
     <div className="flex items-center gap-6">
       <button onClick={toggleLanguage}>
         {language === "pl" ? "EN" : "PL"}
       </button>
 
-      <div className="relative cursor-pointer">
-        <Heart onClick={() => setActive(active === "fav" ? null : "fav")} />
+      {user && (
+        <div className=" relative">
+          <Heart
+            onMouseDown={(e) => {
+              e.stopPropagation();
 
-        {active === "fav" && (
-          <FavoritesDropdown
-            createSlug={createSlug}
-            close={() => setActive(null)}
+              setActive((prev: any) => (prev === "fav" ? null : "fav"));
+            }}
+            className="cursor-pointer"
           />
-        )}
-      </div>
 
-      <MessageCircle className="cursor-pointer" />
+          {active === "fav" && (
+            <FavoritesDropdown onClose={() => setActive(null)} />
+          )}
+        </div>
+      )}
 
-      <Bell className="cursor-pointer" />
+      {user && (
+        <Link to="/chat">
+          <MessageCircle className="cursor-pointer" />
+        </Link>
+      )}
+
+      {user && (
+        <div className="relative">
+          <Bell
+            onMouseDown={(e) => {
+              e.stopPropagation();
+
+              setActive((prev: any) => (prev === "bell" ? null : "bell"));
+            }}
+            className="cursor-pointer"
+          />
+
+          {active === "bell" && (
+            <BellDropdown onClose={() => setActive(null)} />
+          )}
+        </div>
+      )}
 
       <div className="relative">
         <ShoppingCart
+          onMouseDown={(e) => {
+            e.stopPropagation();
+
+            setActive((prev: any) => (prev === "cart" ? null : "cart"));
+          }}
           className="cursor-pointer"
-          onClick={() => setActive(active === "cart" ? null : "cart")}
         />
 
-        {active === "cart" && <CartDropdown />}
+        {active === "cart" && <CartDropdown onClose={() => setActive(null)} />}
       </div>
 
       <div className=" relative">
         <button
-          onClick={() => setActive(active === "account" ? null : "account")}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+
+            setActive((prev: any) => (prev === "account" ? null : "account"));
+          }}
           className="hover:text-orange-500 flex items-center gap-3 cursor-pointer"
         >
           {isAuthenticated ? (
@@ -75,7 +104,7 @@ const NavbarActions = ({
               </div>
             </>
           ) : (
-            <User size={22}  />
+            <User size={22} />
           )}
         </button>
 
@@ -84,7 +113,7 @@ const NavbarActions = ({
             isAuthenticated={isAuthenticated}
             user={user}
             logout={logout}
-            close={() => setActive(null)}
+            onClose={() => setActive(null)}
             seller={seller}
           />
         )}
