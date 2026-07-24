@@ -13,7 +13,7 @@ export const chatSocket = (socket: Socket, io: Server) => {
       message: data.message,
     });
 
-    console.log(message);
+    
 
     io.to(`conversation_${data.conversationId}`).emit("newMessage", message);
   });

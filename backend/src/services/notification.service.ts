@@ -1,32 +1,28 @@
 import { connection } from "../config/db.config";
-
-
+import { getIO } from "../socket/indext";
 export const createNotificationService = async (data: any) => {
   const [result]: any = await connection.query(
     `
-    INSERT INTO notifications
-    (
-      user_id,
-      type,
-      title,
-      message
-    )
+ INSERT INTO notifications
+ (
+ user_id,
+ type,
+ title,
+ message
+ )
 
-    VALUES(?,?,?,?)
-    `,
+ VALUES(?,?,?,?)
+ `,
     [data.userId, data.type, data.title, data.message],
   );
 
-  const [rows]: any = await connection.query(
-    `
-    SELECT *
-    FROM notifications
-    WHERE id=?
-    `,
-    [result.insertId],
-  );
+  const notification = {
+    id: result.insertId,
+    ...data,
+  };
 
-  const notification = rows[0];
+  console.log("EMIT ROOM:", `user_${data.userId}`);
+  getIO().to(`user_${data.userId}`).emit("newNotification", notification);
 
   return notification;
 };
@@ -54,4 +50,50 @@ export const getUserNotificationsService = async (userId: number) => {
   );
 
   return rows;
+};
+
+// jedno powiadomienie jako przeczytane
+export const markNotificationAsReadService = async (
+  notificationId: number,
+  userId: number,
+) => {
+  const [result]: any = await connection.query(
+    `
+    UPDATE notifications
+    SET is_read = 1
+    WHERE id = ?
+    AND user_id = ?
+    `,
+    [notificationId, userId],
+  );
+
+  return result.affectedRows > 0;
+};
+
+// wszystkie powiadomienia użytkownika jako przeczytane
+export const markAllNotificationsAsReadService = async (userId: number) => {
+  const [result]: any = await connection.query(
+    `
+    UPDATE notifications
+    SET is_read = 1
+    WHERE user_id = ?
+    AND is_read = 0
+    `,
+    [userId],
+  );
+
+  return result.affectedRows;
+};
+
+export const deleteNotificationFromDb = async (id: number, userId: number) => {
+  const [result]: any = await connection.query(
+    `
+    DELETE FROM notifications
+    WHERE user_id = ?
+    AND id = ?
+    `,
+    [userId, id],
+  );
+
+  return result.affectedRows;
 };

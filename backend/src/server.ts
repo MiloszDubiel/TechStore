@@ -12,6 +12,7 @@ import reportRoutes from "./routes/report.routes";
 import path from "node:path";
 import cors from "cors";
 import chatRoutes from "./routes/chat.router";
+import notificationRoutes from "./routes/notification.routes";
 import { initSocket } from "./socket/indext";
 import http from "http";
 
@@ -30,16 +31,16 @@ app.use("/api/seller", sellerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/socket", chatRoutes);
 app.use("/api/report", reportRoutes);
+app.use("/api/notification", notificationRoutes);
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 const server = http.createServer(app);
+
 initSocket(server);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
-app.listen(5000, () => {
-  console.log("Serwer działa na porcie 5000");
-});
-server.listen(5001, () => {
-  console.log("Socket działa na 5001");
+
+server.listen(5000, () => {
+  console.log("HTTP + Socket.IO działa na porcie 5000");
 });

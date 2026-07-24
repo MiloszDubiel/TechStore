@@ -15,7 +15,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { FavoriteProvider } from "./context/FavoritesContext";
 import { CheckoutProvider } from "./context/CheckoutContext";
 import { ThemeProvider } from "./context/ThemeProvider";
-
+import { NotificationProvider } from "./context/NotificationContext";
 import {
   CheckIsEmptyCart,
   CheckIsLoggedIn,
@@ -140,7 +140,9 @@ const App: React.FC = () => {
       <ThemeProvider>
         <CheckoutProvider>
           <FavoriteProvider>
-            <AppContent />
+            <NotificationProvider>
+              <AppContent />
+            </NotificationProvider>
           </FavoriteProvider>
         </CheckoutProvider>
       </ThemeProvider>

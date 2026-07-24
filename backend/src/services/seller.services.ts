@@ -2,6 +2,7 @@ import { connection } from "../config/db.config";
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import slugify from "slugify";
 import { createNotificationService } from "./notification.service";
+import { getIO } from "../socket/indext";
 
 export interface CreateProductDTO {
   name: string;
@@ -707,6 +708,7 @@ export const getSellerOrderDetailsService = async (
     o.delivery_price,
     o.payment_method,
     o.created_at,
+  
 
     -- DOSTAWA
     o.locker_id,
@@ -717,6 +719,8 @@ export const getSellerOrderDetailsService = async (
     o.customer_name,
     o.customer_last_name,
     o.customer_phone,
+    o.user_id,
+    o.email,
 
     -- ADRES
     a.street,
@@ -800,6 +804,8 @@ ORDER BY oi.id ASC;;
       first_name: rows[0].name || rows[0].customer_name,
       last_name: rows[0].last_name || rows[0].customer_last_name,
       phone: rows[0].phone,
+      email: rows[0].email,
+      user_id: rows[0].user_id,
 
       address: {
         street: rows[0].street,
@@ -831,103 +837,65 @@ export const updateSellerOrderStatusService = async (
 ) => {
   const [result]: any = await connection.query(
     `
-UPDATE orders o
+    UPDATE orders o
 
-JOIN order_items oi
-ON oi.order_id = o.id
+    JOIN order_items oi
+    ON oi.order_id = o.id
 
-JOIN products p
-ON p.id = oi.product_id
+    JOIN products p
+    ON p.id = oi.product_id
 
+    SET o.status = ?
 
-SET o.status = ?
-
-
-WHERE o.id = ?
-AND p.seller_id = ?
-
-`,
+    WHERE o.id = ?
+    AND p.seller_id = ?
+    `,
     [status, orderId, sellerId],
   );
 
-  await connection.query(
-    `
-UPDATE orders
-SET status=?
-WHERE id=?
-`,
-    [status, orderId],
-  );
+  if (!result.affectedRows) {
+    return false;
+  }
 
-  const [order]: any = await connection.query(
+  const [orders]: any = await connection.query(
     `
-SELECT *
-FROM orders
-WHERE id=?
-`,
+    SELECT
+      id,
+      user_id,
+      order_number
+    FROM orders
+    WHERE id=?
+    `,
     [orderId],
   );
 
+  const order = orders[0];
+
+  if (!order.user_id) {
+    return true;
+  }
+
   const messages: any = {
-    CONFIRMED: "Sprzedawca potwierdził Twoje zamówienie",
+    NEW: "Otrzymaliśmy Twoje zamówienie",
+
+    PROCESSING: "Twoje zamówienie jest przygotowywane",
 
     SHIPPED: "Twoja przesyłka została wysłana",
 
-    DELIVERED: "Twoje zamówienie zostało dostarczone",
+    COMPLETED: "Twoje zamówienie zostało dostarczone",
 
     CANCELLED: "Twoje zamówienie zostało anulowane",
   };
 
-  //TODO - jesli user_id === null to wyslij email bo nie ma konta
-
   await createNotificationService({
-    userId: order[0].user_id,
+    userId: order.user_id,
 
     type: "ORDER_STATUS",
 
     title: "Zmiana statusu zamówienia",
 
-    message: messages[status] || "Status zamówienia został zmieniony",
+    message: messages[status] ?? "Status zamówienia został zmieniony",
   });
 
-  return result.affectedRows > 0;
-};
-
-export const getSellerBySlug = async (slug: string) => {
-  const [rows]: any = await connection.query(
-    `
-SELECT
-    sp.user_id AS seller_id,
-    sp.shop_name,
-    sp.slug,
-    sp.description,
-    sp.logo,
-    sp.company_name,
-    sp.is_verified,
-
-    COALESCE(
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'id', p.id,
-                'name', p.name,
-                'price', p.price,
-                'stock', p.stock
-            )
-        ),
-        JSON_ARRAY()
-    ) AS products
-
-FROM seller_profiles sp
-
-LEFT JOIN products p
-ON p.seller_id = sp.user_id
-
-WHERE sp.slug = ?
-
-GROUP BY sp.id
-`,
-    [slug],
-  );
-
-  return rows[0];
+  return true;
 };

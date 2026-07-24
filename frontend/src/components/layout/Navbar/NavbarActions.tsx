@@ -6,6 +6,9 @@ import FavoritesDropdown from "./FavoriteDropdown";
 import CartDropdown from "./CartDropdown";
 import AccountDropdown from "./AccountDropdown";
 import BellDropdown from "./BellDropdown";
+import { useNotification } from "../../../context/NotificationContext";
+import { useCartStore } from "../../../zustand/states/cartState";
+import { useFavorite } from "../../../context/FavoritesContext";
 
 const NavbarActions = ({
   toggleLanguage,
@@ -17,6 +20,13 @@ const NavbarActions = ({
 }: any) => {
   const [active, setActive] = useState<any>(null);
 
+  const cart = useCartStore((state) => state.cart);
+
+  const { notifications, notificationData = [] } = useNotification();
+
+  const { favorites = [] } = useFavorite();
+
+  console.log(notificationData);
   return (
     <div className="flex items-center gap-6">
       <button onClick={toggleLanguage}>
@@ -33,7 +43,11 @@ const NavbarActions = ({
             }}
             className="cursor-pointer"
           />
-
+          {favorites?.length > 0 && (
+            <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white ">
+              {favorites.length}
+            </div>
+          )}
           {active === "fav" && (
             <FavoritesDropdown onClose={() => setActive(null)} />
           )}
@@ -56,9 +70,17 @@ const NavbarActions = ({
             }}
             className="cursor-pointer"
           />
+          {notificationData[0] && (
+            <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white ">
+              {notificationData[1]}
+            </div>
+          )}
 
           {active === "bell" && (
-            <BellDropdown onClose={() => setActive(null)} />
+            <BellDropdown
+              notifications={notifications}
+              onClose={() => setActive(null)}
+            />
           )}
         </div>
       )}
@@ -72,6 +94,11 @@ const NavbarActions = ({
           }}
           className="cursor-pointer"
         />
+        {cart.length > 0 && (
+          <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white ">
+            {cart.length}
+          </div>
+        )}
 
         {active === "cart" && <CartDropdown onClose={() => setActive(null)} />}
       </div>

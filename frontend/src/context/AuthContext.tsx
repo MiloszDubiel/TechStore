@@ -3,6 +3,7 @@ import { useUser } from "../hooks/useUser";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLogout } from "../hooks/useLogin";
 import { socket } from "../socket";
+import { useEffect } from "react";
 export type User = {
   id: number;
   email: string;
@@ -53,11 +54,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     queryClient.invalidateQueries({ queryKey: ["user"] });
     setToken(accessToken);
-
-    socket.auth = {
-      token: token,
-    };
-    socket.connect();
   };
 
   const logout = () => {
@@ -76,6 +72,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       },
     });
   };
+  useEffect(() => {
+    if (!user || !token) return;
+
+    socket.auth = {
+      token,
+    };
+
+    socket.connect();
+
+    socket.on("connect", () => {
+      socket.emit("user", user.id);
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.disconnect();
+    };
+  }, [user, token]);
 
   return (
     <AuthContext.Provider

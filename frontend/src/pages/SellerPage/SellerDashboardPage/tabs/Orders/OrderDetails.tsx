@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useSeller } from "../../../../../hooks/useSeller";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-
+import { socket } from "../../../../../socket";
 type Props = {
   orderId: number;
   onBack: () => void;
@@ -20,6 +20,8 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
   const { getOrderDetails, updateOrderStatus } = useSeller();
 
   const { data: order, isLoading } = getOrderDetails(orderId);
+
+  console.log(order);
 
   const [status, setStatus] = useState(order?.status);
 
@@ -40,16 +42,19 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
     CANCELLED: "Anulowane",
   };
 
-  console.log(order);
-
   const saveStatus = () => {
     updateOrderStatus.mutate(
       {
-        id: order.id,
+        id: orderId,
         status,
       },
       {
         onSuccess: () => {
+          socket.emit("changeStatus", {
+            order_id: orderId,
+            user: order?.user_id,
+          });
+
           clientQuery.invalidateQueries({ queryKey: ["seller-orders"] });
           clientQuery.invalidateQueries({
             queryKey: ["seller-order-details", orderId],
@@ -107,7 +112,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
             disabled={updateOrderStatus.isPending || status === order.status}
             className=" hover:bg-orange-600 disabled:bg-gray-300 px-4 py-2 text-white bg-orange-500 cursor-pointer"
           >
-            {updateOrderStatus.isPending ? "Zapisywanie..." : "Zapisz"}
+            Zapisz
           </button>
         </div>
       </section>
