@@ -38,27 +38,18 @@ const AddProduct = () => {
   const onSubmit = (data: any) => {
     const productData = {
       name: data.name,
-
       brand: data.brand,
-
       model: data.model,
-
       description: data.description,
-
       price: data.price,
-
       stock: data.stock,
-
       category_id: data.category_id,
-
       subcategory_id: data.subcategory_id,
-
-      // pełny JSON parametrów
-
       attributes: data.attributes,
-
       seller_id: sellerData.seller_id,
     };
+
+    console.log(data.attributes);
 
     mutate(
       productData,

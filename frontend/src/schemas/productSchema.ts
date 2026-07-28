@@ -1,9 +1,12 @@
 import { z } from "zod";
 
-const attributesSchema = z.object({
-  name: z.string().min(1, "Podaj nazwę parametru"),
-  value: z.string().min(1, "Podaj wartość"),
-});
+const attributesSchema = z
+  .object({
+    parameter_id: z.number(),
+    name: z.string(),
+    value: z.string(),
+  })
+  .passthrough();
 
 const baseProductSchema = {
   name: z.string().min(3, "Nazwa musi mieć minimum 3 znaki"),
@@ -34,13 +37,11 @@ const baseProductSchema = {
   ),
 };
 
-
 export const productCreateSchema = z.object({
   ...baseProductSchema,
 
   images: z.array(z.instanceof(File)).min(1, "Dodaj minimum jedno zdjęcie"),
 });
-
 
 export const productEditSchema = z
   .object({

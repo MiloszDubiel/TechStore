@@ -51,7 +51,7 @@ const ProductForm = ({
     defaultValues,
   });
 
-  const { fields } = useFieldArray({
+  const { fields, replace } = useFieldArray({
     control,
     name: "attributes",
   });
@@ -78,30 +78,29 @@ const ProductForm = ({
     enabled: !!selectedSubcategory,
   });
 
-  console.log(selectedSubcategory);
-
   useEffect(() => {
     if (!parameters.length) return;
 
-    const attributes = parameters.map((param: any) => ({
-      parameter_id: param.id,
-      name: param.name,
-      label: param.label,
-      type: param.type,
-      required: param.required,
-      options: param.options ?? [],
-      value: "",
-    }));
+    const currentAttributes = watch("attributes") || [];
 
-    setValue(
-      "attributes",
+    const attributes = parameters.map((param: any) => {
+      const existing = currentAttributes.find(
+        (attr: any) => attr.parameter_id === param.id
+      );
 
-      attributes,
-      {
-        shouldValidate: true,
-      }
-    );
-  }, [parameters]);
+      return {
+        parameter_id: param.id,
+        name: param.name,
+        label: param.label,
+        type: param.type,
+        required: param.required,
+        options: param.options ?? [],
+        value: existing?.value ?? "",
+      };
+    });
+
+    replace(attributes);
+  }, [parameters, replace]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -241,61 +240,68 @@ const ProductForm = ({
             <div />
           </div>
 
-          {fields.map((field: any, index) => (
-            <div
-              key={field.id}
-              className="grid grid-cols-[1fr_1fr] items-center gap-4 p-3 border-b border-gray-300"
-            >
-              <div>
-                <label className="font-medium">
-                  {field.label || field.name}
-                </label>
-                <input
-                  type="hidden"
-                  {...register(`attributes.${index}.parameter_id`)}
-                />
+          {fields.map((field: any, index) => {
+            return (
+              <div
+                key={field.id}
+                className="grid grid-cols-[1fr_1fr] items-center gap-4 p-3 border-b border-gray-300"
+              >
+                <div>
+                  <label className="font-medium">
+                    {field.label || field.name}
+                  </label>
 
-                <input
-                  type="hidden"
-                  {...register(`attributes.${index}.name`)}
-                />
-
-                <input
-                  type="hidden"
-                  {...register(`attributes.${index}.label`)}
-                />
-
-                <input
-                  type="hidden"
-                  {...register(`attributes.${index}.type`)}
-                />
-              </div>
-
-              <div>
-                {field.type === "select" ? (
-                  <select
-                    {...register(`attributes.${index}.value`)}
-                    className="w-full px-4 py-2 border border-gray-300"
-                  >
-                    <option value="">Wybierz</option>
-
-                    {field.options?.map((opt: any) => (
-                      <option key={opt.id} value={opt.value}>
-                        {opt.value}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
                   <input
-                    type={field.type === "number" ? "number" : "text"}
-                    {...register(`attributes.${index}.value`)}
-                    className="w-full px-4 py-2 border border-gray-300"
-                    placeholder={`Podaj ${field.label}`}
+                    type="hidden"
+                    value={field.parameter_id}
+                    {...register(`attributes.${index}.parameter_id`)}
                   />
-                )}
+
+                  <input
+                    type="hidden"
+                    value={field.name}
+                    {...register(`attributes.${index}.name`)}
+                  />
+
+                  <input
+                    value={field.label}
+                    type="hidden"
+                    {...register(`attributes.${index}.label`)}
+                  />
+
+                  <input
+                    type="hidden"
+                    value={field.type}
+                    {...register(`attributes.${index}.type`)}
+                  />
+                </div>
+
+                <div>
+                  {field.type === "select" ? (
+                    <select
+                      {...register(`attributes.${index}.value`)}
+                      className="w-full px-4 py-2 border border-gray-300"
+                    >
+                      <option value="">Wybierz</option>
+
+                      {field.options?.map((opt: any) => (
+                        <option key={opt.id} value={opt.value}>
+                          {opt.value}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type={field.type === "number" ? "number" : "text"}
+                      {...register(`attributes.${index}.value`)}
+                      className="w-full px-4 py-2 border border-gray-300"
+                      placeholder={`Podaj ${field.label}`}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       <div className="p-6 bg-white border border-gray-300">
