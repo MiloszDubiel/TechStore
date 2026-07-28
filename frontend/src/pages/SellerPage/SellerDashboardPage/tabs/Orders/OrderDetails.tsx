@@ -148,7 +148,9 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
 
           <p>
             Metoda:
-            <b className="ml-2">{order.delivery.method}</b>
+            <b className="ml-2">
+              {order.delivery.method == "LOCKER" ? "Paczkomat" : "Kurier"}
+            </b>
           </p>
 
           <p>

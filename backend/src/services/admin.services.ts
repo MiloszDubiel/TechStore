@@ -1,6 +1,28 @@
 import { connection } from "../config/db.config";
-export const getAllUsers = async () => {
-  const [rows] = await connection.query(
+export const getAllUsers = async (
+  page: number,
+  limit: number,
+  search: string = "",
+) => {
+  const offset = (page - 1) * limit;
+
+  const searchValue = `%${search}%`;
+
+  const [[count]]: any = await connection.query(
+    `
+    SELECT COUNT(*) AS total
+    FROM users u
+    WHERE u.role <> "ADMIN"
+    AND (
+      u.email LIKE ?
+      OR u.name LIKE ?
+      OR u.last_name LIKE ?
+    )
+    `,
+    [searchValue, searchValue, searchValue],
+  );
+
+  const [rows]: any = await connection.query(
     `
     SELECT
       u.id,
@@ -10,7 +32,6 @@ export const getAllUsers = async () => {
       u.role,
       u.created_at,
       u.is_active,
-
 
       sp.id AS seller_id,
       sp.shop_name,
@@ -23,20 +44,34 @@ export const getAllUsers = async () => {
       sp.city,
       sp.postal_code
 
-
     FROM users u
 
     LEFT JOIN seller_profiles sp
       ON sp.user_id = u.id
 
-
     WHERE u.role <> "ADMIN"
 
+    AND (
+      u.email LIKE ?
+      OR u.name LIKE ?
+      OR u.last_name LIKE ?
+    )
+
     ORDER BY u.created_at DESC
+
+    LIMIT ?
+    OFFSET ?
     `,
+    [searchValue, searchValue, searchValue, limit, offset],
   );
 
-  return rows;
+  return {
+    users: rows,
+    total: count.total,
+    page,
+    limit,
+    totalPages: Math.ceil(count.total / limit),
+  };
 };
 
 export const deleteUser = async (id: number) => {
@@ -103,9 +138,18 @@ export const activeUser = async (id: number) => {
   return true;
 };
 
-export const getAllAdminProducts = async () => {
+export const getAllAdminProducts = async (
+  page: number,
+  limit: number,
+  search: string = "",
+) => {
+  const offset = (page - 1) * limit;
+
+  const searchValue = `%${search}%`;
+
   const [rows] = await connection.query(
-    `SELECT 
+    `
+SELECT 
       p.id,
       p.name,
       p.description,
@@ -118,6 +162,13 @@ export const getAllAdminProducts = async () => {
       p.is_deleted,
       p.is_visible,
       p.seller_id,
+      sp.shop_name,
+      sp.shop_name,
+
+u.name AS seller_name,
+u.last_name AS seller_last_name,
+u.email AS seller_email,
+      
 
       c.id AS category_id,
       s.id AS subcategory_id,
@@ -143,14 +194,51 @@ export const getAllAdminProducts = async () => {
 
     LEFT JOIN product_images pi
       ON p.id = pi.product_id
+LEFT JOIN seller_profiles sp
+    ON sp.id = p.seller_id
+
+LEFT JOIN users u
+    ON u.id = sp.user_id
+
+    
+
+ WHERE 
+      p.name LIKE ?
+      OR CAST(p.id AS CHAR) LIKE ?
+      
 
     GROUP BY p.id
 
     ORDER BY p.created_at DESC
+
+    LIMIT ? OFFSET ?
+
     `,
+    [searchValue, searchValue, limit, offset],
   );
 
-  return rows;
+  const [countResult]: any = await connection.query(
+    `
+    SELECT COUNT(*) as total
+    FROM products p
+
+    WHERE 
+      p.name LIKE ?
+      OR CAST(p.id AS CHAR) LIKE ?
+
+    `,
+    [searchValue, searchValue],
+  );
+
+  const total = countResult[0].total;
+
+  return {
+    products: rows,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 
 export const hideProduct = async (id: number) => {
@@ -420,53 +508,90 @@ WHERE user_id=?
 
   return rows[0];
 };
-export const getAdminOrdersService = async () => {
+export const getAdminOrdersService = async (
+  page: number,
+  limit: number,
+  search: string = "",
+) => {
+  const offset = (page - 1) * limit;
+
+  const searchValue = `%${search}%`;
+
   const [orders] = await connection.query(
-    `SELECT
-    o.id,
-    o.order_number,
-    o.user_id,
+    `
+    SELECT
+      o.id,
+      o.order_number,
+      o.user_id,
 
-    -- użytkownik
-    u.email,
-    u.name AS user_name,
-    u.last_name AS user_last_name,
+      -- użytkownik
+      u.email,
+      u.name AS user_name,
+      u.last_name AS user_last_name,
 
-    -- dane z zamówienia (snapshot)
-    oa.first_name,
-    oa.last_name,
-    oa.phone,
+      -- snapshot adresu
+      oa.first_name,
+      oa.last_name,
+      oa.phone,
+      oa.street,
+      oa.postal_code,
+      oa.city,
+      oa.country,
 
-    oa.street,
-    oa.postal_code,
-    oa.city,
-    oa.country,
-
-    -- zamówienie
-    o.payment_method,
-    o.delivery_method,
-    o.delivery_price,
-    o.total_price,
-    o.status,
-    o.created_at
-
-
-FROM orders o
+      -- zamówienie
+      o.payment_method,
+      o.delivery_method,
+      o.delivery_price,
+      o.total_price,
+      o.status,
+      o.created_at
 
 
-LEFT JOIN users u
-    ON u.id = o.user_id
+    FROM orders o
+
+    LEFT JOIN users u
+      ON u.id = o.user_id
+
+    LEFT JOIN order_addresses oa
+      ON oa.id = o.address_id
 
 
-LEFT JOIN order_addresses oa
-    ON oa.id = o.address_id
+    WHERE 
+      o.order_number LIKE ?
+      OR u.email LIKE ?
+      OR u.name LIKE ?
 
 
-ORDER BY o.created_at DESC;
+    ORDER BY o.created_at DESC
+
+    LIMIT ?
+    OFFSET ?
+
     `,
+    [searchValue, searchValue, searchValue, limit, offset],
   );
 
-  return orders;
+  const [countResult]: any = await connection.query(
+    `
+   SELECT COUNT(*) AS total
+    FROM orders o
+
+    WHERE 
+      o.order_number LIKE ?
+
+    `,
+    [searchValue],
+  );
+
+  const total = countResult[0].total;
+
+  return {
+    orders,
+    total,
+    page,
+    limit,
+    totalPages: Math.ceil(total / limit),
+  };
 };
 export const getAdminOrderDetailsService = async (id: string) => {
   const [rows]: any = await connection.query(

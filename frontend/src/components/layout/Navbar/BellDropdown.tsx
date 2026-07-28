@@ -1,5 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useNotification } from "../../../context/NotificationContext";
+import { Trash2 } from "lucide-react";
 
 const BellDropdown = ({ onClose, notifications = [] }: any) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -67,7 +68,7 @@ const BellDropdown = ({ onClose, notifications = [] }: any) => {
                   onClick={() => setAsDeleted(notification?.id)}
                   className="hover:underline text-sm text-red-500 cursor-pointer"
                 >
-                  Usuń
+                  <Trash2 size={14} />
                 </button>
               </div>
 

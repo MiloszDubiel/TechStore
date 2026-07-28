@@ -3,15 +3,23 @@ import { useState } from "react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useAdmin } from "../../../../hooks/useAdmin";
 import EditOrder from "./EditOrder";
+import Pagination from "../../../../components/ui/Pagination";
+
 const Orders = () => {
   const { token } = useAuth();
-
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState<any | null>(null);
 
   const {
     orders: { data = [] },
-  } = useAdmin(token!);
+  } = useAdmin(token!, {
+    page: page,
+    limit: 10,
+    search,
+  });
+
+  const orderList = data?.orders ?? [];
 
   const orderStatusLabels: Record<string, string> = {
     NEW: "Nowe",
@@ -20,12 +28,6 @@ const Orders = () => {
     COMPLETED: "Zakończone",
     CANCELLED: "Anulowane",
   };
-
-  const filtered = data.filter((order: any) =>
-    `${order.customer_name} ${order.customer_last_name}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
 
   if (selectedOrderId) {
     return (
@@ -47,7 +49,6 @@ const Orders = () => {
           className="px-4 py-2 border border-gray-300"
         />
       </div>
-
       <div className="overflow-hidden bg-white border border-gray-200">
         <table className="w-full text-left">
           <thead className="bg-gray-100">
@@ -64,7 +65,7 @@ const Orders = () => {
           </thead>
 
           <tbody>
-            {filtered.map((order: any) => (
+            {orderList.map((order: any) => (
               <tr key={order.id} className="border-t border-gray-200">
                 <td className="p-4 font-semibold">#{order.order_number}</td>
 
@@ -110,7 +111,7 @@ const Orders = () => {
               </tr>
             ))}
 
-            {filtered.length === 0 && (
+            {orderList.length === 0 && (
               <tr>
                 <td colSpan={8} className="p-8 text-center text-gray-500">
                   Brak zamówień
@@ -119,7 +120,12 @@ const Orders = () => {
             )}
           </tbody>
         </table>
-      </div>
+      </div>{" "}
+      <Pagination
+        page={page}
+        totalPages={data?.totalPages ?? 1}
+        onPageChange={setPage}
+      />
     </div>
   );
 };

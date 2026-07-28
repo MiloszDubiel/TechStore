@@ -19,19 +19,37 @@ import {
   getAdminOrderDetailsApi,
 } from "../api/admin";
 
-export const useAdmin = (token: string) => {
+export const useAdmin = (
+  token: string,
+  params: {
+    page: number;
+    limit: number;
+    search: string;
+  }
+) => {
   const queryClient = useQueryClient();
 
   const users = useQuery({
-    queryKey: ["admin-users"],
+    queryKey: ["admin-users", params.page, params.limit, params.search],
 
-    queryFn: () => getUsers(token),
+    queryFn: () => {
+      return getUsers(token, {
+        page: params.page,
+        limit: params.limit,
+        search: params.search,
+      });
+    },
   });
 
   const orders = useQuery({
-    queryKey: ["admin-orders"],
+    queryKey: ["admin-orders", params.page, params.limit, params.search],
 
-    queryFn: () => getOrders(token),
+    queryFn: () =>
+      getOrders(token, {
+        page: params.page,
+        limit: params.limit,
+        search: params.search,
+      }),
   });
 
   const getAdminOrderDetails = (id?: number) => {
@@ -104,9 +122,14 @@ export const useAdmin = (token: string) => {
     },
   });
   const products = useQuery({
-    queryKey: ["admin-products"],
+    queryKey: ["admin-products", params.page, params.limit, params.search],
 
-    queryFn: () => getAdminProducts(token),
+    queryFn: () =>
+      getAdminProducts(token, {
+        page: params.page,
+        limit: params.limit,
+        search: params.search,
+      }),
 
     enabled: !!token,
   });

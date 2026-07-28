@@ -1,60 +1,68 @@
 import React from "react";
 
 interface PaginationProps {
+  page: number;
   totalPages: number;
-  currentPage: number;
   onPageChange: (page: number) => void;
 }
 
 const Pagination: React.FC<PaginationProps> = ({
+  page,
   totalPages,
-  currentPage,
   onPageChange,
 }) => {
   if (totalPages <= 1) return null;
 
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1).filter(
+    (number) =>
+      number === 1 || number === totalPages || Math.abs(number - page) <= 2
+  );
+
   return (
     <div className="flex flex-wrap items-center justify-center gap-2 mt-8">
       <button
-        disabled={currentPage === 1}
-        onClick={() => onPageChange(currentPage - 1)}
-        className="disabled:opacity-40 hover:bg-orange-100 px-3 py-1 border border-gray-200 rounded cursor-pointer"
+        disabled={page === 1}
+        onClick={() => onPageChange(page - 1)}
+        className=" disabled:opacity-40 hover:bg-orange-100 px-3 py-1 border border-gray-200 rounded cursor-pointer"
       >
         ←
       </button>
 
-      {Array.from({ length: totalPages }, (_, i) => i + 1)
-        .filter(
-          (page) =>
-            page === 1 ||
-            page === totalPages ||
-            Math.abs(page - currentPage) <= 2
-        )
-        .map((page, index, arr) => {
-          const prevPage = arr[index - 1];
-          return (
-            <div key={page} className="flex items-center">
-              {prevPage && page - prevPage > 1 && (
-                <span className=" px-2">...</span>
-              )}
-              <button
-                onClick={() => onPageChange(page)}
-                className={`px-3 py-1 rounded border transition border-gray-200 cursor-pointer ${
-                  currentPage === page
+      {pages.map((item, index) => {
+        const previous = pages[index - 1];
+        return (
+          <React.Fragment key={item}>
+            {previous && item - previous > 1 && (
+              <span className="px-2">...</span>
+            )}
+
+            <button
+              onClick={() => onPageChange(item)}
+              className={`
+                px-3
+                py-1
+                rounded
+                border
+                transition
+                cursor-pointer
+
+                ${
+                  page === item
                     ? "bg-orange-500 text-white border-orange-500"
-                    : "hover:bg-orange-100"
-                }`}
-              >
-                {page}
-              </button>
-            </div>
-          );
-        })}
+                    : "border-gray-200 hover:bg-orange-100"
+                }
+              `}
+            >
+              {item}
+            </button>
+          </React.Fragment>
+        );
+      })}
 
       <button
-        disabled={currentPage === totalPages}
-        onClick={() => onPageChange(currentPage + 1)}
-        className="disabled:opacity-40 hover:bg-orange-100 px-3 py-1 border border-gray-200 rounded cursor-pointer"
+        disabled={page === totalPages}
+        onClick={() => onPageChange(page + 1)}
+        className=" disabled:opacity-40 hover:bg-orange-100 px-3 py-1 border border-gray-200 rounded cursor-pointer"
       >
         →
       </button>

@@ -2,21 +2,37 @@ import axios from "axios";
 
 const API = "/api/admin";
 
-export const getUsers = async (token: string) => {
+export const getUsers = async (
+  token: string,
+  params?: {
+    page: number;
+    limit: number;
+    search: string;
+  }
+) => {
   const { data } = await axios.get(`${API}/users`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    params,
   });
 
   return data;
 };
 
-export const getOrders = async (token: string) => {
+export const getOrders = async (
+  token: string,
+  params?: {
+    page: number;
+    limit: number;
+    search: string;
+  }
+) => {
   const { data } = await axios.get(`${API}/orders`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    params,
   });
 
   return data;
@@ -120,11 +136,19 @@ export const unactiveUser = async (id: any, token: string) => {
 
   return response.data;
 };
-export const getAdminProducts = async (token: string) => {
+export const getAdminProducts = async (
+  token: string,
+  params?: {
+    page: number;
+    limit: number;
+    search: string;
+  }
+) => {
   const { data } = await axios.get(`${API}/products`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    params,
   });
 
   return data;

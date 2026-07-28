@@ -1,4 +1,5 @@
 import { Search, CheckCircle, UserCog, Ban, Store } from "lucide-react";
+
 import { useState } from "react";
 import { useAdmin } from "../../../../hooks/useAdmin";
 import { useAuth } from "../../../../context/AuthContext";
@@ -7,45 +8,51 @@ import ConfirmModal from "../../../../components/ui/ConfirmModal";
 import { toast } from "react-toastify";
 import SellerForm from "../../../../components/ui/SellerForm";
 import { useQueryClient } from "@tanstack/react-query";
+import Pagination from "../../../../components/ui/Pagination";
 
 const Users = () => {
   const [search, setSearch] = useState("");
+
+  const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [editSeller, setEditSeller] = useState(false);
   const [editUser, setEditUser] = useState(false);
-
   const queryClient = useQueryClient();
 
   const [confirmData, setConfirmData] = useState({
     title: "",
     message: "",
   });
+
   const [onConfirm, setOnConfirm] = useState<(() => void) | undefined>();
 
   const { token } = useAuth();
+
   const {
-    users: { data = [] },
+    users: { data },
     activeUser,
     BanUser,
     updateSeller,
-  } = useAdmin(token!);
+  } = useAdmin(token!, {
+    page: page,
+    limit: 10,
+    search,
+  });
 
-  const filteredUsers = data.filter((user: any) =>
-    user.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const usersList = data?.users ?? [];
 
-  const numberOfAdmins = data.filter((user: any) => user.role === "ADMIN");
-  const numberOfSellers = data.filter((user: any) => user.role === "SELLER");
+  const numberOfAdmins = data?.totalAdmins ?? 0;
+
+  const numberOfSellers = data?.totalSellers ?? 0;
+
   if (editUser) {
     return (
       <EditUser
         user={selectedUser}
         onBack={() => setEditUser(false)}
         onSuccess={() => {
-          toast.success(
-            `Pomyślnie zaktualizowano profil użytkownika: ${selectedUser.name} `
-          );
+          toast.success("Pomyślnie zaktualizowano użytkownika");
           setSelectedUser(null);
         }}
       />
@@ -55,26 +62,22 @@ const Users = () => {
   if (editSeller) {
     return (
       <SellerForm
+        storeData={selectedUser}
+        mode="edit"
         onBack={() => {
           setEditSeller(false);
           setSelectedUser(null);
         }}
-        storeData={selectedUser}
-        onSubmit={(data) => {
+        onSubmit={(form) => {
           const formData = new FormData();
 
-          formData.append("shop_name", data.shop_name);
-          formData.append("description", data.description);
-          formData.append("company_name", data.company_name);
-          formData.append("nip", data.nip);
-          formData.append("street", data.street);
-          formData.append("city", data.city);
-          formData.append("postal_code", data.postal_code);
-          formData.append("seller_id", selectedUser.id);
-
-          if (data.logo instanceof File) {
-            formData.append("logo", data.logo);
-          }
+          Object.entries(form).forEach(([key, value]) => {
+            if (value instanceof File) {
+              formData.append(key, value);
+            } else if (value) {
+              formData.append(key, String(value));
+            }
+          });
 
           updateSeller.mutate(
             {
@@ -83,22 +86,21 @@ const Users = () => {
             },
             {
               onSuccess: () => {
-                setEditSeller(false);
                 queryClient.invalidateQueries({
                   queryKey: ["admin-users"],
                 });
 
-                toast.success(
-                  `Pomyślnie edytowano dane sklepu '${selectedUser.shop_name}', użytkownika: ${selectedUser.name}`
-                );
+                setEditSeller(false);
+
+                toast.success("Zaktualizowano sklep");
               },
             }
           );
         }}
-        mode="edit"
       />
     );
   }
+
   return (
     <div>
       <div className=" flex items-center justify-between mb-6">
@@ -164,7 +166,7 @@ const Users = () => {
           </thead>
 
           <tbody>
-            {filteredUsers.map((user: any) => (
+            {usersList?.map((user: any) => (
               <tr
                 key={user.id}
                 className=" hover:bg-gray-50 border-b border-gray-200"
@@ -288,7 +290,21 @@ const Users = () => {
           onConfirm={onConfirm ?? (() => {})}
         />
       </div>
+      <Pagination
+        page={page}
+        totalPages={data?.totalPages ?? 1}
+        onPageChange={setPage}
+      />
+
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title={confirmData.title}
+        message={confirmData.message}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={onConfirm ?? (() => {})}
+      />
     </div>
   );
 };
+
 export default Users;

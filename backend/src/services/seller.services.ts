@@ -661,7 +661,6 @@ u.email as user_email,
 u.name as user_name,
 u.last_name as user_last_name
 
-
 FROM orders o
 
 
@@ -708,6 +707,8 @@ export const getSellerOrderDetailsService = async (
     o.delivery_price,
     o.payment_method,
     o.created_at,
+o.customer_phone,
+
   
 
     -- DOSTAWA
@@ -803,7 +804,7 @@ ORDER BY oi.id ASC;;
     customer: {
       first_name: rows[0].name || rows[0].customer_name,
       last_name: rows[0].last_name || rows[0].customer_last_name,
-      phone: rows[0].phone,
+      phone: rows[0].customer_phone,
       email: rows[0].email,
       user_id: rows[0].user_id,
 

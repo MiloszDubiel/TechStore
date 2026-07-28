@@ -25,7 +25,13 @@ import path from "path";
 
 export const getUsers = async (req: Request, res: Response) => {
   try {
-    const users = await getAllUsers();
+    const page = Number(req.query.page) || 1;
+
+    const limit = Number(req.query.limit) || 10;
+
+    const search = String(req.query.search || "");
+
+    const users = await getAllUsers(page, limit, search);
 
     res.json(users);
   } catch (error) {
@@ -127,7 +133,13 @@ export const getAdminProductsController = async (
   res: Response,
 ) => {
   try {
-    const products = await getAllAdminProducts();
+    const page = Number(req.query.page) || 1;
+
+    const limit = Number(req.query.limit) || 10;
+
+    const search = String(req.query.search || "");
+
+    const products = await getAllAdminProducts(page, limit, search);
 
     res.json(products);
   } catch (error) {
@@ -287,7 +299,10 @@ export const updateSellerByAdmin = async (req: Request, res: Response) => {
 };
 export const getAdminOrders = async (req: Request, res: Response) => {
   try {
-    const orders = await getAdminOrdersService();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const search = String(req.query.search || "");
+    const orders = await getAdminOrdersService(page, limit, search);
 
     return res.status(200).json(orders);
   } catch (error) {

@@ -4,11 +4,13 @@ import { useState } from "react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useAdmin } from "../../../../hooks/useAdmin";
 import ConfirmModal from "../../../../components/ui/ConfirmModal";
+import Pagination from "../../../../components/ui/Pagination";
 
 import EditProduct from "./EditProduct";
 const Products = () => {
   const { token } = useAuth();
 
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
@@ -23,11 +25,15 @@ const Products = () => {
     hideProduct,
     showProduct,
     deleteProduct,
-  } = useAdmin(token!);
+  } = useAdmin(token!, {
+    page: page,
+    limit: 10,
+    search,
+  });
 
-  const filtered = data.filter((product: any) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const productList = data?.products ?? [];
+
+  console.log(productList);
 
   if (editingProduct) {
     return (
@@ -69,7 +75,7 @@ const Products = () => {
           </thead>
 
           <tbody>
-            {filtered.map((product: any) => (
+            {productList.map((product: any) => (
               <tr key={product.id} className=" border-t border-gray-200">
                 <td className="p-4">
                   <p className="font-semibold">{product.name}</p>
@@ -156,6 +162,11 @@ const Products = () => {
           </tbody>
         </table>
       </div>
+      <Pagination
+        page={page}
+        totalPages={data?.totalPages ?? 1}
+        onPageChange={setPage}
+      />
       <ConfirmModal
         isOpen={isOpen}
         title={confirmData.title}
