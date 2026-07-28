@@ -900,3 +900,58 @@ export const updateSellerOrderStatusService = async (
 
   return true;
 };
+
+export const getSubcategoryParameters = async (id: number) => {
+  const [rows] = await connection.query(
+    `
+
+SELECT
+
+sp.id,
+sp.name,
+sp.label,
+sp.type,
+sp.required,
+
+
+COALESCE(
+
+JSON_ARRAYAGG(
+
+JSON_OBJECT(
+
+'id',po.id,
+'value',po.value
+
+)
+
+),
+
+JSON_ARRAY()
+
+) AS options
+
+
+FROM subcategory_parameters sp
+
+
+LEFT JOIN parameter_options po
+
+ON po.parameter_id = sp.id
+
+
+
+WHERE sp.subcategory_id = ?
+
+
+
+GROUP BY sp.id
+
+
+`,
+
+    [id],
+  );
+
+  return rows;
+};

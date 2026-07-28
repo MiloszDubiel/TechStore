@@ -16,6 +16,7 @@ import {
   getSellerOrderDetails,
   getSellerOrders,
   updateSellerOrderStatus,
+  getSubParma,
 } from "../controllers/seller.controller";
 
 import { uploadSellerLogo, uploadProductImages } from "../multer";
@@ -72,5 +73,6 @@ router.patch(
 
   updateSellerOrderStatus,
 );
+router.get("/subcategories/:id/parameters", getSubParma);
 
 export default router;

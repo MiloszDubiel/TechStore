@@ -7,9 +7,13 @@ import { toast } from "react-toastify";
 const AddProduct = () => {
   const {
     addProduct: { mutate, isSuccess },
+
     uploadImage,
+
     getCategories: { data: categories = [] },
+
     getSubcategories: { data: subcategories = [] },
+
     getCompanyInfo: { data: sellerData },
   } = useSeller();
 
@@ -20,73 +24,95 @@ const AddProduct = () => {
     brand: "",
     model: "",
     description: "",
+
     price: "",
     stock: "",
+
     category_id: "",
     subcategory_id: "",
-    attributes: [
-      {
-        name: "RAM",
-        value: "",
-      },
-      {
-        name: "Dysk",
-        value: "",
-      },
-      {
-        name: "CPU",
-        value: "",
-      },
-    ],
+    attributes: [],
+
     images: [],
   };
 
   const onSubmit = (data: any) => {
     const productData = {
       name: data.name,
+
       brand: data.brand,
+
       model: data.model,
+
       description: data.description,
+
       price: data.price,
+
       stock: data.stock,
+
       category_id: data.category_id,
+
       subcategory_id: data.subcategory_id,
+
+      // pełny JSON parametrów
+
       attributes: data.attributes,
+
       seller_id: sellerData.seller_id,
     };
 
-    mutate(productData, {
-      onSuccess(product) {
-        const formData = new FormData();
+    mutate(
+      productData,
 
-        data.images.forEach((file: File) => {
-          formData.append("images", file);
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["products", "seller-products"],
-        });
+      {
+        onSuccess: (product) => {
+          if (data.images?.length) {
+            const formData = new FormData();
 
-        uploadImage.mutate(
-          {
-            productId: product.id,
-            formData,
-          },
-          {
-            onSuccess() {
-              queryClient.invalidateQueries({
-                queryKey: ["products"],
-              });
+            data.images.forEach((file: File) => {
+              formData.append("images", file);
+            });
 
-              toast.success("Produkt został dodany");
-            },
+            uploadImage.mutate(
+              {
+                productId: product.id,
+
+                formData,
+              },
+
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({
+                    queryKey: ["products", "seller-products"],
+                  });
+
+                  queryClient.invalidateQueries({
+                    queryKey: ["products"],
+                  });
+
+                  toast.success("Produkt został dodany");
+                },
+
+                onError: () => {
+                  toast.warning(
+                    "Produkt dodany, ale zdjęcia nie zostały przesłane"
+                  );
+                },
+              }
+            );
+          } else {
+            queryClient.invalidateQueries({
+              queryKey: ["products", "seller-products"],
+            });
+
+            toast.success("Produkt został dodany");
           }
-        );
-      },
+        },
 
-      onError() {
-        toast.error("Nie udało się dodać produktu");
-      },
-    });
+        onError: () => {
+          toast.error("Nie udało się dodać produktu");
+        },
+      }
+    );
   };
 
   return (
@@ -100,10 +126,10 @@ const AddProduct = () => {
       <ProductForm
         mode="create"
         schema={productCreateSchema}
-        defaultValues={defaultValues}
         isSuccess={isSuccess}
         categories={categories}
         subcategories={subcategories}
+        defaultValues={defaultValues}
         onSubmit={onSubmit}
       />
     </div>

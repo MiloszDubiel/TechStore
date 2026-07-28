@@ -17,6 +17,7 @@ import {
   getSellerOrderDetailsService,
   getSellerOrdersService,
   updateSellerOrderStatusService,
+  getSubcategoryParameters,
 } from "../services/seller.services";
 import { getIO } from "../socket/indext";
 
@@ -442,6 +443,22 @@ export const updateSellerOrderStatus = async (req: Request, res: Response) => {
 
     res.json({
       success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Błąd",
+    });
+  }
+};
+export const getSubParma = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const rows = await getSubcategoryParameters(Number(id));
+
+    res.json({
+      rows: rows,
     });
   } catch (err) {
     console.log(err);

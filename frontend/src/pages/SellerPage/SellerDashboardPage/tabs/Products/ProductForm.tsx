@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import ImageUploader from "../../../../../components/ui/ImageUploader";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 type PropsEr = {
   message?: any;
@@ -35,7 +37,6 @@ const ProductForm = ({
   subcategories = [],
   existingImages = [],
   onRemoveExisting,
-  isSuccess,
 }: Props) => {
   const {
     register,
@@ -43,14 +44,14 @@ const ProductForm = ({
     control,
     watch,
     setValue,
-    reset,
+
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues,
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields } = useFieldArray({
     control,
     name: "attributes",
   });
@@ -61,20 +62,47 @@ const ProductForm = ({
     (item) => Number(item.category_id) === Number(selectedCategory)
   );
 
-  useEffect(() => {
-    reset({
-      ...defaultValues,
-      attributes: defaultValues.attributes.length
-        ? defaultValues.attributes
-        : [
-            { name: "CPU", value: "" },
-            { name: "RAM", value: "" },
-            { name: "DYSK", value: "" },
-          ],
-    });
-  }, [isSuccess]);
+  const selectedSubcategory = watch("subcategory_id");
 
-  console.log(errors);
+  const { data: parameters = [] } = useQuery({
+    queryKey: ["subcategory-parameters", selectedSubcategory],
+
+    queryFn: async () => {
+      const res = await axios.get(
+        `/api/seller/subcategories/${selectedSubcategory}/parameters`
+      );
+
+      return res.data.rows;
+    },
+
+    enabled: !!selectedSubcategory,
+  });
+
+  console.log(selectedSubcategory);
+
+  useEffect(() => {
+    if (!parameters.length) return;
+
+    const attributes = parameters.map((param: any) => ({
+      parameter_id: param.id,
+      name: param.name,
+      label: param.label,
+      type: param.type,
+      required: param.required,
+      options: param.options ?? [],
+      value: "",
+    }));
+
+    setValue(
+      "attributes",
+
+      attributes,
+      {
+        shouldValidate: true,
+      }
+    );
+  }, [parameters]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
@@ -161,7 +189,6 @@ const ProductForm = ({
           {...register("category_id")}
           onChange={(e) => {
             setValue("category_id", e.target.value);
-
             setValue("subcategory_id", "");
           }}
           className="w-full px-4 py-3 border border-gray-300"
@@ -183,6 +210,11 @@ const ProductForm = ({
 
         <select
           {...register("subcategory_id")}
+          onChange={(e) => {
+            setValue("subcategory_id", e.target.value, {
+              shouldValidate: true,
+            });
+          }}
           className="w-full px-4 py-3 border border-gray-300"
         >
           <option value="">Wybierz podkategorię</option>
@@ -200,86 +232,70 @@ const ProductForm = ({
       <div className="p-5 border border-gray-300">
         <div className="flex items-center justify-between mb-4">
           <label className="text-lg font-medium">Parametry produktu</label>
-
-          <button
-            type="button"
-            onClick={() =>
-              append({
-                name: "",
-                value: "",
-              })
-            }
-            className="hover:bg-orange-50 flex items-center gap-2 px-3 py-2 text-sm text-orange-500 border border-orange-500"
-          >
-            <Plus size={18} />
-            Dodaj parametr
-          </button>
         </div>
 
         <div className="overflow-hidden border border-gray-200">
           <div className="grid grid-cols-[1fr_1fr_60px] bg-gray-50 border-b border-gray-300">
             <div className="px-4 py-3 font-medium">Nazwa parametru</div>
-
             <div className="px-4 py-3 font-medium">Wartość</div>
-
             <div />
           </div>
 
-          {fields.map((field: any, index) => {
-            return (
-              <div
-                key={field.id}
-                className="grid grid-cols-[1fr_1fr_60px] items-start gap-3 p-3 border-b border-gray-300"
-              >
-                <div>
-                  <input
-                    {...register(`attributes.${index}.name`)}
-                    placeholder="Np. RAM"
-                    disabled={index < 3}
-                    className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-2 border border-gray-300"
-                  />
+          {fields.map((field: any, index) => (
+            <div
+              key={field.id}
+              className="grid grid-cols-[1fr_1fr] items-center gap-4 p-3 border-b border-gray-300"
+            >
+              <div>
+                <label className="font-medium">
+                  {field.label || field.name}
+                </label>
+                <input
+                  type="hidden"
+                  {...register(`attributes.${index}.parameter_id`)}
+                />
 
-                  {(errors as any).attributes?.[index]?.name?.message && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {(errors as any)?.attributes[index]?.name?.message}
-                    </p>
-                  )}
-                </div>
+                <input
+                  type="hidden"
+                  {...register(`attributes.${index}.name`)}
+                />
 
-                <div>
-                  <input
-                    {...register(`attributes.${index}.value`)}
-                    placeholder="Np. 16GB"
-                    className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-2 border border-gray-300"
-                  />
+                <input
+                  type="hidden"
+                  {...register(`attributes.${index}.label`)}
+                />
 
-                  {(errors as any).attributes?.[index]?.value?.message && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {(errors as any)?.attributes[index]?.value?.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex justify-center pt-2">
-                  {index > 2 && (
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="text-red-500"
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  )}
-                </div>
+                <input
+                  type="hidden"
+                  {...register(`attributes.${index}.type`)}
+                />
               </div>
-            );
-          })}
 
-          {errors.attributes?.root?.message && (
-            <p className="p-3 text-sm text-red-500">
-              {(errors as any)?.attributes?.root?.message}
-            </p>
-          )}
+              <div>
+                {field.type === "select" ? (
+                  <select
+                    {...register(`attributes.${index}.value`)}
+                    className="w-full px-4 py-2 border border-gray-300"
+                  >
+                    <option value="">Wybierz</option>
+
+                    {field.options?.map((opt: any) => (
+                      <option key={opt.id} value={opt.value}>
+                        {opt.value}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type={field.type === "number" ? "number" : "text"}
+                    {...register(`attributes.${index}.value`)}
+                    className="w-full px-4 py-2 border border-gray-300"
+                    placeholder={`Podaj ${field.label}`}
+                  />
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
       <div className="p-6 bg-white border border-gray-300">
