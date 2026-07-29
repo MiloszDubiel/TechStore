@@ -20,7 +20,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
     "mysql2": "^3.22.6",
-    "playwright": "^1.61.1",
+    "playwright": "^1.62.0",
     "slugify": "^1.6.9",
     "socket.io": "^4.8.3",
     "uuid": "^13.0.0"
