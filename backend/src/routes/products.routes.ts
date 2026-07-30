@@ -6,6 +6,7 @@ import {
   orderProdcuts,
   getCategories,
   getSubcategories,
+  scrapeProdcuts,
 } from "../controllers/prodcuts.controller";
 import { verifyToken } from "../middleware/auth.middleware";
 import { getOrders, getOrderDetails } from "../controllers/settings.controller";
@@ -20,5 +21,6 @@ router.get("/orders/", verifyToken, getOrders);
 router.get("/orders/:id", verifyToken, getOrderDetails);
 router.get("/categories", verifyToken, getCategories);
 router.get("/subcategories", verifyToken, getSubcategories);
+router.get("/scrape", scrapeProdcuts);
 
 export default router;

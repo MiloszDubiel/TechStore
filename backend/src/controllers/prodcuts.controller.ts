@@ -7,6 +7,8 @@ import {
   getCategoriesFromDB,
   getSubcategoriesFromDB,
 } from "../services/prodcuts.service";
+import { scrapeMediaMarkt } from "../scrapper/scraper";
+import { saveToDatabase } from "../scrapper/saveDataToDatabase";
 
 export const getOffersFromDatabase = async (req: Request, res: Response) => {
   let query = { ...req.query };
@@ -20,13 +22,29 @@ export const getOffersFromDatabase = async (req: Request, res: Response) => {
   }
 };
 
-export const orderProdcuts = async (req: Request, res: Response) => {
-  // console.log(req.body);
-
+export const scrapeProdcuts = async (req: Request, res: Response) => {
   try {
-    const { orderId, success, orderNumber } = await saveOrderToDB(
-      req.body,
-    );
+    const offers = await scrapeMediaMarkt();
+
+    for (const offer of offers) {
+      await saveToDatabase(offer);
+    }
+
+    res.json({
+      message: "Produkty zapisane",
+      count: offers.length,
+    });
+  } catch (err: any) {
+    console.error(err);
+
+    res.status(500).json({
+      message: "Błąd pobierania ofert",
+    });
+  }
+};
+export const orderProdcuts = async (req: Request, res: Response) => {
+  try {
+    const { orderId, success, orderNumber } = await saveOrderToDB(req.body);
     return res.status(200).json({
       orderId,
       success,
