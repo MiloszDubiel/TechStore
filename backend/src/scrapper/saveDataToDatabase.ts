@@ -12,6 +12,7 @@ export const saveToDatabase = async (data: any) => {
   const productData = {
     source: "MediaMarkt",
     url: data.link,
+    type: data.type,
   };
 
   const attributes = data.spec ?? [];
@@ -65,9 +66,9 @@ export const saveToDatabase = async (data: any) => {
 
     sellerId,
 
-    2,
+    data.categoryId ?? null,
 
-    2,
+    data.subcategoryId ?? null,
 
     slug,
   ];

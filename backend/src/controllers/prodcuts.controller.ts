@@ -24,15 +24,23 @@ export const getOffersFromDatabase = async (req: Request, res: Response) => {
 
 export const scrapeProdcuts = async (req: Request, res: Response) => {
   try {
-    const offers = await scrapeMediaMarkt();
+    const offers: any = await scrapeMediaMarkt();
+
+    let saved = 0;
 
     for (const offer of offers) {
-      await saveToDatabase(offer);
+      try {
+        await saveToDatabase(offer);
+        saved++;
+      } catch (err) {
+        console.error("Błąd zapisu produktu:", offer.name, err);
+      }
     }
 
     res.json({
       message: "Produkty zapisane",
-      count: offers.length,
+      total: offers.length,
+      saved,
     });
   } catch (err: any) {
     console.error(err);

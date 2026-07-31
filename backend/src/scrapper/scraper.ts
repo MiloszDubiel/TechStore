@@ -1,10 +1,25 @@
 import { chromium } from "playwright";
-import { saveToDatabase } from "./saveDataToDatabase";
-const URL = "https://mediamarkt.pl/pl/category/laptopy-25867.html";
+
+const URLS = [
+  {
+    url: "https://mediamarkt.pl/pl/category/laptopy-25867.html",
+    type: "laptop",
+    categoryId: 2,
+    subcategoryId: 9,
+  },
+  {
+    url: "https://mediamarkt.pl/pl/category/komputery-stacjonarne-aio-25871.html",
+    type: "desktop",
+    categoryId: 1,
+    subcategoryId: 1,
+  },
+];
+
+const getUrl = (url: string, page: number) => `${url}?page=${page}`;
 
 export async function scrapeMediaMarkt() {
   const browser = await chromium.launch({
-    headless: false,
+    headless: true,
   });
 
   const page = await browser.newPage({
@@ -12,94 +27,131 @@ export async function scrapeMediaMarkt() {
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
   });
 
-  await page.goto(URL, {
-    waitUntil: "domcontentloaded",
-    timeout: 60000,
-  });
+  const detailPage = await browser.newPage();
 
-  try {
-    await page.click('button:has-text("Akceptuję")', {
-      timeout: 5000,
-    });
-  } catch {}
+  const results: any[] = [];
 
-  await page.waitForTimeout(5000);
+  let cookiesAccepted = false;
 
-  const products = await page.evaluate(() => {
-    const cards = [
-      ...document.querySelectorAll("[data-test='mms-product-card']"),
-    ];
+  for (const category of URLS) {
+    {
+      for (let pageNumber = 1; pageNumber <= 5; pageNumber++) {
+        console.log(`Pobieram: ${getUrl(category.url, pageNumber)}`);
 
-    return cards.map((card: any) => ({
-      name:
-        card.querySelector("[data-test='product-title']")?.innerText ?? null,
+        await page.goto(getUrl(category.url, pageNumber), {
+          waitUntil: "domcontentloaded",
+          timeout: 60000,
+        });
 
-      price:
-        card.querySelector("[data-test='mms-price'] span.mms-ui-mBgaT")
-          ?.innerText ?? null,
+        if (!cookiesAccepted) {
+          try {
+            await page.click('button:has-text("Akceptuję")', {
+              timeout: 5000,
+            });
+          } catch {}
 
-      link: card.querySelector("a")?.href ?? null,
-    }));
-  });
+          cookiesAccepted = true;
+        }
 
-  const results = [];
+        await page.waitForTimeout(2000);
 
-  for (let i = 0; i < 1; i++) {
-    if (!products[i]?.link) continue;
+        const products = await page.evaluate(() => {
+          const cards = [
+            ...document.querySelectorAll("[data-test='mms-product-card']"),
+          ];
 
-    const detailPage = await browser.newPage();
+          return cards.map((card: any) => ({
+            name:
+              card
+                .querySelector("[data-test='product-title']")
+                ?.innerText?.trim() ?? null,
 
-    await detailPage.goto(products[i]?.link, {
-      waitUntil: "domcontentloaded",
-      timeout: 60000,
-    });
+            price:
+              card
+                .querySelector("[data-test='mms-price'] span.mms-ui-mBgaT")
+                ?.innerText?.trim() ?? null,
 
-    await detailPage.locator("#features-content").scrollIntoViewIfNeeded();
+            link: card.querySelector("a")?.href ?? null,
+          }));
+        });
 
-    await detailPage.waitForFunction(
-      () => {
-        return document.querySelectorAll("#features-content tr").length > 0;
-      },
-      null,
-      {
-        timeout: 15000,
-      },
-    );
+        console.log(`Znaleziono ${products.length} produktów`);
 
-    const data = await detailPage.evaluate(() => {
-      const rows = [...document.querySelectorAll("#features-content tr")];
-      const img = (
-        document.querySelector("img.pdp-gallery-image") as HTMLImageElement
-      )?.src;
+        for (const product of products) {
+          if (!product.link) continue;
 
-      return {
-        description:
-          document.querySelector("#description-content")?.innerHTML ?? null,
+          try {
+            await detailPage.goto(product.link, {
+              waitUntil: "domcontentloaded",
+              timeout: 60000,
+            });
 
-        spec: rows
-          .map((row) => {
-            const cells = row.querySelectorAll("td");
+            await detailPage
+              .locator("#features-content")
+              .scrollIntoViewIfNeeded();
 
-            return {
-              name: cells[0]?.textContent?.trim() ?? null,
+            await detailPage.waitForFunction(
+              () =>
+                document.querySelectorAll("#features-content tr").length > 0,
+              null,
+              {
+                timeout: 30000,
+              },
+            );
 
-              value: cells[1]?.textContent?.trim() ?? null,
-            };
-          })
-          .filter((x) => x.name && x.value),
-        img,
-      };
-    });
+            const data = await detailPage.evaluate(() => {
+              const rows = [
+                ...document.querySelectorAll("#features-content tr"),
+              ];
 
-    results.push({
-      ...products[i],
-      ...data,
-    });
+              const img = (
+                document.querySelector(
+                  "img.pdp-gallery-image",
+                ) as HTMLImageElement
+              )?.src;
+
+              return {
+                description:
+                  document.querySelector("#description-content")?.innerHTML ??
+                  null,
+
+                spec: rows
+                  .map((row) => {
+                    const cells = row.querySelectorAll("td");
+
+                    return {
+                      name: cells[0]?.textContent?.trim() ?? null,
+                      value: cells[1]?.textContent?.trim() ?? null,
+                    };
+                  })
+                  .filter((x) => x.name && x.value),
+
+                img,
+              };
+            });
+
+            results.push({
+              ...product,
+              ...data,
+
+              type: category.type,
+              categoryId: category.categoryId,
+              subcategoryId: category.subcategoryId,
+            });
+
+            console.log(`${product.name}`);
+          } catch (err) {
+            console.error(`Błąd produktu: ${product.link}`);
+            console.error(err);
+          }
+        }
+      }
+    }
 
     await detailPage.close();
+    await page.close();
+    await browser.close();
+
+    console.log(`Pobrano ${results.length} produktów`);
   }
-
-  await browser.close();
-
-  return results;
 }

@@ -38,17 +38,23 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
     }
   });
 
+  const getImage = (images: any[]) => {
+    if (!Array.isArray(images)) {
+      return "/no-image.png";
+    }
+
+    return images[0].url.includes("https")
+      ? images[0].url
+      : `${import.meta.env.VITE_API_URL}uploads/products/${product.seller_id}/${
+          product.id
+        }/${product.images[0].image}`;
+  };
+
   return (
     <div className=" hover:shadow-lg block p-4 transition bg-white border border-gray-200">
       <div className="flex items-start gap-6">
         <img
-          src={
-            product.images?.[0]
-              ? `${import.meta.env.VITE_API_URL}uploads/products/${
-                  product.seller_id
-                }/${product.id}/${product.images[0].image}`
-              : "/no-image.png"
-          }
+          src={getImage(product.images)}
           alt={product.name}
           className=" object-contain w-48 h-48 bg-white"
         />
