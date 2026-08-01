@@ -21,12 +21,10 @@ const NavbarActions = ({
   const [active, setActive] = useState<any>(null);
 
   const cart = useCartStore((state) => state.cart);
-
   const { notifications, notificationData = [] } = useNotification();
-
   const { favorites = [] } = useFavorite();
 
-  console.log(notificationData);
+
   return (
     <div className="flex items-center gap-6">
       <button onClick={toggleLanguage}>

@@ -18,7 +18,10 @@ const SearchBar = ({ search, setSearch }: Props) => {
   };
 
   return (
-    <div className=" flex items-center w-1/3 overflow-hidden border border-gray-300">
+    <form
+      className="flex items-center w-1/3 overflow-hidden border border-gray-300"
+      onSubmit={(e) => e.preventDefault()}
+    >
       <div className="relative flex-1">
         <input
           value={search}
@@ -35,11 +38,11 @@ const SearchBar = ({ search, setSearch }: Props) => {
 
       <button
         onClick={searchProduct}
-        className=" px-5 py-2 text-white bg-orange-500"
+        className=" px-5 py-2 text-white bg-orange-500 cursor-pointer hover:bg-orange-600"
       >
         Szukaj
       </button>
-    </div>
+    </form>
   );
 };
 export default SearchBar;

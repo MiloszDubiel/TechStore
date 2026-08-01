@@ -286,6 +286,7 @@ export const getCurrtentProdcutByID = async (id: string) => {
 
 export const saveOrderToDB = async (data: any) => {
   const conn = await connection.getConnection();
+  console.log(data);
 
   try {
     await conn.beginTransaction();
@@ -353,7 +354,7 @@ export const saveOrderToDB = async (data: any) => {
       INSERT INTO orders
       (
         user_id,
-        address_id,
+
 
         customer_name,
         customer_last_name,
@@ -371,15 +372,18 @@ export const saveOrderToDB = async (data: any) => {
 
         total_price,
         order_number,
+        customer_street,
+        customer_postal_code,
+        customer_city,
+        customer_country,
         status
       )
 
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
       `,
       [
         userId,
 
-        address?.id ?? null,
 
         customer.name,
         customer.last_name,
@@ -400,6 +404,10 @@ export const saveOrderToDB = async (data: any) => {
         finalTotal,
 
         orderNumber,
+        address?.street ?? null,
+        address?.postal_code ?? null,
+        address?.city ?? null,
+        address?.country ?? null,
         "NEW",
       ],
     );

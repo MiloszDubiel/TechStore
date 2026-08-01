@@ -2,27 +2,39 @@ import { z } from "zod";
 
 const attributesSchema = z
   .object({
-    parameter_id: z.number(),
+    parameter_id: z.number().positive("ID parametru musi być większe od 0"),
     name: z.string(),
     value: z.string(),
+    type: z.string(),
   })
-  .passthrough();
+  .passthrough()
+  .refine(
+    (attribute) => {
+      if (attribute.type === "number") {
+        const value = Number(attribute.value);
+        return !isNaN(value) && value >= 0;
+      }
+
+      return true;
+    },
+    {
+      message: "Wartość musi być liczbą większą lub równą 0",
+      path: ["value"],
+    }
+  );
 
 const baseProductSchema = {
   name: z.string().min(3, "Nazwa musi mieć minimum 3 znaki"),
-
   brand: z.string().min(2, "Podaj producenta"),
-
   model: z.string().min(1, "Podaj model"),
-
   description: z.string().min(10, "Opis musi mieć minimum 10 znaków"),
-
-  price: z.string().min(1, "Podaj cenę"),
-
-  stock: z.string().min(1, "Podaj stan magazynu"),
-
+  price: z.coerce
+    .number()
+    .min(1, "Wartość musi być liczbą większą lub równą 0"),
+  stock: z.coerce
+    .number()
+    .min(1, "Wartość musi być liczbą większą lub równą 0"),
   category_id: z.string().min(1, "Wybierz kategorię"),
-
   subcategory_id: z.string().min(1, "Wybierz podkategorię"),
 
   attributes: z.array(attributesSchema).refine(

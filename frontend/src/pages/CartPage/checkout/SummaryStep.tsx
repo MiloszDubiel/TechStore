@@ -129,7 +129,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
         <p>{methods[checkoutData!.payment!.method || "blik"]}</p>
       </section>
 
-      <hr className="my-5" />
+      <hr className="my-5 text-gray-300" />
 
       <div className="space-y-3">
         <p className="flex justify-between">

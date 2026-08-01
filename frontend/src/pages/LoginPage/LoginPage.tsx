@@ -8,6 +8,8 @@ import { useLogin } from "../../hooks/useLogin";
 import { useAuth } from "../../context/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import { useCartStore } from "../../zustand/states/cartState";
+import { toast } from "react-toastify";
+
 const LoginPage: React.FC = () => {
   const {
     register,
@@ -44,6 +46,8 @@ const LoginPage: React.FC = () => {
         );
 
         removeSellerProducts(response.id);
+
+        toast.success("Zalogowano pomyślnie!");
 
         if (fromCart === "1") {
           navigate("/cart/checkout");

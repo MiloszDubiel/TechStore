@@ -1,7 +1,6 @@
-import { Save, Plus, Trash2 } from "lucide-react";
+import { Save } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import ImageUploader from "../../../../../components/ui/ImageUploader";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -74,7 +73,6 @@ const ProductForm = ({
 
       return res.data.rows;
     },
-
     enabled: !!selectedSubcategory,
   });
 
@@ -291,12 +289,19 @@ const ProductForm = ({
                       ))}
                     </select>
                   ) : (
-                    <input
-                      type={field.type === "number" ? "number" : "text"}
-                      {...register(`attributes.${index}.value`)}
-                      className="w-full px-4 py-2 border border-gray-300"
-                      placeholder={`Podaj ${field.label}`}
-                    />
+                    <>
+                      <input
+                        type={field.type === "number" ? "number" : "text"}
+                        {...register(`attributes.${index}.value`)}
+                        className="w-full px-4 py-2 border border-gray-300"
+                        placeholder={`Podaj ${field.label}`}
+                      />
+                      <FormError
+                        message={
+                          (errors as any)?.attributes?.[index]?.value?.message
+                        }
+                      />
+                    </>
                   )}
                 </div>
               </div>

@@ -7,13 +7,9 @@ import { toast } from "react-toastify";
 const AddProduct = () => {
   const {
     addProduct: { mutate, isSuccess },
-
     uploadImage,
-
     getCategories: { data: categories = [] },
-
     getSubcategories: { data: subcategories = [] },
-
     getCompanyInfo: { data: sellerData },
   } = useSeller();
 
@@ -49,59 +45,54 @@ const AddProduct = () => {
       seller_id: sellerData.seller_id,
     };
 
-    mutate(
-      productData,
+    mutate(productData, {
+      onSuccess: (product) => {
+        if (data.images?.length) {
+          const formData = new FormData();
 
-      {
-        onSuccess: (product) => {
-          if (data.images?.length) {
-            const formData = new FormData();
+          data.images.forEach((file: File) => {
+            formData.append("images", file);
+          });
 
-            data.images.forEach((file: File) => {
-              formData.append("images", file);
-            });
+          uploadImage.mutate(
+            {
+              productId: product.id,
+              formData,
+            },
 
-            uploadImage.mutate(
-              {
-                productId: product.id,
+            {
+              onSuccess: () => {
+                queryClient.invalidateQueries({
+                  queryKey: ["products", "seller-products"],
+                });
 
-                formData,
+                queryClient.invalidateQueries({
+                  queryKey: ["products"],
+                });
+
+                toast.success("Produkt został dodany");
               },
 
-              {
-                onSuccess: () => {
-                  queryClient.invalidateQueries({
-                    queryKey: ["products", "seller-products"],
-                  });
+              onError: () => {
+                toast.warning(
+                  "Produkt dodany, ale zdjęcia nie zostały przesłane"
+                );
+              },
+            }
+          );
+        } else {
+          queryClient.invalidateQueries({
+            queryKey: ["products", "seller-products"],
+          });
 
-                  queryClient.invalidateQueries({
-                    queryKey: ["products"],
-                  });
+          toast.success("Produkt został dodany");
+        }
+      },
 
-                  toast.success("Produkt został dodany");
-                },
-
-                onError: () => {
-                  toast.warning(
-                    "Produkt dodany, ale zdjęcia nie zostały przesłane"
-                  );
-                },
-              }
-            );
-          } else {
-            queryClient.invalidateQueries({
-              queryKey: ["products", "seller-products"],
-            });
-
-            toast.success("Produkt został dodany");
-          }
-        },
-
-        onError: () => {
-          toast.error("Nie udało się dodać produktu");
-        },
-      }
-    );
+      onError: () => {
+        toast.error("Nie udało się dodać produktu");
+      },
+    });
   };
 
   return (

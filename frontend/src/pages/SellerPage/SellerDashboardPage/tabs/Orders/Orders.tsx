@@ -24,7 +24,7 @@ const getStatusClasses = (status: string) => {
       return "bg-gray-100 text-gray-700";
   }
 };
-const orderStatusLabels: Record<string, string> = {
+export const orderStatusLabels: Record<string, string> = {
   NEW: "Nowe",
   PROCESSING: "W realizacji",
   SHIPPED: "Wysłane",

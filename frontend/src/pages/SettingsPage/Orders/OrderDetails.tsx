@@ -2,7 +2,7 @@ import { OrangeButton } from "../../../components/ui/Buttons";
 import { useAuth } from "../../../context/AuthContext";
 import { useOrder } from "../../../hooks/useOrders";
 import { Link } from "react-router-dom";
-
+import { useImage } from "../../../hooks/useImage";
 const OrderDetails = ({ id, onBack }: any) => {
   const { token } = useAuth();
   const { data, isLoading } = useOrder(id, token);
@@ -25,11 +25,6 @@ const OrderDetails = ({ id, onBack }: any) => {
 
   const { order, items } = data;
 
-  const imageUrl = (productId: number, image: string, seller_id: string) =>
-    `${
-      import.meta.env.VITE_API_URL
-    }uploads/products/${seller_id}/${productId}/${image}`;
-
   return (
     <div className="space-y-8">
       <OrangeButton onClick={onBack}>Powrót do zamówień</OrangeButton>
@@ -39,8 +34,6 @@ const OrderDetails = ({ id, onBack }: any) => {
 
         <p className="mt-1 text-gray-500">Szczegóły zamówienia</p>
       </div>
-
-      {/* INFORMACJE */}
 
       <section className="border border-gray-300">
         <div className="bg-gray-50 px-6 py-4 border-b border-gray-300">
@@ -85,8 +78,6 @@ const OrderDetails = ({ id, onBack }: any) => {
           const product = item.product;
           const seller = item.seller;
 
-          console.log(`/seller/${seller.slug}/${seller.seller_id}`);
-
           return (
             <div
               key={product.id}
@@ -95,15 +86,7 @@ const OrderDetails = ({ id, onBack }: any) => {
               }`}
             >
               <img
-                src={
-                  product.images?.length
-                    ? imageUrl(
-                        product.id,
-                        product.images[0].image,
-                        seller.seller_id
-                      )
-                    : "/no-image.png"
-                }
+                src={useImage(product)}
                 className="object-contain w-32 h-32 border border-gray-300"
                 alt={product.name}
               />

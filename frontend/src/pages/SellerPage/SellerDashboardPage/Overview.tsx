@@ -1,20 +1,13 @@
-import {
-  Package,
-  ShoppingCart,
-  TrendingUp,
-  Users,
-  ArrowUpRight,
-} from "lucide-react";
+import { Package, ShoppingCart, TrendingUp, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { GrayButton, OrangeButton } from "../../../components/ui/Buttons";
 import { useSeller } from "../../../hooks/useSeller";
-
+import {orderStatusLabels} from "./tabs/Orders/Orders";
 const Overview = () => {
   const navigate = useNavigate();
 
   const {
-    orders: { data = [] },
-    getOverview: { data: overview, isLoading },
+    getOverview: { data: overview },
   } = useSeller();
 
   const stats = [
@@ -87,11 +80,11 @@ const Overview = () => {
             {overview?.lastOrders?.length ? (
               overview?.lastOrders.map((order: any) => (
                 <div
-                  key={order.id}
+                  key={order.order_number}
                   className=" flex items-center justify-between pb-4 border-b border-gray-300"
                 >
                   <div>
-                    <p className="font-medium">{order.id}</p>
+                    <p className="font-medium">{order.order_number}</p>
 
                     <p className="text-sm text-gray-500">{order.customer}</p>
                   </div>
@@ -100,7 +93,7 @@ const Overview = () => {
                     <p className="font-semibold">{order.price}</p>
 
                     <span className=" text-sm text-gray-500">
-                      {order.status}
+                      {orderStatusLabels[order.status]}
                     </span>
                   </div>
                 </div>

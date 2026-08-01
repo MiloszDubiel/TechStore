@@ -75,7 +75,6 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
         ...data,
       };
 
-      // zabezpieczenie przed niepotrzebnym rerenderem
       if (JSON.stringify(prev) === JSON.stringify(updated)) {
         return prev;
       }

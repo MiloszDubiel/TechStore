@@ -6,6 +6,7 @@ import { useCartStore } from "../../zustand/states/cartState";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Edit } from "lucide-react";
+import { useImage } from "../../hooks/useImage";
 const HomePage = () => {
   const addToCart = useCartStore((state) => state.addToCart);
   const { user } = useAuth();
@@ -29,20 +30,8 @@ const HomePage = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  console.log(data);
   const navigate = useNavigate();
 
-  const getImage = (product: any) => {
-    if (!Array.isArray(product.images)) {
-      return "/no-image.png";
-    }
-
-    return product.images[0].url.includes("https")
-      ? product.images[0].url
-      : `${import.meta.env.VITE_API_URL}uploads/products/${product.seller_id}/${
-          product.id
-        }/${product.images[0].image}`;
-  };
   return (
     <>
       <Navbar />
@@ -78,7 +67,7 @@ const HomePage = () => {
                 <div className="hover:shadow-xl h-95 flex flex-col overflow-hidden transition bg-white shadow-md">
                   <div className="relative flex justify-center">
                     <img
-                      src={getImage(product)}
+                      src={useImage(product) || "/no-image.png"}
                       alt={product.name}
                       className="object-cover h-48"
                     />

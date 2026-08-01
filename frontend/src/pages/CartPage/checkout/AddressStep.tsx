@@ -17,14 +17,13 @@ export default function AddressStep({ next, back }: Props) {
     localStorage.getItem("token") ?? sessionStorage.getItem("token");
 
   const { userAddresses, saveAddress } = useAdresses(user?.id, token);
-
   const { updateCheckout } = useCheckout();
-
   const [closeModal, setCloseModal] = useState(false);
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null
   );
+
 
   useEffect(() => {
     if (userAddresses && userAddresses.length > 0 && !selectedAddressId) {
@@ -42,6 +41,8 @@ export default function AddressStep({ next, back }: Props) {
   const currentAddress = user
     ? userAddresses?.find((address: any) => address.id === selectedAddressId)
     : guestAddress;
+
+  
 
   return (
     <div>

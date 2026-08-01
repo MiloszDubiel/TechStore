@@ -7,6 +7,7 @@ import { useAuth } from "../../../context/AuthContext";
 import SearchBar from "./SearchBar";
 import NavbarActions from "./NavbarActions";
 import { useSeller } from "../../../hooks/useSeller";
+import { toast } from "react-toastify";
 
 const Navbar: React.FC = () => {
   const { i18n } = useTranslation();
@@ -27,12 +28,13 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate("/");
+    toast.success("Wylogowano pomyślnie!");
   };
 
   return (
     <nav className=" flex items-center justify-between w-full px-6 py-3 bg-white shadow-md">
       <Link to="/" className="text-2xl font-bold text-orange-500">
-        My IT Store
+        IT E-commerce
       </Link>
 
       <div className="flex items-center flex-1 gap-6 mx-6">

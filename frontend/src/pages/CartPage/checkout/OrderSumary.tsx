@@ -23,7 +23,7 @@ export default function OrderSummary() {
         </div>
       ))}
 
-      <hr className="my-4" />
+      <hr className="my-4 text-gray-300" />
 
       <div className="flex justify-between">
         <span>Produkty</span>

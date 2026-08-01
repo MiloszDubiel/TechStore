@@ -3,6 +3,7 @@ import ProductForm from "./ProductForm";
 import { productEditSchema } from "../../../../../schemas/productSchema";
 import { useSeller } from "../../../../../hooks/useSeller";
 import { toast } from "react-toastify";
+import { useImage } from "../../../../../hooks/useImage";
 
 type Props = {
   product: any;
@@ -22,16 +23,6 @@ const EditProduct = ({ product, onBack }: Props) => {
 
     uploadImage: { mutate: uploadAnotherImage },
   } = useSeller();
-
-  const getImages = () => {
-    if (!product?.images[0].url) return [];
-
-    return product.images.map((img: any) => {
-      if (img?.url?.includes("http")) return img.url;
-
-      return `${import.meta.env.VITE_API_URL}${img.url}`;
-    });
-  };
 
   return (
     <div className="space-y-6">
@@ -61,12 +52,12 @@ const EditProduct = ({ product, onBack }: Props) => {
               : product.attributes ?? [],
 
           images: [],
-          existingImages: getImages(),
+          existingImages: useImage(product),
           removedImages: [],
         }}
         categories={categories}
         subcategories={subcategories}
-        existingImages={getImages()}
+        existingImages={useImage(product)}
         onRemoveExisting={(image) => {
           const filename = image.split("/").pop();
 

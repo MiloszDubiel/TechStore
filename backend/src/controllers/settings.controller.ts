@@ -15,10 +15,10 @@ import {
 
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id; // z JWT middleware
+    const userId = (req as any).user.id; 
     const { last_name, name, phone, email } = req.body;
 
-    console.log(userId);
+ 
 
     if (!userId) {
       return res.status(400).json({

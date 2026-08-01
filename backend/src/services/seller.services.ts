@@ -683,7 +683,7 @@ export const getSellerOverviewService = async (sellerId: number) => {
 
   const [[orders]]: any = await connection.query(
     `
-    SELECT COUNT(DISTINCT o.id) AS orders
+    SELECT COUNT(DISTINCT o.id), o.order_number AS orders
     FROM orders o
     JOIN order_items oi ON oi.order_id = o.id
     JOIN products p ON p.id = oi.product_id
@@ -720,11 +720,11 @@ export const getSellerOverviewService = async (sellerId: number) => {
       o.total_price,
       o.status,
       o.created_at,
-      CONCAT(oa.first_name,' ',oa.last_name) AS customer
+      CONCAT(o.customer_name,' ',o.customer_last_name) AS customer
     FROM orders o
     JOIN order_items oi ON oi.order_id = o.id
     JOIN products p ON p.id = oi.product_id
-    LEFT JOIN order_addresses oa ON oa.id = o.address_id
+   
     WHERE p.seller_id = ?
     GROUP BY o.id
     ORDER BY o.created_at DESC
@@ -777,9 +777,6 @@ LEFT JOIN users u
 ON u.id = o.user_id
 
 
-LEFT JOIN order_addresses oa
-ON oa.id = o.address_id
-
 
 WHERE p.seller_id = ?
 
@@ -825,10 +822,10 @@ o.customer_phone,
     o.email,
 
     -- ADRES
-    a.street,
-    a.postal_code,
-    a.city,
-    a.country,
+    o.customer_street,
+    o.customer_postal_code,
+    o.customer_city,
+    o.customer_country,
 
     -- PRODUKT
     oi.id AS item_id,
@@ -861,8 +858,7 @@ JOIN order_items oi
 JOIN products p
     ON p.id = oi.product_id
 
-LEFT JOIN addresses a
-    ON a.id = o.address_id
+
 
 
 WHERE 
@@ -910,10 +906,10 @@ ORDER BY oi.id ASC;;
       user_id: rows[0].user_id,
 
       address: {
-        street: rows[0].street,
-        postal_code: rows[0].postal_code,
-        city: rows[0].city,
-        country: rows[0].country,
+        street: rows[0].customer_street,
+        postal_code: rows[0].customer_postal_code,
+        city: rows[0].customer_city,
+        country: rows[0].customer_country,
       },
     },
 

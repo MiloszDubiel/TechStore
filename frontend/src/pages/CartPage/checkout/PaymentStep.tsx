@@ -21,15 +21,17 @@ const PaymentStep = ({ next, back }: any) => {
       name: "Przelew tradycyjny",
       description: "Przelew bankowy",
     },
-    {
-      id: "cash",
-      name: "Płatność przy odbiorze",
-      description: "Zapłacisz kurierowi",
-    },
-  ];
+    checkoutData.delivery.method !== "locker"
+      ? {
+          id: "cash_on_delivery",
+          name: "Płatność przy odbiorze",
+          description: "Zapłacisz kurierowi",
+        }
+      : null,
+  ].filter(Boolean);
 
   const [selectedPayment, setSelectedPayment] = useState(
-    checkoutData.payment?.method ?? null,
+    checkoutData.payment?.method ?? null
   );
 
   const selectPayment = (method: any) => {
@@ -44,12 +46,12 @@ const PaymentStep = ({ next, back }: any) => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Metoda płatności</h2>
+      <h2 className="mb-6 text-2xl font-bold">Metoda płatności</h2>
 
       <div className="space-y-4">
         {payments.map((payment) => (
           <label
-            key={payment.id}
+            key={payment?.id}
             className={`
               block
               border
@@ -57,7 +59,7 @@ const PaymentStep = ({ next, back }: any) => {
               cursor-pointer
               transition
               ${
-                selectedPayment === payment.id
+                selectedPayment === payment?.id
                   ? "border-orange-500 bg-orange-50"
                   : "border-gray-200"
               }
@@ -67,14 +69,14 @@ const PaymentStep = ({ next, back }: any) => {
               <input
                 type="radio"
                 name="payment"
-                checked={selectedPayment === payment.id}
-                onChange={() => selectPayment(payment.id)}
+                checked={selectedPayment === payment?.id}
+                onChange={() => selectPayment(payment?.id)}
               />
 
               <div>
-                <p className="font-semibold">{payment.name}</p>
+                <p className="font-semibold">{payment?.name}</p>
 
-                <p className="text-sm text-gray-500">{payment.description}</p>
+                <p className="text-sm text-gray-500">{payment?.description}</p>
               </div>
             </div>
           </label>
