@@ -40,13 +40,22 @@ const OfferDetails = () => {
       }),
   });
 
+  const getImages = () => {
+    if (!product?.images[0].url) return [];
+
+    return product.images.map((img: any) => {
+      if (img?.url?.includes("http")) return img.url;
+
+      return `${import.meta.env.VITE_API_URL}${img.url}`;
+    });
+  };
+
   const navigate = useNavigate();
 
   if (isLoading) {
     return (
       <>
         <Navbar />
-
         <div className="p-10 text-center">Ładowanie produktu...</div>
       </>
     );
@@ -56,35 +65,23 @@ const OfferDetails = () => {
     return (
       <>
         <Navbar />
-
         <div className="p-10 text-center">Nie znaleziono produktu</div>
       </>
     );
   }
 
-  const imageUrl = (image: string) => `${import.meta.env.VITE_API_URL}${image}`;
-
   return (
     <>
       <Navbar />
-
       <main className=" bg-gray-50 min-h-screen py-10">
         <div className=" max-w-7xl px-6 mx-auto">
           <div className="lg:grid-cols-12 grid gap-10">
             <div className="lg:col-span-7">
               <div className="p-6 bg-white border border-gray-300 shadow-sm">
                 <img
-                  src={
-                    product.images?.[selectedImage]
-                      ? imageUrl(product.images[selectedImage].image)
-                      : "/no-image.png"
-                  }
+                  src={getImages()}
                   alt={product.name}
-                  className="
-          w-full
-          h-[520px]
-          object-contain
-        "
+                  className=" h-130 object-contain w-full"
                 />
               </div>
 
@@ -106,7 +103,7 @@ const OfferDetails = () => {
             `}
                     >
                       <img
-                        src={imageUrl(img.image)}
+                        src={getImages()}
                         alt=""
                         className=" object-cover w-20 h-20"
                       />
@@ -139,16 +136,18 @@ const OfferDetails = () => {
                         : "Brak produktu"}
                     </span>
                   </span>
-                  <span className="flex">
-                    <button
-                      disabled={!product.stock}
-                      onClick={() => setOpenReport(true)}
-                      className=" hover:bg-orange-600 flex items-center justify-center w-full gap-3 p-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
-                    >
-                      <Flag size={18} />
-                      Zgłoś
-                    </button>
-                  </span>
+                  {product?.seller_id != user?.id && (
+                    <span className="flex">
+                      <button
+                        disabled={!product.stock}
+                        onClick={() => setOpenReport(true)}
+                        className=" hover:bg-orange-600 flex items-center justify-center w-full gap-3 p-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
+                      >
+                        <Flag size={18} />
+                        Zgłoś
+                      </button>
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-3 mt-6">
@@ -182,7 +181,7 @@ const OfferDetails = () => {
                           `/seller/dashboard?tab=products&edit=${product.id}`
                         )
                       }
-                      className=" hover:bg-orange-400 flex items-center justify-center w-full gap-3 py-4 font-semibold text-gray-900 transition bg-white border border-gray-300"
+                      className=" hover:bg-orange-400 flex items-center justify-center w-full gap-3 py-4 font-semibold text-gray-900 transition bg-white border border-gray-300 cursor-pointer"
                     >
                       <Edit size={20} />
                       Edytuj produkt
@@ -224,9 +223,10 @@ const OfferDetails = () => {
           <section className=" p-6 mt-8 bg-white border border-gray-300">
             <h2 className=" mb-4 text-2xl font-semibold">Opis</h2>
 
-            <p className=" text-gray-700 whitespace-pre-line">
-              {product.description}
-            </p>
+            <p
+              className=" text-gray-700 whitespace-pre-line"
+              dangerouslySetInnerHTML={{ __html: product.description }}
+            ></p>
           </section>
 
           {product.attributes?.length > 0 && (
@@ -239,7 +239,7 @@ const OfferDetails = () => {
                     key={attr.name}
                     className=" grid grid-cols-2 p-4 border-b border-gray-200"
                   >
-                    <span className="font-medium">{attr.name}</span>
+                    <span className="font-medium">{attr.label}</span>
 
                     <span className="text-gray-600">{attr.value}</span>
                   </div>

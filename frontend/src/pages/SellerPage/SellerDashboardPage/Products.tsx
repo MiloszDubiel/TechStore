@@ -3,7 +3,7 @@ import { useSeller } from "../../../hooks/useSeller";
 import EditProduct from "./tabs/Products/EditProduct";
 import { useEffect, useState } from "react";
 import ConfirmModal from "../../../components/ui/ConfirmModal";
-
+import Pagination from "../../../components/ui/Pagination";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -24,30 +24,33 @@ const getStatus = (product: any) => {
 };
 
 const Products = () => {
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [productData, setProductData] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const editId = searchParams.get("edit") || (0 as any);
   const {
     products: { data = [] },
     deleteProduct: { mutate },
-  } = useSeller();
+    productsById,
+  } = useSeller({
+    page: page,
+    limit: 10,
+    search,
+  });
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const editId = searchParams.get("edit") || null;
+  const { data: selectedProduct } = productsById(editId);
 
   useEffect(() => {
-    if (!editId || !data.length) {
+    if (!editId) {
       setEditingProduct(null);
       return;
     }
 
-    const product = data.find(
-      (product: any) => Number(product.id) === Number(editId)
-    );
-
-    setEditingProduct(product);
-  }, [editId, data]);
+    setEditingProduct(selectedProduct?.product?.[0] ?? null);
+  }, [editId, selectedProduct]);
 
   const navigate = useNavigate();
 
@@ -58,8 +61,9 @@ const Products = () => {
         onBack={() => {
           setEditingProduct(null);
 
-          searchParams.delete("edit");
-          setSearchParams(searchParams);
+          const params = new URLSearchParams(searchParams);
+          params.delete("edit");
+          setSearchParams(params);
         }}
       />
     );
@@ -74,7 +78,7 @@ const Products = () => {
         </div>
 
         <button
-          className=" hover:bg-orange-600 flex items-center gap-2 px-4 py-2 text-white bg-orange-500"
+          className=" hover:bg-orange-600 flex items-center gap-2 px-4 py-2 text-white bg-orange-500 cursor-pointer"
           onClick={() => {
             navigate("/seller/dashboard?tab=add-product");
           }}
@@ -112,8 +116,8 @@ const Products = () => {
           </thead>
 
           <tbody>
-            {data.length > 0 ? (
-              data.map((product: any) => (
+            {data.products?.length > 0 ? (
+              data.products.map((product: any) => (
                 <tr
                   key={product.id}
                   className=" hover:bg-gray-50 border-t border-gray-300"
@@ -174,6 +178,11 @@ const Products = () => {
             )}
           </tbody>
         </table>
+        <Pagination
+          page={page}
+          totalPages={data?.totalPages ?? 1}
+          onPageChange={setPage}
+        />
       </div>
       <ConfirmModal
         isOpen={isOpen}

@@ -5,8 +5,19 @@ const API = "http://localhost:5000/api/seller";
 const token = () =>
   localStorage.getItem("token") || sessionStorage.getItem("token");
 
-export const getProducts = async () => {
+export const getProducts = async (params: any) => {
   const { data } = await axios.get(`${API}/products`, {
+    headers: {
+      Authorization: `Bearer ${token()}`,
+    },
+    params,
+  });
+
+  return data;
+};
+
+export const getProductsByID = async (id: number) => {
+  const { data } = await axios.get(`${API}/products/${id}`, {
     headers: {
       Authorization: `Bearer ${token()}`,
     },

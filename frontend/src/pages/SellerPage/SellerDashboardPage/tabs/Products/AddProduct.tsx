@@ -49,8 +49,6 @@ const AddProduct = () => {
       seller_id: sellerData.seller_id,
     };
 
-    console.log(data.attributes);
-
     mutate(
       productData,
 

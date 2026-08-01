@@ -16,11 +16,8 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
   const navigate = useNavigate();
 
   const addToCart = useCartStore((state) => state.addToCart);
-
   const favorite = isFavorite(product.id);
-
   const [favoriteMessage, setFavoriteMessage] = useState<string | null>(null);
-
   const importantParams = ["RAM", "Procesor", "Dysk", "Karta graficzna"];
 
   const displayedParams: string[] = [];
@@ -39,17 +36,14 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
   });
 
   const getImage = (images: any[]) => {
-    if (!Array.isArray(images)) {
-      return "/no-image.png";
-    }
+    if (!images[0].url) return [];
 
-    return images[0].url.includes("https")
-      ? images[0].url
-      : `${import.meta.env.VITE_API_URL}uploads/products/${product.seller_id}/${
-          product.id
-        }/${product.images[0].image}`;
+    return product.images.map((img: any) => {
+      if (img?.url?.includes("http")) return img.url;
+
+      return `${import.meta.env.VITE_API_URL}${img.url}`;
+    });
   };
-
   return (
     <div className=" hover:shadow-lg block p-4 transition bg-white border border-gray-200">
       <div className="flex items-start gap-6">

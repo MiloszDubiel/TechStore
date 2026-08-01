@@ -18,24 +18,26 @@ const EditProduct = ({ product, onBack }: Props) => {
     getCategories: { data: categories = [] },
     getSubcategories: { data: subcategories = [] },
 
-    updateProduct: { mutate: updateProduct, isPending },
+    updateProduct: { mutate: updateProduct },
 
     uploadImage: { mutate: uploadAnotherImage },
   } = useSeller();
 
   const getImages = () => {
-    if (!product?.images) return [];
+    if (!product?.images[0].url) return [];
 
-    return product.images.map(
-      (img: any) => `${import.meta.env.VITE_API_URL}${img.url}`
-    );
+    return product.images.map((img: any) => {
+      if (img?.url?.includes("http")) return img.url;
+
+      return `${import.meta.env.VITE_API_URL}${img.url}`;
+    });
   };
 
   return (
     <div className="space-y-6">
       <button
         onClick={onBack}
-        className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500"
+        className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500 cursor-pointer"
       >
         ← Powrót
       </button>
@@ -95,7 +97,6 @@ const EditProduct = ({ product, onBack }: Props) => {
             },
             {
               onSuccess: () => {
-            
                 if (data.images?.length) {
                   const imagesFormData = new FormData();
 

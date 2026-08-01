@@ -13,6 +13,8 @@ import { saveToDatabase } from "../scrapper/saveDataToDatabase";
 export const getOffersFromDatabase = async (req: Request, res: Response) => {
   let query = { ...req.query };
 
+
+
   try {
     const offers = await getProducts(query);
     res.json(offers);

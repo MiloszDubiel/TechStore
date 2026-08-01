@@ -17,6 +17,7 @@ import {
   getSellerOrders,
   updateSellerOrderStatus,
   getSubParma,
+  getProductsByID,
 } from "../controllers/seller.controller";
 
 import { uploadSellerLogo, uploadProductImages } from "../multer";
@@ -32,6 +33,7 @@ router.post(
 
 router.get("/users/:id/seller", verifyToken, verifyAdmin, getSellerData);
 router.get("/products", verifyToken, getProducts);
+router.get("/products/:id", verifyToken, getProductsByID);
 
 router.delete("/products/:id", verifyToken, deleteProduct);
 

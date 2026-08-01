@@ -2,13 +2,28 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import * as sellerApi from "../api/seller";
 
-export const useSeller = () => {
+export const useSeller = (params?: {
+  page: number;
+  limit: number;
+  search: string;
+}) => {
   const queryClient = useQueryClient();
 
   const products = useQuery({
-    queryKey: ["seller-products"],
-    queryFn: sellerApi.getProducts,
+    queryKey: ["seller-products", params?.page, params?.limit, params?.search],
+    queryFn: () =>
+      sellerApi.getProducts({
+        page: params?.page,
+        limit: params?.limit,
+        search: params?.search,
+      }),
   });
+
+  const productsById = (id: number) =>
+    useQuery({
+      queryKey: ["seller-products-by-id"],
+      queryFn: () => sellerApi.getProductsByID(id),
+    });
 
   const getOverview = useQuery({
     queryKey: ["seller-overview"],
@@ -91,7 +106,7 @@ export const useSeller = () => {
     queryFn: sellerApi.getSubcategories,
     queryKey: ["subcategories"],
   });
-  
+
   const getOrderDetails = (id: number) =>
     useQuery({
       queryKey: ["seller-order-details", id],
@@ -112,6 +127,7 @@ export const useSeller = () => {
     getCompanyInfo,
     uploadImage,
     getOverview,
+    productsById,
     getOrderDetails,
   };
 };

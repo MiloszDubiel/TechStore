@@ -7,6 +7,7 @@ import ConfirmModal from "../../../../components/ui/ConfirmModal";
 import Pagination from "../../../../components/ui/Pagination";
 
 import EditProduct from "./EditProduct";
+import { da } from "zod/v4/locales";
 const Products = () => {
   const { token } = useAuth();
 
@@ -31,9 +32,9 @@ const Products = () => {
     search,
   });
 
-  const productList = data?.products ?? [];
+  console.log(data);
 
-  console.log(productList);
+  const productList = data?.products ?? [];
 
   if (editingProduct) {
     return (

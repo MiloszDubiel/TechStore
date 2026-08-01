@@ -12,21 +12,37 @@ const HomePage = () => {
 
   const fetchOffers = async () => {
     try {
-      const response = await axios.get("/api/products/products");
-      return response.data.slice(0, 4);
+      const response = await axios.get("/api/products/products", {
+        params: {
+          limit: 4,
+        },
+      });
+      return response.data;
     } catch (err) {
       console.error(err);
     }
   };
 
-  const { data: products = [], isLoading } = useQuery({
+  const { data: data = {}, isLoading } = useQuery({
     queryKey: ["products-main-page"],
     queryFn: fetchOffers,
     staleTime: 5 * 60 * 1000,
   });
 
+  console.log(data);
   const navigate = useNavigate();
 
+  const getImage = (product: any) => {
+    if (!Array.isArray(product.images)) {
+      return "/no-image.png";
+    }
+
+    return product.images[0].url.includes("https")
+      ? product.images[0].url
+      : `${import.meta.env.VITE_API_URL}uploads/products/${product.seller_id}/${
+          product.id
+        }/${product.images[0].image}`;
+  };
   return (
     <>
       <Navbar />
@@ -54,7 +70,7 @@ const HomePage = () => {
             ))}
 
           {!isLoading &&
-            products.map((product: any) => (
+            data?.products?.map((product: any) => (
               <Link
                 key={product.id}
                 to={`/offers/${product.slug}/${product.id}`}
@@ -62,13 +78,7 @@ const HomePage = () => {
                 <div className="hover:shadow-xl h-95 flex flex-col overflow-hidden transition bg-white shadow-md">
                   <div className="relative flex justify-center">
                     <img
-                      src={
-                        product.images?.[0]
-                          ? `${import.meta.env.VITE_API_URL}uploads/products/${
-                              product.seller_id
-                            }/${product.id}/${product.images[0].image}`
-                          : "/no-image.png"
-                      }
+                      src={getImage(product)}
                       alt={product.name}
                       className="object-cover h-48"
                     />

@@ -109,7 +109,96 @@ export const updateUserRoleToSeller = async (userId: number) => {
   );
 };
 
-export const getSellerProducts = async (sellerId: number) => {
+export const getSellerProductsByID = async (
+  sellerId: number,
+  productId: number,
+) => {
+  const [[count]]: any = await connection.query(
+    `
+    SELECT * 
+    FROM products u
+    WHERE seller_id = ? AND id = ?
+    `,
+    [sellerId, productId],
+  );
+
+  if (count === 0) {
+    throw new Error("Nie jestes włascicielem produktu");
+  }
+
+  const [product] = await connection.query(
+    `
+    SELECT 
+      p.id,
+      p.name,
+      p.description,
+      p.price,
+      p.stock,
+      p.attributes,
+      p.created_at,
+      p.brand,
+      p.model,
+      p.is_deleted,
+      p.is_visible,
+
+      c.id AS category_id,
+      s.id AS subcategory_id,
+
+      COALESCE(
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id', pi.id,
+            'image', pi.image,
+            'url', pi.url,
+            'is_main', pi.is_main
+          )
+        ),
+        JSON_ARRAY()
+      ) AS images
+
+    FROM products p
+
+    LEFT JOIN categories c 
+      ON p.category_id = c.id
+      LEFT JOIN subcategories s
+      ON p.subcategory_id = s.id
+
+    LEFT JOIN product_images pi
+      ON p.id = pi.product_id
+
+    WHERE p.seller_id = ?
+    AND p.id = ?
+
+    GROUP BY p.id
+
+    `,
+    [sellerId, productId],
+  );
+
+  return {
+    product,
+  };
+};
+
+export const getSellerProducts = async (
+  sellerId: number,
+  page: number,
+  limit: number,
+  search: string = "",
+) => {
+  const offset = (page - 1) * limit;
+
+  const searchValue = `%${search}%`;
+
+  const [[count]]: any = await connection.query(
+    `
+    SELECT COUNT(*) AS total
+    FROM products u
+    WHERE seller_id = ?
+    `,
+    [sellerId, searchValue, searchValue, searchValue],
+  );
+
   const [products] = await connection.query(
     `
     SELECT 
@@ -151,15 +240,27 @@ export const getSellerProducts = async (sellerId: number) => {
       ON p.id = pi.product_id
 
     WHERE p.seller_id = ?
+    AND (
+       p.name LIKE ?
+      OR p.price LIKE ?
+    )
 
     GROUP BY p.id
 
     ORDER BY p.created_at DESC
+     LIMIT ?
+    OFFSET ?
     `,
-    [sellerId],
+    [sellerId, searchValue, searchValue, limit, offset],
   );
 
-  return products;
+  return {
+    products: products,
+    total: count.total,
+    page,
+    limit,
+    totalPages: Math.ceil(count.total / limit),
+  };
 };
 
 export const saveProductImages = async (
@@ -950,7 +1051,7 @@ GROUP BY sp.id
 
 `,
 
-    [id],
+    [id || 0],
   );
 
   return rows;

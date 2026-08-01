@@ -53,9 +53,93 @@ function mapMainCategory(categoryName: string | null) {
   };
 }
 export const getProducts = async (params: any) => {
-  const { categories, brands, min, max, stock, search } = params;
+  const {
+    categories,
+    brands,
+    min,
+    max,
+    stock,
+    search,
+    limit = 10,
+    page = 1,
+  } = params;
 
-  let query = `
+  const offset = (page - 1) * limit;
+
+  let where = `
+    WHERE p.stock > 0
+  `;
+
+  const queryParams: any[] = [];
+
+  if (categories) {
+    const cats = categories.split(",");
+
+    where += `
+      AND c.name IN (${cats.map(() => "?").join(",")})
+    `;
+
+    queryParams.push(...cats);
+  }
+
+  if (brands) {
+    const b = brands.split(",");
+
+    where += `
+      AND p.brand IN (${b.map(() => "?").join(",")})
+    `;
+
+    queryParams.push(...b);
+  }
+
+  if (min) {
+    where += `
+      AND p.price >= ?
+    `;
+
+    queryParams.push(Number(min));
+  }
+
+  if (max) {
+    where += `
+      AND p.price <= ?
+    `;
+
+    queryParams.push(Number(max));
+  }
+
+  if (stock === "1") {
+    where += `
+      AND p.stock > 0
+    `;
+  }
+
+  if (search) {
+    where += `
+      AND p.name LIKE ?
+    `;
+
+    queryParams.push(`%${search}%`);
+  }
+
+  const [[count]]: any = await connection.query(
+    `
+    SELECT COUNT(DISTINCT p.id) AS total
+
+    FROM products p
+
+    LEFT JOIN categories c
+      ON c.id = p.category_id
+
+    ${where}
+    `,
+    queryParams,
+  );
+
+  const productParams = [...queryParams, Number(limit), offset];
+
+  const [rows]: any = await connection.query(
+    `
     SELECT
       p.*,
 
@@ -74,7 +158,6 @@ export const getProducts = async (params: any) => {
           JSON_OBJECT(
             'image', pi.image,
             'url', pi.url
-
           )
         ),
         JSON_ARRAY()
@@ -94,62 +177,8 @@ export const getProducts = async (params: any) => {
     LEFT JOIN seller_profiles sp
       ON sp.user_id = p.seller_id
 
-    WHERE 1 = 1 AND p.stock > 0
-  `;
+    ${where}
 
-  const queryParams: any[] = [];
-
-  if (categories) {
-    const cats = categories.split(",");
-
-    query += `
-      AND c.name IN (${cats.map(() => "?").join(",")})
-    `;
-
-    queryParams.push(...cats);
-  }
-
-  if (brands) {
-    const b = brands.split(",");
-
-    query += `
-      AND p.brand IN (${b.map(() => "?").join(",")})
-    `;
-
-    queryParams.push(...b);
-  }
-
-  if (min) {
-    query += `
-      AND p.price >= ?
-    `;
-
-    queryParams.push(Number(min));
-  }
-
-  if (max) {
-    query += `
-      AND p.price <= ?
-    `;
-
-    queryParams.push(Number(max));
-  }
-
-  if (stock === "1") {
-    query += `
-      AND p.stock > 0
-    `;
-  }
-
-  if (search) {
-    query += `
-      AND p.name LIKE ?
-    `;
-
-    queryParams.push(`%${search}%`);
-  }
-
-  query += `
     GROUP BY
       p.id,
       c.name,
@@ -162,17 +191,27 @@ export const getProducts = async (params: any) => {
       sp.is_verified
 
     ORDER BY p.created_at DESC
-  `;
 
-  const [rows]: any = await connection.query(query, queryParams);
+    LIMIT ?
+    OFFSET ?
+    `,
+    productParams,
+  );
 
-  return rows.map((product: any) => ({
-    ...product,
-    images:
-      typeof product.images === "string"
-        ? JSON.parse(product.images)
-        : product.images,
-  }));
+  return {
+    products: rows.map((product: any) => ({
+      ...product,
+      images:
+        typeof product.images === "string"
+          ? JSON.parse(product.images)
+          : product.images,
+    })),
+
+    page: Number(page),
+    limit: Number(limit),
+    total: count.total,
+    totalPages: Math.ceil(count.total / limit),
+  };
 };
 
 export const getCurrtentProdcut = async (id: string) => {
@@ -190,13 +229,12 @@ export const getCurrtentProdcut = async (id: string) => {
       sp.slug,
       sp.created_at AS seller_created_at,
       sp.is_verified,
-      sp.description,
 sp.banner,
 
       COALESCE(
         JSON_ARRAYAGG(
           JSON_OBJECT(
-            'image', pi.url
+            'url', pi.url
           )
         ),
         JSON_ARRAY()

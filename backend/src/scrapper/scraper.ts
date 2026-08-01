@@ -69,7 +69,7 @@ export async function scrapeMediaMarkt() {
             price:
               card
                 .querySelector("[data-test='mms-price'] span.mms-ui-mBgaT")
-                ?.innerText?.trim() ?? null,
+                ?.innerText?.trim() ?? "",
 
             link: card.querySelector("a")?.href ?? null,
           }));
@@ -104,6 +104,11 @@ export async function scrapeMediaMarkt() {
                 ...document.querySelectorAll("#features-content tr"),
               ];
 
+              const brand =
+                document
+                  .querySelector(".mms-ui-kFYpmu [data-test='mms-router-link']")
+                  ?.textContent.trim() ?? null;
+
               const img = (
                 document.querySelector(
                   "img.pdp-gallery-image",
@@ -127,6 +132,12 @@ export async function scrapeMediaMarkt() {
                   .filter((x) => x.name && x.value),
 
                 img,
+                brand,
+                model:
+                  document
+                    .querySelector("[data-test='pdp-article-number']")
+                    ?.textContent.replace("Numer produktu:", brand || "") ??
+                  null,
               };
             });
 
@@ -148,10 +159,12 @@ export async function scrapeMediaMarkt() {
       }
     }
 
-    await detailPage.close();
-    await page.close();
-    await browser.close();
-
     console.log(`Pobrano ${results.length} produktów`);
   }
+  await detailPage.close();
+  await page.close();
+  await browser.close();
+
+  
+  return results;
 }

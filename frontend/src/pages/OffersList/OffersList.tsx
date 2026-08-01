@@ -3,46 +3,41 @@ import { useMemo, useState } from "react";
 import axios from "axios";
 import OfferCard from "../../components/ui/OffersCard";
 import Pagination from "../../components/ui/Pagination";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import FiltersSidebar from "../../components/layout/FiltersSidebar";
-import { useQuery } from "@tanstack/react-query"; // hook React Query
+import { useQuery } from "@tanstack/react-query";
 
 const OffersList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [sort, setSort] = useState(searchParams.get("sort") || "");
 
   const allParams = Object.fromEntries(searchParams.entries());
-  const { page, search, ...filters } = allParams;
-
-  const currentPage = Number(page || 1);
-  const itemsPerPage = 10;
-
-  const navigate = useNavigate();
+  const { search, ...filters } = allParams;
+  const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
 
   const fetchProducts = async () => {
-    const params = new URLSearchParams(filters);
+    const params = Object.fromEntries(searchParams.entries());
 
-    if (search) params.set("search", search);
-    if (sort) params.set("sort", sort);
-    if (currentPage) params.set("page", currentPage.toString());
-
-    const res = await axios.get(`/api/products/products?${params.toString()}`);
+    const res = await axios.get("/api/products/products", {
+      params: {
+        ...params,
+        limit: 10,
+        page,
+      },
+    });
 
     return res.data;
   };
 
-  const { data: products = [], isLoading } = useQuery({
-    // queryKey = unikalny klucz cache
-    // kiedy zmieni się którykolwiek element
-    // React Query zrobi refetch
-    queryKey: ["products", filters, search, sort, currentPage],
-
-    // funkcja która pobiera dane
+  const { data, isLoading } = useQuery({
+    queryKey: ["products", filters, search, sort, page],
     queryFn: fetchProducts,
-
-    // czas cache (opcjonalne)
-    staleTime: 1000 * 60 * 5, // 5 minut
+    staleTime: 1000 * 60 * 5,
   });
+
+  const products = data?.products ?? [];
+
+  console.log();
 
   const sortedProducts = useMemo(() => {
     return [...products].sort((a, b) => {
@@ -62,11 +57,6 @@ const OffersList = () => {
     });
   }, [products, sort]);
 
-  const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentProducts = sortedProducts.slice(startIndex, endIndex);
-
   const handleSortChange = (value: string) => {
     const params = new URLSearchParams(searchParams);
 
@@ -80,21 +70,21 @@ const OffersList = () => {
     setSort(value);
   };
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+
+    const params = new URLSearchParams(searchParams);
+    params.set("page", String(newPage));
+
+    setSearchParams(params);
+  };
   return (
     <>
       <Navbar />
 
       <div className="max-w-7xl flex gap-6 p-6 mx-auto">
         <FiltersSidebar
-          categories={[
-            "Zestawy",
-            "Wentylatory",
-            "Radiatory",
-            "Płyty główne",
-            "Procesory",
-            "Pozostałe",
-          ]}
-          brands={["Samsung", "Asus", "MSI", "HP"]}
+          brands={[...new Set(products.map((el: any) => el.brand))] as string[]}
         />
 
         <div className="flex flex-col w-full gap-6">
@@ -175,24 +165,17 @@ const OffersList = () => {
                 </select>
               </div>
 
-              {currentProducts.map((product: any) => (
+              {sortedProducts?.map((product: any) => (
                 <OfferCard key={product.id} id={product.id} product={product} />
               ))}
             </>
           ) : (
             <p>Brak produktów spełniających kryteria.</p>
-          )}
-
+          )}{" "}
           <Pagination
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={(page) => {
-              const params = new URLSearchParams(searchParams);
-
-              params.set("page", page.toString());
-
-              navigate(`?${params.toString()}`);
-            }}
+            page={page}
+            totalPages={data?.totalPages ?? 1}
+            onPageChange={handlePageChange}
           />
         </div>
       </div>
