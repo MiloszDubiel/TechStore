@@ -108,7 +108,7 @@ cd fullstack-ecommerce
 ### 3. Uruchom kontener Docker
 
 ```bash
-cd docker compose up --build
+docker compose up --build
 ```
 ### 4. Przejdź na [http://localhost:5173](http://localhost:5173/)
 
