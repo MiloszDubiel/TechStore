@@ -110,7 +110,7 @@ cd fullstack-ecommerce
 ```bash
 cd docker compose up --build
 ```
-### 4. Przejdź na [http://localhost:51](http://localhost:5173/)
+### 4. Przejdź na [http://localhost:5173](http://localhost:5173/)
 
 
 ---
