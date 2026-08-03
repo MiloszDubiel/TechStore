@@ -1,7 +1,6 @@
 # Fullstack E-commerce
 
-Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności FullStack Web Development
-**Aplikacja wciąż może waierać błedy**
+Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności FullStack Web Development  
 
 
 ## Funkcjonalności
