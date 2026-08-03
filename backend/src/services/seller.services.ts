@@ -688,6 +688,7 @@ export const getSellerOverviewService = async (sellerId: number) => {
     JOIN order_items oi ON oi.order_id = o.id
     JOIN products p ON p.id = oi.product_id
     WHERE p.seller_id = ?
+    GROUP BY o.order_number
     `,
     [sellerId],
   );
@@ -734,10 +735,10 @@ export const getSellerOverviewService = async (sellerId: number) => {
   );
 
   return {
-    revenue: revenue.revenue,
-    orders: orders.orders,
-    products: products.products,
-    customers: customers.customers,
+    revenue: revenue?.revenue,
+    orders: orders?.orders,
+    products: products?.products,
+    customers: customers?.customers,
     lastOrders,
   };
 };

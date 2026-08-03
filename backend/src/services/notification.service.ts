@@ -21,7 +21,6 @@ export const createNotificationService = async (data: any) => {
     ...data,
   };
 
-  console.log("EMIT ROOM:", `user_${data.userId}`);
   getIO().to(`user_${data.userId}`).emit("newNotification", notification);
 
   return notification;
@@ -52,7 +51,7 @@ export const getUserNotificationsService = async (userId: number) => {
   return rows;
 };
 
-// jedno powiadomienie jako przeczytane
+
 export const markNotificationAsReadService = async (
   notificationId: number,
   userId: number,
@@ -70,7 +69,7 @@ export const markNotificationAsReadService = async (
   return result.affectedRows > 0;
 };
 
-// wszystkie powiadomienia użytkownika jako przeczytane
+
 export const markAllNotificationsAsReadService = async (userId: number) => {
   const [result]: any = await connection.query(
     `

@@ -9,6 +9,9 @@ import BellDropdown from "./BellDropdown";
 import { useNotification } from "../../../context/NotificationContext";
 import { useCartStore } from "../../../zustand/states/cartState";
 import { useFavorite } from "../../../context/FavoritesContext";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../../../context/AuthContext";
 
 const NavbarActions = ({
   toggleLanguage,
@@ -23,6 +26,24 @@ const NavbarActions = ({
   const cart = useCartStore((state) => state.cart);
   const { notifications, notificationData = [] } = useNotification();
   const { favorites = [] } = useFavorite();
+  const { token } = useAuth();
+
+  const { data: unreadMessages = 0 } = useQuery<number>({
+    queryKey: ["unreadMessages"],
+    queryFn: async () => {
+      if (!user) return 0;
+
+      const response = await axios.get("/api/socket/get-notifications", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    },
+    enabled: !!user,
+  });
+
 
 
   return (
@@ -53,9 +74,16 @@ const NavbarActions = ({
       )}
 
       {user && (
-        <Link to="/chat">
-          <MessageCircle className="cursor-pointer" />
-        </Link>
+        <div className=" relative">
+          <Link to="/chat">
+            <MessageCircle className="cursor-pointer" />
+            {unreadMessages > 0 && (
+              <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white">
+                {unreadMessages}
+              </div>
+            )}
+          </Link>
+        </div>
       )}
 
       {user && (

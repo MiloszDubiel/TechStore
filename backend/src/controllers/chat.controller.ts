@@ -4,6 +4,8 @@ import {
   createMessageService,
   createConversationService,
   getConversationsService,
+  getNotificationsService,
+  markMessagesAsReadService,
 } from "../services/chat.services";
 
 export const getMessages = async (req: Request, res: Response) => {
@@ -12,7 +14,6 @@ export const getMessages = async (req: Request, res: Response) => {
 
     const userId = (req as any).user.id;
 
- 
     if (!id) {
       return res.status(400).json({
         message: "Brak id konwersacji",
@@ -104,6 +105,39 @@ export const getConversations = async (req: Request, res: Response) => {
 
     res.status(500).json({
       message: "Błąd pobierania konwersacji",
+    });
+  }
+};
+
+export const getNotifications = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const notifications = await getNotificationsService(userId);
+
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message: "Błąd pobierania powiadomień",
+    });
+  }
+};
+export const markMessagesAsRead = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.id;
+
+    const conversationId = Number(req.params.conversationId);
+
+    await markMessagesAsReadService(conversationId, userId);
+
+    res.json({
+      message: "Messages marked as read",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
     });
   }
 };

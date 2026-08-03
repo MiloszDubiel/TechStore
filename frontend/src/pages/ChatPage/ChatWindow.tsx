@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -8,6 +8,24 @@ import { socket } from "../../socket";
 const ChatWindow = ({ conversation }: any) => {
   const [message, setMessage] = useState("");
   const { user, token } = useAuth();
+
+  const queryClient = useQueryClient();
+
+  const markAsRead = async () => {
+    await axios.patch(
+      `/api/socket/messages/read/${conversation.id}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    queryClient.invalidateQueries({
+      queryKey: ["unreadMessages"],
+    });
+  };
 
   const {
     data: messages = [],
@@ -31,6 +49,12 @@ const ChatWindow = ({ conversation }: any) => {
       return data;
     },
   });
+
+  useEffect(() => {
+    if (!conversation) return;
+
+    markAsRead();
+  }, [conversation?.id]);
 
   const send = () => {
     if (!message) {

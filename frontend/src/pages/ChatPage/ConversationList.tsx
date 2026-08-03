@@ -1,7 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { useEffect } from "react";
+import { useChat } from "../../hooks/useChat";
 
 type Props = {
   selected: any;
@@ -12,18 +13,9 @@ type Props = {
 const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
   const { user, token } = useAuth();
   const queryClient = useQueryClient();
-
-  const { data: conversations = [], isSuccess } = useQuery({
-    queryKey: ["get-convertation", user?.id],
-    queryFn: async () => {
-      const { data } = await axios.get(`/api/socket/get-conversations`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      return data;
-    },
-  });
+  const {
+    conversations: { data: conversations, isSuccess },
+  } = useChat(token!, user);
 
   const { mutate } = useMutation({
     mutationFn: (data: any) =>
@@ -36,7 +28,6 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
 
   useEffect(() => {
     if (!isSuccess || !seller_id) return;
-
     const conversation = conversations?.find(
       (c: any) => c.seller_id === Number(seller_id)
     );
@@ -53,7 +44,7 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
           onSelect(data);
 
           queryClient.invalidateQueries({
-            queryKey: ["get-conversation"],
+            queryKey: ["conversations", user?.id],
           });
         },
       }
@@ -64,7 +55,7 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
     <div className="w-80 border-r border-gray-300">
       <h2 className="p-5 text-xl font-bold">Wiadomości</h2>
 
-      {conversations.length > 0 ? (
+      {conversations?.length > 0 ? (
         conversations.map((c: any) => {
           const isSeller = user?.id === c.seller_id;
 
@@ -107,7 +98,13 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
               )}
 
               <div className="flex-1 overflow-hidden">
-                <p className="font-semibold truncate">{name}</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold truncate">{name}</p>
+
+                  {Number(c.unread_count) > 0 && (
+                    <span className="w-3 h-3 bg-orange-500 rounded-full" />
+                  )}
+                </div>
 
                 <p className="text-sm text-gray-500 truncate">
                   {c.last_message || "Brak wiadomości"}

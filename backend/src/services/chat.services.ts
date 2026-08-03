@@ -133,72 +133,114 @@ WHERE id=?
 export const getConversationsService = async (userId: number) => {
   const [rows]: any = await connection.query(
     `
- SELECT
+    SELECT
 
-    c.id,
-    c.created_at,
+      c.id,
+      c.created_at,
 
-    -- kupujący
-    buyer.id AS buyer_id,
-    buyer.email AS buyer_email,
-    buyer.name AS buyer_first_name,
-    buyer.last_name AS buyer_last_name,
+      buyer.id AS buyer_id,
+      buyer.email AS buyer_email,
+      buyer.name AS buyer_first_name,
+      buyer.last_name AS buyer_last_name,
 
+      seller.id AS seller_id,
+      seller.email AS seller_email,
+      seller.name AS seller_first_name,
+      seller.last_name AS seller_last_name,
 
-    -- sprzedawca
-    seller.id AS seller_id,
-    seller.email AS seller_email,
-    seller.name AS seller_first_name,
-    seller.last_name AS seller_last_name,
-
-
-    -- sklep
-    sp.shop_name,
-    sp.logo,
+      sp.shop_name,
+      sp.logo,
 
 
-    (
+      (
         SELECT m.message
         FROM messages m
         WHERE m.conversation_id = c.id
         ORDER BY m.created_at DESC
         LIMIT 1
-    ) AS last_message,
+      ) AS last_message,
 
 
-    (
+      (
         SELECT m.created_at
         FROM messages m
         WHERE m.conversation_id = c.id
         ORDER BY m.created_at DESC
         LIMIT 1
-    ) AS last_message_date
+      ) AS last_message_date,
 
 
-FROM conversations c
+      (
+        SELECT COUNT(*)
+        FROM messages m
+        WHERE m.conversation_id = c.id
+        AND m.is_read = 0
+        AND m.sender_id != ?
+      ) AS unread_count
 
 
-JOIN users buyer
-ON buyer.id = c.user_id
+    FROM conversations c
 
 
-JOIN users seller
-ON seller.id = c.seller_id
+    JOIN users buyer
+    ON buyer.id = c.user_id
 
 
-LEFT JOIN seller_profiles sp
-ON sp.user_id = seller.id
+    JOIN users seller
+    ON seller.id = c.seller_id
 
 
-WHERE 
-c.user_id = ?
-OR 
-c.seller_id = ?
+    LEFT JOIN seller_profiles sp
+    ON sp.user_id = seller.id
 
 
-ORDER BY last_message_date DESC;`,
-    [userId, userId],
+    WHERE 
+      c.user_id = ?
+      OR 
+      c.seller_id = ?
+
+
+    ORDER BY last_message_date DESC
+    `,
+    [userId, userId, userId],
   );
 
   return rows;
+};
+
+export const getNotificationsService = async (userId: number) => {
+  const [rows]: any = await connection.query(
+    `
+    SELECT COUNT(*) AS unread_count
+    FROM messages m
+    JOIN conversations c 
+      ON c.id = m.conversation_id
+    WHERE m.is_read = 0
+    AND m.sender_id != ?
+    AND (
+      c.user_id = ?
+      OR c.seller_id = ?
+    )
+    `,
+    [userId, userId, userId],
+  );
+
+  return rows[0].unread_count;
+};
+export const markMessagesAsReadService = async (
+  conversationId: number,
+  userId: number,
+) => {
+  await connection.query(
+    `
+    UPDATE messages
+    SET is_read = 1
+    WHERE conversation_id = ?
+    AND sender_id != ?
+    AND is_read = 0
+    `,
+    [conversationId, userId],
+  );
+
+  return true;
 };
