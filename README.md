@@ -38,8 +38,8 @@ Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzysta
 * React Router
 * TanStack Query
 * Axios
-* React Hook Form - w trakcie implementacji
-* Zod - w trakcie implementacji
+* React Hook Form 
+* Zod
 * Tailwind CSS
 
 ### Backend
@@ -80,7 +80,7 @@ USER
 
 
 ADMIN
- ├── wszystko co USER (opcjonalnie)
+ ├── wszystko co USER
  ├── panel administracyjny
  ├── zarządza użytkownikami
  ├── zarządza sprzedawcami
@@ -96,7 +96,7 @@ ADMIN
 ### 1. Sklonuj repozytorium
 
 ```bash
-git clone https://github.com/MiloszDubiel/fullstack-ecommerce.git
+git clone https://github.com/MiloszDubiel/fullstack_e-commerce.git
 ```
 
 ### 2. Przejdź do katalogu projektu
