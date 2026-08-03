@@ -1,6 +1,6 @@
 # Fullstack E-commerce
 
-Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności Full Stack Web Development oraz zaprezentowania praktycznej znajomości współczesnych technologii wykorzystywanych przy tworzeniu aplikacji webowych.
+Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności FullStack Web Development
 
 ## Funkcjonalności
 
@@ -71,11 +71,8 @@ USER
  ├── przegląda produkty
  ├── kupuje
  ├── składa zamówienia
- └── zarządza profilem
-
-
-SELLER
- ├── wszystko co USER
+ ├── zarządza profilem
+ ├── stworzenie profilu sklepu
  ├── wystawia produkty
  ├── zarządza sklepem
  └── obsługuje zamówienia
@@ -107,70 +104,30 @@ git clone https://github.com/MiloszDubiel/fullstack-ecommerce.git
 cd fullstack-ecommerce
 ```
 
-### 3. Instalacja zależności
-
-Frontend
+### 3. Uruchom kontener Docker
 
 ```bash
-cd frontend
-npm install
+cd docker compose up --build
 ```
+### 4. Przejdź na [http://localhost:51](http://localhost:5173/)
 
-Backend
-
-```bash
-cd ../backend
-npm install
-```
-
-### 4. Konfiguracja zmiennych środowiskowych
-
-Utwórz plik `.env` w katalogu `server` i uzupełnij odpowiednimi wartościami.
-
-Przykład:
-
-```env
-DATABASE_URL=
-JWT_SECRET=
-PORT=5000
-```
-
-
-### 5. Uruchom aplikację
-
-Backend
-
-```bash
-npm run dev
-```
-
-Frontend
-
-```bash
-npm run dev
-```
 
 ---
 
 ## 📌 Planowane funkcjonalności
 
 * Integracja płatności (Stripe)
-* Lista ulubionych produktów
-* Opinie i oceny produktów
 * Powiadomienia e-mail
 * Wyszukiwarka z podpowiedziami
-* Panel administratora
-* Upload zdjęć produktów
 * Dashboard sprzedaży
 * Dark Mode
-* Docker
 * CI/CD (GitHub Actions)
 
 ---
 
 ## Cel projektu
 
-Celem projektu jest stworzenie kompletnej aplikacji e-commerce z wykorzystaniem nowoczesnych technologii oraz dobrych praktyk programistycznych, takich jak:
+Celem projektu jest stworzenie kompletnej aplikacji e-commerce z wykorzystaniem nowoczesnych technologii, takich jak:
 
 * architektura warstwowa,
 * REST API,
@@ -180,8 +137,6 @@ Celem projektu jest stworzenie kompletnej aplikacji e-commerce z wykorzystaniem 
 * bezpieczne przechowywanie danych,
 * optymalizacja wydajności,
 * responsywny interfejs użytkownika.
-
-Projekt jest rozwijany jako element portfolio Full Stack JavaScript/TypeScript.
 
 
 
