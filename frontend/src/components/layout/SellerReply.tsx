@@ -1,13 +1,13 @@
-import axios from "axios";
+import axios from "../../axios";
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
+
 
 const SellerReply = ({ reviewId }: { reviewId: string }) => {
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  const { token } = useAuth();
+
 
   const sendReply = async () => {
     if (!reply.trim()) {
@@ -18,17 +18,9 @@ const SellerReply = ({ reviewId }: { reviewId: string }) => {
     try {
       setLoading(true);
 
-      await axios.put(
-        `/api/reviews/${reviewId}/reply`,
-        {
-          reply,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.put(`/api/reviews/${reviewId}/reply`, {
+        reply,
+      });
 
       setReply("");
       setMessage("Odpowiedź dodana");

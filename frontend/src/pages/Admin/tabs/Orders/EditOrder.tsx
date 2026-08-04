@@ -18,9 +18,9 @@ type Props = {
 };
 
 const OrderDetails = ({ orderId, onBack }: Props) => {
-  const { token } = useAuth();
+ 
 
-  const { updateOrderStatus, getAdminOrderDetails } = useAdmin(token!);
+  const { updateOrderStatus, getAdminOrderDetails } = useAdmin();
 
   const { data: order, isLoading } = getAdminOrderDetails(orderId);
   const [status, setStatus] = useState(order?.status);

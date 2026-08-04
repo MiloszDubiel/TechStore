@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../axios";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "../../components/layout/Navbar/Navbar";
 import { Link } from "react-router-dom";

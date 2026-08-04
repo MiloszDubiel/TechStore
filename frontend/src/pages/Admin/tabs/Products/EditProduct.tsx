@@ -16,7 +16,7 @@ type Props = {
 const ProductEditForm = ({ product, onBack }: any) => {
   const [newImages] = useState<File[]>([]);
 
-  const { token } = useAuth();
+
 
   const {
     getCategories: { data: categories },
@@ -25,7 +25,7 @@ const ProductEditForm = ({ product, onBack }: any) => {
 
   const {
     updateProduct: { mutate: updateProducts },
-  } = useAdmin(token!);
+  } = useAdmin();
 
   const getImages = () => {
     if (!product?.images) return [];

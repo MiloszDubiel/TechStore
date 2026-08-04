@@ -16,15 +16,19 @@ import notificationRoutes from "./routes/notification.routes";
 import { initSocket } from "./socket/indext";
 import http from "http";
 
+import cookieParser from "cookie-parser";
+
 const app = express();
 
 app.use(
   cors({
     origin: "http://localhost:5173",
+    credentials: true,
   }),
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/settings", settingsRoutes);
 app.use("/api/auth", authRoutes);

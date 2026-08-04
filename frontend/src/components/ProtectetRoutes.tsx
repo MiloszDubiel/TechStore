@@ -76,9 +76,9 @@ type ProtectedProps = {
 };
 
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedProps) => {
-  const { token } = useAuth();
 
-  const { data: user, isLoading } = useUser(token);
+
+  const { data: user, isLoading } = useUser();
 
   if (isLoading) {
     return (

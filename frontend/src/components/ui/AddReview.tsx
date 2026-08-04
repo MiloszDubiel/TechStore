@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
@@ -16,7 +16,7 @@ const AddReview = ({
   const [hoverRating, setHoverRating] = useState(0);
   const [message, setMessage] = useState("");
 
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const submit = async () => {
@@ -31,19 +31,11 @@ const AddReview = ({
     }
 
     try {
-      await axios.post(
-        "/api/reviews",
-        {
-          product_id: productId,
-          rating,
-          comment,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.post("/api/reviews", {
+        product_id: productId,
+        rating,
+        comment,
+      });
 
       setComment("");
       setRating(0);
@@ -56,7 +48,7 @@ const AddReview = ({
   if (user && Number(seller_id) === Number(user.id)) {
     return null;
   }
-  if (!token) {
+  if (!user?.id) {
     return (
       <div className="p-6 text-center bg-white border border-gray-200">
         <h3 className="mb-2 text-lg font-semibold">Chcesz dodać opinię?</h3>

@@ -5,8 +5,7 @@ import OrderDetails from "./OrderDetails";
 import { OrangeButton } from "../../../components/ui/Buttons";
 
 const Orders = () => {
-  const { token } = useAuth();
-  const { data: orders, isLoading } = useOrders(token);
+  const { data: orders, isLoading } = useOrders();
 
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
 

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import axios from "../../axios";
 import { CheckCircle, Store, Edit } from "lucide-react";
 
 import Navbar from "../../components/layout/Navbar/Navbar";

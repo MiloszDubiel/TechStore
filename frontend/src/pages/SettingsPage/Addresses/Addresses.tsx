@@ -21,15 +21,14 @@ export const Addresses = () => {
 
   const { user } = useAuth();
 
-  const token =
-    localStorage.getItem("token") ?? sessionStorage.getItem("token");
+
 
   const {
     userAddresses,
     saveAddress,
     updateAddress,
     deleteAddress,
-  } = useAdresses(user?.id, token);
+  } = useAdresses(user?.id);
 
   return (
     <div>

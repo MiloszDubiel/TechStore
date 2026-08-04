@@ -16,7 +16,6 @@ const AccountDropdown = ({
   user,
   logout,
   onClose,
-  seller = [],
 }: Props) => {
   const {
     getCompanyInfo: { data },

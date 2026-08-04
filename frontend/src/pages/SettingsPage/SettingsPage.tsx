@@ -21,7 +21,7 @@ const AccountPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("orders");
   const [selectedOrderId] = useState<string | null>(null);
 
-  const { token } = useAuth();
+  const { user } = useAuth();
 
   const renderContent = () => {
     switch (activeTab) {
@@ -61,7 +61,7 @@ const AccountPage = () => {
     }
   };
 
-  if (!token) {
+  if (!user?.id) {
     return <>Brak dostępu</>;
   }
   return (

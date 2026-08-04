@@ -2,7 +2,7 @@ import { createContext, useEffect, useContext, useState } from "react";
 import { socket } from "../socket";
 import { useAuth } from "./AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import axios from "../axios";
 import { toast } from "react-toastify";
 
 interface NotificationContextType {
@@ -16,39 +16,24 @@ interface NotificationContextType {
 const NotificationContext = createContext<NotificationContextType | null>(null);
 
 export const NotificationProvider = ({ children }: any) => {
-  const { token, user } = useAuth();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [notificationData, setNotificationData] = useState<any>();
 
-
-  
   const { data, refetch } = useQuery({
     queryKey: ["notifications", user?.id],
 
     queryFn: async () => {
-      const { data = [] } = await axios.get("/api/notification/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const { data = [] } = await axios.get("/api/notification/");
 
       return data;
     },
 
-    enabled: !!token,
+    enabled: !!user?.id,
   });
 
   const { mutate: setAsRead } = useMutation({
-    mutationFn: (id: number) =>
-      axios.patch(
-        `/api/notification/${id}/read`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ),
+    mutationFn: (id: number) => axios.patch(`/api/notification/${id}/read`, {}),
     onSuccess: () => {
       toast.success("Zmieniono status powiadomienia");
       queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
@@ -56,12 +41,7 @@ export const NotificationProvider = ({ children }: any) => {
   });
 
   const { mutate: setAsDeleted } = useMutation({
-    mutationFn: (id: number) =>
-      axios.delete(`/api/notification/${id}/delete`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }),
+    mutationFn: (id: number) => axios.delete(`/api/notification/${id}/delete`),
     onSuccess: () => {
       toast.success("Usunięto powidomienia ");
       queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
@@ -69,16 +49,7 @@ export const NotificationProvider = ({ children }: any) => {
   });
 
   const { mutate: setAllAsRead } = useMutation({
-    mutationFn: () =>
-      axios.patch(
-        `/api/notification/read-all`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ),
+    mutationFn: () => axios.patch(`/api/notification/read-all`, {}),
     onSuccess: () => {
       toast.success("Zmieniono status powiadomień");
       queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });

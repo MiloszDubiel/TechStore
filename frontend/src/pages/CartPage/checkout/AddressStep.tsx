@@ -13,10 +13,9 @@ type Props = {
 export default function AddressStep({ next, back }: Props) {
   const { user } = useAuth();
   const [guestAddress, setGuestAddress] = useState<any | null>(null);
-  const token =
-    localStorage.getItem("token") ?? sessionStorage.getItem("token");
 
-  const { userAddresses, saveAddress } = useAdresses(user?.id, token);
+
+  const { userAddresses, saveAddress } = useAdresses(user?.id );
   const { updateCheckout } = useCheckout();
   const [closeModal, setCloseModal] = useState(false);
 

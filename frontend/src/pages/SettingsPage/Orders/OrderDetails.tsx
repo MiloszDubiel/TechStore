@@ -4,8 +4,8 @@ import { useOrder } from "../../../hooks/useOrders";
 import { Link } from "react-router-dom";
 import { useImage } from "../../../hooks/useImage";
 const OrderDetails = ({ id, onBack }: any) => {
-  const { token } = useAuth();
-  const { data, isLoading } = useOrder(id, token);
+
+  const { data, isLoading } = useOrder(id);
 
   if (isLoading) {
     return <p>Ładowanie...</p>;

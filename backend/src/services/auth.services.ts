@@ -14,8 +14,6 @@ type User = {
   phone: string;
 };
 
-
-
 export const registerUser = async (data: any) => {
   const { email, password, name, last_name, role } = data;
 
@@ -82,11 +80,6 @@ export const loginUser = async (email: string, password: string) => {
   const accessToken = jwt.sign(
     {
       id: user.id,
-      email: user.email,
-      role: user.role,
-      name: user.name,
-      lastName: user.last_name,
-      phone: user.phone,
     },
     process.env.JWT_ACCESS_SECRET as string,
     {
@@ -120,7 +113,7 @@ export const loginUser = async (email: string, password: string) => {
   return {
     accessToken,
     refreshToken,
-    id: user.id,
+    user,
   };
 };
 

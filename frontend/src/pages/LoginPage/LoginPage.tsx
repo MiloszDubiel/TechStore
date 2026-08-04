@@ -42,7 +42,6 @@ const LoginPage: React.FC = () => {
         login(
           response.accessToken,
           response.refreshToken,
-          response.rememberMe ?? false
         );
 
         removeSellerProducts(response.id);

@@ -1,27 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import axios from "../axios";
 
-const useAdresses = (userID: string | unknown, token: string | null) => {
+const useAdresses = (userID: string | unknown) => {
   const queryClient = useQueryClient();
 
   const { data } = useQuery({
     queryKey: ["adressess", userID],
-    queryFn: async () =>
-      await axios.get(`/api/settings/edit-user/adresses/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }),
+    queryFn: async () => await axios.get(`/api/settings/edit-user/adresses/`),
   });
 
   const { mutate: saveAddress, isSuccess: addressSetSuccess } = useMutation({
     mutationKey: ["save-address"],
     mutationFn: async (data) =>
-      await axios.post("/api/settings/edit-user/adresses", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }),
+      await axios.post("/api/settings/edit-user/adresses", data),
 
     onSuccess: (response) => {
       queryClient.invalidateQueries({
@@ -36,11 +27,7 @@ const useAdresses = (userID: string | unknown, token: string | null) => {
     useMutation({
       mutationKey: ["update-address"],
       mutationFn: async (data) =>
-        await axios.patch("/api/settings/edit-user/adresses", data, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
+        await axios.patch("/api/settings/edit-user/adresses", data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
       },
@@ -50,11 +37,7 @@ const useAdresses = (userID: string | unknown, token: string | null) => {
     useMutation({
       mutationKey: ["delete-address"],
       mutationFn: async (id: string) =>
-        await axios.delete(`/api/settings/edit-user/adresses/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }),
+        await axios.delete(`/api/settings/edit-user/adresses/${id}`),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
       },

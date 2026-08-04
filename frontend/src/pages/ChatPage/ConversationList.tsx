@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
-import axios from "axios";
+import axios from "../../axios";
 import { useEffect } from "react";
 import { useChat } from "../../hooks/useChat";
 
@@ -11,19 +11,15 @@ type Props = {
 };
 
 const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
-  const { user, token } = useAuth();
+  const { user,  } = useAuth();
   const queryClient = useQueryClient();
   const { conversations } = useChat();
 
-  const { data: conversationsData, isSuccess } = conversations(user, token!);
+  const { data: conversationsData, isSuccess } = conversations(user, );
 
   const { mutate } = useMutation({
     mutationFn: (data: any) =>
-      axios.post("/api/socket/create-conversations", data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }),
+      axios.post("/api/socket/create-conversations", data,),
   });
 
   useEffect(() => {

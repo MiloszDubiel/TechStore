@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios from "../axios";
 import type { RegisterSchema } from "../schemas/registerSchema";
 
 const registerUser = async (data: RegisterSchema) => {

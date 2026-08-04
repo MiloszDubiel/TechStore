@@ -3,39 +3,24 @@ import jwt from "jsonwebtoken";
 import { AuthRequest } from "../types/express";
 import { JwtUserPayload } from "../types/jwt";
 
-export const verifyToken = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction,
-) => {
-  const authHeader: string | undefined = req.headers.authorization;
+export const verifyToken = (req: any, res: any, next: any) => {
+  const token = req.cookies.accessToken;
 
-  if (!authHeader) {
-    return res.status(401).json({ message: "Brak tokena" });
+  if (!token) {
+    return res.status(401).json({
+      message: "Brak tokena",
+    });
   }
 
-  const token = authHeader.split(" ")[1];
-
   try {
-    const decoded = jwt.verify(
-      token as string,
-      process.env.JWT_ACCESS_SECRET as string,
-    );
+    const decoded: any = jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
 
-    if (typeof decoded === "string") {
-  
-      return res.status(403).json({ message: "Nieprawidłowy token" });
-    }
-
-    const user = decoded as JwtUserPayload;
-
-    req.user = {
-      id: user.id,
-      role: user.role,
-    };
+    req.user = decoded;
 
     next();
-  } catch (error) {
-    return res.status(403).json({ message: "Nieprawidłowy token" });
+  } catch (err) {
+    return res.status(401).json({
+      message: "Token wygasł",
+    });
   }
 };

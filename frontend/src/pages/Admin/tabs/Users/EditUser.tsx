@@ -9,9 +9,9 @@ import {
 } from "../../../../schemas/editUserAdminSchema";
 
 const EditUser = ({ user, onSuccess, onBack }: any) => {
-  const { token } = useAuth();
 
-  const { editUser } = useAdmin(token!);
+
+  const { editUser } = useAdmin();
 
   const {
     register,

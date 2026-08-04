@@ -6,15 +6,13 @@ import {
   type ChangePasswordSchema,
 } from "../../../schemas/seciuritySchema";
 import { useEditUserSecurity } from "../../../hooks/useEditUserSeciurity";
-
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
 const Security = () => {
-  const [successMessage, setSuccessMessage] = useState("");
   const {
     register,
     handleSubmit,
@@ -35,7 +33,7 @@ const Security = () => {
       isLoading,
       data: { result: passwordUpdatedAt } = { result: null },
     },
-    editPasswordMutation: { mutate, isSuccess, isError, error },
+    editPasswordMutation: { mutate, error },
   } = useEditUserSecurity();
 
   const navigate = useNavigate();
@@ -46,12 +44,7 @@ const Security = () => {
         toast.success(
           "Hasło zostało pomyślnie zmienione. Za chwilę nastąpi wylogowanie..."
         );
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("refreshToken");
-
+  
         queryClient.clear();
         setTimeout(() => {
           logout();

@@ -1,5 +1,5 @@
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import axios from "../../axios";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -7,20 +7,12 @@ import { socket } from "../../socket";
 
 const ChatWindow = ({ conversation }: any) => {
   const [message, setMessage] = useState("");
-  const { user, token } = useAuth();
+  const { user } = useAuth();
 
   const queryClient = useQueryClient();
 
   const markAsRead = async () => {
-    await axios.patch(
-      `/api/socket/messages/read/${conversation.id}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    await axios.patch(`/api/socket/messages/read/${conversation.id}`, {});
 
     queryClient.invalidateQueries({
       queryKey: ["unreadMessages"],
@@ -38,12 +30,7 @@ const ChatWindow = ({ conversation }: any) => {
 
     queryFn: async () => {
       const { data } = await axios.get(
-        `/api/socket/conversations/${conversation.id}/messages`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `/api/socket/conversations/${conversation.id}/messages`
       );
 
       return data;
@@ -101,9 +88,7 @@ const ChatWindow = ({ conversation }: any) => {
     : conversation.shop_name;
   return (
     <div className="flex flex-col flex-1">
-      <div className="p-5 font-bold border-b border-gray-300">
-        {name}
-      </div>
+      <div className="p-5 font-bold border-b border-gray-300">{name}</div>
 
       <div className="flex-1 p-5 space-y-3 overflow-y-auto">
         {isLoading ? (

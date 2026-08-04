@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../../axios";
 import { useQuery } from "@tanstack/react-query";
 import { Star } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";

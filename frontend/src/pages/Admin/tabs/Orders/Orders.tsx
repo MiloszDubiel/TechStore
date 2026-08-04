@@ -6,14 +6,14 @@ import EditOrder from "./EditOrder";
 import Pagination from "../../../../components/ui/Pagination";
 
 const Orders = () => {
-  const { token } = useAuth();
+
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState<any | null>(null);
 
   const {
     orders: { data = [] },
-  } = useAdmin(token!, {
+  } = useAdmin( {
     page: page,
     limit: 10,
     search,

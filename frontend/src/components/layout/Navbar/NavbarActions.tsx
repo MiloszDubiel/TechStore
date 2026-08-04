@@ -25,7 +25,9 @@ const NavbarActions = ({
   const { notifications, notificationData = [] } = useNotification();
   const { favorites = [] } = useFavorite();
 
-  const { unreadMessages } = useChat(user?.token, user);
+  const {
+    unreadMessages: { data },
+  } = useChat();
 
   return (
     <div className="flex items-center gap-6">
@@ -58,9 +60,9 @@ const NavbarActions = ({
         <div className=" relative">
           <Link to="/chat">
             <MessageCircle className="cursor-pointer" />
-            {unreadMessages?.data > 0 && (
+            {data > 0 && (
               <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white">
-                {unreadMessages?.data}
+                {data}
               </div>
             )}
           </Link>

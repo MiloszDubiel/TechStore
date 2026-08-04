@@ -1,6 +1,6 @@
 import Navbar from "../../components/layout/Navbar/Navbar";
 import { useMemo, useState } from "react";
-import axios from "axios";
+import axios from "../../axios";
 import OfferCard from "../../components/ui/OffersCard";
 import Pagination from "../../components/ui/Pagination";
 import { useSearchParams } from "react-router-dom";

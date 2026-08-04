@@ -24,15 +24,28 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Podaj email oraz hasło",
-      });
-    }
+    const { accessToken, refreshToken, user } = await loginUser(
+      email,
+      password,
+    );
 
-    const result = await loginUser(email, password);
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
+    });
 
-    res.json(result);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+      user,
+    });
   } catch (error: any) {
     res.status(400).json({
       message: error.message,

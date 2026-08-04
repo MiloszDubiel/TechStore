@@ -1,15 +1,15 @@
 import { Edit, Eye, EyeOff, Trash2 } from "lucide-react";
 
 import { useState } from "react";
-import { useAuth } from "../../../../context/AuthContext";
+
 import { useAdmin } from "../../../../hooks/useAdmin";
 import ConfirmModal from "../../../../components/ui/ConfirmModal";
 import Pagination from "../../../../components/ui/Pagination";
 
 import EditProduct from "./EditProduct";
-import { da } from "zod/v4/locales";
+
 const Products = () => {
-  const { token } = useAuth();
+
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -26,7 +26,7 @@ const Products = () => {
     hideProduct,
     showProduct,
     deleteProduct,
-  } = useAdmin(token!, {
+  } = useAdmin( {
     page: page,
     limit: 10,
     search,

@@ -27,14 +27,14 @@ const Users = () => {
 
   const [onConfirm, setOnConfirm] = useState<(() => void) | undefined>();
 
-  const { token } = useAuth();
+ 
 
   const {
     users: { data },
     activeUser,
     BanUser,
     updateSeller,
-  } = useAdmin(token!, {
+  } = useAdmin( {
     page: page,
     limit: 10,
     search,
