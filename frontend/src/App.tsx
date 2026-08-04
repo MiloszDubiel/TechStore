@@ -27,10 +27,29 @@ import {
 import BecomeSellerPage from "./pages/SellerPage/BecomeSellerPage";
 import SellerDashboard from "./pages/SellerPage/SellerDashboardPage/SellerDashboard";
 import SellerPage from "./pages/SellerPage/SellerPage";
-
+import { useAuth } from "./context/AuthContext";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 
 const AppContent = () => {
+  const { isLoggingOut } = useAuth();
+
+  if (isLoggingOut) {
+    return (
+      <>
+        {isLoggingOut && (
+          <div className=" bg-black/40 fixed inset-0 z-50 flex items-center justify-center">
+            <div className=" rounded-xl flex flex-col items-center gap-3 p-6 bg-white shadow-lg">
+              <div className=" border-t-transparent animate-spin w-10 h-10 border-4 border-orange-500 rounded-full" />
+
+              <p>Wylogowywanie...</p>
+            </div>
+          </div>
+        )}
+
+        <App />
+      </>
+    );
+  }
   return (
     <BrowserRouter>
       <div className="flex flex-col min-h-screen">
@@ -133,7 +152,6 @@ const AppContent = () => {
     </BrowserRouter>
   );
 };
-
 const App: React.FC = () => {
   return (
     <AuthProvider>
@@ -149,5 +167,4 @@ const App: React.FC = () => {
     </AuthProvider>
   );
 };
-
 export default App;

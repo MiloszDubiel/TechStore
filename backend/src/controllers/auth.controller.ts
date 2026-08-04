@@ -69,14 +69,24 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const { refreshToken } = req.body;
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
 
-    const result = await logoutUser(refreshToken);
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+    });
 
-    res.json(result);
-  } catch (error: any) {
+    res.status(200).json({
+      message: "Wylogowano pomyślnie",
+    });
+  } catch (error) {
     res.status(500).json({
-      message: error.message,
+      message: "Błąd wylogowania",
     });
   }
 };

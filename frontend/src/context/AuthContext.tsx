@@ -20,6 +20,7 @@ type AuthContextType = {
   logout: () => any;
   isAuthenticated: boolean;
   isPending: boolean;
+  isLoggingOut: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -29,8 +30,7 @@ export const AuthProvider: React.FC<{
 }> = ({ children }) => {
   const queryClient = useQueryClient();
 
-  const logoutMutation = useLogout();
-
+  const { mutate: logoutMutation, isPending: isLoggingOut } = useLogout();
 
   const { data: user, isPending } = useUser();
 
@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<{
   };
 
   const logout = () => {
-    logoutMutation.mutate(undefined, {
+    logoutMutation(undefined, {
       onSuccess: () => {
         queryClient.clear();
 
@@ -85,6 +85,7 @@ export const AuthProvider: React.FC<{
         logout,
         isAuthenticated: !!user,
         isPending,
+        isLoggingOut,
       }}
     >
       {children}
