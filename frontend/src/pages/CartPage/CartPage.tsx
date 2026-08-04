@@ -20,8 +20,7 @@ const CartPage = () => {
     [cart]
   );
 
-  console.log(cart);
-
+ 
   return (
     <>
       <Navbar />

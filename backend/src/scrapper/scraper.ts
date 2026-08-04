@@ -150,7 +150,7 @@ export async function scrapeMediaMarkt() {
               subcategoryId: category.subcategoryId,
             });
 
-            console.log(`${product.name}`);
+          
           } catch (err) {
             console.error(`Błąd produktu: ${product.link}`);
             console.error(err);

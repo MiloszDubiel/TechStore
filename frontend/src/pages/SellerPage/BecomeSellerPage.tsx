@@ -37,8 +37,6 @@ const BecomeSellerForm = () => {
 
     formData.append("user_id", String(user!.id));
 
-    console.log([...formData]);
-
     createProfile.mutate(formData, {
       onSuccess: () => {
         queryClient.invalidateQueries({

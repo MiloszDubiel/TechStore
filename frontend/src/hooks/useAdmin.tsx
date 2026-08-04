@@ -21,7 +21,7 @@ import {
 
 export const useAdmin = (
   token: string,
-  params: {
+  params?: {
     page: number;
     limit: number;
     search: string;
@@ -30,25 +30,25 @@ export const useAdmin = (
   const queryClient = useQueryClient();
 
   const users = useQuery({
-    queryKey: ["admin-users", params.page, params.limit, params.search],
+    queryKey: ["admin-users", params?.page, params?.limit, params?.search],
 
     queryFn: () => {
       return getUsers(token, {
-        page: params.page,
-        limit: params.limit,
-        search: params.search,
+        page: params?.page,
+        limit: params?.limit,
+        search: params?.search,
       });
     },
   });
 
   const orders = useQuery({
-    queryKey: ["admin-orders", params.page, params.limit, params.search],
+    queryKey: ["admin-orders", params?.page, params?.limit, params?.search],
 
     queryFn: () =>
       getOrders(token, {
-        page: params.page,
-        limit: params.limit,
-        search: params.search,
+        page: params?.page,
+        limit: params?.limit,
+        search: params?.search,
       }),
   });
 
@@ -122,13 +122,13 @@ export const useAdmin = (
     },
   });
   const products = useQuery({
-    queryKey: ["admin-products", params.page, params.limit, params.search],
+    queryKey: ["admin-products", params?.page, params?.limit, params?.search],
 
     queryFn: () =>
       getAdminProducts(token, {
-        page: params.page,
-        limit: params.limit,
-        search: params.search,
+        page: params?.page,
+        limit: params?.limit,
+        search: params?.search,
       }),
 
     enabled: !!token,

@@ -93,7 +93,7 @@ export default function CheckoutLayout() {
     }
   };
 
-  console.log(step);
+
 
   return (
     <>

@@ -5,8 +5,6 @@ export const verifyAdmin = (
   res: Response,
   next: NextFunction,
 ) => {
-  console.log(req.user);
-
   try {
     if (!req.user) {
       return res.status(401).json({

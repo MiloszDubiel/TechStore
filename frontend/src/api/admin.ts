@@ -5,9 +5,9 @@ const API = "/api/admin";
 export const getUsers = async (
   token: string,
   params?: {
-    page: number;
-    limit: number;
-    search: string;
+    page: number | undefined;
+    limit: number | undefined;
+    search: string | undefined;
   }
 ) => {
   const { data } = await axios.get(`${API}/users`, {
@@ -23,9 +23,9 @@ export const getUsers = async (
 export const getOrders = async (
   token: string,
   params?: {
-    page: number;
-    limit: number;
-    search: string;
+    page: number | undefined;
+    limit: number | undefined;
+    search: string | undefined;
   }
 ) => {
   const { data } = await axios.get(`${API}/orders`, {
@@ -116,8 +116,6 @@ export const updateUserRole = async (
 };
 
 export const updateUser = async (data: any, token: string) => {
-  console.log(data);
-
   const response = await axios.patch(`${API}/users/${data.id}`, data, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -139,9 +137,9 @@ export const unactiveUser = async (id: any, token: string) => {
 export const getAdminProducts = async (
   token: string,
   params?: {
-    page: number;
-    limit: number;
-    search: string;
+    page: number | undefined;
+    limit: number | undefined;
+    search: string | undefined;
   }
 ) => {
   const { data } = await axios.get(`${API}/products`, {

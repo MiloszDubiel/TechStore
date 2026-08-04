@@ -1,15 +1,15 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import Navbar from "../layout/Navbar/Navbar";
-import ReviewsList from "../layout/ReviewList";
-import AddReview from "./AddReview";
+import Navbar from "../../components/layout/Navbar/Navbar";
+import ReviewsList from "../../components/layout/ReviewList";
+import AddReview from "../../components/ui/AddReview";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCartStore } from "../../zustand/states/cartState";
 import { ShoppingCart, Store } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { Edit, Flag } from "lucide-react";
-import ReportOffer from "./ReportOffert";
+import ReportOffer from "../../components/ui/ReportOffert";
 import { toast } from "react-toastify";
 
 const OfferDetails = () => {

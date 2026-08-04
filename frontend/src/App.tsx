@@ -7,7 +7,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import Footer from "./components/layout/Footer";
 import CartPage from "./pages/CartPage/CartPage";
-import OfferDetails from "./components/ui/OfertDetails";
+import OfferDetails from "./pages/OfferDetails/OfferDetails";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import CheckoutLayout from "./pages/CartPage/checkout/CheckoutLayout";
 import Chat from "./pages/ChatPage/Chat";

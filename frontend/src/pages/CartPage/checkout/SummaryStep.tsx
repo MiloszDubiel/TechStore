@@ -38,7 +38,6 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     let user_id = user?.id || null;
     if (checkoutData.customer?.email != user?.email) user_id = null;
 
-    console.log({ ...checkoutData, user_id: user?.id });
 
     mutate({
       ...checkoutData,
@@ -59,8 +58,6 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       }),
 
     onSuccess: (response) => {
-      console.log("Zamówienie utworzone", response.data);
-
       clearCart();
 
       setIsComplete(true);
@@ -70,7 +67,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     },
 
     onError: (error: any) => {
-      console.log(
+      toast.error(
         error.response?.data?.message ?? "Nie udało się utworzyć zamówienia"
       );
     },

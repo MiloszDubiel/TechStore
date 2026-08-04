@@ -18,7 +18,11 @@ import http from "http";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  }),
+);
 
 app.use(express.json());
 
@@ -40,6 +44,10 @@ const server = http.createServer(app);
 initSocket(server);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
+// server.listen(5000, "0.0.0.0", () => {
+//   console.log("HTTP + Socket.IO działa na porcie 5000");
+// }); //Dla Dockera
 
 server.listen(5000, () => {
   console.log("HTTP + Socket.IO działa na porcie 5000");

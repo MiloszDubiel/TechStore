@@ -93,11 +93,16 @@ const ChatWindow = ({ conversation }: any) => {
       </div>
     );
   }
-
+  const isSeller = user?.id === conversation.seller_id;
+  const name = isSeller
+    ? `${conversation.buyer_first_name} ${
+        conversation.buyer_last_name || "Klient"
+      }`
+    : conversation.shop_name;
   return (
     <div className="flex flex-col flex-1">
       <div className="p-5 font-bold border-b border-gray-300">
-        {conversation.name}
+        {name}
       </div>
 
       <div className="flex-1 p-5 space-y-3 overflow-y-auto">

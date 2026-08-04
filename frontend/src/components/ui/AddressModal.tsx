@@ -41,16 +41,12 @@ export default function AddressModal({
 
   const onSubmit = (data: AddressFrom) => {
     if (isEdited) {
-      console.log(data);
       updateAddress({ ...data, aid: defaultValues.aid });
     } else {
       saveAddress(data);
     }
   };
 
-  const onError = (errors: any) => {
-    console.log("ERRORS", errors);
-  };
   return (
     <div className="bg-black/50 fixed inset-0 z-10 flex items-center justify-center">
       <div className="bg-black/50 fixed inset-0 flex items-center justify-center">
@@ -59,7 +55,7 @@ export default function AddressModal({
 
           <form
             onSubmit={(e) => {
-              handleSubmit(onSubmit, onError)(e);
+              handleSubmit(onSubmit)(e);
             }}
             className="space-y-4"
           >

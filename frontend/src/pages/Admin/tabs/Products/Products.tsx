@@ -32,8 +32,6 @@ const Products = () => {
     search,
   });
 
-  console.log(data);
-
   const productList = data?.products ?? [];
 
   if (editingProduct) {

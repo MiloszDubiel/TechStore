@@ -22,7 +22,6 @@ export const insertReview = async (
 };
 
 export const getProductRev = async (productId: string | number) => {
-  console.log(productId);
   const [result] = await connection.query(
     `
     SELECT r.*, u.email

@@ -37,7 +37,7 @@ const OffersList = () => {
 
   const products = data?.products ?? [];
 
-  console.log();
+
 
   const sortedProducts = useMemo(() => {
     return [...products].sort((a, b) => {

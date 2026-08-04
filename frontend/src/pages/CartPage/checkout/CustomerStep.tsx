@@ -62,9 +62,6 @@ export default function CustomerStep({ next }: Props) {
     next();
   };
 
-  const onError = (errors: any) => {
-    console.log("Form submission errors:", errors);
-  };
 
   return (
     <div>
@@ -148,7 +145,7 @@ export default function CustomerStep({ next }: Props) {
           </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
             <label className=" block mb-1 text-sm font-medium">Imię</label>
 

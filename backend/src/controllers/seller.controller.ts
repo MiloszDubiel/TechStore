@@ -373,13 +373,10 @@ export const updateProduct = async (req: Request, res: Response) => {
 
 export const getSellerData = async (req: Request, res: Response) => {
   try {
-    console.log("PARAM:", req.params.id);
-
     const userId = Number(req.params.id);
 
     const seller = await getSellerByUserIdService(userId);
 
-    console.log("SELLER:", seller);
     if (!seller) {
       return res.status(404).json({
         message: "Sklep nie istnieje",

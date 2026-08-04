@@ -13,9 +13,9 @@ type Props = {
 const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
   const { user, token } = useAuth();
   const queryClient = useQueryClient();
-  const {
-    conversations: { data: conversations, isSuccess },
-  } = useChat(token!, user);
+  const { conversations } = useChat();
+
+  const { data: conversationsData, isSuccess } = conversations(user, token!);
 
   const { mutate } = useMutation({
     mutationFn: (data: any) =>
@@ -28,7 +28,7 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
 
   useEffect(() => {
     if (!isSuccess || !seller_id) return;
-    const conversation = conversations?.find(
+    const conversation = conversationsData?.find(
       (c: any) => c.seller_id === Number(seller_id)
     );
 
@@ -44,24 +44,26 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
           onSelect(data);
 
           queryClient.invalidateQueries({
-            queryKey: ["conversations", user?.id],
+            queryKey: ["conversations", user?.id, "unreadMessages"],
           });
         },
       }
     );
-  }, [seller_id, conversations]);
+  }, [seller_id, conversationsData?.id]);
 
   return (
     <div className="w-80 border-r border-gray-300">
       <h2 className="p-5 text-xl font-bold">Wiadomości</h2>
 
-      {conversations?.length > 0 ? (
-        conversations.map((c: any) => {
+      {conversationsData?.length > 0 ? (
+        conversationsData.map((c: any) => {
           const isSeller = user?.id === c.seller_id;
 
           const name = isSeller
             ? `${c.buyer_first_name} ${c.buyer_last_name || "Klient"}`
             : c.shop_name;
+
+        
 
           const avatar = isSeller ? null : c.logo;
 
@@ -101,7 +103,7 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
                 <div className="flex items-center justify-between">
                   <p className="font-semibold truncate">{name}</p>
 
-                  {Number(c.unread_count) > 0 && (
+                  {Number(c.unread_count) > 0 && selected?.id !== c.id && (
                     <span className="w-3 h-3 bg-orange-500 rounded-full" />
                   )}
                 </div>

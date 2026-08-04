@@ -6,7 +6,6 @@ const storageSellerLogo = multer.diskStorage({
   destination: (req: any, file, cb) => {
     const userId = req.params.id || req.user.id;
 
-
     const uploadPath = path.join("uploads", "sellers", String(userId));
 
     fs.mkdirSync(uploadPath, {
@@ -43,8 +42,6 @@ export const uploadSellerLogo = multer({
 
 const storage = multer.diskStorage({
   destination: (req: any, file, cb) => {
-    console.log(req.query);
-
     const sellerId = Number(req.body.seller_id || req.user.id);
     const productId = Number(req.params.id);
 
@@ -54,8 +51,6 @@ const storage = multer.diskStorage({
       String(sellerId),
       String(productId),
     );
-
-    console.log("FOLDER:", folder);
 
     fs.mkdirSync(folder, {
       recursive: true,
@@ -68,8 +63,6 @@ const storage = multer.diskStorage({
     const ext = path.extname(file.originalname);
 
     const filename = `${Date.now()}-${Math.round(Math.random() * 999999)}${ext}`;
-
-    console.log("FILENAME:", filename);
 
     cb(null, filename);
   },

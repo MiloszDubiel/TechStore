@@ -21,8 +21,6 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
 
   const { data: order, isLoading } = getOrderDetails(orderId);
 
-  console.log(order);
-
   const [status, setStatus] = useState(order?.status);
 
   const clientQuery = useQueryClient();

@@ -41,8 +41,6 @@ const lockers: LockerData[] = [
 export default function ParcelLockerMap() {
   const { updateCheckout, checkoutData } = useCheckout();
 
-  console.log(checkoutData);
-
   return (
     <div className="mt-6">
       <h3 className="mb-3 font-semibold">Wybierz paczkomat</h3>

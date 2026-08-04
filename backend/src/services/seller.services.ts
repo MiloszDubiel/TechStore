@@ -593,8 +593,6 @@ export const updateProductImages = async (
     return [];
   }
 
-  console.log(images);
-
   const values = images.map((file, index) => [
     productId,
 

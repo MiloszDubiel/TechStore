@@ -286,7 +286,7 @@ export const getCurrtentProdcutByID = async (id: string) => {
 
 export const saveOrderToDB = async (data: any) => {
   const conn = await connection.getConnection();
-  console.log(data);
+
 
   try {
     await conn.beginTransaction();

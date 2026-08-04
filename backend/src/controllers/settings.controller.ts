@@ -78,8 +78,6 @@ export const updateAdresses = async (req: Request, res: Response) => {
 
     const { street, postal_code, city, is_default, aid } = req.body;
 
-    console.log(id);
-
     if (!id) {
       return res.status(400).json({
         success: false,
@@ -233,7 +231,7 @@ export const getPasswordUpdatedAt = async (req: Request, res: Response) => {
 
     const result = await getPassword(userId);
 
-    console.log("Data ostatniej zmiany hasła:", result.passwordUpdatedAt);
+    
     return res.status(200).json({
       message: "Data ostatniej zmiany hasła",
       result: result.passwordUpdatedAt,

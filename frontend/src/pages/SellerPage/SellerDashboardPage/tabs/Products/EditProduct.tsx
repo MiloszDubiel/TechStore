@@ -13,8 +13,6 @@ type Props = {
 const EditProduct = ({ product, onBack }: Props) => {
   const [removedImages, setRemovedImages] = useState<string[]>([]);
 
-  console.log(product);
-
   const {
     getCategories: { data: categories = [] },
     getSubcategories: { data: subcategories = [] },
@@ -67,8 +65,6 @@ const EditProduct = ({ product, onBack }: Props) => {
         }}
         onSubmit={(data) => {
           const formData = new FormData();
-
-          console.log(data);
 
           formData.append("name", data.name);
           formData.append("description", data.description);

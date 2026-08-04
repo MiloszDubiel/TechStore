@@ -38,7 +38,7 @@ const ProductEditForm = ({ product, onBack }: any) => {
     );
   };
 
-  console.log(product);
+
   const onSubmit = (data: any) => {
     const formData = new FormData();
 

@@ -8,8 +8,6 @@ const Orders = () => {
   const { token } = useAuth();
   const { data: orders, isLoading } = useOrders(token);
 
-  console.log(orders);
-
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
 
   if (selectedOrder) {
@@ -17,12 +15,9 @@ const Orders = () => {
       <OrderDetails id={selectedOrder} onBack={() => setSelectedOrder(null)} />
     );
   }
-
   if (isLoading) {
     return <p>Ładowanie...</p>;
   }
-
-  
   return (
     <>
       <h2 className="mb-6 text-2xl font-bold">Moje zamówienia</h2>
