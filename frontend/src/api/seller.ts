@@ -1,11 +1,9 @@
-import axios from "../axios";
+import {api} from "../axios";
 
 const API = "http://localhost:5000/api/seller";
 
-
-
 export const getProducts = async (params: any) => {
-  const { data } = await axios.get(`${API}/products`, {
+  const { data } = await api.get(`${API}/products`, {
     params,
   });
 
@@ -13,25 +11,25 @@ export const getProducts = async (params: any) => {
 };
 
 export const getProductsByID = async (id: number) => {
-  const { data } = await axios.get(`${API}/products/${id}`, {});
+  const { data } = await api.get(`${API}/products/${id}`, {});
 
   return data;
 };
 
 export const getSellerOverview = async () => {
-  const { data } = await axios.get(`${API}/dashboard/overview`, {});
+  const { data } = await api.get(`${API}/dashboard/overview`, {});
 
   return data;
 };
 
 export const addProduct = async (product: any) => {
-  const { data } = await axios.post(`${API}/products`, product, {});
+  const { data } = await api.post(`${API}/products`, product, {});
 
   return data;
 };
 
 export const getCategories = async () => {
-  const { data } = await axios.get(
+  const { data } = await api.get(
     `http://localhost:5000/api/products/categories`
   );
 
@@ -39,17 +37,17 @@ export const getCategories = async () => {
 };
 
 export const uploadImage = async (productId: string, formData: FormData) => {
-  axios.post(`${API}/products/${productId}/images`, formData, {});
+  api.post(`${API}/products/${productId}/images`, formData, {});
 };
 
 export const getCompanyInfo = async () => {
-  const { data } = await axios.get(`${API}/get-my-profile`);
+  const { data } = await api.get(`${API}/get-my-profile`);
 
   return data.profile;
 };
 
 export const getSubcategories = async () => {
-  const { data } = await axios.get(
+  const { data } = await api.get(
     `http://localhost:5000/api/products/subcategories`
   );
 
@@ -57,7 +55,7 @@ export const getSubcategories = async () => {
 };
 
 export const createStore = async (storeData: FormData) => {
-  const { data } = await axios.post(`${API}/create`, storeData);
+  const { data } = await api.post(`${API}/create`, storeData);
 
   return data;
 };
@@ -69,19 +67,19 @@ export const updateProduct = async ({
   id: number;
   product: any;
 }) => {
-  const { data } = await axios.patch(`${API}/products/${id}`, product);
+  const { data } = await api.patch(`${API}/products/${id}`, product);
 
   return data;
 };
 
 export const deleteProduct = async (id: number) => {
-  const { data } = await axios.delete(`${API}/products/${id}`);
+  const { data } = await api.delete(`${API}/products/${id}`);
 
   return data;
 };
 
 export const editProfile = async (data: FormData) => {
-  const response = await axios.patch(`${API}/edit-profile`, data, {
+  const response = await api.patch(`${API}/edit-profile`, data, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -91,7 +89,7 @@ export const editProfile = async (data: FormData) => {
 };
 
 export const getOrders = async () => {
-  const { data } = await axios.get(`${API}/orders`);
+  const { data } = await api.get(`${API}/orders`);
 
   return data;
 };
@@ -103,17 +101,12 @@ export const updateOrderStatus = async ({
   id: number;
   status: string;
 }) => {
-  const { data } = await axios.patch(
-    `${API}/orders/${id}/status`,
-    { status },
-
-  );
+  const { data } = await api.patch(`${API}/orders/${id}/status`, { status });
 
   return data;
 };
 export const getOrderDetails = async (id: number) => {
-  const { data } = await axios.get(`${API}/orders/${id}`, 
-  );
+  const { data } = await api.get(`${API}/orders/${id}`);
 
   return data;
 };

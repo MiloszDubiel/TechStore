@@ -1,18 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "../axios";
+import {api} from "../axios";
 
 const useAdresses = (userID: string | unknown) => {
   const queryClient = useQueryClient();
 
   const { data } = useQuery({
     queryKey: ["adressess", userID],
-    queryFn: async () => await axios.get(`/api/settings/edit-user/adresses/`),
+    queryFn: async () => await api.get(`/api/settings/edit-user/adresses/`),
   });
 
   const { mutate: saveAddress, isSuccess: addressSetSuccess } = useMutation({
     mutationKey: ["save-address"],
     mutationFn: async (data) =>
-      await axios.post("/api/settings/edit-user/adresses", data),
+      await api.post("/api/settings/edit-user/adresses", data),
 
     onSuccess: (response) => {
       queryClient.invalidateQueries({
@@ -27,7 +27,7 @@ const useAdresses = (userID: string | unknown) => {
     useMutation({
       mutationKey: ["update-address"],
       mutationFn: async (data) =>
-        await axios.patch("/api/settings/edit-user/adresses", data),
+        await api.patch("/api/settings/edit-user/adresses", data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
       },
@@ -37,7 +37,7 @@ const useAdresses = (userID: string | unknown) => {
     useMutation({
       mutationKey: ["delete-address"],
       mutationFn: async (id: string) =>
-        await axios.delete(`/api/settings/edit-user/adresses/${id}`),
+        await api.delete(`/api/settings/edit-user/adresses/${id}`),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
       },

@@ -1,31 +1,30 @@
 # Fullstack E-commerce
 
-Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności FullStack Web Development  
-
+Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności FullStack Web Development
 
 ## Funkcjonalności
 
 ### Użytkownik
 
-* Rejestracja i logowanie użytkowników
-* Autoryzacja z wykorzystaniem JWT
-* Zarządzanie profilem użytkownika
-* Przeglądanie produktów
-* Wyszukiwanie i filtrowanie produktów
-* Sortowanie produktów
-* Szczegóły produktu
-* Dodawanie produktów do koszyka
-* Zarządzanie zawartością koszyka
-* Składanie zamówień
-* Historia zamówień
+- Rejestracja i logowanie użytkowników
+- Autoryzacja z wykorzystaniem JWT
+- Zarządzanie profilem użytkownika
+- Przeglądanie produktów
+- Wyszukiwanie i filtrowanie produktów
+- Sortowanie produktów
+- Szczegóły produktu
+- Dodawanie produktów do koszyka
+- Zarządzanie zawartością koszyka
+- Składanie zamówień
+- Historia zamówień
 
 ### Administrator
 
-* Zarządzanie produktami (CRUD)
-* Zarządzanie kategoriami
-* Zarządzanie użytkownikami
-* Zarządzanie zamówieniami
-* Dashboard z podstawowymi statystykami
+- Zarządzanie produktami (CRUD)
+- Zarządzanie kategoriami
+- Zarządzanie użytkownikami
+- Zarządzanie zamówieniami
+- Dashboard z podstawowymi statystykami
 
 ---
 
@@ -33,25 +32,25 @@ Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzysta
 
 ### Frontend
 
-* React
-* TypeScript
-* React Router
-* TanStack Query
-* Axios
-* React Hook Form 
-* Zod
-* Tailwind CSS
+- React
+- TypeScript
+- React Router
+- TanStack Query
+- axios
+- React Hook Form
+- Zod
+- Tailwind CSS
 
 ### Backend
 
-* Node.js
-* Express.js
-* TypeScript
-* MySQL
-* JWT Authentication
-* bcrypt
-* Multer
-* CORS
+- Node.js
+- Express.js
+- TypeScript
+- MySQL
+- JWT Authentication
+- bcrypt
+- Multer
+- CORS
 
 ---
 
@@ -60,8 +59,8 @@ Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzysta
 ```text
 fullstack-ecommerce/
 │
-├── frontend/          
-├── backend/         
+├── frontend/
+├── backend/
 └── README.md
 ```
 
@@ -110,19 +109,19 @@ cd fullstack-ecommerce
 ```bash
 docker compose up --build
 ```
-### 4. Przejdź na [http://localhost:5173](http://localhost:5173/)
 
+### 4. Przejdź na [http://localhost:5173](http://localhost:5173/)
 
 ---
 
 ## 📌 Planowane funkcjonalności
 
-* Integracja płatności (Stripe)
-* Powiadomienia e-mail
-* Wyszukiwarka z podpowiedziami
-* Dashboard sprzedaży
-* Dark Mode
-* CI/CD (GitHub Actions)
+- Integracja płatności (Stripe)
+- Powiadomienia e-mail
+- Wyszukiwarka z podpowiedziami
+- Dashboard sprzedaży
+- Dark Mode
+- CI/CD (GitHub Actions)
 
 ---
 
@@ -130,14 +129,11 @@ docker compose up --build
 
 Celem projektu jest stworzenie kompletnej aplikacji e-commerce z wykorzystaniem nowoczesnych technologii, takich jak:
 
-* architektura warstwowa,
-* REST API,
-* walidacja danych,
-* autoryzacja i uwierzytelnianie,
-* obsługa błędów,
-* bezpieczne przechowywanie danych,
-* optymalizacja wydajności,
-* responsywny interfejs użytkownika.
-
-
-
+- architektura warstwowa,
+- REST API,
+- walidacja danych,
+- autoryzacja i uwierzytelnianie,
+- obsługa błędów,
+- bezpieczne przechowywanie danych,
+- optymalizacja wydajności,
+- responsywny interfejs użytkownika.

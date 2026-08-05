@@ -1,4 +1,4 @@
-import axios from "../../axios";
+import { api } from "../../axios";
 import { useQuery } from "@tanstack/react-query";
 import { Star } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -10,13 +10,11 @@ const ReviewsList = ({ productId }: { productId: string }) => {
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ["reviews", productId],
     queryFn: async () => {
-      const res = await axios.get(`/api/reviews/product/${productId}`);
+      const res = await api.get(`/api/reviews/product/${productId}`);
 
       return Array.isArray(res.data) ? res.data : [];
     },
   });
-
- 
 
   if (isLoading) {
     return (
@@ -77,7 +75,7 @@ const ReviewsList = ({ productId }: { productId: string }) => {
           )}
 
           {user?.role === "SELLER" && !review.seller_reply && (
-            <SellerReply reviewId={review.id}  />
+            <SellerReply reviewId={review.id} />
           )}
         </div>
       ))}

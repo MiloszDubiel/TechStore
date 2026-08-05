@@ -3,7 +3,7 @@ import { GrayButton } from "../../../components/ui/Buttons";
 import { useCheckout } from "../../../context/CheckoutContext";
 import { useCartStore } from "../../../zustand/states/cartState";
 import { useState } from "react";
-import axios from "../../../axios";
+import {api} from "../../../axios";
 import { useAuth } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
 
@@ -18,7 +18,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
   const { checkoutData, setIsComplete } = useCheckout();
   const cartItems = useCartStore((state) => state.cart);
   const clearCart = useCartStore((state) => state.clearCart);
-  const { user} = useAuth();
+  const { user } = useAuth();
   const [orderCompleted] = useState(false);
 
   const productsPrice = cartItems.reduce(
@@ -38,7 +38,6 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     let user_id = user?.id || null;
     if (checkoutData.customer?.email != user?.email) user_id = null;
 
-
     mutate({
       ...checkoutData,
 
@@ -50,8 +49,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
   };
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (data: any) =>
-      axios.post("/api/products/products/order", data, ),
+    mutationFn: (data: any) => api.post("/api/products/products/order", data),
 
     onSuccess: (response) => {
       clearCart();

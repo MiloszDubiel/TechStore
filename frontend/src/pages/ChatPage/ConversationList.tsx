@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
-import axios from "../../axios";
+import { api } from "../../axios";
 import { useEffect } from "react";
 import { useChat } from "../../hooks/useChat";
 
@@ -11,15 +11,15 @@ type Props = {
 };
 
 const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
-  const { user,  } = useAuth();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const { conversations } = useChat();
 
-  const { data: conversationsData, isSuccess } = conversations(user, );
+  const { data: conversationsData, isSuccess } = conversations(user);
 
   const { mutate } = useMutation({
     mutationFn: (data: any) =>
-      axios.post("/api/socket/create-conversations", data,),
+      api.post("/api/socket/create-conversations", data),
   });
 
   useEffect(() => {
@@ -58,8 +58,6 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
           const name = isSeller
             ? `${c.buyer_first_name} ${c.buyer_last_name || "Klient"}`
             : c.shop_name;
-
-        
 
           const avatar = isSeller ? null : c.logo;
 

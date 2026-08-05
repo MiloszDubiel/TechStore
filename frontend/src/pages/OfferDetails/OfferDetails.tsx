@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import axios from "../../axios";
+import {api} from "../../axios";
 import Navbar from "../../components/layout/Navbar/Navbar";
 import ReviewsList from "../../components/layout/ReviewList";
 import AddReview from "../../components/ui/AddReview";
@@ -14,14 +14,14 @@ import { toast } from "react-toastify";
 
 const OfferDetails = () => {
   const { slug, id } = useParams();
-  const { user} = useAuth();
+  const { user } = useAuth();
   const [openReport, setOpenReport] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
 
   const addToCart = useCartStore((state) => state.addToCart);
 
   const fetchOffer = async () => {
-    const { data } = await axios.get(`/api/products/products/${slug}/${id}`);
+    const { data } = await api.get(`/api/products/products/${slug}/${id}`);
 
     return data;
   };
@@ -32,8 +32,7 @@ const OfferDetails = () => {
   });
 
   const { mutate: sendReport } = useMutation({
-    mutationFn: (data) =>
-      axios.post("/api/report/", data,),
+    mutationFn: (data) => api.post("/api/report/", data),
   });
 
   const getImages = () => {

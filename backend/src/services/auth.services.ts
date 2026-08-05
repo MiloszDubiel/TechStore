@@ -113,7 +113,13 @@ export const loginUser = async (email: string, password: string) => {
   return {
     accessToken,
     refreshToken,
-    user,
+    user: {
+      id: user.id,
+      name: user.name,
+      last_name: user.last_name,
+      role: user.role,
+      email: user.email,
+    },
   };
 };
 

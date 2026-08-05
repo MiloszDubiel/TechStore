@@ -2,7 +2,7 @@ import { createContext, useEffect, useContext, useState } from "react";
 import { socket } from "../socket";
 import { useAuth } from "./AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "../axios";
+import {api} from "../axios";
 import { toast } from "react-toastify";
 
 interface NotificationContextType {
@@ -24,7 +24,7 @@ export const NotificationProvider = ({ children }: any) => {
     queryKey: ["notifications", user?.id],
 
     queryFn: async () => {
-      const { data = [] } = await axios.get("/api/notification/");
+      const { data = [] } = await api.get("/api/notification/");
 
       return data;
     },
@@ -33,7 +33,7 @@ export const NotificationProvider = ({ children }: any) => {
   });
 
   const { mutate: setAsRead } = useMutation({
-    mutationFn: (id: number) => axios.patch(`/api/notification/${id}/read`, {}),
+    mutationFn: (id: number) => api.patch(`/api/notification/${id}/read`, {}),
     onSuccess: () => {
       toast.success("Zmieniono status powiadomienia");
       queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
@@ -41,7 +41,7 @@ export const NotificationProvider = ({ children }: any) => {
   });
 
   const { mutate: setAsDeleted } = useMutation({
-    mutationFn: (id: number) => axios.delete(`/api/notification/${id}/delete`),
+    mutationFn: (id: number) => api.delete(`/api/notification/${id}/delete`),
     onSuccess: () => {
       toast.success("Usunięto powidomienia ");
       queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });
@@ -49,7 +49,7 @@ export const NotificationProvider = ({ children }: any) => {
   });
 
   const { mutate: setAllAsRead } = useMutation({
-    mutationFn: () => axios.patch(`/api/notification/read-all`, {}),
+    mutationFn: () => api.patch(`/api/notification/read-all`, {}),
     onSuccess: () => {
       toast.success("Zmieniono status powiadomień");
       queryClient.invalidateQueries({ queryKey: ["notifications", user?.id] });

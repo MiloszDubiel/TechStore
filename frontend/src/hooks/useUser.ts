@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "../axios";
+import { api } from "../axios";
 
 const getUser = async () => {
-  const response = await axios.get("/api/auth/user");
+  const response = await api.get("/api/auth/user");
 
   return response.data;
 };

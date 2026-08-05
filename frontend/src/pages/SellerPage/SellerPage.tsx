@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import axios from "../../axios";
+import { api } from "../../axios";
 import { CheckCircle, Store, Edit } from "lucide-react";
 
 import Navbar from "../../components/layout/Navbar/Navbar";
@@ -13,7 +13,7 @@ const SellerPage = () => {
   const navigate = useNavigate();
 
   const fetchSeller = async () => {
-    const { data } = await axios.get(`/api/seller/${slug}/${user?.id}`);
+    const { data } = await  api .get(`/api/seller/${slug}/${user?.id}`);
 
     return data;
   };

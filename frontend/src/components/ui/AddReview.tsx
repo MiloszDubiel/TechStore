@@ -1,4 +1,4 @@
-import axios from "../../axios";
+import { api } from "../../axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
@@ -31,7 +31,7 @@ const AddReview = ({
     }
 
     try {
-      await axios.post("/api/reviews", {
+      await api.post("/api/reviews", {
         product_id: productId,
         rating,
         comment,

@@ -44,7 +44,7 @@ const Security = () => {
         toast.success(
           "Hasło zostało pomyślnie zmienione. Za chwilę nastąpi wylogowanie..."
         );
-  
+
         queryClient.clear();
         setTimeout(() => {
           logout();

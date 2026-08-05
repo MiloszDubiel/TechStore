@@ -1,6 +1,6 @@
 import Navbar from "../../components/layout/Navbar/Navbar";
 import { useMemo, useState } from "react";
-import axios from "../../axios";
+import { api } from "../../axios";
 import OfferCard from "../../components/ui/OffersCard";
 import Pagination from "../../components/ui/Pagination";
 import { useSearchParams } from "react-router-dom";
@@ -18,7 +18,7 @@ const OffersList = () => {
   const fetchProducts = async () => {
     const params = Object.fromEntries(searchParams.entries());
 
-    const res = await axios.get("/api/products/products", {
+    const res = await api .get("/api/products/products", {
       params: {
         ...params,
         limit: 10,
@@ -36,8 +36,6 @@ const OffersList = () => {
   });
 
   const products = data?.products ?? [];
-
-
 
   const sortedProducts = useMemo(() => {
     return [...products].sort((a, b) => {

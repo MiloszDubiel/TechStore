@@ -9,6 +9,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useSearchParams } from "react-router-dom";
 import { useCartStore } from "../../zustand/states/cartState";
 import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
 
 const LoginPage: React.FC = () => {
   const {
@@ -36,13 +37,12 @@ const LoginPage: React.FC = () => {
     (state: any) => state.removeSellerProducts
   );
 
+  const queryClient = useQueryClient();
+
   const onSubmit = (data: LoginFormData) => {
     mutate(data, {
       onSuccess: (response: any) => {
-        login(
-          response.accessToken,
-          response.refreshToken,
-        );
+        login(response.accessToken, response.refreshToken);
 
         removeSellerProducts(response.id);
 
@@ -53,6 +53,9 @@ const LoginPage: React.FC = () => {
           return;
         }
 
+        queryClient.refetchQueries({
+          queryKey: ["user"],
+        });
         navigate("/");
       },
     });

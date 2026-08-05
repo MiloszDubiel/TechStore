@@ -31,16 +31,16 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 900 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 604800 * 1000,
     });
 
     res.json({
@@ -93,19 +93,26 @@ export const logout = async (req: Request, res: Response) => {
 
 export const refresh = async (req: Request, res: Response) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Brak refresh tokena",
       });
     }
 
-    const result = await refreshUserToken(refreshToken);
+    const { accessToken } = await refreshUserToken(refreshToken);
 
-    res.json(result);
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 900 * 1000,
+    });
+
+    return res.sendStatus(204);
   } catch (error: any) {
-    res.status(403).json({
+    return res.status(401).json({
       message: error.message,
     });
   }

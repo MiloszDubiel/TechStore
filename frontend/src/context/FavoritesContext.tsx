@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react";
-import axios from "../axios";
+import { api } from "../axios";
 import { useAuth } from "./AuthContext";
 
 /*
@@ -32,9 +32,7 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
   const queryClient = useQueryClient();
 
   const fetchFavorites = async () => {
-    const res = await axios.get(
-      `/api/favorite/${user!.id}`,
-    );
+    const res = await api.get(`/api/favorite/${user!.id}`);
 
     return res.data;
   };
@@ -67,12 +65,9 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
   const toggleFavoriteMutation = useMutation({
     //mutationFn → funkcja która wykona request do backendu
     mutationFn: async (productId: string) => {
-      return axios.post(
-        `api/favorite/toggle/${productId}`,
-        {
-          userId: user!.id,
-        },
-      );
+      return api.post(`api/favorite/toggle/${productId}`, {
+        userId: user!.id,
+      });
     },
 
     //onSuccess → co zrobić gdy request się powiedzie - tutaj odświeżamy favorites

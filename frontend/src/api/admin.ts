@@ -1,4 +1,4 @@
-import axios from "../axios";
+import { api } from "../axios";
 
 const API = "/api/admin";
 
@@ -7,7 +7,7 @@ export const getUsers = async (params?: {
   limit: number | undefined;
   search: string | undefined;
 }) => {
-  const { data } = await axios.get(`${API}/users`, {
+  const { data } = await api.get(`${API}/users`, {
     params,
   });
 
@@ -19,7 +19,7 @@ export const getOrders = async (params?: {
   limit: number | undefined;
   search: string | undefined;
 }) => {
-  const { data } = await axios.get(`${API}/orders`, {
+  const { data } = await api.get(`${API}/orders`, {
     params,
   });
 
@@ -27,36 +27,36 @@ export const getOrders = async (params?: {
 };
 
 export const getAdminOrderDetailsApi = async (id: number) => {
-  const { data } = await axios.get(`${API}/orders/${id}`, {});
+  const { data } = await api.get(`${API}/orders/${id}`, {});
 
   return data;
 };
 
 export const updateAdminOrderStatus = async ({ id, status }: any) => {
-  const { data } = await axios.patch(`${API}/orders/${id}/status`, {
+  const { data } = await api.patch(`${API}/orders/${id}/status`, {
     status,
   });
 
   return data;
 };
 export const deleteUser = async (id: number) => {
-  const { data } = await axios.delete(`${API}/users/${id}`, {});
+  const { data } = await api.delete(`${API}/users/${id}`, {});
 
   return data;
 };
 export const banUser = async (id: number) => {
-  const { data } = await axios.patch(`${API}/users/ban/${id}/`, null, {});
+  const { data } = await api.patch(`${API}/users/ban/${id}/`, null, {});
 
   return data;
 };
 
 export const active = async (id: number) => {
-  const { data } = await axios.patch(`${API}/users/activate/${id}/`, null, {});
+  const { data } = await api.patch(`${API}/users/activate/${id}/`, null, {});
 
   return data;
 };
 export const updateUserRole = async (payload: { id: number; role: string }) => {
-  const { data } = await axios.patch(`${API}/users/${payload.id}/role`, {
+  const { data } = await api.patch(`${API}/users/${payload.id}/role`, {
     role: payload.role,
   });
 
@@ -64,25 +64,22 @@ export const updateUserRole = async (payload: { id: number; role: string }) => {
 };
 
 export const updateUser = async (data: any) => {
-  const response = await axios.patch(`${API}/users/${data.id}`, data, {});
+  const response = await api.patch(`${API}/users/${data.id}`, data, {});
 
   return response.data;
 };
 
 export const unactiveUser = async (id: any) => {
-  const response = await axios.patch(`${API}/users/unactive/${id}`, {});
+  const response = await api.patch(`${API}/users/unactive/${id}`, {});
 
   return response.data;
 };
-export const getAdminProducts = async (
-
-  params?: {
-    page: number | undefined;
-    limit: number | undefined;
-    search: string | undefined;
-  }
-) => {
-  const { data } = await axios.get(`${API}/products`, {
+export const getAdminProducts = async (params?: {
+  page: number | undefined;
+  limit: number | undefined;
+  search: string | undefined;
+}) => {
+  const { data } = await api.get(`${API}/products`, {
     params,
   });
 
@@ -90,49 +87,43 @@ export const getAdminProducts = async (
 };
 
 export const hideAdminProduct = async (id: number) => {
-  const { data } = await axios.patch(`${API}/products/${id}/hide`, {});
+  const { data } = await api.patch(`${API}/products/${id}/hide`, {});
 
   return data;
 };
 
 export const showAdminProduct = async (id: number) => {
-  const { data } = await axios.patch(`${API}/products/${id}/show`, {});
+  const { data } = await api.patch(`${API}/products/${id}/show`, {});
 
   return data;
 };
 
 export const deleteAdminProduct = async (id: number) => {
-  const { data } = await axios.patch(`${API}/products/${id}/delete`, {}, {});
+  const { data } = await api.patch(`${API}/products/${id}/delete`, {}, {});
 
   return data;
 };
 
-export const updateSellerData = async (
-  {
-    id,
-    data,
-  }: {
-    id: number;
-    data: FormData;
-  },
-
-) => {
-  const response = await axios.patch(`${API}/users/${id}/seller`, data, {});
+export const updateSellerData = async ({
+  id,
+  data,
+}: {
+  id: number;
+  data: FormData;
+}) => {
+  const response = await api.patch(`${API}/users/${id}/seller`, data, {});
 
   return response.data;
 };
 
-export const updateAdminProduct = async (
-  {
-    id,
-    formData,
-  }: {
-    id: number;
-    formData: any;
-  },
-
-) => {
-  const { data } = await axios.patch(`${API}/products/${id}`, formData, {});
+export const updateAdminProduct = async ({
+  id,
+  formData,
+}: {
+  id: number;
+  formData: any;
+}) => {
+  const { data } = await api.patch(`${API}/products/${id}`, formData, {});
 
   return data;
 };
@@ -140,14 +131,13 @@ export const updateAdminProduct = async (
 export const uploadImage = async (
   productId: string,
   seller_id: string,
-  formData: FormData,
-
+  formData: FormData
 ) => {
-  axios.post(`${API}/products/${seller_id}/${productId}/images/`, formData, {});
+  api.post(`${API}/products/${seller_id}/${productId}/images/`, formData, {});
 };
 
 export const getSellerById = async (id: number) => {
-  const { data } = await axios.get(`${API}/users/${id}/seller`, {});
+  const { data } = await api.get(`${API}/users/${id}/seller`, {});
 
   return data;
 };

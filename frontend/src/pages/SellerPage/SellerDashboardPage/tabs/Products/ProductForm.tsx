@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploader from "../../../../../components/ui/ImageUploader";
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "../../../../../axios";
+import { api } from "../../../../../axios";
 
 type PropsEr = {
   message?: any;
@@ -67,7 +67,7 @@ const ProductForm = ({
     queryKey: ["subcategory-parameters", selectedSubcategory],
 
     queryFn: async () => {
-      const res = await axios.get(
+      const res = await api .get(
         `/api/seller/subcategories/${selectedSubcategory}/parameters`
       );
 

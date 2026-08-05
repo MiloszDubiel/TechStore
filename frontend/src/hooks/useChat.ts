@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "../axios";
+import { api } from "../axios";
 import { useEffect } from "react";
 import { socket } from "../socket";
 import { useAuth } from "../context/AuthContext";
@@ -12,7 +12,7 @@ export const useChat = () => {
     useQuery({
       queryKey: ["get-conversations", user?.id],
       queryFn: async () => {
-        const { data } = await axios.get(`/api/socket/get-conversations`);
+        const { data } = await api.get(`/api/socket/get-conversations`);
 
         return data;
       },
@@ -23,7 +23,7 @@ export const useChat = () => {
     useQuery({
       queryKey: ["unread-messages", user?.id],
       queryFn: async () => {
-        const { data } = await axios.get(`/api/socket/get-notifications`);
+        const { data } = await api.get(`/api/socket/get-notifications`);
 
         return data;
       },

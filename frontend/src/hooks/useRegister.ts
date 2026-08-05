@@ -1,9 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "../axios";
+import { api } from "../axios";
 import type { RegisterSchema } from "../schemas/registerSchema";
 
 const registerUser = async (data: RegisterSchema) => {
-  const response = await axios.post("/api/auth/register", {
+  const response = await api.post("/api/auth/register", {
     name: data.name,
     email: data.email,
     password: data.password,

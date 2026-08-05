@@ -1,5 +1,5 @@
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import axios from "../../axios";
+import { api } from "../../axios";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
@@ -12,7 +12,7 @@ const ChatWindow = ({ conversation }: any) => {
   const queryClient = useQueryClient();
 
   const markAsRead = async () => {
-    await axios.patch(`/api/socket/messages/read/${conversation.id}`, {});
+    await api.patch(`/api/socket/messages/read/${conversation.id}`, {});
 
     queryClient.invalidateQueries({
       queryKey: ["unreadMessages"],
@@ -29,7 +29,7 @@ const ChatWindow = ({ conversation }: any) => {
     enabled: !!conversation?.id,
 
     queryFn: async () => {
-      const { data } = await axios.get(
+      const { data } = await api.get(
         `/api/socket/conversations/${conversation.id}/messages`
       );
 

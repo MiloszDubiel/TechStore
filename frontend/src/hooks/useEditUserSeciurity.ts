@@ -1,22 +1,16 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "../axios";
+import { api } from "../axios";
 import type { ChangePasswordSchema } from "../schemas/seciuritySchema";
 
-
 const editUserSecurity = async (data: ChangePasswordSchema) => {
- 
-
-  const response = await axios.patch("/api/settings/edit-user/security", data, );
+  const response = await api.patch("/api/settings/edit-user/security", data);
 
   return response.data;
 };
 
 const getPasswordUpdatedAt = async () => {
-
-
-  const response = await axios.get(
-    "/api/settings/edit-user/security/password-date",
-   
+  const response = await api.get(
+    "/api/settings/edit-user/security/password-date"
   );
 
   return response.data;

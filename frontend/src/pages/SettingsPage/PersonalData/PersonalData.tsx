@@ -4,7 +4,7 @@ import { profileSchema } from "../../../schemas/profileSchema";
 import type { ProfileFormData } from "../../../schemas/profileSchema";
 import { useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import axios from "../../../axios";
+import {api} from "../../../axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -44,7 +44,7 @@ export const PersonalData = () => {
 
   const { mutate, isError, isSuccess } = useMutation({
     mutationFn: (data: ProfileFormData) =>
-      axios.patch("/api/settings/edit-user/personal-data", data),
+      api.patch("/api/settings/edit-user/personal-data", data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

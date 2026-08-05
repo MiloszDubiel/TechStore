@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "../axios";
+import { api } from "../axios";
 import type { LoginFormData } from "../schemas/loginSchema";
 
 interface LoginResponse {
@@ -8,7 +8,7 @@ interface LoginResponse {
 }
 
 const loginUser = async (data: LoginFormData): Promise<LoginResponse> => {
-  const response = await axios.post("/api/auth/login", {
+  const response = await api.post("/api/auth/login", {
     email: data.email,
     password: data.password,
   });
@@ -20,7 +20,7 @@ const loginUser = async (data: LoginFormData): Promise<LoginResponse> => {
 };
 
 const logoutUser = async () => {
-  const response = await axios.post("/api/auth/logout", {});
+  const response = await api.post("/api/auth/logout", {});
 
   return { message: response.data.message };
 };

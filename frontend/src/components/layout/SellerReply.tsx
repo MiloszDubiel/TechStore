@@ -1,13 +1,10 @@
-import axios from "../../axios";
+import { api } from "../../axios";
 import { useState } from "react";
-
 
 const SellerReply = ({ reviewId }: { reviewId: string }) => {
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-
-
 
   const sendReply = async () => {
     if (!reply.trim()) {
@@ -18,7 +15,7 @@ const SellerReply = ({ reviewId }: { reviewId: string }) => {
     try {
       setLoading(true);
 
-      await axios.put(`/api/reviews/${reviewId}/reply`, {
+      await api.put(`/api/reviews/${reviewId}/reply`, {
         reply,
       });
 
