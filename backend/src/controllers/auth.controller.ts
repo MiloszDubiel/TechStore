@@ -24,6 +24,8 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
+    console.log(email, password);
+
     const { accessToken, refreshToken, user } = await loginUser(
       email,
       password,
@@ -55,18 +57,21 @@ export const login = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const user = (req as any).user;
 
-    const user = await getUserById(userId);
+    if (!user) {
+      return res.json(null);
+    }
 
-    res.json(user);
+    const userData = await getUserById(user.id);
+
+    res.json(userData);
   } catch (error: any) {
-    res.status(404).json({
+    res.status(500).json({
       message: error.message,
     });
   }
 };
-
 export const logout = async (req: Request, res: Response) => {
   try {
     res.clearCookie("accessToken", {

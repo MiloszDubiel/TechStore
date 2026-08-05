@@ -11,15 +11,27 @@ export const api = axios.create({
 //   async (error) => {
 //     const originalRequest = error.config;
 
-//     if (error.response?.status === 401 && !originalRequest._retry) {
+//     if (!originalRequest) {
+//       return Promise.reject(error);
+//     }
+
+//     const isRefreshRequest = originalRequest.url?.includes("/auth/refresh");
+
+//     if (
+//       error.response?.status === 401 &&
+//       !originalRequest._retry &&
+//       !isRefreshRequest
+//     ) {
 //       originalRequest._retry = true;
 
 //       try {
-//         await api.post("/api/auth/refresh");
+//         await api.post("/auth/refresh");
 
 //         return api(originalRequest);
-//       } catch {
+//       } catch (refreshError) {
 //         window.location.href = "/login";
+
+//         return Promise.reject(refreshError);
 //       }
 //     }
 

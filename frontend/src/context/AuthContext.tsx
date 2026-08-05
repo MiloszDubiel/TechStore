@@ -34,19 +34,7 @@ export const AuthProvider: React.FC<{
 
   const { data: user, isPending } = useUser();
 
-  const login = async (email: string, password: string) => {
-    await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-
+  const login = async () => {
     await queryClient.invalidateQueries({
       queryKey: ["user"],
     });

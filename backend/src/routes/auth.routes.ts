@@ -6,7 +6,8 @@ import {
   logout,
   getUser,
 } from "../controllers/auth.controller";
-import { verifyToken } from "../middleware/auth.middleware";
+
+import { optionalAuth } from "../middleware/optiona.middleware";
 
 const router = Router();
 
@@ -14,6 +15,6 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
-router.get("/user", verifyToken, getUser);
+router.get("/user", optionalAuth, getUser);
 
 export default router;
