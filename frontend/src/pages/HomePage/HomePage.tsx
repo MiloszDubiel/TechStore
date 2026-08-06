@@ -46,15 +46,15 @@ const HomePage = () => {
             [...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="h-95 animate-pulse overflow-hidden rounded-xl border border-(--border) bg-(--surface) shadow-sm"
+                className="h-95 animate-pulse overflow-hidden  border border-(--border) bg-(--surface) shadow-sm"
               >
                 <div className="h-48 w-full bg-(--surface-secondary)" />
 
                 <div className="flex flex-col h-full p-4">
-                  <div className="mb-3 h-5 w-3/4 rounded bg-(--surface-secondary)" />
-                  <div className="mb-2 h-5 w-1/2 rounded bg-(--surface-secondary)" />
-                  <div className="mt-auto mb-3 h-5 w-1/3 rounded bg-(--surface-secondary)" />
-                  <div className="h-10 rounded bg-(--surface-secondary)" />
+                  <div className="mb-3 h-5 w-3/4  bg-(--surface-secondary)" />
+                  <div className="mb-2 h-5 w-1/2  bg-(--surface-secondary)" />
+                  <div className="mt-auto mb-3 h-5 w-1/3  bg-(--surface-secondary)" />
+                  <div className="h-10  bg-(--surface-secondary)" />
                 </div>
               </div>
             ))}
@@ -73,7 +73,7 @@ const HomePage = () => {
                       className="max-h-44 object-contain"
                     />
 
-                    <span className="top-3 left-3 absolute px-3 py-1 text-xs text-white bg-orange-500 rounded-full">
+                    <span className="top-3 left-3 absolute px-3 py-1 text-xs text-white bg-orange-500 ">
                       PROMOCJA
                     </span>
                   </div>
@@ -95,7 +95,7 @@ const HomePage = () => {
 
                     {product?.seller_id != user?.id && (
                       <button
-                        className="hover:bg-orange-600 w-full py-2 mt-auto font-medium text-white transition bg-orange-500 rounded-lg"
+                        className="hover:bg-orange-600 w-full py-2 mt-auto font-medium text-white transition bg-orange-500"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();

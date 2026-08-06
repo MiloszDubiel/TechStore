@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{
         socket.disconnect();
       },
     });
+    localStorage.clear();
   };
 
   useEffect(() => {
