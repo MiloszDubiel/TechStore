@@ -52,17 +52,31 @@ const ReportOffer = ({ open, onClose, onSubmit, product }: Props) => {
 
   return (
     <div className="bg-black/50 fixed inset-0 z-50 flex items-center justify-center">
-      <div className="w-full max-w-xl bg-white border border-gray-300 shadow-xl">
-        <div className="flex items-center justify-between p-5 border-b border-gray-300">
+      <div
+        className="
+      w-full max-w-xl
+      border border-(--border)
+      bg-(--surface)
+      text-(--foreground)
+      shadow-xl
+    "
+      >
+        <div
+          className="
+        flex items-center justify-between
+        border-b border-(--border)
+        p-5
+      "
+        >
           <div className="flex items-center gap-3">
-            <div className=" p-2 text-red-600 bg-red-100">
+            <div className=" bg-red-500/15 p-2 text-red-500">
               <AlertTriangle size={22} />
             </div>
 
             <div>
               <h2 className="text-xl font-bold">Zgłoś ofertę</h2>
 
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-(--foreground-secondary)">
                 Administrator zweryfikuje zgłoszenie.
               </p>
             </div>
@@ -70,7 +84,12 @@ const ReportOffer = ({ open, onClose, onSubmit, product }: Props) => {
 
           <button
             onClick={onClose}
-            className="hover:bg-gray-100 p-2 transition cursor-pointer"
+            className="
+          cursor-pointer
+          p-2
+          transition
+          hover:bg-(--surface-secondary)
+        "
           >
             <X size={20} />
           </button>
@@ -83,20 +102,36 @@ const ReportOffer = ({ open, onClose, onSubmit, product }: Props) => {
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className={`focus:border-orange-500 w-full px-4 py-3 border  ${
-                reasonError ? "border-red-500" : "border-gray-300"
-              } outline-none cursor-pointer`}
+              className={`
+            w-full
+            cursor-pointer
+            border
+            px-4 py-3
+            bg-(--surface-secondary)
+            text-(--foreground)
+            outline-none
+            focus:border-orange-500
+
+            ${reasonError ? "border-red-500" : "border-(--border)"}
+          `}
             >
               <option value="">Wybierz powód</option>
+
               <option value="SCAM">Próba oszustwa</option>
+
               <option value="FAKE">Fałszywa oferta</option>
+
               <option value="COPYRIGHT">Naruszenie praw autorskich</option>
+
               <option value="WRONG_CATEGORY">Nieprawidłowa kategoria</option>
+
               <option value="OFFENSIVE">Niedozwolona treść</option>
+
               <option value="OTHER">Inny powód</option>
             </select>
+
             {reasonError && (
-              <p className="mt-2 text-sm text-red-600">{reasonError}</p>
+              <p className="mt-2 text-sm text-red-500">{reasonError}</p>
             )}
           </div>
 
@@ -109,34 +144,49 @@ const ReportOffer = ({ open, onClose, onSubmit, product }: Props) => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Opisz problem..."
               className={`
-                        w-full
-                        p-3
-                        border
-                        outline-none
-                        resize-none
-                        focus:border-orange-500
-                        ${
-                          descriptionError
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }
-  `}
+            w-full
+            resize-none
+            border
+            bg-(--surface-secondary)
+            p-3
+            text-(--foreground)
+            outline-none
+            placeholder:text-(--foreground-secondary)
+            focus:border-orange-500
+
+            ${descriptionError ? "border-red-500" : "border-(--border)"}
+          `}
             />
+
             {descriptionError && (
-              <p className="mt-2 text-sm text-red-600">{descriptionError}</p>
+              <p className="mt-2 text-sm text-red-500">{descriptionError}</p>
             )}
           </div>
 
-          <div className="bg-yellow-50 p-4 text-sm text-yellow-800 border border-yellow-300">
+          <div className=" border-yellow-500/40 bg-yellow-500/10 p-4 text-sm text-yellow-500 border">
             Zgłoszenie zostanie przeanalizowane przez administratora. Fałszywe
             zgłoszenia mogą skutkować ograniczeniem konta.
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 p-5 border-t border-gray-300">
+        <div
+          className="
+        flex justify-end gap-3
+        border-t border-(--border)
+        p-5
+      "
+        >
           <button
             onClick={onClose}
-            className="hover:bg-gray-100 px-5 py-3 border border-gray-300 cursor-pointer"
+            className="
+          cursor-pointer
+          border border-(--border)
+          bg-(--surface)
+          px-5 py-3
+          text-(--foreground)
+          transition
+          hover:bg-(--surface-secondary)
+        "
           >
             Anuluj
           </button>
@@ -147,5 +197,4 @@ const ReportOffer = ({ open, onClose, onSubmit, product }: Props) => {
     </div>
   );
 };
-
 export default ReportOffer;

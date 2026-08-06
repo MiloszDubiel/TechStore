@@ -93,11 +93,10 @@ export default function CheckoutLayout() {
     }
   };
 
-
-
   return (
     <>
       <Navbar />
+
       <div className="container px-6 py-10 mx-auto">
         <CheckoutSteps steps={steps} current={step} />
 
@@ -106,7 +105,7 @@ export default function CheckoutLayout() {
             step !== 5 ? 3 : 2
           } grid grid-cols-1 gap-8 mt-10`}
         >
-          <div className=" lg:col-span-2 p-6 bg-white shadow">
+          <div className="lg:col-span-2 p-6 bg-(--surface) text-(--foreground) border border-(--border) shadow">
             {renderStep()}
           </div>
 

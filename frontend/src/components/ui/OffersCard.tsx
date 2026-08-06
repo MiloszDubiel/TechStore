@@ -45,32 +45,54 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
     });
   };
   return (
-    <div className=" hover:shadow-lg block p-4 transition bg-white border border-gray-200">
+    <div
+      className="
+    block
+    border border-(--border)
+    bg-(--surface)
+    p-4
+    text-(--foreground)
+    transition
+    hover:shadow-lg
+  "
+    >
       <div className="flex items-start gap-6">
         <img
           src={getImage(product.images)}
           alt={product.name}
-          className=" object-contain w-48 h-48 bg-white"
+          className="
+        h-48
+        w-48
+        bg-(--surface-secondary)
+        object-contain
+      "
         />
 
         <div className="flex-1">
           <Link to={`/offers/${product.slug}/${product.id}`}>
-            <h3 className=" hover:underline line-clamp-2 hover:text-orange-600 text-lg font-semibold">
+            <h3 className=" line-clamp-2 hover:text-orange-600 hover:underline text-lg font-semibold transition">
               {product.name}
             </h3>
           </Link>
 
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-(--foreground-secondary)">
             Kategoria: {product.category_name ?? "Brak"}
           </p>
 
-          <ul className="mt-2 space-y-1 text-sm text-gray-600">
+          <ul
+            className="
+          mt-2
+          space-y-1
+          text-sm
+          text-(--foreground-secondary)
+        "
+          >
             {displayedParams.map((param) => (
               <li key={param}>{param}</li>
             ))}
           </ul>
 
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-(--foreground-secondary)">
             Dostępna szybka wysyłka • Gwarancja 24 miesiące
           </p>
         </div>
@@ -81,8 +103,8 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
           <p
             className={
               product.stock > 0
-                ? "text-green-600 text-sm"
-                : "text-red-500 text-sm"
+                ? "text-sm text-green-500"
+                : "text-sm text-red-500"
             }
           >
             {product.stock > 0
@@ -92,7 +114,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
 
           {product?.seller_id != user?.id && (
             <button
-              className=" hover:bg-orange-600 px-6 py-2 font-semibold text-white bg-orange-500 cursor-pointer"
+              className=" hover:bg-orange-600 px-6 py-2 font-semibold text-white transition bg-orange-500 cursor-pointer"
               onClick={() => addToCart(product)}
             >
               Dodaj do koszyka
@@ -101,7 +123,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
 
           {product?.seller_id == user?.id && (
             <button
-              className=" hover:bg-orange-600 flex items-center gap-2 px-6 py-2 font-semibold text-white bg-orange-500 cursor-pointer"
+              className=" hover:bg-orange-600 flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-orange-500 cursor-pointer"
               onClick={() => {
                 navigate(`/seller/dashboard?tab=products&edit=${product.id}`);
               }}
@@ -144,7 +166,18 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
       </div>
 
       {favoriteMessage && (
-        <div className=" bottom-6 right-6 fixed z-50 px-4 py-2 bg-white border border-orange-400">
+        <div
+          className="
+        fixed
+        bottom-6 right-6
+        z-50
+        border border-orange-400
+        bg-(--surface)
+        px-4 py-2
+        text-(--foreground)
+        shadow-lg
+      "
+        >
           {favoriteMessage}
         </div>
       )}

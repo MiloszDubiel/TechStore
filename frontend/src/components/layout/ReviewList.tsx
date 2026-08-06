@@ -33,7 +33,15 @@ const ReviewsList = ({ productId }: { productId: string }) => {
   return (
     <div className="mb-5 space-y-5">
       {reviews.map((review: any) => (
-        <div key={review.id} className="p-5 bg-white border border-gray-200">
+        <div
+          key={review.id}
+          className="
+          border border-(--border)
+          bg-(--surface)
+          p-5
+          text-(--foreground)
+        "
+        >
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
               <div className=" flex items-center justify-center w-10 h-10 font-bold text-white bg-orange-500 rounded-full">
@@ -43,7 +51,7 @@ const ReviewsList = ({ productId }: { productId: string }) => {
               <div>
                 <p className="font-semibold">{review.email}</p>
 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-(--foreground-secondary)">
                   {new Date(review.created_at).toLocaleDateString()}
                 </p>
               </div>
@@ -57,20 +65,30 @@ const ReviewsList = ({ productId }: { productId: string }) => {
                   className={
                     star <= review.rating
                       ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
+                      : "text-(--border)"
                   }
                 />
               ))}
             </div>
           </div>
 
-          <p className="mt-4 text-gray-700">{review.comment}</p>
+          <p className="mt-4 text-(--foreground)">{review.comment}</p>
 
           {review.seller_reply && (
-            <div className=" bg-gray-50 p-4 mt-4 border-l-4 border-orange-500">
+            <div
+              className="
+              mt-4
+              border-l-4
+              border-orange-500
+              bg-(--surface-secondary)
+              p-4
+            "
+            >
               <p className="font-semibold">Odpowiedź sprzedawcy</p>
 
-              <p className="mt-1 text-gray-700">{review.seller_reply}</p>
+              <p className="mt-1 text-(--foreground-secondary)">
+                {review.seller_reply}
+              </p>
             </div>
           )}
 

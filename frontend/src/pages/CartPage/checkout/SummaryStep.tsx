@@ -3,7 +3,7 @@ import { GrayButton } from "../../../components/ui/Buttons";
 import { useCheckout } from "../../../context/CheckoutContext";
 import { useCartStore } from "../../../zustand/states/cartState";
 import { useState } from "react";
-import {api} from "../../../axios";
+import { api } from "../../../axios";
 import { useAuth } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
 
@@ -144,11 +144,12 @@ const SummaryStep = ({ back, onSuccess }: any) => {
 
       {!orderCompleted && (
         <div className="flex justify-between mt-8">
-          <GrayButton onClick={back}> Wstecz</GrayButton>
+          <GrayButton onClick={back}>Wstecz</GrayButton>
+
           <button
             onClick={order}
             disabled={isPending}
-            className=" hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed px-6 py-3 text-white bg-orange-500 cursor-pointer"
+            className="hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed px-6 py-3 text-white bg-orange-500 cursor-pointer"
           >
             {isPending ? "Tworzenie zamówienia..." : "Zamawiam"}
           </button>

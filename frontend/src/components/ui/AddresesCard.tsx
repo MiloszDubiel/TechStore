@@ -24,29 +24,42 @@ export default function AddressCard({
   onDelete,
 }: AddressCardProps) {
   return (
-    <div className=" gap-2 p-6 mb-2 bg-white shadow-sm">
+    <div
+      className="
+    mb-2
+    gap-2
+    border border-(--border)
+    bg-(--surface)
+    p-6
+    text-(--foreground)
+    shadow-sm
+  "
+    >
       <div className="flex items-center justify-between gap-2 mb-2">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-lg font-semibold">{title}</h3>
 
             {isDefault && (
-              <span className="px-2 py-1 text-xs text-green-700 bg-green-100 rounded-full">
+              <span className=" bg-green-500/15 px-2 py-1 text-xs text-green-500 rounded-full">
                 Domyślny
               </span>
             )}
           </div>
 
           <p>{street}</p>
-          <p>
+
+          <p className="text-(--foreground-secondary)">
             {postalCode} {city}
           </p>
-          <p>{country}</p>
+
+          <p className="text-(--foreground-secondary)">{country}</p>
         </div>
 
         <div className="flex gap-2">
-          <GrayButton onClick={onEdit}> Edytuj</GrayButton>
-          <OrangeButton onClick={onDelete}> Usuń</OrangeButton>
+          <GrayButton onClick={onEdit}>Edytuj</GrayButton>
+
+          <OrangeButton onClick={onDelete}>Usuń</OrangeButton>
         </div>
       </div>
     </div>

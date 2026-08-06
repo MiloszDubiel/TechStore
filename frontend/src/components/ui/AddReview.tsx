@@ -50,28 +50,42 @@ const AddReview = ({
   }
   if (!user?.id) {
     return (
-      <div className="p-6 text-center bg-white border border-gray-200">
+      <div
+        className="
+      border border-(--border)
+      bg-(--surface)
+      p-6
+      text-center
+      text-(--foreground)
+    "
+      >
         <h3 className="mb-2 text-lg font-semibold">Chcesz dodać opinię?</h3>
 
-        <p className="mb-4 text-gray-500">
+        <p className="mb-4 text-(--foreground-secondary)">
           Zaloguj się, aby móc ocenić ten produkt.
         </p>
 
         <button
           onClick={() => navigate("/login")}
-          className="hover:bg-orange-600 px-6 py-3 text-white bg-orange-500"
+          className=" hover:bg-orange-600 px-6 py-3 text-white transition bg-orange-500 cursor-pointer"
         >
           Zaloguj się
         </button>
       </div>
     );
   }
-
   return (
-    <div className="p-6 bg-white border border-gray-200">
+    <div
+      className="
+    border border-(--border)
+    bg-(--surface)
+    p-6
+    text-(--foreground)
+  "
+    >
       <h3 className="mb-4 text-xl font-semibold">Dodaj opinię</h3>
 
-      <p className="mb-2 text-sm text-gray-500">Twoja ocena</p>
+      <p className="mb-2 text-sm text-(--foreground-secondary)">Twoja ocena</p>
 
       <div className="flex gap-1 mb-5" onMouseLeave={() => setHoverRating(0)}>
         {[1, 2, 3, 4, 5].map((star) => {
@@ -83,26 +97,41 @@ const AddReview = ({
               size={34}
               onMouseEnter={() => setHoverRating(star)}
               onClick={() => setRating(star)}
-              className={`cursor-pointer transition ${
-                active ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-              }`}
+              className={`
+            cursor-pointer
+            transition
+            ${active ? "fill-yellow-400 text-yellow-400" : "text-(--border)"}
+          `}
             />
           );
         })}
       </div>
 
       <textarea
-        className=" min-h-32 focus:border-orange-500 w-full p-3 border border-gray-300 outline-none resize-none"
+        className="
+      min-h-32
+      w-full
+      resize-none
+      border border-(--border)
+      bg-(--surface-secondary)
+      p-3
+      text-(--foreground)
+      outline-none
+      placeholder:text-(--foreground-secondary)
+      focus:border-orange-500
+    "
         placeholder="Napisz swoją opinię..."
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
 
-      {message && <p className="mt-3 text-sm text-gray-600">{message}</p>}
+      {message && (
+        <p className="mt-3 text-sm text-(--foreground-secondary)">{message}</p>
+      )}
 
       <button
         onClick={submit}
-        className=" hover:bg-orange-600 px-6 py-3 mt-4 text-white bg-orange-500"
+        className=" hover:bg-orange-600 px-6 py-3 mt-4 text-white transition bg-orange-500 cursor-pointer"
       >
         Dodaj opinię
       </button>

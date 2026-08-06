@@ -9,29 +9,31 @@ export default function OrderSummary() {
   );
 
   return (
-    <div className=" top-5 sticky p-6 bg-white shadow">
-      <h2 className=" mb-4 text-xl font-bold">Podsumowanie</h2>
+    <div className="top-5 sticky p-6 bg-(--surface) text-(--foreground) border border-(--border) shadow">
+      <h2 className="mb-4 text-xl font-bold">Podsumowanie</h2>
 
       {cart.map((item) => (
-        <div key={item.id} className=" flex justify-between mb-2">
+        <div
+          key={item.id}
+          className="flex justify-between mb-2 text-(--foreground-secondary)"
+        >
           <span>{item.name}</span>
 
-          <span>
-            {(item.price * item.quantity).toFixed(2)}
-            zł
+          <span className="text-(--foreground)">
+            {(item.price * item.quantity).toFixed(2)} zł
           </span>
         </div>
       ))}
 
-      <hr className="my-4 text-gray-300" />
+      <hr className="my-4 border-(--border)" />
 
-      <div className="flex justify-between">
+      <div className="flex justify-between text-(--foreground)">
         <span>Produkty</span>
 
         <span>{productsPrice} zł</span>
       </div>
 
-      <div className=" flex justify-between mt-3 text-lg font-bold">
+      <div className="flex justify-between mt-3 text-lg font-bold">
         <span>Razem</span>
 
         <span className="text-orange-500">{productsPrice} zł</span>

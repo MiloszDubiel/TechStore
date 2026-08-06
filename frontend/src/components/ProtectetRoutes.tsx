@@ -5,6 +5,7 @@ import { useCartStore } from "../zustand/states/cartState";
 import { useCheckout } from "../context/CheckoutContext";
 import { useSeller } from "../hooks/useSeller";
 import { useUser } from "../hooks/useUser";
+import LoadingScreen from "./LoadingScreen";
 
 type Props = {
   children: React.ReactNode;
@@ -24,11 +25,7 @@ export const CheckIsLoggedIn = ({ children }: Props) => {
   const { user, isPending } = useAuth();
 
   if (isPending) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Ładowanie...
-      </div>
-    );
+    return <LoadingScreen />;
   }
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -76,16 +73,10 @@ type ProtectedProps = {
 };
 
 export const ProtectedRoute = ({ children, allowedRoles }: ProtectedProps) => {
-
-
   const { data: user, isLoading } = useUser();
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Ładowanie...
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (!user) {

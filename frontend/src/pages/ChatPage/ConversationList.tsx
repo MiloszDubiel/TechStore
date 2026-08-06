@@ -48,8 +48,8 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
   }, [seller_id, conversationsData?.id]);
 
   return (
-    <div className="w-80 border-r border-gray-300">
-      <h2 className="p-5 text-xl font-bold">Wiadomości</h2>
+    <div className="w-80 border-r border-(--border)">
+      <h2 className="p-5 text-xl font-bold text-(--foreground)">Wiadomości</h2>
 
       {conversationsData?.length > 0 ? (
         conversationsData.map((c: any) => {
@@ -66,19 +66,23 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
               key={c.id}
               onClick={() => onSelect(c)}
               className={`
-          flex
-          items-center
-          gap-4
-          w-full
-          p-4
-          text-left
-          border-t
-          border-gray-300
-          cursor-pointer
-          transition
+            flex
+            items-center
+            gap-4
+            w-full
+            p-4
+            text-left
+            border-t
+            border-(--border)
+            cursor-pointer
+            transition
 
-          ${selected?.id === c.id ? "bg-orange-100" : "hover:bg-gray-50"}
-        `}
+            ${
+              selected?.id === c.id
+                ? "bg-orange-100 dark:bg-orange-950/30"
+                : "hover:bg-(--surface-secondary)"
+            }
+          `}
             >
               {avatar ? (
                 <img
@@ -88,21 +92,23 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
                   className="object-cover w-12 h-12 rounded-full"
                 />
               ) : (
-                <div className=" flex items-center justify-center w-12 h-12 text-lg font-bold text-white bg-orange-500 rounded-full">
+                <div className="flex items-center justify-center w-12 h-12 text-lg font-bold text-white bg-orange-500 rounded-full">
                   {name?.charAt(0)}
                 </div>
               )}
 
               <div className="flex-1 overflow-hidden">
                 <div className="flex items-center justify-between">
-                  <p className="font-semibold truncate">{name}</p>
+                  <p className="font-semibold text-(--foreground) truncate">
+                    {name}
+                  </p>
 
                   {Number(c.unread_count) > 0 && selected?.id !== c.id && (
                     <span className="w-3 h-3 bg-orange-500 rounded-full" />
                   )}
                 </div>
 
-                <p className="text-sm text-gray-500 truncate">
+                <p className="text-sm text-(--foreground-secondary) truncate">
                   {c.last_message || "Brak wiadomości"}
                 </p>
               </div>
@@ -110,7 +116,9 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
           );
         })
       ) : (
-        <h2 className="p-5 text-xl font-bold">Brak konwersacji</h2>
+        <h2 className="p-5 text-xl font-bold text-(--foreground)">
+          Brak konwersacji
+        </h2>
       )}
     </div>
   );

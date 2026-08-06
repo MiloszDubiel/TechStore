@@ -75,7 +75,7 @@ const ChatWindow = ({ conversation }: any) => {
 
   if (!conversation) {
     return (
-      <div className="flex items-center justify-center flex-1 text-gray-400">
+      <div className="flex items-center justify-center flex-1 text-(--foreground-secondary)">
         Wybierz rozmowę
       </div>
     );
@@ -88,11 +88,15 @@ const ChatWindow = ({ conversation }: any) => {
     : conversation.shop_name;
   return (
     <div className="flex flex-col flex-1">
-      <div className="p-5 font-bold border-b border-gray-300">{name}</div>
+      <div className="p-5 font-bold text-(--foreground) border-b border-(--border)">
+        {name}
+      </div>
 
       <div className="flex-1 p-5 space-y-3 overflow-y-auto">
         {isLoading ? (
-          <p className="text-gray-400">Ładowanie wiadomości...</p>
+          <p className="text-(--foreground-secondary)">
+            Ładowanie wiadomości...
+          </p>
         ) : messages?.length ? (
           messages.map((msg: any) => {
             const mine = msg.sender_id === user?.id;
@@ -101,27 +105,26 @@ const ChatWindow = ({ conversation }: any) => {
               <div
                 key={msg.id}
                 className={`
-                max-w-[70%]
-                p-3
-                
+              max-w-[70%]
+              p-3
 
-                ${
-                  mine
-                    ? "ml-auto bg-orange-500 text-white"
-                    : "bg-gray-100 text-gray-900"
-                }
-              `}
+              ${
+                mine
+                  ? "ml-auto bg-orange-500 text-white"
+                  : "bg-(--surface-secondary) text-(--foreground)"
+              }
+            `}
               >
                 <p>{msg.message}</p>
 
                 <span
                   className={`
-                  block
-                  mt-1
-                  text-xs
+                block
+                mt-1
+                text-xs
 
-                  ${mine ? "text-orange-100" : "text-gray-400"}
-                `}
+                ${mine ? "text-orange-100" : "text-(--foreground-secondary)"}
+              `}
                 >
                   {new Date(msg.created_at).toLocaleString()}
                 </span>
@@ -129,20 +132,32 @@ const ChatWindow = ({ conversation }: any) => {
             );
           })
         ) : (
-          <div className="text-center text-gray-400">Brak wiadomości</div>
+          <div className="text-center text-(--foreground-secondary)">
+            Brak wiadomości
+          </div>
         )}
       </div>
 
-      <div className="flex gap-3 p-4 border-t border-gray-300">
+      <div className="flex gap-3 p-4 border-t border-(--border)">
         <input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Napisz wiadomość..."
-          className=" flex-1 px-4 py-3 border border-gray-300"
+          className="
+        flex-1
+        px-4
+        py-3
+        bg-(--surface)
+        text-(--foreground)
+        border
+        border-(--border)
+        outline-none
+        focus:border-orange-500
+      "
         />
 
         <button
-          className=" hover:bg-orange-600 px-5 text-white bg-orange-500"
+          className="hover:bg-orange-600 px-5 text-white transition bg-orange-500 cursor-pointer"
           onClick={send}
         >
           Wyślij

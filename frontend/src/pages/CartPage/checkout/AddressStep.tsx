@@ -14,15 +14,13 @@ export default function AddressStep({ next, back }: Props) {
   const { user } = useAuth();
   const [guestAddress, setGuestAddress] = useState<any | null>(null);
 
-
-  const { userAddresses, saveAddress } = useAdresses(user?.id );
+  const { userAddresses, saveAddress } = useAdresses(user?.id);
   const { updateCheckout } = useCheckout();
   const [closeModal, setCloseModal] = useState(false);
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null
   );
-
 
   useEffect(() => {
     if (userAddresses && userAddresses.length > 0 && !selectedAddressId) {
@@ -41,30 +39,51 @@ export default function AddressStep({ next, back }: Props) {
     ? userAddresses?.find((address: any) => address.id === selectedAddressId)
     : guestAddress;
 
-  
-
   return (
     <div>
-      <h2 className="mb-6 text-2xl font-bold">Adres zamieszkania</h2>
+      <h2 className="mb-6 text-2xl font-bold text-(--foreground)">
+        Adres zamieszkania
+      </h2>
 
       {currentAddress ? (
         <div className="mb-4 space-y-6">
-          <div className=" bg-gray-50 p-5 border border-gray-200">
-            <h2 className="mb-3 font-semibold">Dane do zamówienia</h2>
+          <div
+            className="
+          p-5
+          bg-(--surface-secondary)
+          border
+          border-(--border)
+        "
+          >
+            <h2 className="mb-3 font-semibold text-(--foreground)">
+              Dane do zamówienia
+            </h2>
 
-            <p className="font-medium">{currentAddress.street}</p>
+            <p className="font-medium text-(--foreground)">
+              {currentAddress.street}
+            </p>
 
-            <p className="text-gray-500">
+            <p className="text-(--foreground-secondary)">
               {currentAddress.postal_code} {currentAddress.city}
             </p>
 
             {currentAddress.country && (
-              <p className="text-gray-500">{currentAddress.country}</p>
+              <p className="text-(--foreground-secondary)">
+                {currentAddress.country}
+              </p>
             )}
           </div>
         </div>
       ) : (
-        <div className=" bg-gray-50 p-5 border border-gray-200">
+        <div
+          className="
+        p-5
+        bg-(--surface-secondary)
+        border
+        border-(--border)
+        text-(--foreground)
+      "
+        >
           Nie wybrano adresu
         </div>
       )}
@@ -74,13 +93,21 @@ export default function AddressStep({ next, back }: Props) {
           {userAddresses.map((address: any) => (
             <label
               key={address.id}
-              className={`flex items-start gap-4 border border-gray-200 p-4 cursor-pointer hover:border-orange-500 transition
-              
-              ${
-                selectedAddressId === address.id
-                  ? "border-orange-500 bg-orange-50"
-                  : "border-gray-200"
-              }`}
+              className={`
+            flex
+            items-start
+            gap-4
+            p-4
+            cursor-pointer
+            border
+            transition
+
+            ${
+              selectedAddressId === address.id
+                ? "border-orange-500 bg-(--surface-secondary) ring-1 ring-orange-500"
+                : "border-(--border) bg-(--surface) hover:border-orange-500"
+            }
+          `}
             >
               <input
                 type="radio"
@@ -95,16 +122,18 @@ export default function AddressStep({ next, back }: Props) {
 
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold">{address.street}</p>
+                  <p className="font-semibold text-(--foreground)">
+                    {address.street}
+                  </p>
 
                   {address.is_default && (
-                    <span className="px-2 py-1 text-xs text-green-700 bg-green-100 rounded-full">
+                    <span className=" px-2 py-1 text-xs text-green-700 bg-green-100 rounded-full">
                       Domyślny
                     </span>
                   )}
                 </div>
 
-                <p className="text-gray-600">
+                <p className="text-(--foreground-secondary)">
                   {address.postal_code} {address.city}
                 </p>
               </div>
@@ -112,7 +141,17 @@ export default function AddressStep({ next, back }: Props) {
           ))}
         </div>
       ) : guestAddress ? (
-        <div className="p-6 text-center text-gray-500 border border-gray-300 border-dashed">
+        <div
+          className="
+        p-6
+        text-center
+        text-(--foreground-secondary)
+        border
+        border-(--border)
+        border-dashed
+        bg-(--surface)
+      "
+        >
           Nie masz zapisanych adresów.
         </div>
       ) : (
@@ -121,7 +160,7 @@ export default function AddressStep({ next, back }: Props) {
 
       <button
         type="button"
-        className="hover:bg-orange-50 px-5 py-3 mt-6 text-orange-500 transition border border-orange-500 cursor-pointer"
+        className=" hover:bg-orange-50 px-5 py-3 mt-6 text-orange-500 transition border border-orange-500 cursor-pointer"
         onClick={() => setCloseModal(true)}
       >
         {user ? "+ Dodaj nowy adres" : "Zmień adres"}
@@ -143,17 +182,11 @@ export default function AddressStep({ next, back }: Props) {
               saveAddress(data, {
                 onSuccess: (response) => {
                   const newAddress = response.data.address;
-
                   setSelectedAddressId(newAddress.id);
-
-                  updateCheckout({
-                    address: newAddress,
-                  });
-
+                  updateCheckout({ address: newAddress });
                   setCloseModal(false);
                 },
               });
-
               return;
             }
             const newAddress = {
@@ -162,19 +195,15 @@ export default function AddressStep({ next, back }: Props) {
               is_default: true,
             };
             setGuestAddress(newAddress);
-
             setSelectedAddressId(newAddress.id);
-
-            updateCheckout({
-              address: newAddress,
-            });
-
+            updateCheckout({ address: newAddress });
             setCloseModal(false);
           }}
           defaultValues={{
             city: "",
             postal_code: "",
             street: "",
+
             is_default: false,
           }}
           isEdited={false}

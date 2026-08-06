@@ -29,22 +29,43 @@ const SellerReply = ({ reviewId }: { reviewId: string }) => {
   };
 
   return (
-    <div className="bg-gray-50 p-4 mt-4 border border-gray-200">
+    <div
+      className="
+      mt-4
+      border border-(--border)
+      bg-(--surface-secondary)
+      p-4
+      text-(--foreground)
+    "
+    >
       <h4 className="mb-2 font-semibold">Odpowiedz klientowi</h4>
 
       <textarea
         value={reply}
         onChange={(e) => setReply(e.target.value)}
         placeholder="Napisz odpowiedź..."
-        className=" min-h-24 focus:border-orange-500 w-full p-3 border border-gray-300 outline-none resize-none"
+        className="
+        min-h-24
+        w-full
+        resize-none
+        border border-(--border)
+        bg-(--surface)
+        p-3
+        text-(--foreground)
+        outline-none
+        placeholder:text-(--foreground-secondary)
+        focus:border-orange-500
+      "
       />
 
-      {message && <p className="mt-2 text-sm text-gray-600">{message}</p>}
+      {message && (
+        <p className="mt-2 text-sm text-(--foreground-secondary)">{message}</p>
+      )}
 
       <button
         disabled={loading}
         onClick={sendReply}
-        className=" hover:bg-orange-600 disabled:opacity-50 px-5 py-2 mt-3 text-white bg-orange-500"
+        className=" hover:bg-orange-600 disabled:opacity-50 px-5 py-2 mt-3 text-white transition bg-orange-500 cursor-pointer"
       >
         {loading ? "Wysyłanie..." : "Odpowiedz"}
       </button>

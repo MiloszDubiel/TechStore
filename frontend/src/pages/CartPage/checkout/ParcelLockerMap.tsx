@@ -63,11 +63,14 @@ export default function ParcelLockerMap() {
             <Popup>
               <div className="space-y-2">
                 <p className="font-bold">{locker.name}</p>
+
                 <p>{locker.address}</p>
+
                 <button
                   className="hover:bg-orange-600 px-3 py-2 text-white transition-colors bg-orange-500"
                   onClick={(e) => {
                     e.stopPropagation();
+
                     updateCheckout({
                       delivery: {
                         method: "locker",
@@ -88,7 +91,9 @@ export default function ParcelLockerMap() {
       {checkoutData.delivery?.locker && (
         <div className="bg-orange-50 p-4 mt-4 border border-orange-300">
           <p className="font-semibold">Wybrany paczkomat:</p>
+
           <p>{checkoutData.delivery.locker.name}</p>
+
           <p>{checkoutData.delivery.locker.address}</p>
         </div>
       )}

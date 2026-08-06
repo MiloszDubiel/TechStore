@@ -26,8 +26,15 @@ const BellDropdown = ({ onClose, notifications = [] }: any) => {
 
   return (
     <div
-      className="top-10 w-125 absolute right-0 z-50 p-4 bg-white border border-gray-300 shadow-xl"
       ref={dropdownRef}
+      className="
+        absolute right-0 top-10 z-50 w-125
+        border border-(--border)
+        bg-(--surface)
+        p-4
+        text-(--foreground)
+        shadow-xl
+      "
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-bold">Powiadomienia</h3>
@@ -35,51 +42,56 @@ const BellDropdown = ({ onClose, notifications = [] }: any) => {
         {notifications?.length > 0 && (
           <button
             onClick={setAllAsRead}
-            className="hover:underline text-sm text-red-500 cursor-pointer"
+            className=" hover:underline text-sm text-orange-500 transition cursor-pointer"
           >
-            Odznacz wszytskie
+            Odznacz wszystkie
           </button>
         )}
       </div>
 
       {notifications?.length === 0 ? (
-        <p className="text-sm text-gray-500">Brak powiadomień</p>
+        <p className="text-sm text-(--foreground-secondary)">
+          Brak powiadomień
+        </p>
       ) : (
         <div className="max-h-80 space-y-3 overflow-y-auto">
           {notifications?.map((notification: any) => (
             <div
               key={notification?.id}
-              className={`p-3 border ${
-                notification?.is_read
-                  ? "border-gray-200 bg-white"
-                  : "border-orange-300 bg-orange-50"
-              }`}
+              className={`
+                border p-3 transition
+                ${
+                  notification?.is_read
+                    ? "border-(--border) bg-(--surface)"
+                    : "border-orange-500/40 bg-orange-500/10"
+                }
+              `}
             >
               <div className="flex justify-between gap-3">
                 <div>
                   <p className="font-medium">{notification?.title}</p>
 
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-(--foreground-secondary)">
                     {notification?.message}
                   </p>
                 </div>
 
                 <button
                   onClick={() => setAsDeleted(notification?.id)}
-                  className="hover:underline text-sm text-red-500 cursor-pointer"
+                  className=" hover:text-red-400 text-red-500 transition cursor-pointer"
                 >
                   <Trash2 size={14} />
                 </button>
               </div>
 
-              <p className="mt-2 text-xs text-gray-400">
+              <p className="mt-2 text-xs text-(--foreground-secondary)">
                 {new Date(notification?.created_at).toLocaleString("pl-PL")}
               </p>
 
               {!notification.is_read && (
                 <button
                   onClick={() => setAsRead(notification?.id)}
-                  className="hover:underline mt-2 text-xs text-orange-500 cursor-pointer"
+                  className=" hover:underline mt-2 text-xs text-orange-500 transition cursor-pointer"
                 >
                   Oznacz jako przeczytane
                 </button>
@@ -91,5 +103,4 @@ const BellDropdown = ({ onClose, notifications = [] }: any) => {
     </div>
   );
 };
-
 export default BellDropdown;

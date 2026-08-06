@@ -62,27 +62,31 @@ export default function CustomerStep({ next }: Props) {
     next();
   };
 
-
   return (
     <div>
-      <h2 className="mb-6 text-2xl font-bold">Dane klienta</h2>
-      {!currentUser && !guestCheckout && (
-        <div className="bg-gray-50 p-5 mb-6 border border-gray-200">
-          <h3 className="mb-3 font-semibold">Masz już konto?</h3>
+      <h2 className="mb-6 text-2xl font-bold text-(--foreground)">
+        Dane klienta
+      </h2>
 
-          <p className="mb-4 text-gray-500">
+      {!currentUser && !guestCheckout && (
+        <div className="bg-(--surface-secondary) p-5 mb-6 border border-(--border)">
+          <h3 className="mb-3 font-semibold text-(--foreground)">
+            Masz już konto?
+          </h3>
+
+          <p className="mb-4 text-(--foreground-secondary)">
             Zaloguj się lub kontynuuj jako gość.
           </p>
 
           <button
-            className=" px-5 py-3 mr-3 text-white bg-orange-500 cursor-pointer"
+            className="hover:bg-orange-600 px-5 py-3 mr-3 text-white transition bg-orange-500 cursor-pointer"
             onClick={() => navigate("/login?cart=1")}
           >
             Zaloguj się
           </button>
 
           <button
-            className=" px-5 py-3 border border-gray-300 cursor-pointer"
+            className="px-5 py-3 border border-(--border) text-(--foreground) cursor-pointer hover:bg-(--surface-hover) transition"
             onClick={() => setGuestCheckout(true)}
           >
             Kontynuuj jako gość
@@ -95,27 +99,41 @@ export default function CustomerStep({ next }: Props) {
           {checkoutData?.customer?.name &&
           checkoutData?.customer?.last_name &&
           checkoutData?.customer?.email ? (
-            <div className=" bg-gray-50 p-5 border border-gray-200">
-              <h2 className="mb-3 font-semibold">Dane do zamówienia</h2>
+            <div className="bg-(--surface-secondary) p-5 border border-(--border)">
+              <h2 className="mb-3 font-semibold text-(--foreground)">
+                Dane do zamówienia
+              </h2>
 
-              <p>
+              <p className="text-(--foreground)">
                 {checkoutData?.customer?.name}{" "}
                 {checkoutData?.customer?.last_name}
               </p>
 
-              <p className="text-gray-500">{checkoutData!?.customer?.email}</p>
-              <p className="text-gray-500">{checkoutData!?.customer?.phone}</p>
+              <p className="text-(--foreground-secondary)">
+                {checkoutData?.customer?.email}
+              </p>
+
+              <p className="text-(--foreground-secondary)">
+                {checkoutData?.customer?.phone}
+              </p>
             </div>
           ) : (
-            <div className=" bg-gray-50 p-5 border border-gray-200">
-              <h2 className="mb-3 font-semibold">Dane do zamówienia</h2>
+            <div className="bg-(--surface-secondary) p-5 border border-(--border)">
+              <h2 className="mb-3 font-semibold text-(--foreground)">
+                Dane do zamówienia
+              </h2>
 
-              <p>
+              <p className="text-(--foreground)">
                 {currentUser?.name} {currentUser?.last_name}
               </p>
 
-              <p className="text-gray-500">{currentUser?.email}</p>
-              <p className="text-gray-500">{currentUser?.phone}</p>
+              <p className="text-(--foreground-secondary)">
+                {currentUser?.email}
+              </p>
+
+              <p className="text-(--foreground-secondary)">
+                {currentUser?.phone}
+              </p>
             </div>
           )}
 
@@ -147,11 +165,13 @@ export default function CustomerStep({ next }: Props) {
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label className=" block mb-1 text-sm font-medium">Imię</label>
+            <label className="block mb-1 text-sm font-medium text-(--foreground)">
+              Imię
+            </label>
 
             <input
               {...register("name")}
-              className=" w-full p-3 border border-gray-200"
+              className="w-full p-3 bg-(--surface) text-(--foreground) border border-(--border) outline-none focus:border-orange-500"
             />
 
             {errors.name && (
@@ -160,37 +180,46 @@ export default function CustomerStep({ next }: Props) {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Nazwisko</label>
+            <label className="block mb-1 text-sm font-medium text-(--foreground)">
+              Nazwisko
+            </label>
 
             <input
               {...register("last_name")}
-              className=" w-full p-3 border border-gray-200"
+              className="w-full p-3 bg-(--surface) text-(--foreground) border border-(--border) outline-none focus:border-orange-500"
             />
+
             {errors.last_name && (
               <p className="text-sm text-red-500">{errors.last_name.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Email</label>
+            <label className="block mb-1 text-sm font-medium text-(--foreground)">
+              Email
+            </label>
 
             <input
               {...register("email")}
-              className=" w-full p-3 border border-gray-200"
+              className="w-full p-3 bg-(--surface) text-(--foreground) border border-(--border) outline-none focus:border-orange-500"
             />
+
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Telefon</label>
+            <label className="block mb-1 text-sm font-medium text-(--foreground)">
+              Telefon
+            </label>
 
             <input
               {...register("phone")}
-              className=" w-full p-3 border border-gray-200"
+              className="w-full p-3 bg-(--surface) text-(--foreground) border border-(--border) outline-none focus:border-orange-500"
               maxLength={9}
             />
+
             {errors.phone && (
               <p className="text-sm text-red-500">{errors.phone.message}</p>
             )}
@@ -215,7 +244,7 @@ export default function CustomerStep({ next }: Props) {
 
             <button
               type="submit"
-              className=" px-6 py-3 text-white bg-orange-500 cursor-pointer"
+              className="hover:bg-orange-600 px-6 py-3 text-white transition bg-orange-500 cursor-pointer"
             >
               Dalej
             </button>

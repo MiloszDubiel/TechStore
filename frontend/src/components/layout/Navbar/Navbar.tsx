@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className=" flex items-center justify-between w-full px-6 py-3 bg-white shadow-md">
+    <nav className="flex w-full items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md">
       <Link to="/" className="text-2xl font-bold text-orange-500">
         IT E-commerce
       </Link>
@@ -42,7 +42,7 @@ const Navbar: React.FC = () => {
 
         <Link
           to="/offers"
-          className=" whitespace-nowrap hover:text-orange-600 font-medium"
+          className="whitespace-nowrap font-medium text-(--foreground-secondary) transition hover:text-orange-500"
         >
           Wszystkie produkty
         </Link>

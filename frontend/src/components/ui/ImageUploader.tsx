@@ -107,21 +107,27 @@ const ImageUploader = ({
       <div
         {...getRootProps()}
         className={`
-          p-10
-          text-center
-          border-2
-          border-dashed
-          cursor-pointer
-          border-gray-300
-
-          ${isDragActive ? "border-orange-500 bg-orange-50" : ""}
-        `}
+      cursor-pointer
+      border-2
+      border-dashed
+      p-10
+      text-center
+      transition
+      ${
+        isDragActive
+          ? "border-orange-500 bg-orange-500/10"
+          : "border-(--border) bg-(--surface-secondary)"
+      }
+    `}
       >
         <input {...getInputProps()} />
 
-        <ImagePlus size={40} className="mx-auto mb-4 text-gray-400" />
+        <ImagePlus
+          size={40}
+          className="mx-auto mb-4 text-(--foreground-secondary)"
+        />
 
-        <p className="text-gray-500">
+        <p className="text-(--foreground-secondary)">
           {isDragActive
             ? "Upuść zdjęcia tutaj"
             : "Przeciągnij zdjęcia lub kliknij"}
@@ -131,19 +137,26 @@ const ImageUploader = ({
       {preview.length > 0 && (
         <div className="grid grid-cols-4 gap-4 mt-5">
           {preview.map((image, index) => (
-            <div key={index} className="relative">
+            <div
+              key={index}
+              className="
+            relative
+            border border-(--border)
+            bg-(--surface)
+          "
+            >
               <img
                 src={image}
-                className="object-cover w-full h-32"
+                className=" object-cover w-full h-32"
                 alt="preview"
               />
 
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className=" top-2 right-2 absolute p-1 text-white bg-red-500"
+                className=" top-2 right-2 hover:bg-red-600 absolute p-1 text-white transition bg-red-500 cursor-pointer"
               >
-                <X size={16} className="cursor-pointer" />
+                <X size={16} />
               </button>
             </div>
           ))}

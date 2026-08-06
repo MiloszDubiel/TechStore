@@ -49,8 +49,17 @@ export default function AddressModal({
 
   return (
     <div className="bg-black/50 fixed inset-0 z-10 flex items-center justify-center">
-      <div className="bg-black/50 fixed inset-0 flex items-center justify-center">
-        <div className=" w-full max-w-md p-6 bg-white">
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div
+          className="
+        w-full max-w-md
+        border border-(--border)
+        bg-(--surface)
+        p-6
+        text-(--foreground)
+        shadow-xl
+      "
+        >
           <h2 className="mb-4 text-xl font-bold">Adres dostawy</h2>
 
           <form
@@ -64,7 +73,16 @@ export default function AddressModal({
 
               <input
                 {...register("city")}
-                className="w-full p-2 border border-gray-200 rounded"
+                className="
+              w-full
+              border border-(--border)
+              bg-(--surface-secondary)
+              p-2
+              text-(--foreground)
+              outline-none
+              placeholder:text-(--foreground-secondary)
+              focus:border-orange-500
+            "
               />
 
               {errors.city && (
@@ -87,7 +105,15 @@ export default function AddressModal({
                     shouldDirty: true,
                   });
                 }}
-                className="w-full p-2 border border-gray-200 rounded"
+                className="
+              w-full
+              border border-(--border)
+              bg-(--surface-secondary)
+              p-2
+              text-(--foreground)
+              outline-none
+              focus:border-orange-500
+            "
               />
 
               {errors.postal_code && (
@@ -104,7 +130,15 @@ export default function AddressModal({
 
               <input
                 {...register("street")}
-                className="w-full p-2 border border-gray-200 rounded"
+                className="
+              w-full
+              border border-(--border)
+              bg-(--surface-secondary)
+              p-2
+              text-(--foreground)
+              outline-none
+              focus:border-orange-500
+            "
               />
 
               {errors.street && (
@@ -121,28 +155,37 @@ export default function AddressModal({
                 {...register("is_default", {
                   setValueAs: (value) => Boolean(value),
                 })}
-                className="w-4 h-4 cursor-pointer"
+                className="accent-orange-500 w-4 h-4 cursor-pointer"
               />
 
               <label
                 htmlFor="is_default"
-                className="text-sm cursor-pointer select-none"
+                className=" text-sm cursor-pointer select-none"
               >
                 Ustaw jako adres domyślny
               </label>
             </div>
+
             <div className="flex gap-3 pt-3">
               <button
                 type="button"
                 onClick={closeModal}
-                className="px-4 py-2 border border-gray-200 cursor-pointer"
+                className="
+              cursor-pointer
+              border border-(--border)
+              bg-(--surface)
+              px-4 py-2
+              text-(--foreground)
+              transition
+              hover:bg-(--surface-secondary)
+            "
               >
                 Anuluj
               </button>
 
               <button
                 type="submit"
-                className="hover:bg-orange-600 px-4 py-2 text-white bg-orange-500 cursor-pointer"
+                className=" hover:bg-orange-600 px-4 py-2 text-white transition bg-orange-500 cursor-pointer"
               >
                 Zapisz adres
               </button>

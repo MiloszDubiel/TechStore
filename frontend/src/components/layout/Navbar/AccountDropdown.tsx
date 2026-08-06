@@ -11,15 +11,11 @@ type Props = {
   seller: [];
 };
 
-const AccountDropdown = ({
-  isAuthenticated,
-  user,
-  logout,
-  onClose,
-}: Props) => {
+const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
   const {
     getCompanyInfo: { data },
   } = useSeller();
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,44 +31,43 @@ const AccountDropdown = ({
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [onClose]);
+
+  const itemClass =
+    "flex items-center gap-3 px-4 py-2 transition hover:bg-(--surface-secondary) hover:text-orange-500";
+
   return (
     <div
-      className="top-10 absolute right-0 z-50 w-56 bg-white border border-gray-300 shadow-lg"
       ref={dropdownRef}
+      className="
+        absolute right-0 top-10 z-50 w-56
+        border border-(--border)
+        bg-(--surface)
+        text-(--foreground)
+        shadow-lg
+      "
     >
       {!isAuthenticated ? (
         <>
-          <Link
-            to="/login"
-            onClick={close}
-            className="hover:bg-orange-50 flex items-center gap-3 px-4 py-2"
-          >
+          <Link to="/login" onClick={onClose} className={itemClass}>
             <LogIn size={18} />
             Zaloguj się
           </Link>
 
-          <Link
-            to="/register"
-            onClick={close}
-            className="hover:bg-orange-50 flex items-center gap-3 px-4 py-2"
-          >
+          <Link to="/register" onClick={onClose} className={itemClass}>
             <UserPlus size={18} />
             Rejestracja
           </Link>
         </>
       ) : (
         <>
-          <div className="px-4 py-3 border-b border-gray-300">
-            <p className="text-sm text-gray-500">Zalogowany:</p>
-            <strong>{user?.email}</strong>
+          <div className="border-b border-(--border) px-4 py-3">
+            <p className="text-sm text-(--foreground-secondary)">Zalogowany:</p>
+
+            <strong className="text-sm">{user?.email}</strong>
           </div>
 
-          <Link
-            to="/profile"
-            onClick={close}
-            className="hover:bg-orange-50 flex items-center gap-3 px-4 py-2"
-          >
+          <Link to="/profile" onClick={onClose} className={itemClass}>
             <User size={18} />
             Mój profil
           </Link>
@@ -80,8 +75,8 @@ const AccountDropdown = ({
           {user?.role === "SELLER" && user?.id === data?.user_id && (
             <Link
               to="/seller/dashboard"
-              onClick={close}
-              className="hover:bg-orange-50 flex items-center gap-3 px-4 py-2"
+              onClick={onClose}
+              className={itemClass}
             >
               <Store size={18} />
               Panel sprzedawcy
@@ -89,22 +84,14 @@ const AccountDropdown = ({
           )}
 
           {user?.role === "ADMIN" && (
-            <Link
-              to="/admin"
-              onClick={close}
-              className="hover:bg-orange-50 flex items-center gap-3 px-4 py-2"
-            >
+            <Link to="/admin" onClick={onClose} className={itemClass}>
               <Shield size={18} />
               Panel administratora
             </Link>
           )}
 
           {user?.role !== "ADMIN" && user?.id !== data?.user_id && (
-            <Link
-              to="/seller/create"
-              onClick={close}
-              className="hover:bg-orange-50 flex items-center gap-3 px-4 py-2"
-            >
+            <Link to="/seller/create" onClick={onClose} className={itemClass}>
               <Store size={18} />
               Zostań sprzedawcą
             </Link>
@@ -112,7 +99,7 @@ const AccountDropdown = ({
 
           <button
             onClick={logout}
-            className="hover:bg-red-50 flex items-center w-full gap-3 px-4 py-2 text-left text-red-500 cursor-pointer"
+            className=" hover:bg-red-500/10 flex items-center w-full gap-3 px-4 py-2 text-left text-red-500 transition cursor-pointer"
           >
             <LogOut size={18} />
             Wyloguj
@@ -122,5 +109,4 @@ const AccountDropdown = ({
     </div>
   );
 };
-
 export default AccountDropdown;

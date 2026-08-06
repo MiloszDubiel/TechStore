@@ -9,15 +9,11 @@ const ChatPage = () => {
 
   const [searchParams] = useSearchParams();
   const seller_ID = searchParams.get("seller_id") || "";
-  
 
   return (
     <>
       <Navbar />
-      <div
-        className="h-[calc(100vh-80px)] flex bg-white border border-gray-300
-"
-      >
+      <div className="h-[calc(100vh-80px)] flex bg-(--surface) border border-(--border)">
         <ConversationList
           selected={selectedConversation}
           onSelect={setSelectedConversation}

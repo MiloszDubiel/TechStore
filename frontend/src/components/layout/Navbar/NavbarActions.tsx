@@ -30,8 +30,11 @@ const NavbarActions = ({
   } = useChat();
 
   return (
-    <div className="flex items-center gap-6">
-      <button onClick={toggleLanguage}>
+    <div className="flex items-center gap-6 text-(--foreground)">
+      <button
+        onClick={toggleLanguage}
+        className="hover:text-orange-500 font-medium transition"
+      >
         {language === "pl" ? "EN" : "PL"}
       </button>
 
@@ -40,16 +43,13 @@ const NavbarActions = ({
           <Heart
             onMouseDown={(e) => {
               e.stopPropagation();
-
               setActive((prev: any) => (prev === "fav" ? null : "fav"));
             }}
-            className="cursor-pointer"
+            className="hover:text-orange-500 transition cursor-pointer"
           />
-          {favorites?.length > 0 && (
-            <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white ">
-              {favorites.length}
-            </div>
-          )}
+          <div className="absolute left-4 top-4 grid h-4 w-4 place-content-center rounded-full bg-orange-500 text-[10px] text-white">
+            {favorites.length}
+          </div>
           {active === "fav" && (
             <FavoritesDropdown onClose={() => setActive(null)} />
           )}
@@ -59,9 +59,9 @@ const NavbarActions = ({
       {user && (
         <div className=" relative">
           <Link to="/chat">
-            <MessageCircle className="cursor-pointer" />
+            <MessageCircle className="hover:text-orange-500 transition cursor-pointer" />
             {data > 0 && (
-              <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white">
+              <div className="absolute left-4 top-4 grid h-4 w-4 place-content-center rounded-full bg-orange-500 text-[10px] text-white">
                 {data}
               </div>
             )}
@@ -77,10 +77,10 @@ const NavbarActions = ({
 
               setActive((prev: any) => (prev === "bell" ? null : "bell"));
             }}
-            className="cursor-pointer"
+            className="hover:text-orange-500 transition cursor-pointer"
           />
           {notificationData[0] && (
-            <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white ">
+            <div className="absolute left-4 top-4 grid h-4 w-4 place-content-center rounded-full bg-orange-500 text-[10px] text-white">
               {notificationData[1]}
             </div>
           )}
@@ -104,7 +104,7 @@ const NavbarActions = ({
           className="cursor-pointer"
         />
         {cart.length > 0 && (
-          <div className="absolute left-4 w-4 h-4 top-4 grid place-content-center bg-orange-500 rounded-full text-[10px] text-white ">
+          <div className="absolute left-4 top-4 grid h-4 w-4 place-content-center rounded-full bg-orange-500 text-[10px] text-white">
             {cart.length}
           </div>
         )}
@@ -116,10 +116,9 @@ const NavbarActions = ({
         <button
           onMouseDown={(e) => {
             e.stopPropagation();
-
             setActive((prev: any) => (prev === "account" ? null : "account"));
           }}
-          className="hover:text-orange-500 flex items-center gap-3 cursor-pointer"
+          className="hover:text-orange-500 flex items-center gap-3 transition cursor-pointer"
         >
           {isAuthenticated ? (
             <>
@@ -128,7 +127,9 @@ const NavbarActions = ({
                   {user?.name} {user?.last_name}
                 </p>
 
-                <p className="mt-1 text-xs text-gray-500">{user?.email}</p>
+                <p className="mt-1 text-xs text-(--foreground-secondary)">
+                  {user?.email}
+                </p>
               </div>
               <div className="flex items-center justify-center w-10 h-10 font-semibold text-white bg-orange-500 rounded-full">
                 {user?.name?.[0]}

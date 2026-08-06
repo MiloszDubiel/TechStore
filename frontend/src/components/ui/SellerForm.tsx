@@ -30,7 +30,6 @@ const SellerProfileForm = ({
 }: Props) => {
   let data = storeData;
 
-
   const {
     register,
     handleSubmit,
@@ -65,22 +64,28 @@ const SellerProfileForm = ({
     });
   };
 
-
   const isEdit = mode === "edit";
   const [values, setValues] = useState<File[]>([]);
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
-      <section className="p-6">
+      <section
+        className="
+      border border-(--border)
+      bg-(--surface)
+      p-6
+    "
+      >
         {hideButton && (
           <button
             type="button"
             onClick={onBack}
-            className="hover:bg-orange-600 px-4 py-3 mb-2 text-white bg-orange-500 cursor-pointer"
+            className=" hover:bg-orange-600 px-4 py-3 mb-2 text-white transition bg-orange-500 cursor-pointer"
           >
             ← Powrót
           </button>
         )}
+
         <div className="flex items-center gap-3 mb-6">
           <Store size={22} className="text-orange-500" />
 
@@ -94,7 +99,16 @@ const SellerProfileForm = ({
             <input
               {...register("shop_name")}
               placeholder="Nazwa sklepu"
-              className="focus:border-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+              className="
+            w-full
+            border border-(--border)
+            bg-(--surface-secondary)
+            px-4 py-3
+            text-(--foreground)
+            outline-none
+            placeholder:text-(--foreground-secondary)
+            focus:border-orange-500
+          "
             />
 
             {errors.shop_name && (
@@ -111,7 +125,17 @@ const SellerProfileForm = ({
               {...register("description")}
               rows={5}
               placeholder="Opis sklepu..."
-              className="focus:border-orange-500 w-full px-4 py-3 border border-gray-300 outline-none resize-none"
+              className="
+            w-full
+            resize-none
+            border border-(--border)
+            bg-(--surface-secondary)
+            px-4 py-3
+            text-(--foreground)
+            outline-none
+            placeholder:text-(--foreground-secondary)
+            focus:border-orange-500
+          "
             />
 
             {errors.description && (
@@ -137,7 +161,6 @@ const SellerProfileForm = ({
               value={values}
               onChange={(files) => {
                 setValues(files);
-
                 setValue("logo", files[0] ?? undefined, {
                   shouldValidate: true,
                 });
@@ -156,7 +179,13 @@ const SellerProfileForm = ({
         </div>
       </section>
 
-      <section className="p-6 bg-white border border-gray-300">
+      <section
+        className="
+      border border-(--border)
+      bg-(--surface)
+      p-6
+    "
+      >
         <div className="flex items-center gap-3 mb-6">
           <Building2 size={22} className="text-orange-500" />
 
@@ -164,79 +193,43 @@ const SellerProfileForm = ({
         </div>
 
         <div className="md:grid-cols-2 grid grid-cols-1 gap-5">
-          <div>
-            <input
-              {...register("company_name")}
-              placeholder="Nazwa firmy"
-              className="input"
-            />
+          {[
+            ["company_name", "Nazwa firmy"],
+            ["nip", "NIP"],
+            ["street", "Ulica"],
+            ["city", "Miasto"],
+            ["postal_code", "Kod pocztowy"],
+          ].map(([field, placeholder]) => (
+            <div key={field}>
+              <input
+                {...register(field)}
+                placeholder={placeholder}
+                className="
+              w-full
+              border border-(--border)
+              bg-(--surface-secondary)
+              px-4 py-3
+              text-(--foreground)
+              outline-none
+              placeholder:text-(--foreground-secondary)
+              focus:border-orange-500
+            "
+              />
 
-            {errors.company_name && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.company_name.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <input
-              {...register("nip")}
-              placeholder="NIP"
-              className="input"
-              maxLength={10}
-            />
-
-            {errors.nip && (
-              <p className="mt-1 text-sm text-red-500">{errors.nip.message}</p>
-            )}
-          </div>
-
-          <div>
-            <input
-              {...register("street")}
-              placeholder="Ulica"
-              className="input"
-            />
-
-            {errors.street && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.street.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <input
-              {...register("city")}
-              placeholder="Miasto"
-              className="input"
-            />
-
-            {errors.city && (
-              <p className="mt-1 text-sm text-red-500">{errors.city.message}</p>
-            )}
-          </div>
-
-          <div>
-            <input
-              {...register("postal_code")}
-              placeholder="Kod pocztowy"
-              className="input"
-            />
-
-            {errors.postal_code && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.postal_code.message}
-              </p>
-            )}
-          </div>
+              {errors[field] && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors[field]?.message}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       </section>
 
       {!hideButton && (
         <button
           disabled={isLoading}
-          className="hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white bg-orange-500"
+          className=" hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white transition bg-orange-500 cursor-pointer"
         >
           {isEdit ? (
             <>

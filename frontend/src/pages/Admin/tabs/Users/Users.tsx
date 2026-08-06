@@ -27,14 +27,12 @@ const Users = () => {
 
   const [onConfirm, setOnConfirm] = useState<(() => void) | undefined>();
 
- 
-
   const {
     users: { data },
     activeUser,
     BanUser,
     updateSeller,
-  } = useAdmin( {
+  } = useAdmin({
     page: page,
     limit: 10,
     search,
@@ -103,65 +101,87 @@ const Users = () => {
 
   return (
     <div>
-      <div className=" flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className=" text-2xl font-bold">Użytkownicy</h1>
+          <h1 className="text-2xl font-bold text-(--foreground)">
+            Użytkownicy
+          </h1>
 
-          <p className=" text-gray-500">Zarządzaj kontami użytkowników</p>
+          <p className="text-(--foreground-secondary)">
+            Zarządzaj kontami użytkowników
+          </p>
         </div>
 
-        <div className=" relative">
+        <div className="relative">
           <Search
             size={18}
-            className=" left-3 top-1/2 absolute text-gray-400 -translate-y-1/2"
+            className="left-3 top-1/2 absolute text-(--foreground-secondary) -translate-y-1/2"
           />
 
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Szukaj użytkownika..."
-            className=" focus:border-orange-500 py-2 pl-10 pr-4 border border-gray-300 outline-none"
+            className="
+          focus:border-orange-500
+          bg-(--surface)
+          text-(--foreground)
+          py-2
+          pl-10
+          pr-4
+          border
+          border-(--border)
+          outline-none
+        "
           />
         </div>
       </div>
 
-      <div className=" grid grid-cols-3 gap-5 mb-8">
-        <div className=" p-5 bg-white border border-gray-200">
-          <p className="text-gray-500">Wszystkich użytkowników</p>
+      <div className="grid grid-cols-3 gap-5 mb-8">
+        <div className="p-5 bg-(--surface) border border-(--border)">
+          <p className="text-(--foreground-secondary)">
+            Wszystkich użytkowników
+          </p>
 
-          <h3 className=" mt-2 text-3xl font-bold">{data?.length}</h3>
+          <h3 className="mt-2 text-3xl font-bold text-(--foreground)">
+            {data?.length}
+          </h3>
         </div>
 
-        <div className=" p-5 bg-white border border-gray-200">
-          <p className="text-gray-500">Sprzedawcy</p>
+        <div className="p-5 bg-(--surface) border border-(--border)">
+          <p className="text-(--foreground-secondary)">Sprzedawcy</p>
 
-          <h3 className=" mt-2 text-3xl font-bold">
+          <h3 className="mt-2 text-3xl font-bold text-(--foreground)">
             {numberOfSellers?.length}
           </h3>
         </div>
 
-        <div className=" p-5 bg-white border border-gray-200">
-          <p className="text-gray-500">Administratorzy</p>
+        <div className="p-5 bg-(--surface) border border-(--border)">
+          <p className="text-(--foreground-secondary)">Administratorzy</p>
 
-          <h3 className=" mt-2 text-3xl font-bold">{numberOfAdmins?.length}</h3>
+          <h3 className="mt-2 text-3xl font-bold text-(--foreground)">
+            {numberOfAdmins?.length}
+          </h3>
         </div>
       </div>
 
-      <div className=" overflow-hidden bg-white border border-gray-200">
-        <table className=" w-full text-left">
-          <thead className=" bg-gray-100 border-b border-gray-200">
+      <div className="overflow-hidden bg-(--surface) border border-(--border)">
+        <table className="w-full text-left">
+          <thead className="bg-(--surface-secondary) border-b border-(--border)">
             <tr>
-              <th className="px-5 py-4">Użytkownik</th>
+              <th className="px-5 py-4 text-(--foreground)">Użytkownik</th>
 
-              <th className="px-5 py-4">Email</th>
+              <th className="px-5 py-4 text-(--foreground)">Email</th>
 
-              <th className="px-5 py-4">Rola</th>
+              <th className="px-5 py-4 text-(--foreground)">Rola</th>
 
-              <th className="px-5 py-4">Data rejestracji</th>
+              <th className="px-5 py-4 text-(--foreground)">
+                Data rejestracji
+              </th>
 
-              <th className="px-5 py-4">Status</th>
+              <th className="px-5 py-4 text-(--foreground)">Status</th>
 
-              <th className="px-5 py-4">Akcje</th>
+              <th className="px-5 py-4 text-(--foreground)">Akcje</th>
             </tr>
           </thead>
 
@@ -169,11 +189,20 @@ const Users = () => {
             {usersList?.map((user: any) => (
               <tr
                 key={user.id}
-                className=" hover:bg-gray-50 border-b border-gray-200"
+                className="
+              hover:bg-(--surface-secondary)
+              border-b
+              border-(--border)
+              transition
+            "
               >
-                <td className="px-5 py-4 font-medium">{user?.name}</td>
+                <td className="px-5 py-4 font-medium text-(--foreground)">
+                  {user?.name}
+                </td>
 
-                <td className="px-5 py-4 text-gray-600">{user?.email}</td>
+                <td className="px-5 py-4 text-(--foreground-secondary)">
+                  {user?.email}
+                </td>
 
                 <td className="px-5 py-4">
                   <span
@@ -183,28 +212,28 @@ const Users = () => {
 
                   ${
                     user.role === "ADMIN"
-                      ? "text-red-600"
+                      ? "text-red-500"
                       : user.role === "SELLER"
-                      ? "text-orange-600"
-                      : "text-gray-700"
+                      ? "text-orange-500"
+                      : "text-(--foreground-secondary)"
                   }
-
-                  `}
+                `}
                   >
                     {user.role}
                   </span>
                 </td>
 
-                <td className="px-5 py-4 text-gray-600">
+                <td className="px-5 py-4 text-(--foreground-secondary)">
                   {new Date(user.created_at).toLocaleDateString("pl-PL")}
                 </td>
-                <td className="px-5 py-4 text-gray-600">
+
+                <td className="px-5 py-4 text-(--foreground-secondary)">
                   {user.is_active == 1 ? "Aktywny" : "Nieaktywny"}
                 </td>
 
-                <td className=" flex gap-3 px-5 py-4">
+                <td className="flex gap-3 px-5 py-4">
                   <button
-                    className=" hover:text-blue-800 text-blue-600"
+                    className="hover:text-blue-800 text-blue-600"
                     onClick={() => {
                       setSelectedUser(user);
                       setEditUser(true);
@@ -212,18 +241,6 @@ const Users = () => {
                   >
                     <UserCog size={19} />
                   </button>
-
-                  {/* {user.role !== "ADMIN" && (
-                    <button
-                      className=" hover:text-red-800 text-red-600"
-                      onClick={() => {
-                        setIsOpen(true);
-                        setCurrentUser(user);
-                      }}
-                    >
-                      <Trash2 size={19} />
-                    </button>
-                  )} */}
 
                   {user.role === "SELLER" && user.seller_id && (
                     <button
@@ -251,12 +268,7 @@ const Users = () => {
                           setIsConfirmOpen(true);
 
                           setOnConfirm(() => () => {
-                            BanUser.mutate(user.id, {
-                              onSuccess: () => {
-                                toast.success("Użytkownik został zablokowany");
-                                setIsConfirmOpen(false);
-                              },
-                            });
+                            BanUser.mutate(user.id);
                           });
                         }}
                       >
@@ -266,11 +278,7 @@ const Users = () => {
                       <button
                         className="hover:text-green-800 text-green-600"
                         onClick={() => {
-                          activeUser.mutate(user.id, {
-                            onSuccess: () => {
-                              toast.success("Użytkownik został odblokowany");
-                            },
-                          });
+                          activeUser.mutate(user.id);
                         }}
                       >
                         <CheckCircle size={19} />
@@ -290,18 +298,11 @@ const Users = () => {
           onConfirm={onConfirm ?? (() => {})}
         />
       </div>
+
       <Pagination
         page={page}
         totalPages={data?.totalPages ?? 1}
         onPageChange={setPage}
-      />
-
-      <ConfirmModal
-        isOpen={isConfirmOpen}
-        title={confirmData.title}
-        message={confirmData.message}
-        onCancel={() => setIsConfirmOpen(false)}
-        onConfirm={onConfirm ?? (() => {})}
       />
     </div>
   );

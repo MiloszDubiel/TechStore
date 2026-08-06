@@ -14,7 +14,6 @@ const CartDropdown = ({ onClose }: any) => {
         dropdownRef.current &&
         !dropdownRef.current.contains(e.target as Node)
       ) {
-      
         onClose();
       }
     };
@@ -28,20 +27,30 @@ const CartDropdown = ({ onClose }: any) => {
 
   return (
     <div
-      className=" top-10 w-125 absolute right-0 z-50 p-4 bg-white border border-gray-300 shadow-xl"
       ref={dropdownRef}
+      className="
+        absolute right-0 top-10 z-50 w-125
+        border border-(--border)
+        bg-(--surface)
+        p-4
+        text-(--foreground)
+        shadow-xl
+      "
     >
       <h2 className="mb-4 text-xl font-bold">Twój koszyk</h2>
 
       {cart.length === 0 ? (
-        <p>Koszyk jest pusty</p>
+        <p className="text-(--foreground-secondary)">Koszyk jest pusty</p>
       ) : (
         <>
           <ul className="max-h-65 overflow-y-auto">
             {cart.map((item: any) => (
               <li
                 key={item.id}
-                className=" flex gap-3 pb-3 mb-3 border-b border-gray-300"
+                className="
+                  mb-3 flex gap-3 border-b
+                  border-(--border) pb-3
+                "
               >
                 <img
                   src={
@@ -51,15 +60,20 @@ const CartDropdown = ({ onClose }: any) => {
                         }/${item.id}/${item.images[0].image}`
                       : "/no-image.png"
                   }
-                  className=" object-cover w-16 h-16"
+                  className="
+                    h-16 w-16
+                    object-cover
+                    bg-(--surface-secondary)
+                  "
+                  alt={item.name}
                 />
 
                 <div className="flex-1">
                   <p className="font-medium">{item.name}</p>
 
-                  <div>
+                  <div className="flex items-center mt-1">
                     <button
-                      className="cursor-pointer"
+                      className=" hover:text-orange-500 text-lg transition cursor-pointer"
                       onClick={() =>
                         updateQuantity(item.id, Math.max(1, item.quantity - 1))
                       }
@@ -67,10 +81,10 @@ const CartDropdown = ({ onClose }: any) => {
                       -
                     </button>
 
-                    <span className="px-2">{item.quantity}</span>
+                    <span className="px-3 text-sm">{item.quantity}</span>
 
                     <button
-                      className="cursor-pointer"
+                      className=" hover:text-orange-500 text-lg transition cursor-pointer"
                       onClick={() =>
                         updateQuantity(
                           item.id,
@@ -83,14 +97,14 @@ const CartDropdown = ({ onClose }: any) => {
                   </div>
                 </div>
 
-                <div>
+                <div className="text-right">
                   <p className="font-bold">
                     {(item.price * item.quantity).toFixed(2)} zł
                   </p>
 
                   <button
                     onClick={() => removeFromCart(item.id)}
-                    className="hover:underline text-xs text-red-500 cursor-pointer"
+                    className=" hover:text-red-400 text-xs text-red-500 transition cursor-pointer"
                   >
                     Usuń
                   </button>
@@ -101,14 +115,14 @@ const CartDropdown = ({ onClose }: any) => {
 
           <button
             onClick={() => navigate("/cart")}
-            className=" w-full py-2 mt-3 text-white bg-orange-500 cursor-pointer"
+            className=" hover:bg-orange-600 w-full py-2 mt-3 text-white transition bg-orange-500 cursor-pointer"
           >
             Przejdź do koszyka
           </button>
 
           <button
             onClick={clearCart}
-            className=" hover:underline w-full mt-2 text-red-500 cursor-pointer"
+            className=" hover:text-red-400 w-full mt-2 text-red-500 transition cursor-pointer"
           >
             Wyczyść
           </button>
@@ -117,5 +131,4 @@ const CartDropdown = ({ onClose }: any) => {
     </div>
   );
 };
-
 export default CartDropdown;

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useFavorite } from "../../../context/FavoritesContext";
 import { useEffect, useRef } from "react";
+
 type Props = {
   onClose: () => void;
 };
@@ -21,24 +22,39 @@ const FavoritesDropdown = ({ onClose }: Props) => {
 
     document.addEventListener("mousedown", handleClickOutside);
 
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
 
   return (
     <div
-      className=" top-10 w-125 absolute right-0 z-50 p-4 bg-white border border-gray-300 shadow-xl"
       ref={dropdownRef}
+      className="
+        absolute right-0 top-10 z-50 w-125
+        border border-(--border)
+        bg-(--surface)
+        p-4
+        text-(--foreground)
+        shadow-xl
+      "
     >
       <h3 className="mb-3 text-lg font-bold">Ulubione produkty</h3>
 
       {favorites.length === 0 ? (
-        <p>Brak ulubionych produktów</p>
+        <p className="text-sm text-(--foreground-secondary)">
+          Brak ulubionych produktów
+        </p>
       ) : (
         <ul className="space-y-3">
           {favorites.map((product: any) => (
             <li
               key={product.id}
-              className=" flex items-center gap-3 pb-2 border-b border-gray-300"
+              className="
+                flex items-center gap-3
+                border-b border-(--border)
+                pb-2
+              "
             >
               <img
                 src={
@@ -48,19 +64,26 @@ const FavoritesDropdown = ({ onClose }: Props) => {
                       }`
                     : "/no-image.png"
                 }
-                className=" object-cover w-12 h-12"
+                alt={product.name}
+                className="
+                  h-12 w-12
+                  object-cover
+                  bg-(--surface-secondary)
+                "
               />
 
               <div className="flex-1">
                 <p className="line-clamp-2 font-medium">{product.name}</p>
 
-                <p className="text-sm text-gray-500">{product.price} zł</p>
+                <p className="text-sm text-(--foreground-secondary)">
+                  {product.price} zł
+                </p>
               </div>
 
               <Link
                 onClick={onClose}
                 to={`/offers/${product.slug}/${product.id}`}
-                className="text-sm text-orange-500"
+                className=" hover:text-orange-400 text-sm text-orange-500 transition"
               >
                 Zobacz
               </Link>

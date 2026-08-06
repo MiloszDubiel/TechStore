@@ -9,8 +9,6 @@ import Pagination from "../../../../components/ui/Pagination";
 import EditProduct from "./EditProduct";
 
 const Products = () => {
-
-
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +24,7 @@ const Products = () => {
     hideProduct,
     showProduct,
     deleteProduct,
-  } = useAdmin( {
+  } = useAdmin({
     page: page,
     limit: 10,
     search,
@@ -46,59 +44,71 @@ const Products = () => {
   return (
     <div>
       <div className="flex justify-between mb-6">
-        <h1 className="text-2xl font-bold">Produkty</h1>
+        <h1 className="text-2xl font-bold text-(--foreground)">Produkty</h1>
 
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Szukaj..."
-          className=" px-4 py-2 border border-gray-300"
+          className="
+        px-4 py-2
+        border border-(--border)
+        bg-(--input)
+        text-(--foreground)
+        outline-none
+        focus:border-orange-500
+      "
         />
       </div>
 
-      <div className=" overflow-hidden bg-white border border-gray-200">
-        <table className="w-full text-left">
-          <thead className="bg-gray-100">
+      <div
+        className="
+      overflow-hidden
+      bg-(--surface)
+      border border-(--border)
+    "
+      >
+        <table className="w-full text-left text-(--foreground)">
+          <thead className="bg-(--surface-secondary)">
             <tr>
               <th className="p-4">Produkt</th>
-
               <th className="p-4">Sklep</th>
               <th className="p-4">Sprzedawca</th>
-
               <th className="p-4">Cena</th>
-
               <th className="p-4">Status</th>
-
               <th className="p-4">Akcje</th>
             </tr>
           </thead>
 
           <tbody>
             {productList.map((product: any) => (
-              <tr key={product.id} className=" border-t border-gray-200">
+              <tr key={product.id} className="border-t border-(--border)">
                 <td className="p-4">
                   <p className="font-semibold">{product.name}</p>
                 </td>
 
                 <td className="p-4">{product.shop_name}</td>
-                <td className="p-4">{product.email}</td>
+
+                <td className="p-4 text-(--foreground-secondary)">
+                  {product.email}
+                </td>
 
                 <td className="p-4">{product.price} zł</td>
 
                 <td className="p-4">
                   {product.is_deleted ? (
-                    <span className="text-red-600">Usunięty</span>
+                    <span className="text-red-500">Usunięty</span>
                   ) : product.is_visible ? (
-                    <span className="text-green-600">Aktywny</span>
+                    <span className="text-green-500">Aktywny</span>
                   ) : (
-                    <span className="text-orange-600">Ukryty</span>
+                    <span className="text-orange-500">Ukryty</span>
                   )}
                 </td>
 
                 <td className="p-4">
                   <div className="flex gap-3">
                     <button
-                      className="text-blue-600"
+                      className=" hover:text-blue-600 text-blue-500 cursor-pointer"
                       onClick={() => {
                         setEditingProduct(product);
                       }}
@@ -108,17 +118,15 @@ const Products = () => {
 
                     {product.is_visible ? (
                       <button
-                        className="text-orange-600"
+                        className=" hover:text-orange-600 text-orange-500 cursor-pointer"
                         onClick={() => {
                           setConfirmData({
                             title: "Ukryć produkt?",
                             message: `Czy na pewno chcesz ukryć produkt "${product.name}"?`,
                           });
-
                           setConfirmAction(() => () => {
                             hideProduct.mutate(product.id);
                           });
-
                           setIsOpen(true);
                         }}
                       >
@@ -126,7 +134,7 @@ const Products = () => {
                       </button>
                     ) : (
                       <button
-                        className="text-green-600"
+                        className=" hover:text-green-600 text-green-500 cursor-pointer"
                         onClick={() => {
                           showProduct.mutate(product.id);
                         }}
@@ -137,17 +145,15 @@ const Products = () => {
 
                     {product.is_deleted != 1 && (
                       <button
-                        className="text-red-600"
+                        className=" hover:text-red-600 text-red-500 cursor-pointer"
                         onClick={() => {
                           setConfirmData({
                             title: "Usunąć produkt?",
                             message: `Czy na pewno chcesz usunąć produkt "${product.name}"?`,
                           });
-
                           setConfirmAction(() => () => {
                             deleteProduct.mutate(product.id);
                           });
-
                           setIsOpen(true);
                         }}
                       >
@@ -161,11 +167,13 @@ const Products = () => {
           </tbody>
         </table>
       </div>
+
       <Pagination
         page={page}
         totalPages={data?.totalPages ?? 1}
         onPageChange={setPage}
       />
+
       <ConfirmModal
         isOpen={isOpen}
         title={confirmData.title}
@@ -176,7 +184,6 @@ const Products = () => {
         }}
         onConfirm={() => {
           confirmAction?.();
-
           setIsOpen(false);
           setConfirmAction(null);
         }}
@@ -184,5 +191,4 @@ const Products = () => {
     </div>
   );
 };
-
 export default Products;

@@ -22,15 +22,20 @@ const DeliveryStep = ({ next, back }: any) => {
     <div>
       <h2 className="mb-5 text-2xl font-bold">Metoda dostawy</h2>
 
-      <label className=" block p-4 mb-3 border border-gray-200 cursor-pointer">
+      <label className="block p-4 mb-3 border border-gray-200 cursor-pointer">
         <input
           type="radio"
           name="delivery"
           checked={method === "courier"}
           onChange={() => {
             setMethod("courier");
+
             updateCheckout({
-              delivery: { method: "courier", price: 15, locker: null },
+              delivery: {
+                method: "courier",
+                price: 15,
+                locker: null,
+              },
             });
           }}
         />
@@ -38,13 +43,14 @@ const DeliveryStep = ({ next, back }: any) => {
         <span className="ml-3">Kurier DHL - 15 zł</span>
       </label>
 
-      <label className=" block p-4 border border-gray-200 cursor-pointer">
+      <label className="block p-4 border border-gray-200 cursor-pointer">
         <input
           type="radio"
           name="delivery"
           checked={method === "locker"}
           onChange={() => {
             setMethod("locker");
+
             updateCheckout({
               delivery: {
                 ...checkoutData.delivery,
@@ -62,13 +68,13 @@ const DeliveryStep = ({ next, back }: any) => {
 
       <div className="flex justify-between mt-8">
         <GrayButton onClick={back}>Wstecz</GrayButton>
+
         <OrangeButton
           disabled={
             !method || (method === "locker" && !checkoutData.delivery?.locker)
           }
           onClick={next}
         >
-          {" "}
           Dalej
         </OrangeButton>
       </div>

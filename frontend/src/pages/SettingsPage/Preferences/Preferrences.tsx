@@ -21,8 +21,11 @@ const Preferences = () => {
   };
 
   const saveSettings = () => {
-    console.log(settings);
-    //TODO save settings to backend
+    if (settings.theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   };
 
   return (

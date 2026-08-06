@@ -53,17 +53,17 @@ const PaymentStep = ({ next, back }: any) => {
           <label
             key={payment?.id}
             className={`
-              block
-              border
-              p-4
-              cursor-pointer
-              transition
-              ${
-                selectedPayment === payment?.id
-                  ? "border-orange-500 bg-orange-50"
-                  : "border-gray-200"
-              }
-            `}
+block
+border
+p-4
+cursor-pointer
+transition
+${
+  selectedPayment === payment?.id
+    ? "border-orange-500 bg-(--surface-secondary) ring-1 ring-orange-500"
+    : "border-(--border) bg-(--surface) hover:border-orange-500"
+}
+`}
           >
             <div className="flex gap-3">
               <input
@@ -85,6 +85,7 @@ const PaymentStep = ({ next, back }: any) => {
 
       <div className="flex justify-between mt-8">
         <GrayButton onClick={back}>Wstecz</GrayButton>
+
         <OrangeButton disabled={!selectedPayment} onClick={next}>
           Dalej
         </OrangeButton>

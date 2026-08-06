@@ -59,7 +59,6 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
       params.delete("stock");
     }
 
-
     params.set("page", "1");
 
     setSearchParams(params);
@@ -77,7 +76,16 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
   const active = selectedBrands.length || min || max || inStock;
 
   return (
-    <aside className=" w-72 space-y-7 p-5 bg-white border border-gray-200 shadow-sm">
+    <aside
+      className="
+      w-72 space-y-7
+      border border-(--border)
+      bg-(--surface)
+      p-5
+      text-(--foreground)
+      shadow-sm
+    "
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Filter size={22} className="text-orange-500" />
@@ -105,7 +113,16 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
             placeholder="Od"
             value={min}
             onChange={(e) => setMin(e.target.value)}
-            className=" w-full px-3 py-2 border border-gray-200 outline-none"
+            className="
+            w-full
+            border border-(--border)
+            bg-(--surface-secondary)
+            px-3 py-2
+            text-(--foreground)
+            outline-none
+            placeholder:text-(--foreground-secondary)
+            focus:border-orange-500
+          "
           />
 
           <input
@@ -113,7 +130,16 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
             placeholder="Do"
             value={max}
             onChange={(e) => setMax(e.target.value)}
-            className=" w-full px-3 py-2 border border-gray-200 outline-none"
+            className="
+            w-full
+            border border-(--border)
+            bg-(--surface-secondary)
+            px-3 py-2
+            text-(--foreground)
+            outline-none
+            placeholder:text-(--foreground-secondary)
+            focus:border-orange-500
+          "
           />
         </div>
       </div>
@@ -125,7 +151,7 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
           <h3 className="font-semibold">Marka</h3>
         </div>
 
-        <div className=" max-h-40 space-y-2 overflow-y-auto">
+        <div className="max-h-40 space-y-2 overflow-y-auto">
           {brands.map((brand) => (
             <label
               key={brand}
@@ -165,7 +191,7 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
       <div className="space-y-3">
         <button
           onClick={updateURL}
-          className=" hover:bg-orange-600 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white bg-orange-500"
+          className=" hover:bg-orange-600 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white transition bg-orange-500 cursor-pointer"
         >
           <Search size={18} />
           Szukaj
@@ -173,7 +199,18 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
 
         <button
           onClick={resetFilters}
-          className=" flex items-center justify-center w-full gap-2 py-3 border border-gray-200"
+          className="
+          flex w-full
+          items-center justify-center
+          gap-2
+          border border-(--border)
+          bg-(--surface)
+          py-3
+          text-(--foreground)
+          transition
+          hover:bg-(--surface-secondary)
+          cursor-pointer
+        "
         >
           <RotateCcw size={18} />
           Resetuj
