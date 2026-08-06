@@ -20,6 +20,10 @@
   --danger: #ef4444;
 }
 
+* {
+  transition-duration: 0.15s !important;
+}
+
 .dark {
   --background: #1a1d23;
   --surface: #242933;

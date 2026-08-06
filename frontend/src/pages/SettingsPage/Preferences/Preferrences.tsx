@@ -1,32 +1,6 @@
-import { useState } from "react";
-
+import { useTheme } from "../../../context/ThemeProvider";
 const Preferences = () => {
-  const [settings, setSettings] = useState({
-    theme: "light",
-    language: "pl",
-    currency: "PLN",
-    marketing: true,
-    productAlerts: true,
-    newsletter: false,
-  });
-
-  const updateSetting = (
-    key: keyof typeof settings,
-    value: string | boolean
-  ) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  const saveSettings = () => {
-    if (settings.theme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+  const { theme, setTheme } = useTheme();
 
   return (
     <div>
@@ -49,18 +23,20 @@ const Preferences = () => {
           </label>
 
           <select
-            value={settings.theme}
-            onChange={(e) => updateSetting("theme", e.target.value)}
+            value={theme}
+            onChange={(e) =>
+              setTheme(e.target.value as "light" | "dark" | "system")
+            }
             className="
-          w-full
-          p-3
-          border
-          border-(--border)
-          bg-(--surface)
-          text-(--foreground)
-          outline-none
-          focus:border-(--primary)
-        "
+    w-full
+    p-3
+    border
+    border-(--border)
+    bg-(--surface)
+    text-(--foreground)
+    outline-none
+    focus:border-(--primary)
+  "
           >
             <option value="light">Jasny</option>
 
@@ -69,56 +45,6 @@ const Preferences = () => {
             <option value="system">Systemowy</option>
           </select>
         </section>
-
-        <section className="p-4 border border-(--border) bg-(--surface)">
-          <h3 className="mb-3 font-semibold text-(--foreground)">
-            Powiadomienia
-          </h3>
-
-          <label className="flex items-center justify-between mb-3 text-(--foreground)">
-            <span>Newsletter</span>
-
-            <input
-              type="checkbox"
-              checked={settings.newsletter}
-              onChange={(e) => updateSetting("newsletter", e.target.checked)}
-            />
-          </label>
-
-          <label className="flex items-center justify-between mb-3 text-(--foreground)">
-            <span>Promocje i rabaty</span>
-
-            <input
-              type="checkbox"
-              checked={settings.marketing}
-              onChange={(e) => updateSetting("marketing", e.target.checked)}
-            />
-          </label>
-
-          <label className="flex items-center justify-between text-(--foreground)">
-            <span>Powiadomienia o zmianie ceny produktu</span>
-
-            <input
-              type="checkbox"
-              checked={settings.productAlerts}
-              onChange={(e) => updateSetting("productAlerts", e.target.checked)}
-            />
-          </label>
-        </section>
-
-        <button
-          onClick={saveSettings}
-          className="
-        hover:bg-(--primary-hover)
-        w-full
-        py-3
-        text-white
-        transition
-        bg-(--primary)
-      "
-        >
-          Zapisz ustawienia
-        </button>
       </div>
     </div>
   );

@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
 import { useAdmin } from "../../../../hooks/useAdmin";
-import { useAuth } from "../../../../context/AuthContext";
 import {
   editUserAdminSchema,
   type EditUserAdminForm,
