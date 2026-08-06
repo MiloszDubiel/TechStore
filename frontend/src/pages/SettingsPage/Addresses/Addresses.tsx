@@ -32,10 +32,19 @@ export const Addresses = () => {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Adresy dostawy</h2>
+      <h2 className="mb-4 text-2xl font-bold text-(--foreground)">
+        Adresy dostawy
+      </h2>
 
       <button
-        className="px-4 py-2 mb-4 text-white bg-orange-500 cursor-pointer"
+        className="
+      hover:bg-(--primary-hover)
+      px-4 py-2 mb-4
+      text-white
+      bg-(--primary)
+      transition
+      cursor-pointer
+    "
         onClick={() => {
           setIsAddressModalOpen(true);
           setCurrentEditAdress({
@@ -50,7 +59,7 @@ export const Addresses = () => {
       >
         Dodaj adres dostawy
       </button>
-      
+
       {userAddresses && userAddresses.length > 0 ? (
         userAddresses?.map((address: any) => (
           <AddressCard
@@ -79,7 +88,7 @@ export const Addresses = () => {
           />
         ))
       ) : (
-        <p className="text-gray-500">Brak zapisanych adresów</p>
+        <p className="text-(--foreground-secondary)">Brak zapisanych adresów</p>
       )}
 
       {isAddressModalOpen && (

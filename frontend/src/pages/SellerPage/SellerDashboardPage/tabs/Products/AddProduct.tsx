@@ -98,9 +98,13 @@ const AddProduct = () => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold">Dodaj produkt</h2>
+        <h2 className="text-2xl font-bold text-(--foreground)">
+          Dodaj produkt
+        </h2>
 
-        <p className="text-gray-500">Utwórz nową ofertę w swoim sklepie</p>
+        <p className="text-(--foreground-secondary)">
+          Utwórz nową ofertę w swoim sklepie
+        </p>
       </div>
 
       <ProductForm

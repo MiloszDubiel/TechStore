@@ -9,7 +9,17 @@ export const GrayButton = ({ onClick, disabled = false, children }: Props) => {
     <button
       onClick={onClick}
       disabled={disabled}
-      className=" hover:bg-gray-100 px-6 py-3 border border-gray-200 cursor-pointer"
+      className="
+        hover:bg-(--surface-secondary)
+        px-6 py-3
+        border border-(--border)
+        bg-(--surface)
+        text-(--foreground)
+        transition
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+        cursor-pointer
+      "
     >
       {children}
     </button>

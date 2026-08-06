@@ -30,22 +30,37 @@ const Preferences = () => {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Preferencje konta</h2>
+      <h2 className="mb-4 text-2xl font-bold text-(--foreground)">
+        Preferencje konta
+      </h2>
 
-      <p className="mb-6 text-gray-500">
+      <p className="mb-6 text-(--foreground-secondary)">
         Zarządzaj ustawieniami swojej aplikacji
       </p>
 
       <div className="max-w-xl space-y-6">
-        <section className="p-4 border border-gray-200">
-          <h3 className="mb-3 font-semibold">Wygląd aplikacji</h3>
+        <section className="p-4 border border-(--border) bg-(--surface)">
+          <h3 className="mb-3 font-semibold text-(--foreground)">
+            Wygląd aplikacji
+          </h3>
 
-          <label className=" block mb-2 text-sm text-gray-600">Motyw</label>
+          <label className="block mb-2 text-sm text-(--foreground-secondary)">
+            Motyw
+          </label>
 
           <select
             value={settings.theme}
             onChange={(e) => updateSetting("theme", e.target.value)}
-            className="w-full p-3 border border-gray-200"
+            className="
+          w-full
+          p-3
+          border
+          border-(--border)
+          bg-(--surface)
+          text-(--foreground)
+          outline-none
+          focus:border-(--primary)
+        "
           >
             <option value="light">Jasny</option>
 
@@ -55,10 +70,12 @@ const Preferences = () => {
           </select>
         </section>
 
-        <section className="p-4 border border-gray-200">
-          <h3 className="mb-3 font-semibold">Powiadomienia</h3>
+        <section className="p-4 border border-(--border) bg-(--surface)">
+          <h3 className="mb-3 font-semibold text-(--foreground)">
+            Powiadomienia
+          </h3>
 
-          <label className="flex items-center justify-between mb-3">
+          <label className="flex items-center justify-between mb-3 text-(--foreground)">
             <span>Newsletter</span>
 
             <input
@@ -68,7 +85,7 @@ const Preferences = () => {
             />
           </label>
 
-          <label className="flex items-center justify-between mb-3">
+          <label className="flex items-center justify-between mb-3 text-(--foreground)">
             <span>Promocje i rabaty</span>
 
             <input
@@ -78,7 +95,7 @@ const Preferences = () => {
             />
           </label>
 
-          <label className="flex items-center justify-between">
+          <label className="flex items-center justify-between text-(--foreground)">
             <span>Powiadomienia o zmianie ceny produktu</span>
 
             <input
@@ -91,7 +108,14 @@ const Preferences = () => {
 
         <button
           onClick={saveSettings}
-          className=" hover:bg-orange-600 w-full py-3 text-white transition bg-orange-500"
+          className="
+        hover:bg-(--primary-hover)
+        w-full
+        py-3
+        text-white
+        transition
+        bg-(--primary)
+      "
         >
           Zapisz ustawienia
         </button>

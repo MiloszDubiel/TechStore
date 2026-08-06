@@ -51,35 +51,37 @@ const Orders = () => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold">Zamówienia</h2>
+        <h2 className="text-2xl font-bold text-(--foreground)">Zamówienia</h2>
 
-        <p className="text-gray-500">Zarządzaj zamówieniami klientów</p>
+        <p className="text-(--foreground-secondary)">
+          Zarządzaj zamówieniami klientów
+        </p>
       </div>
 
-      <div className="flex items-center gap-3 px-4 py-3 mb-6 border border-gray-300">
-        <Search size={20} className="text-gray-400" />
+      <div className="flex items-center gap-3 px-4 py-3 mb-6 border border-(--border)">
+        <Search size={20} className="text-(--foreground-secondary)" />
 
         <input
           placeholder="Szukaj zamówienia..."
-          className="w-full outline-none"
+          className="w-full outline-none bg-transparent text-(--foreground)"
         />
       </div>
 
-      <div className="overflow-x-auto border border-gray-300">
+      <div className="overflow-x-auto border border-(--border)">
         <table className="w-full text-left">
-          <thead className="bg-gray-100">
+          <thead className="bg-(--surface-secondary)">
             <tr>
-              <th className="p-4">Numer</th>
+              <th className="p-4 text-(--foreground)">Numer</th>
 
-              <th className="p-4">Klient</th>
+              <th className="p-4 text-(--foreground)">Klient</th>
 
-              <th className="p-4">Data</th>
+              <th className="p-4 text-(--foreground)">Data</th>
 
-              <th className="p-4">Kwota</th>
+              <th className="p-4 text-(--foreground)">Kwota</th>
 
-              <th className="p-4">Status</th>
+              <th className="p-4 text-(--foreground)">Status</th>
 
-              <th className="p-4">Akcje</th>
+              <th className="p-4 text-(--foreground)">Akcje</th>
             </tr>
           </thead>
 
@@ -88,27 +90,31 @@ const Orders = () => {
               data.map((order: any) => (
                 <tr
                   key={order.id}
-                  className="hover:bg-gray-50 border-t border-gray-300"
+                  className="hover:bg-(--surface-secondary) border-t border-(--border)"
                 >
-                  <td className="p-4 font-semibold">{order.order_number}</td>
+                  <td className="p-4 font-semibold text-(--foreground)">
+                    {order.order_number}
+                  </td>
 
-                  <td className="p-4">
+                  <td className="p-4 text-(--foreground)">
                     {order.customer_name || order.name}{" "}
                     {order.last_name || order.customer_last_name}
                   </td>
 
-                  <td className="p-4">
+                  <td className="p-4 text-(--foreground-secondary)">
                     {new Date(order.created_at).toLocaleDateString()}
                   </td>
 
-                  <td className="p-4 font-semibold">{order.total_price} zł</td>
+                  <td className="p-4 font-semibold text-(--foreground)">
+                    {order.total_price} zł
+                  </td>
 
                   <td className="p-4">
                     <span
                       className={`
                     px-3 py-1 rounded-full text-sm
                     ${getStatusClasses(order.status)}
-                    `}
+                  `}
                     >
                       {orderStatusLabels[order.status]}
                     </span>
@@ -117,7 +123,7 @@ const Orders = () => {
                   <td className="p-4">
                     <button
                       onClick={() => setSelectedOrder(order.id)}
-                      className="hover:text-blue-800 text-blue-600"
+                      className="hover:text-orange-600 text-orange-500"
                     >
                       <Eye size={18} className="cursor-pointer" />
                     </button>
@@ -126,7 +132,10 @@ const Orders = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="p-6 text-center">
+                <td
+                  colSpan={6}
+                  className="p-6 text-center text-(--foreground-secondary)"
+                >
                   Brak zamówień
                 </td>
               </tr>

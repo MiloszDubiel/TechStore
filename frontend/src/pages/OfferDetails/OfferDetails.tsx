@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import {api} from "../../axios";
+import { api } from "../../axios";
 import Navbar from "../../components/layout/Navbar/Navbar";
 import ReviewsList from "../../components/layout/ReviewList";
 import AddReview from "../../components/ui/AddReview";
@@ -68,15 +68,15 @@ const OfferDetails = () => {
   return (
     <>
       <Navbar />
-      <main className=" bg-gray-50 min-h-screen py-10">
-        <div className=" max-w-7xl px-6 mx-auto">
+      <main className="bg-(--background) min-h-screen py-10">
+        <div className="max-w-7xl px-6 mx-auto">
           <div className="lg:grid-cols-12 grid gap-10">
             <div className="lg:col-span-7">
-              <div className="p-6 bg-white border border-gray-300 shadow-sm">
+              <div className="p-6 bg-(--surface) border border-(--border) shadow-sm">
                 <img
                   src={getImages()}
                   alt={product.name}
-                  className=" h-130 object-contain w-full"
+                  className="h-130 object-contain w-full"
                 />
               </div>
 
@@ -86,62 +86,56 @@ const OfferDetails = () => {
                     <button
                       key={img.image}
                       onClick={() => setSelectedImage(index)}
-                      className={`
-              p-1
-              border
-              transition
-              ${
-                selectedImage === index
-                  ? "border-orange-500"
-                  : "border-gray-300 hover:border-gray-400"
-              }
-            `}
+                      className={`p-1 border transition ${
+                        selectedImage === index
+                          ? "border-orange-500"
+                          : "border-(--border) hover:border-orange-300"
+                      }`}
                     >
                       <img
                         src={getImages()}
                         alt=""
-                        className=" object-cover w-20 h-20"
+                        className="object-cover w-20 h-20"
                       />
                     </button>
                   ))}
                 </div>
               )}
             </div>
+
             <div className="lg:col-span-5">
-              <div className=" top-20 sticky p-6 bg-white border border-gray-300 shadow-sm">
-                <h1 className=" text-3xl font-bold leading-tight text-gray-900">
+              <div className="top-20 sticky p-6 bg-(--surface) border border-(--border) shadow-sm">
+                <h1 className="text-3xl font-bold leading-tight text-(--foreground)">
                   {product.name}
                 </h1>
 
-                <div className=" mt-6 text-4xl font-bold text-orange-500">
+                <div className="mt-6 text-4xl font-bold text-orange-500">
                   {Number(product.price).toFixed(2)} zł
                 </div>
 
                 <div className="flex items-center justify-between gap-2 mt-6">
-                  <span className=" p-4 text-gray-600">
-                    Dostępność
+                  <span className="p-4 text-(--foreground-secondary)">
+                    Dostępność{" "}
                     <span
-                      className={`font-semibold   ${
-                        product.stock > 0 ? "text-green-600" : "text-red-600"
+                      className={`font-semibold ${
+                        product.stock ? "text-green-600" : "text-red-600"
                       }`}
                     >
-                      {" "}
-                      {product.stock > 0
+                      {product.stock
                         ? `${product.stock} szt.`
                         : "Brak produktu"}
                     </span>
                   </span>
-                  {product?.seller_id != user?.id && (
-                    <span className="flex">
-                      <button
-                        disabled={!product.stock}
-                        onClick={() => setOpenReport(true)}
-                        className=" hover:bg-orange-600 flex items-center justify-center w-full gap-3 p-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
-                      >
-                        <Flag size={18} />
-                        Zgłoś
-                      </button>
-                    </span>
+
+                  {product?.seller_id !== user?.id && (
+                    <button
+                      disabled={!product.stock}
+                      onClick={() => setOpenReport(true)}
+                      className="hover:bg-orange-600 flex items-center justify-center w-full gap-3 p-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
+                    >
+                      <Flag size={18} />
+                      Zgłoś
+                    </button>
                   )}
                 </div>
 
@@ -150,7 +144,7 @@ const OfferDetails = () => {
                     <button
                       disabled={!product.stock}
                       onClick={() => addToCart(product)}
-                      className=" disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
+                      className="disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-orange-600 flex items-center justify-center w-full gap-3 py-4 font-semibold text-white transition bg-orange-500 cursor-pointer"
                     >
                       <ShoppingCart size={20} />
 
@@ -160,10 +154,10 @@ const OfferDetails = () => {
 
                   {product?.seller_id !== user?.id && user && (
                     <button
-                      onClick={() => {
-                        navigate(`/chat?seller_id=${product?.seller_id}`);
-                      }}
-                      className=" disabled:bg-gray-300 disabled:cursor-not-allowed hover:bg-orange-500 hover:text-white hover:border-b-orange-500 flex items-center justify-center w-full gap-3 py-4 font-semibold text-black transition border border-gray-300 cursor-pointer"
+                      onClick={() =>
+                        navigate(`/chat?seller_id=${product?.seller_id}`)
+                      }
+                      className="hover:bg-orange-500 hover:text-white hover:border-orange-500 flex items-center justify-center w-full gap-3 py-4 font-semibold text-(--foreground) transition border border-(--border) cursor-pointer"
                     >
                       Napisz do sprzedawcy
                     </button>
@@ -176,7 +170,7 @@ const OfferDetails = () => {
                           `/seller/dashboard?tab=products&edit=${product.id}`
                         )
                       }
-                      className=" hover:bg-orange-400 flex items-center justify-center w-full gap-3 py-4 font-semibold text-gray-900 transition bg-white border border-gray-300 cursor-pointer"
+                      className="hover:bg-orange-400 flex items-center justify-center w-full gap-3 py-4 font-semibold text-(--foreground) transition bg-(--surface) border border-(--border) cursor-pointer"
                     >
                       <Edit size={20} />
                       Edytuj produkt
@@ -184,9 +178,9 @@ const OfferDetails = () => {
                   )}
                 </div>
 
-                <div className=" pt-5 mt-6 text-sm text-gray-500 border-t border-gray-200">
+                <div className="pt-5 mt-6 text-sm text-(--foreground-secondary) border-t border-(--border)">
                   Sprzedawca:
-                  <span className=" ml-2 font-semibold text-gray-900">
+                  <span className="ml-2 font-semibold text-(--foreground)">
                     {product.shop_name}
                   </span>
                 </div>
@@ -194,59 +188,77 @@ const OfferDetails = () => {
             </div>
           </div>
 
-          <section className=" p-6 mt-10 bg-white border border-gray-300">
-            <h2 className=" mb-6 text-2xl font-semibold">
+          <section className="p-6 mt-10 bg-(--surface) border border-(--border)">
+            <h2 className="mb-6 text-2xl font-semibold text-(--foreground)">
               Informacje podstawowe
             </h2>
 
-            <div className=" md:grid-cols-2 grid gap-4">
+            <div className="md:grid-cols-2 grid gap-4">
               {[
                 ["Marka", product.brand],
                 ["Model", product.model],
                 ["Kategoria", product.category_name],
                 ["Podkategoria", product.subcategory_name],
               ].map(([name, value]) => (
-                <div key={name} className=" p-4 border border-gray-200">
-                  <p className=" text-sm text-gray-500">{name}</p>
+                <div key={name} className="p-4 border border-(--border)">
+                  <p className="text-sm text-(--foreground-secondary)">
+                    {name}
+                  </p>
 
-                  <p className=" mt-1 font-medium">{value || "Brak"}</p>
+                  <p className="mt-1 font-medium text-(--foreground)">
+                    {value || "Brak"}
+                  </p>
                 </div>
               ))}
             </div>
           </section>
 
-          <section className=" p-6 mt-8 bg-white border border-gray-300">
-            <h2 className=" mb-4 text-2xl font-semibold">Opis</h2>
+          <section className="p-6 mt-8 bg-(--surface) border border-(--border)">
+            <h2 className="mb-4 text-2xl font-semibold text-(--foreground)">
+              Opis
+            </h2>
 
             <p
-              className=" text-gray-700 whitespace-pre-line"
-              dangerouslySetInnerHTML={{ __html: product.description }}
-            ></p>
+              className="text-(--foreground-secondary) whitespace-pre-line"
+              dangerouslySetInnerHTML={{
+                __html: product.description,
+              }}
+            />
           </section>
 
           {product.attributes?.length > 0 && (
-            <section className=" p-6 mt-8 bg-white border border-gray-300">
-              <h2 className=" mb-6 text-2xl font-semibold">Dane techniczne</h2>
+            <section className="p-6 mt-8 bg-(--surface) border border-(--border)">
+              <h2 className="mb-6 text-2xl font-semibold text-(--foreground)">
+                Dane techniczne
+              </h2>
 
-              <div className=" border border-gray-200">
+              <div className="border border-(--border)">
                 {product.attributes.map((attr: any) => (
                   <div
                     key={attr.name}
-                    className=" grid grid-cols-2 p-4 border-b border-gray-200"
+                    className="grid grid-cols-2 p-4 border-b border-(--border)"
                   >
-                    <span className="font-medium">{attr.label}</span>
+                    <span className="font-medium text-(--foreground)">
+                      {attr.label}
+                    </span>
 
-                    <span className="text-gray-600">{attr.value}</span>
+                    <span className="text-(--foreground-secondary)">
+                      {attr.value}
+                    </span>
                   </div>
                 ))}
               </div>
             </section>
           )}
-          <section className="p-6 mt-8 bg-white border border-gray-300">
+
+          {/* SPRZEDAWCA */}
+          <section className="p-6 mt-8 bg-(--surface) border border-(--border)">
             <div className="flex items-center gap-3 mb-6">
               <Store className="text-orange-500" />
 
-              <h2 className="text-2xl font-semibold">Sprzedawca</h2>
+              <h2 className="text-2xl font-semibold text-(--foreground)">
+                Sprzedawca
+              </h2>
             </div>
 
             <div className="md:flex-row md:items-center md:justify-between flex flex-col gap-6">
@@ -260,32 +272,34 @@ const OfferDetails = () => {
                       : "/shop-placeholder.png"
                   }
                   alt={product.shop_name}
-                  className=" object-cover w-24 h-24 border border-gray-300"
+                  className="object-cover w-24 h-24 border border-(--border)"
                 />
 
                 <div>
-                  <h3 className="text-xl font-semibold">
+                  <h3 className="text-xl font-semibold text-(--foreground)">
                     {product.shop_name || "Nieznany sklep"}
                   </h3>
 
                   {product.company_name && (
-                    <p className="mt-1 text-gray-600">{product.company_name}</p>
+                    <p className="mt-1 text-(--foreground-secondary)">
+                      {product.company_name}
+                    </p>
                   )}
 
                   <div className="flex items-center gap-3 mt-3">
                     {product.is_verified ? (
-                      <span className=" px-3 py-1 text-sm text-green-700 bg-green-100">
+                      <span className="px-3 py-1 text-sm text-green-700 bg-green-100">
                         Zweryfikowany sprzedawca
                       </span>
                     ) : (
-                      <span className=" px-3 py-1 text-sm text-orange-700 bg-orange-100">
+                      <span className="px-3 py-1 text-sm text-orange-700 bg-orange-100">
                         Nowy sprzedawca
                       </span>
                     )}
                   </div>
 
                   {product.seller_created_at && (
-                    <p className="mt-3 text-sm text-gray-500">
+                    <p className="mt-3 text-sm text-(--foreground-secondary)">
                       Sprzedaje od:{" "}
                       {new Date(product.seller_created_at).toLocaleDateString(
                         "pl-PL"
@@ -296,22 +310,28 @@ const OfferDetails = () => {
               </div>
 
               <button
-                onClick={() => {
-                  navigate(`/seller/${product.slug}/${product.seller_id}`);
-                }}
-                className=" hover:bg-orange-600 px-6 py-3 text-white bg-orange-500"
+                onClick={() =>
+                  navigate(`/seller/${product.slug}/${product.seller_id}`)
+                }
+                className="hover:bg-orange-600 px-6 py-3 text-white bg-orange-500"
               >
                 Zobacz sklep
               </button>
             </div>
           </section>
 
-          <section className=" mt-12">
-            <h2 className=" mb-6 text-2xl font-semibold">Opinie klientów</h2>
+          {/* OPINIE */}
+          <section className="mt-12">
+            <h2 className="mb-6 text-2xl font-semibold text-(--foreground)">
+              Opinie klientów
+            </h2>
+
             <AddReview productId={id as string} seller_id={product.seller_id} />
+
             <ReviewsList productId={id as string} />
           </section>
         </div>
+
         <ReportOffer
           open={openReport}
           onClose={() => setOpenReport(false)}

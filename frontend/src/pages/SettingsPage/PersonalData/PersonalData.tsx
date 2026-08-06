@@ -4,7 +4,7 @@ import { profileSchema } from "../../../schemas/profileSchema";
 import type { ProfileFormData } from "../../../schemas/profileSchema";
 import { useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import {api} from "../../../axios";
+import { api } from "../../../axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 
@@ -42,7 +42,7 @@ export const PersonalData = () => {
     }
   }, [user, reset]);
 
-  const { mutate, isError, isSuccess } = useMutation({
+  const { mutate, isError } = useMutation({
     mutationFn: (data: ProfileFormData) =>
       api.patch("/api/settings/edit-user/personal-data", data),
 
@@ -62,14 +62,17 @@ export const PersonalData = () => {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold">Dane osobowe</h2>
-
+      <h2 className="mb-4 text-2xl font-bold text-(--foreground)">
+        Dane osobowe
+      </h2>
       <div className="space-y-3">
         <div>
-          <p className="mb-2 text-gray-500">Zarządzaj swoimi danymi konta</p>
+          <p className="mb-2 text-(--foreground-secondary)">
+            Zarządzaj swoimi danymi konta
+          </p>
 
           {isError && (
-            <div className=" bg-orange-50 p-4 text-sm text-red-700 border-l-4 border-orange-500">
+            <div className="bg-orange-50 p-4 text-sm text-red-700 border-l-4 border-(--primary)">
               Wystąpił błąd podczas zapisu
             </div>
           )}
@@ -80,27 +83,53 @@ export const PersonalData = () => {
           >
             <fieldset>
               <div>
-                <label className="border- text-sm text-gray-600">Imię</label>
+                <label className="text-sm text-(--foreground-secondary)">
+                  Imię
+                </label>
 
                 <input
                   {...register("name")}
                   placeholder="Imię"
-                  className="focus:outline-none focus:border-orange-500 w-full p-3 border border-gray-200"
+                  className="
+            focus:outline-none
+            focus:border-(--primary)
+            w-full
+            p-3
+            border
+            border-(--border)
+            bg-(--surface)
+            text-(--foreground)
+            placeholder:text-(--foreground-secondary)
+          "
                 />
               </div>
+
               {errors.name && (
                 <p className="text-sm text-red-500">{errors.name.message}</p>
               )}
 
               <div>
-                <label className="text-sm text-gray-600">Nazwisko</label>
+                <label className="text-sm text-(--foreground-secondary)">
+                  Nazwisko
+                </label>
 
                 <input
                   placeholder="Nazwisko"
                   {...register("last_name")}
-                  className="focus:outline-none focus:border-orange-500 w-full p-3 border border-gray-200"
+                  className="
+            focus:outline-none
+            focus:border-(--primary)
+            w-full
+            p-3
+            border
+            border-(--border)
+            bg-(--surface)
+            text-(--foreground)
+            placeholder:text-(--foreground-secondary)
+          "
                 />
               </div>
+
               {errors.last_name && (
                 <p className="text-sm text-red-500">
                   {errors.last_name.message}
@@ -108,12 +137,24 @@ export const PersonalData = () => {
               )}
 
               <div>
-                <label className="text-sm text-gray-600">Email</label>
+                <label className="text-sm text-(--foreground-secondary)">
+                  Email
+                </label>
 
                 <input
                   {...register("email")}
                   placeholder="Email"
-                  className="w-full p-3 border border-gray-200"
+                  className="
+            focus:outline-none
+            focus:border-(--primary)
+            w-full
+            p-3
+            border
+            border-(--border)
+            bg-(--surface)
+            text-(--foreground)
+            placeholder:text-(--foreground-secondary)
+          "
                 />
 
                 {errors.email && (
@@ -122,7 +163,7 @@ export const PersonalData = () => {
               </div>
 
               <div>
-                <label className="text-sm text-gray-600 border-gray-200">
+                <label className="text-sm text-(--foreground-secondary)">
                   Telefon
                 </label>
 
@@ -130,8 +171,19 @@ export const PersonalData = () => {
                   {...register("phone")}
                   placeholder="Telefon"
                   maxLength={9}
-                  className="focus:outline-none focus:border-orange-500 w-full p-3 border border-gray-200"
+                  className="
+            focus:outline-none
+            focus:border-(--primary)
+            w-full
+            p-3
+            border
+            border-(--border)
+            bg-(--surface)
+            text-(--foreground)
+            placeholder:text-(--foreground-secondary)
+          "
                 />
+
                 {errors.phone && (
                   <p className="text-sm text-red-500">{errors.phone.message}</p>
                 )}
@@ -139,7 +191,14 @@ export const PersonalData = () => {
 
               <div className="flex gap-3 pt-4">
                 <button
-                  className="hover:bg-orange-600 flex-1 py-3 text-white transition bg-orange-500"
+                  className="
+            hover:bg-(--primary-hover)
+            flex-1
+            py-3
+            text-white
+            transition
+            bg-(--primary)
+          "
                   disabled={isSubmitting}
                   type="submit"
                 >
@@ -147,7 +206,15 @@ export const PersonalData = () => {
                 </button>
 
                 <button
-                  className="hover:bg-gray-100 flex-1 py-3 transition border"
+                  className="
+            hover:bg-(--surface-secondary)
+            flex-1
+            py-3
+            transition
+            border
+            border-(--border)
+            text-(--foreground)
+          "
                   type="reset"
                 >
                   Anuluj

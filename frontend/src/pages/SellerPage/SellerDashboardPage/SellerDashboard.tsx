@@ -5,13 +5,7 @@ import AddProduct from "./tabs/Products/AddProduct";
 import SellerSettings from "./SellerSettings";
 import Overview from "./Overview";
 
-import {
-  Package,
-  ShoppingCart,
-  Plus,
-  Settings,
-  Store,
-} from "lucide-react";
+import { Package, ShoppingCart, Plus, Settings, Store } from "lucide-react";
 import Navbar from "../../../components/layout/Navbar/Navbar";
 
 const tabs = [
@@ -76,37 +70,39 @@ const SellerDashboard = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-gray-50 min-h-screen">
-        <section className=" py-14 text-center text-white bg-orange-500">
+      <div className="bg-(--background) min-h-screen">
+        <section className="py-14 text-center text-white bg-orange-500">
           <h1 className="text-4xl font-bold">Panel sprzedawcy</h1>
 
           <p className="mt-2">Zarządzaj swoim sklepem</p>
         </section>
 
-        <main className=" container grid grid-cols-12 gap-8 px-6 py-10 mx-auto">
-          <aside className=" h-fit col-span-3 bg-white shadow">
+        <main className="container grid grid-cols-12 gap-8 px-6 py-10 mx-auto">
+          <aside className="h-fit col-span-3 bg-(--surface) shadow">
             {tabs.map((tab) => {
               const Icon = tab.icon;
+
               return (
                 <button
                   key={tab.id}
                   onClick={() => changeTab(tab.id)}
                   className={`
-                    w-full
-                    flex
-                    items-center
-                    gap-3
-                    p-4
-                    border-b
-                    border-gray-200
-                    cursor-pointer
-                    
-                    ${
-                      activeTab === tab.id
-                        ? "bg-orange-500 text-white"
-                        : "hover:bg-gray-100"
-                    }
-                  `}
+              w-full
+              flex
+              items-center
+              gap-3
+              p-4
+              border-b
+              border-(--border)
+              cursor-pointer
+              text-(--foreground)
+              
+              ${
+                activeTab === tab.id
+                  ? "bg-(--primary) text-white"
+                  : "hover:bg-(--surface-secondary)"
+              }
+            `}
                 >
                   <Icon size={20} />
 
@@ -116,7 +112,7 @@ const SellerDashboard = () => {
             })}
           </aside>
 
-          <section className="col-span-9 p-6 bg-white border border-gray-300 shadow">
+          <section className="col-span-9 p-6 bg-(--surface) border border-(--border) shadow">
             {renderContent()}
           </section>
         </main>

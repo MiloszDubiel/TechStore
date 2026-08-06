@@ -1,4 +1,3 @@
-import { useAuth } from "../../../context/AuthContext";
 import { useOrders } from "../../../hooks/useOrders";
 import { useState } from "react";
 import OrderDetails from "./OrderDetails";
@@ -19,27 +18,38 @@ const Orders = () => {
   }
   return (
     <>
-      <h2 className="mb-6 text-2xl font-bold">Moje zamówienia</h2>
+      <h2 className="mb-6 text-2xl font-bold text-(--foreground)">
+        Moje zamówienia
+      </h2>
 
       <div className="space-y-4">
         {orders.length > 0
           ? orders.map((order: any) => (
               <div
                 key={order.id}
-                className="flex items-center justify-between p-5 border border-gray-200"
+                className="
+            flex
+            items-center
+            justify-between
+            p-5
+            border border-(--border)
+            bg-(--surface)
+          "
               >
                 <div>
-                  <p className="font-semibold">
+                  <p className="font-semibold text-(--foreground)">
                     Zamówienie {order.order_number}
                   </p>
 
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-(--foreground-secondary)">
                     {new Date(order.created_at).toLocaleDateString()}
                   </p>
 
-                  <p className="text-sm">{order.items_count} produktów</p>
+                  <p className="text-sm text-(--foreground)">
+                    {order.items_count} produktów
+                  </p>
 
-                  <p className="font-bold text-orange-500">
+                  <p className="font-bold text-(--primary)">
                     {order.total_price} zł
                   </p>
                 </div>

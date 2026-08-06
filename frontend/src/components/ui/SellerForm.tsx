@@ -80,21 +80,32 @@ const SellerProfileForm = ({
           <button
             type="button"
             onClick={onBack}
-            className=" hover:bg-orange-600 px-4 py-3 mb-2 text-white transition bg-orange-500 cursor-pointer"
+            className="
+          hover:bg-(--primary-hover)
+          px-4 py-3 mb-2
+          text-white
+          transition
+          bg-(--primary)
+          cursor-pointer
+        "
           >
             ← Powrót
           </button>
         )}
 
         <div className="flex items-center gap-3 mb-6">
-          <Store size={22} className="text-orange-500" />
+          <Store size={22} className="text-(--primary)" />
 
-          <h2 className="text-xl font-semibold">Dane sklepu</h2>
+          <h2 className="text-xl font-semibold text-(--foreground)">
+            Dane sklepu
+          </h2>
         </div>
 
         <div className="space-y-5">
           <div>
-            <label className="block mb-2 font-medium">Nazwa sklepu</label>
+            <label className="block mb-2 font-medium text-(--foreground)">
+              Nazwa sklepu
+            </label>
 
             <input
               {...register("shop_name")}
@@ -107,7 +118,7 @@ const SellerProfileForm = ({
             text-(--foreground)
             outline-none
             placeholder:text-(--foreground-secondary)
-            focus:border-orange-500
+            focus:border-(--primary)
           "
             />
 
@@ -119,7 +130,9 @@ const SellerProfileForm = ({
           </div>
 
           <div>
-            <label className="block mb-2 font-medium">Opis sklepu</label>
+            <label className="block mb-2 font-medium text-(--foreground)">
+              Opis sklepu
+            </label>
 
             <textarea
               {...register("description")}
@@ -134,7 +147,7 @@ const SellerProfileForm = ({
             text-(--foreground)
             outline-none
             placeholder:text-(--foreground-secondary)
-            focus:border-orange-500
+            focus:border-(--primary)
           "
             />
 
@@ -146,7 +159,9 @@ const SellerProfileForm = ({
           </div>
 
           <div>
-            <label className="block mb-2 font-medium">Logo sklepu</label>
+            <label className="block mb-2 font-medium text-(--foreground)">
+              Logo sklepu
+            </label>
 
             <ImageUploader
               images={
@@ -161,6 +176,7 @@ const SellerProfileForm = ({
               value={values}
               onChange={(files) => {
                 setValues(files);
+
                 setValue("logo", files[0] ?? undefined, {
                   shouldValidate: true,
                 });
@@ -187,9 +203,11 @@ const SellerProfileForm = ({
     "
       >
         <div className="flex items-center gap-3 mb-6">
-          <Building2 size={22} className="text-orange-500" />
+          <Building2 size={22} className="text-(--primary)" />
 
-          <h2 className="text-xl font-semibold">Dane firmy</h2>
+          <h2 className="text-xl font-semibold text-(--foreground)">
+            Dane firmy
+          </h2>
         </div>
 
         <div className="md:grid-cols-2 grid grid-cols-1 gap-5">
@@ -199,7 +217,7 @@ const SellerProfileForm = ({
             ["street", "Ulica"],
             ["city", "Miasto"],
             ["postal_code", "Kod pocztowy"],
-          ].map(([field, placeholder]) => (
+          ].map(([field, placeholder]: any) => (
             <div key={field}>
               <input
                 {...register(field)}
@@ -212,13 +230,13 @@ const SellerProfileForm = ({
               text-(--foreground)
               outline-none
               placeholder:text-(--foreground-secondary)
-              focus:border-orange-500
+              focus:border-(--primary)
             "
               />
 
-              {errors[field] && (
+              {(errors as any)[field] && (
                 <p className="mt-1 text-sm text-red-500">
-                  {errors[field]?.message}
+                  {(errors as any)[field]?.message}
                 </p>
               )}
             </div>
@@ -229,7 +247,19 @@ const SellerProfileForm = ({
       {!hideButton && (
         <button
           disabled={isLoading}
-          className=" hover:bg-orange-600 disabled:opacity-50 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white transition bg-orange-500 cursor-pointer"
+          className="
+        hover:bg-(--primary-hover)
+        disabled:opacity-50
+        flex items-center justify-center
+        w-full
+        gap-2
+        py-3
+        font-semibold
+        text-white
+        transition
+        bg-(--primary)
+        cursor-pointer
+      "
         >
           {isEdit ? (
             <>

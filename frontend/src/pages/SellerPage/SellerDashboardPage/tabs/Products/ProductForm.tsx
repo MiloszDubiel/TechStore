@@ -67,7 +67,7 @@ const ProductForm = ({
     queryKey: ["subcategory-parameters", selectedSubcategory],
 
     queryFn: async () => {
-      const res = await api .get(
+      const res = await api.get(
         `/api/seller/subcategories/${selectedSubcategory}/parameters`
       );
 
@@ -103,49 +103,57 @@ const ProductForm = ({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
-        <label className="block mb-2 font-medium">Nazwa produktu</label>
+        <label className="block mb-2 font-medium text-(--foreground)">
+          Nazwa produktu
+        </label>
 
         <input
           {...register("name")}
           placeholder="Np. Lenovo Legion 5"
-          className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+          className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-(--border) bg-(--surface) text-(--foreground) outline-none"
         />
 
         <FormError message={errors.name?.message} />
       </div>
 
       <div>
-        <label className="block mb-2 font-medium">Producent</label>
+        <label className="block mb-2 font-medium text-(--foreground)">
+          Producent
+        </label>
 
         <input
           {...register("brand")}
           placeholder="Np. Lenovo"
-          className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+          className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-(--border) bg-(--surface) text-(--foreground) outline-none"
         />
 
         <FormError message={errors?.brand?.message} />
       </div>
 
       <div>
-        <label className="block mb-2 font-medium">Model</label>
+        <label className="block mb-2 font-medium text-(--foreground)">
+          Model
+        </label>
 
         <input
           {...register("model")}
           placeholder="Np. Legion 5 15ACH6"
-          className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+          className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-(--border) bg-(--surface) text-(--foreground) outline-none"
         />
 
         <FormError message={errors?.model?.message} />
       </div>
 
       <div>
-        <label className="block mb-2 font-medium">Opis</label>
+        <label className="block mb-2 font-medium text-(--foreground)">
+          Opis
+        </label>
 
         <textarea
           {...register("description")}
           rows={6}
           placeholder="Opis produktu..."
-          className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none resize-none"
+          className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-(--border) bg-(--surface) text-(--foreground) outline-none resize-none"
         />
 
         <FormError message={errors?.description?.message} />
@@ -153,26 +161,30 @@ const ProductForm = ({
 
       <div className="md:grid-cols-2 grid grid-cols-1 gap-6">
         <div>
-          <label className="block mb-2 font-medium">Cena</label>
+          <label className="block mb-2 font-medium text-(--foreground)">
+            Cena
+          </label>
 
           <input
             type="number"
             {...register("price")}
             placeholder="0.00"
-            className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300"
+            className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-(--border) bg-(--surface) text-(--foreground)"
           />
 
           <FormError message={errors?.price?.message} />
         </div>
 
         <div>
-          <label className="block mb-2 font-medium">Stan magazynowy</label>
+          <label className="block mb-2 font-medium text-(--foreground)">
+            Stan magazynowy
+          </label>
 
           <input
             type="number"
             {...register("stock")}
             placeholder="0"
-            className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300"
+            className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-(--border) bg-(--surface) text-(--foreground)"
           />
 
           <FormError message={errors?.stock?.message} />
@@ -180,7 +192,9 @@ const ProductForm = ({
       </div>
 
       <div>
-        <label className="block mb-2 font-medium">Kategoria</label>
+        <label className="block mb-2 font-medium text-(--foreground)">
+          Kategoria
+        </label>
 
         <select
           {...register("category_id")}
@@ -188,7 +202,7 @@ const ProductForm = ({
             setValue("category_id", e.target.value);
             setValue("subcategory_id", "");
           }}
-          className="w-full px-4 py-3 border border-gray-300"
+          className="w-full px-4 py-3 border border-(--border) bg-(--surface) text-(--foreground)"
         >
           <option value="">Wybierz kategorię</option>
 
@@ -203,7 +217,9 @@ const ProductForm = ({
       </div>
 
       <div>
-        <label className="block mb-2 font-medium">Podkategoria</label>
+        <label className="block mb-2 font-medium text-(--foreground)">
+          Podkategoria
+        </label>
 
         <select
           {...register("subcategory_id")}
@@ -212,7 +228,7 @@ const ProductForm = ({
               shouldValidate: true,
             });
           }}
-          className="w-full px-4 py-3 border border-gray-300"
+          className="w-full px-4 py-3 border border-(--border) bg-(--surface) text-(--foreground)"
         >
           <option value="">Wybierz podkategorię</option>
 
@@ -226,91 +242,101 @@ const ProductForm = ({
         <FormError message={errors?.subcategory_id?.message} />
       </div>
 
-      <div className="p-5 border border-gray-300">
+      <div className="p-5 border border-(--border) bg-(--surface)">
         <div className="flex items-center justify-between mb-4">
-          <label className="text-lg font-medium">Parametry produktu</label>
+          <label className="text-lg font-medium text-(--foreground)">
+            Parametry produktu
+          </label>
         </div>
 
-        <div className="overflow-hidden border border-gray-200">
-          <div className="grid grid-cols-[1fr_1fr_60px] bg-gray-50 border-b border-gray-300">
-            <div className="px-4 py-3 font-medium">Nazwa parametru</div>
-            <div className="px-4 py-3 font-medium">Wartość</div>
+        <div className="overflow-hidden border border-(--border)">
+          <div className="grid grid-cols-[1fr_1fr_60px] bg-(--surface-secondary) border-b border-(--border)">
+            <div className="px-4 py-3 font-medium text-(--foreground)">
+              Nazwa parametru
+            </div>
+
+            <div className="px-4 py-3 font-medium text-(--foreground)">
+              Wartość
+            </div>
+
             <div />
           </div>
 
-          {fields.map((field: any, index) => {
-            return (
-              <div
-                key={field.id}
-                className="grid grid-cols-[1fr_1fr] items-center gap-4 p-3 border-b border-gray-300"
-              >
-                <div>
-                  <label className="font-medium">
-                    {field.label || field.name}
-                  </label>
+          {fields.map((field: any, index) => (
+            <div
+              key={field.id}
+              className="grid grid-cols-[1fr_1fr] items-center gap-4 p-3 border-b border-(--border)"
+            >
+              <div>
+                <label className="font-medium text-(--foreground)">
+                  {field.label || field.name}
+                </label>
 
-                  <input
-                    type="hidden"
-                    value={field.parameter_id}
-                    {...register(`attributes.${index}.parameter_id`)}
-                  />
+                <input
+                  type="hidden"
+                  value={field.parameter_id}
+                  {...register(`attributes.${index}.parameter_id`)}
+                />
 
-                  <input
-                    type="hidden"
-                    value={field.name}
-                    {...register(`attributes.${index}.name`)}
-                  />
+                <input
+                  type="hidden"
+                  value={field.name}
+                  {...register(`attributes.${index}.name`)}
+                />
 
-                  <input
-                    value={field.label}
-                    type="hidden"
-                    {...register(`attributes.${index}.label`)}
-                  />
+                <input
+                  value={field.label}
+                  type="hidden"
+                  {...register(`attributes.${index}.label`)}
+                />
 
-                  <input
-                    type="hidden"
-                    value={field.type}
-                    {...register(`attributes.${index}.type`)}
-                  />
-                </div>
-
-                <div>
-                  {field.type === "select" ? (
-                    <select
-                      {...register(`attributes.${index}.value`)}
-                      className="w-full px-4 py-2 border border-gray-300"
-                    >
-                      <option value="">Wybierz</option>
-
-                      {field.options?.map((opt: any) => (
-                        <option key={opt.id} value={opt.value}>
-                          {opt.value}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <>
-                      <input
-                        type={field.type === "number" ? "number" : "text"}
-                        {...register(`attributes.${index}.value`)}
-                        className="w-full px-4 py-2 border border-gray-300"
-                        placeholder={`Podaj ${field.label}`}
-                      />
-                      <FormError
-                        message={
-                          (errors as any)?.attributes?.[index]?.value?.message
-                        }
-                      />
-                    </>
-                  )}
-                </div>
+                <input
+                  type="hidden"
+                  value={field.type}
+                  {...register(`attributes.${index}.type`)}
+                />
               </div>
-            );
-          })}
+
+              <div>
+                {field.type === "select" ? (
+                  <select
+                    {...register(`attributes.${index}.value`)}
+                    className="w-full px-4 py-2 border border-(--border) bg-(--surface) text-(--foreground)"
+                  >
+                    <option value="">Wybierz</option>
+
+                    {field.options?.map((opt: any) => (
+                      <option key={opt.id} value={opt.value}>
+                        {opt.value}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <>
+                    <input
+                      type={field.type === "number" ? "number" : "text"}
+                      {...register(`attributes.${index}.value`)}
+                      className="w-full px-4 py-2 border border-(--border) bg-(--surface) text-(--foreground)"
+                      placeholder={`Podaj ${field.label}`}
+                    />
+
+                    <FormError
+                      message={
+                        (errors as any)?.attributes?.[index]?.value?.message
+                      }
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-      <div className="p-6 bg-white border border-gray-300">
-        <h2 className="mb-3 text-xl font-semibold">Zdjęcia</h2>
+
+      <div className="p-6 bg-(--surface) border border-(--border)">
+        <h2 className="mb-3 text-xl font-semibold text-(--foreground)">
+          Zdjęcia
+        </h2>
 
         <ImageUploader
           images={existingImages}
@@ -326,6 +352,7 @@ const ProductForm = ({
           replace={false}
           maxFiles={8}
         />
+
         <FormError message={errors?.images?.message} />
       </div>
 

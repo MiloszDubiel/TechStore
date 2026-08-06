@@ -73,13 +73,13 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
         Powrót
       </button>
 
-      <section className="flex justify-between p-6 bg-white border border-gray-300">
+      <section className="flex justify-between p-6 bg-(--surface) border border-(--border)">
         <div>
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl font-bold text-(--foreground)">
             Zamówienie #{order.order_number}
           </h1>
 
-          <p className="text-gray-500">
+          <p className="text-(--foreground-secondary)">
             {new Date(order.created_at).toLocaleString("pl-PL")}
           </p>
         </div>
@@ -92,23 +92,19 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="px-4 py-2 border border-gray-300"
+            className="px-4 py-2 bg-(--surface) text-(--foreground) border border-(--border)"
           >
             <option value="NEW">Nowe</option>
-
             <option value="PROCESSING">W realizacji</option>
-
             <option value="SHIPPED">Wysłane</option>
-
             <option value="COMPLETED">Zakończone</option>
-
             <option value="CANCELLED">Anulowane</option>
           </select>
 
           <button
             onClick={saveStatus}
             disabled={updateOrderStatus.isPending || status === order.status}
-            className=" hover:bg-orange-600 disabled:bg-gray-300 px-4 py-2 text-white bg-orange-500 cursor-pointer"
+            className="hover:bg-orange-600 disabled:bg-gray-300 px-4 py-2 text-white bg-orange-500 cursor-pointer"
           >
             Zapisz
           </button>
@@ -116,60 +112,60 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
       </section>
 
       <div className="lg:grid-cols-2 grid gap-6">
-        <section className="p-6 bg-white border border-gray-300">
-          <h2 className="flex items-center gap-2 mb-5 text-xl font-semibold">
+        <section className="p-6 bg-(--surface) border border-(--border)">
+          <h2 className="flex items-center gap-2 mb-5 text-xl font-semibold text-(--foreground)">
             <User size={20} />
             Klient
           </h2>
 
-          <p>
+          <p className="text-(--foreground)">
             Imię:
             <b className="ml-2">{order.customer.first_name}</b>
           </p>
 
-          <p>
+          <p className="text-(--foreground)">
             Nazwisko:
             <b className="ml-2">{order.customer.last_name}</b>
           </p>
 
-          <p>
+          <p className="text-(--foreground)">
             Telefon:
             <b className="ml-2">{order.customer.phone}</b>
           </p>
         </section>
 
-        <section className="p-6 bg-white border border-gray-300">
-          <h2 className="flex items-center gap-2 mb-5 text-xl font-semibold">
+        <section className="p-6 bg-(--surface) border border-(--border)">
+          <h2 className="flex items-center gap-2 mb-5 text-xl font-semibold text-(--foreground)">
             <Truck size={20} />
             Dostawa
           </h2>
 
-          <p>
+          <p className="text-(--foreground)">
             Metoda:
             <b className="ml-2">
-              {order.delivery.method == "LOCKER" ? "Paczkomat" : "Kurier"}
+              {order.delivery.method === "LOCKER" ? "Paczkomat" : "Kurier"}
             </b>
           </p>
 
-          <p>
+          <p className="text-(--foreground)">
             Cena:
             <b className="ml-2">{order.delivery.price} zł</b>
           </p>
 
           {order.delivery.locker ? (
-            <div className="bg-gray-50 p-4 mt-4">
-              <p>
+            <div className="bg-(--surface-secondary) p-4 mt-4">
+              <p className="text-(--foreground)">
                 Paczkomat:
                 <b className="ml-2">{order.delivery.locker.name}</b>
               </p>
 
-              <p>
+              <p className="text-(--foreground)">
                 Adres:
                 <b className="ml-2">{order.delivery.locker.address}</b>
               </p>
             </div>
           ) : (
-            <div className="bg-gray-50 p-4 mt-4">
+            <div className="bg-(--surface-secondary) p-4 mt-4 text-(--foreground)">
               <MapPin size={18} />
 
               <p>{order.customer.address.street}</p>
@@ -185,20 +181,20 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
         </section>
       </div>
 
-      <section className="p-6 bg-white border border-gray-300">
-        <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
+      <section className="p-6 bg-(--surface) border border-(--border)">
+        <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold text-(--foreground)">
           <CreditCard size={20} />
           Płatność
         </h2>
 
-        <p>
+        <p className="text-(--foreground)">
           Metoda:
           <b className="ml-2">{order.payment_method}</b>
         </p>
       </section>
 
-      <section className="p-6 bg-white border border-gray-300">
-        <h2 className="flex items-center gap-2 mb-6 text-xl font-semibold">
+      <section className="p-6 bg-(--surface) border border-(--border)">
+        <h2 className="flex items-center gap-2 mb-6 text-xl font-semibold text-(--foreground)">
           <Package size={22} />
           Produkty
         </h2>
@@ -207,7 +203,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
           {order.items.map((item: any) => (
             <div
               key={item.id}
-              className="flex gap-5 p-4 border border-gray-200"
+              className="flex gap-5 p-4 border border-(--border)"
             >
               <div className="flex gap-2">
                 {item.images?.map((img: any) => (
@@ -219,7 +215,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
                 ))}
               </div>
 
-              <div className="flex-1">
+              <div className="flex-1 text-(--foreground)">
                 <h3 className="font-semibold">{item.name}</h3>
 
                 <p>
@@ -233,16 +229,15 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
                 </p>
               </div>
 
-              <div className="text-xl font-bold">
-                {(Number(item.price) * item.quantity).toFixed(2)}
-                {" zł"}
+              <div className="text-xl font-bold text-(--foreground)">
+                {(Number(item.price) * item.quantity).toFixed(2)} zł
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="flex justify-end p-6 text-2xl font-bold bg-white border border-gray-300">
+      <section className="flex justify-end p-6 text-2xl font-bold bg-(--surface) border border-(--border) text-(--foreground)">
         Razem:
         <span className="ml-2 text-orange-600">{order.total_price} zł</span>
       </section>

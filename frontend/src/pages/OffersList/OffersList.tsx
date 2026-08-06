@@ -18,7 +18,7 @@ const OffersList = () => {
   const fetchProducts = async () => {
     const params = Object.fromEntries(searchParams.entries());
 
-    const res = await api .get("/api/products/products", {
+    const res = await api.get("/api/products/products", {
       params: {
         ...params,
         limit: 10,
@@ -91,7 +91,7 @@ const OffersList = () => {
               <div className="flex flex-col items-end mb-4">
                 <div className="w-full">
                   {searchParams.get("search") && (
-                    <h1 className="mb-2 text-gray-600">
+                    <h1 className="mb-2 text-(--foreground-secondary)">
                       Wyniki wyszukiwania dla frazy:{" "}
                       <span className="font-semibold text-orange-500">
                         {searchParams.get("search")}
@@ -100,10 +100,13 @@ const OffersList = () => {
                   )}
                 </div>
 
-                <h3 className="mb-2 font-semibold">Sortuj</h3>
+                <h3 className="mb-2 font-semibold text-(--foreground)">
+                  Sortuj
+                </h3>
+
                 <select
                   disabled
-                  className="w-52 focus:border-orange-500 focus:ring focus:ring-orange-200 px-2 py-1 border border-gray-200"
+                  className="w-52 focus:border-orange-500 focus:ring focus:ring-orange-200 px-2 py-1 border border-(--border) bg-(--surface) text-(--foreground)"
                 >
                   <option value="">Domyślnie</option>
                   <option value="price_asc">Cena rosnąco</option>
@@ -111,37 +114,43 @@ const OffersList = () => {
                   <option value="rating_desc">Najlepsze oceny</option>
                 </select>
               </div>
+
               {[...Array(10)].map((_, i) => (
                 <div
                   key={i}
-                  className=" hover:shadow-lg flex items-start gap-6 p-4 transition bg-white border border-gray-200"
+                  className="hover:shadow-lg flex items-start gap-6 p-4 transition bg-(--surface) border border-(--border)"
                 >
-                  <div className="shrink-0 w-40 h-32 bg-gray-300 rounded-md" />
+                  <div className="shrink-0 w-40 h-32 bg-(--surface-secondary) rounded-md" />
 
                   <div className="flex-1 space-y-2">
-                    <div className="w-3/4 h-5 bg-gray-300 rounded"></div>{" "}
-                    <div className="w-1/2 h-4 bg-gray-300 rounded"></div>{" "}
+                    <div className="w-3/4 h-5 bg-(--surface-secondary) rounded" />
+
+                    <div className="w-1/2 h-4 bg-(--surface-secondary) rounded" />
+
                     <div className="mt-1 space-y-1">
-                      <div className="w-full h-3 bg-gray-300 rounded"></div>
-                      <div className="w-5/6 h-3 bg-gray-300 rounded"></div>
-                      <div className="w-2/3 h-3 bg-gray-300 rounded"></div>
+                      <div className="w-full h-3 bg-(--surface-secondary) rounded" />
+                      <div className="w-5/6 h-3 bg-(--surface-secondary) rounded" />
+                      <div className="w-2/3 h-3 bg-(--surface-secondary) rounded" />
                     </div>
-                    <div className="w-2/3 h-4 mt-2 bg-gray-300 rounded"></div>{" "}
+
+                    <div className="w-2/3 h-4 mt-2 bg-(--surface-secondary) rounded" />
                   </div>
 
                   <div className="flex flex-col items-end gap-3">
-                    <div className="w-16 h-6 bg-gray-300 rounded"></div>{" "}
-                    <div className="w-32 h-10 bg-gray-300 rounded"></div>{" "}
-                    <div className="w-6 h-6 bg-gray-300 rounded"></div>{" "}
+                    <div className="w-16 h-6 bg-(--surface-secondary) rounded" />
+
+                    <div className="w-32 h-10 bg-(--surface-secondary) rounded" />
+
+                    <div className="w-6 h-6 bg-(--surface-secondary) rounded" />
                   </div>
                 </div>
               ))}
             </>
           ) : sortedProducts.length > 0 ? (
             <>
-              <div className="flex flex-col items-end mb-4 border-gray-200">
+              <div className="flex flex-col items-end mb-4 border-b border-(--border) pb-4">
                 {search && (
-                  <h1 className="mb-2 text-gray-600">
+                  <h1 className="mb-2 text-(--foreground-secondary)">
                     Wyniki dla:{" "}
                     <span className="font-semibold text-orange-500">
                       {search}
@@ -149,12 +158,14 @@ const OffersList = () => {
                   </h1>
                 )}
 
-                <h3 className="mb-2 font-semibold">Sortuj</h3>
+                <h3 className="mb-2 font-semibold text-(--foreground)">
+                  Sortuj
+                </h3>
 
                 <select
                   value={sort}
                   onChange={(e) => handleSortChange(e.target.value)}
-                  className="w-52 px-2 py-1 border border-gray-200"
+                  className="w-52 px-2 py-1 border border-(--border) bg-(--surface) text-(--foreground)"
                 >
                   <option value="">Domyślnie</option>
                   <option value="price_asc">Cena rosnąco</option>
@@ -168,8 +179,11 @@ const OffersList = () => {
               ))}
             </>
           ) : (
-            <p>Brak produktów spełniających kryteria.</p>
-          )}{" "}
+            <p className="text-(--foreground-secondary)">
+              Brak produktów spełniających kryteria.
+            </p>
+          )}
+
           <Pagination
             page={page}
             totalPages={data?.totalPages ?? 1}

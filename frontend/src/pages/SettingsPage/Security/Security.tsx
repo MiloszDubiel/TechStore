@@ -62,18 +62,31 @@ const Security = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <h2 className="mb-6 text-2xl font-bold">Bezpieczeństwo</h2>
+        <h2 className="mb-6 text-2xl font-bold text-(--foreground)">
+          Bezpieczeństwo
+        </h2>
 
         <div className="max-w-lg space-y-4">
           <div>
-            <label className="block mb-1 text-sm font-medium">
+            <label className="block mb-1 text-sm font-medium text-(--foreground)">
               Aktualne hasło
             </label>
 
             <input
               type="password"
               {...register("currentPassword")}
-              className="focus:outline-none focus:ring-2 focus:ring-orange-500 w-full p-3 border border-gray-300"
+              className="
+            focus:outline-none
+            focus:ring-2
+            focus:ring-(--primary)
+            w-full
+            p-3
+            border
+            border-(--border)
+            bg-(--surface)
+            text-(--foreground)
+            placeholder:text-(--foreground-secondary)
+          "
               placeholder="Wprowadź aktualne hasło"
             />
 
@@ -85,16 +98,29 @@ const Security = () => {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Nowe hasło</label>
+            <label className="block mb-1 text-sm font-medium text-(--foreground)">
+              Nowe hasło
+            </label>
 
             <input
               type="password"
               {...register("newPassword")}
-              className="focus:outline-none focus:ring-2 focus:ring-orange-500 w-full p-3 border border-gray-300"
+              className="
+            focus:outline-none
+            focus:ring-2
+            focus:ring-(--primary)
+            w-full
+            p-3
+            border
+            border-(--border)
+            bg-(--surface)
+            text-(--foreground)
+            placeholder:text-(--foreground-secondary)
+          "
               placeholder="Wprowadź nowe hasło"
             />
 
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-(--foreground-secondary)">
               Minimum 8 znaków, jedna wielka litera, jedna cyfra i znak
               specjalny.
             </p>
@@ -107,14 +133,25 @@ const Security = () => {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">
+            <label className="block mb-1 text-sm font-medium text-(--foreground)">
               Potwierdź nowe hasło
             </label>
 
             <input
               type="password"
               {...register("confirmPassword")}
-              className="focus:outline-none focus:ring-2 focus:ring-orange-500 w-full p-3 border border-gray-300"
+              className="
+            focus:outline-none
+            focus:ring-2
+            focus:ring-(--primary)
+            w-full
+            p-3
+            border
+            border-(--border)
+            bg-(--surface)
+            text-(--foreground)
+            placeholder:text-(--foreground-secondary)
+          "
               placeholder="Powtórz nowe hasło"
             />
 
@@ -125,19 +162,31 @@ const Security = () => {
             )}
           </div>
 
-          <div className="bg-gray-50 p-4 border border-gray-200">
-            <p className="text-sm text-gray-700">Ostatnia zmiana hasła:</p>
+          <div className="bg-(--surface-secondary) p-4 border border-(--border)">
+            <p className="text-sm text-(--foreground-secondary)">
+              Ostatnia zmiana hasła:
+            </p>
 
-            {isLoading
-              ? "Ładowanie..."
-              : !passwordUpdatedAt
-              ? "Nieznana"
-              : new Date(passwordUpdatedAt).toLocaleDateString("pl-PL")}
+            <span className="text-(--foreground)">
+              {isLoading
+                ? "Ładowanie..."
+                : !passwordUpdatedAt
+                ? "Nieznana"
+                : new Date(passwordUpdatedAt).toLocaleDateString("pl-PL")}
+            </span>
           </div>
 
           <button
             type="submit"
-            className="hover:bg-orange-600 px-5 py-3 font-medium text-white transition bg-orange-500"
+            className="
+          hover:bg-(--primary-hover)
+          px-5
+          py-3
+          font-medium
+          text-white
+          transition
+          bg-(--primary)
+        "
           >
             Zmień hasło
           </button>
