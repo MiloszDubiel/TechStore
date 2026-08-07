@@ -250,8 +250,7 @@ const OfferDetails = () => {
               </div>
             </section>
           )}
-
-          {/* SPRZEDAWCA */}
+     
           <section className="p-6 mt-8 bg-(--surface) border border-(--border)">
             <div className="flex items-center gap-3 mb-6">
               <Store className="text-orange-500" />
@@ -313,14 +312,13 @@ const OfferDetails = () => {
                 onClick={() =>
                   navigate(`/seller/${product.slug}/${product.seller_id}`)
                 }
-                className="hover:bg-orange-600 px-6 py-3 text-white bg-orange-500"
+                className="hover:bg-orange-600 px-6 py-3 text-white bg-orange-500 cursor-pointer"
               >
                 Zobacz sklep
               </button>
             </div>
           </section>
 
-          {/* OPINIE */}
           <section className="mt-12">
             <h2 className="mb-6 text-2xl font-semibold text-(--foreground)">
               Opinie klientów

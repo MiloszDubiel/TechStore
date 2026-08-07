@@ -1,45 +1,81 @@
 import { useSearchParams } from "react-router-dom";
+import { Filter, Euro, RotateCcw, Search } from "lucide-react";
 import { useState } from "react";
-import {
-  Filter,
-  Euro,
-  Tag,
-  PackageCheck,
-  RotateCcw,
-  Search,
-} from "lucide-react";
-
-interface FiltersSidebarProps {
-  brands?: string[];
+import { api } from "../../axios";
+import { useQuery } from "@tanstack/react-query";
+interface FilterItem {
+  label: string;
+  value: string;
+  count: number;
 }
 
-const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
+const FiltersSidebar = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const [selectedBrands, setSelectedBrands] = useState<string[]>(
-    searchParams.get("brands")?.split(",") || []
-  );
 
   const [min, setMin] = useState(searchParams.get("min") || "");
 
   const [max, setMax] = useState(searchParams.get("max") || "");
 
-  const [inStock, setInStock] = useState(searchParams.get("stock") === "1");
+  const { data: filters = [] } = useQuery({
+    queryKey: ["filters"],
 
-  const toggleBrand = (brand: string) => {
-    setSelectedBrands((prev) =>
-      prev.includes(brand) ? prev.filter((x) => x !== brand) : [...prev, brand]
-    );
+    queryFn: async () => {
+      const { data } = await api.get("/api/products/filters");
+
+      return data;
+    },
+  });
+
+  const [selectedFilters, setSelectedFilters] = useState<
+    Record<string, string[]>
+  >(() => {
+    const result: Record<string, string[]> = {};
+
+    filters.forEach((filter: any) => {
+      const values = searchParams.get(filter.label);
+
+      if (values) {
+        result[filter.label] = values.split(",");
+      }
+    });
+
+    return result;
+  });
+
+  const groupedFilters = filters.reduce((acc: any, item: any) => {
+    if (!acc[item.label]) {
+      acc[item.label] = [];
+    }
+
+    acc[item.label].push(item);
+
+    return acc;
+  }, {} as Record<string, FilterItem[]>);
+
+  const toggleFilter = (label: string, value: string) => {
+    setSelectedFilters((prev) => {
+      const current = prev[label] || [];
+
+      return {
+        ...prev,
+
+        [label]: current.includes(value)
+          ? current.filter((v) => v !== value)
+          : [...current, value],
+      };
+    });
   };
 
-  const updateURL = () => {
+  const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
 
-    if (selectedBrands.length) {
-      params.set("brands", selectedBrands.join(","));
-    } else {
-      params.delete("brands");
-    }
+    Object.entries(selectedFilters).forEach(([label, values]) => {
+      if (values.length) {
+        params.set(label, values.join(","));
+      } else {
+        params.delete(label);
+      }
+    });
 
     if (min) {
       params.set("min", min);
@@ -53,58 +89,57 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
       params.delete("max");
     }
 
-    if (inStock) {
-      params.set("stock", "1");
-    } else {
-      params.delete("stock");
-    }
-
     params.set("page", "1");
 
     setSearchParams(params);
   };
 
   const resetFilters = () => {
-    setSelectedBrands([]);
+    setSelectedFilters({});
     setMin("");
     setMax("");
-    setInStock(false);
 
     setSearchParams({});
   };
 
-  const active = selectedBrands.length || min || max || inStock;
-
   return (
     <aside
       className="
-      w-72 space-y-7
-      border border-(--border)
+      w-80
+      space-y-6
+      p-6
       bg-(--surface)
-      p-5
-      text-(--foreground)
+      border
+      border-(--border)
       shadow-sm
     "
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Filter size={22} className="text-orange-500" />
+      <div className="flex items-center gap-3 pb-4 border-b border-(--border)">
+        <Filter size={22} className="text-(--primary)" />
 
-          <h2 className="text-xl font-bold">Filtry</h2>
-        </div>
-
-        {active && (
-          <span className=" px-3 py-1 text-xs text-white bg-orange-500">
-            Aktywne
-          </span>
-        )}
+        <h2
+          className="
+          text-xl
+          font-bold
+          text-(--foreground)
+        "
+        >
+          Filtry
+        </h2>
       </div>
 
       <div>
-        <div className="flex items-center gap-2 mb-3">
-          <Euro size={18} className="text-orange-500" />
+        <div className="flex items-center gap-2 mb-4">
+          <Euro size={18} className="text-(--primary)" />
 
-          <h3 className="font-semibold">Cena</h3>
+          <h3
+            className="
+            font-semibold
+            text-(--foreground)
+          "
+          >
+            Cena
+          </h3>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -115,13 +150,17 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
             onChange={(e) => setMin(e.target.value)}
             className="
             w-full
-            border border-(--border)
+            px-3
+            py-2
+            text-sm
             bg-(--surface-secondary)
-            px-3 py-2
             text-(--foreground)
-            outline-none
             placeholder:text-(--foreground-secondary)
-            focus:border-orange-500
+            border
+            border-(--border)
+            outline-none
+            transition
+            focus:border-(--primary)
           "
           />
 
@@ -132,66 +171,114 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
             onChange={(e) => setMax(e.target.value)}
             className="
             w-full
-            border border-(--border)
+            px-3
+            py-2
+            text-sm
             bg-(--surface-secondary)
-            px-3 py-2
             text-(--foreground)
-            outline-none
             placeholder:text-(--foreground-secondary)
-            focus:border-orange-500
+            border
+            border-(--border)
+            outline-none
+            transition
+            focus:border-(--primary)
           "
           />
         </div>
       </div>
 
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <Tag size={18} className="text-orange-500" />
-
-          <h3 className="font-semibold">Marka</h3>
-        </div>
-
-        <div className="max-h-40 space-y-2 overflow-y-auto">
-          {brands.map((brand) => (
-            <label
-              key={brand}
-              className=" flex items-center gap-3 text-sm cursor-pointer"
+      <div className="space-y-6">
+        {Object.entries(groupedFilters).map(([label, items]: [string, any]) => (
+          <div key={label}>
+            <h3
+              className="
+            mb-3
+            font-semibold
+            text-(--foreground)
+          "
             >
-              <input
-                type="checkbox"
-                checked={selectedBrands.includes(brand)}
-                onChange={() => toggleBrand(brand)}
-                className=" accent-orange-500 w-4 h-4"
-              />
+              {label}
+            </h3>
 
-              {brand}
-            </label>
-          ))}
-        </div>
+            <div className=" max-h-44 pr-2 space-y-2 overflow-y-auto">
+              {items.map((item: any) => (
+                <label
+                  key={item.value}
+                  className="
+              group
+              flex
+              items-center
+              justify-between
+              cursor-pointer
+              px-2
+              py-1.5
+              text-sm
+              transition
+              hover:bg-(--surface-secondary)
+            "
+                >
+                  <div className=" flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedFilters[label]?.includes(item.value) || false
+                      }
+                      onChange={() => toggleFilter(label, item.value)}
+                      className=" accent-orange-500 w-4 h-4 cursor-pointer"
+                    />
+
+                    <span
+                      className="
+                  text-(--foreground)
+                  group-hover:text-(--primary)
+                  transition
+                "
+                    >
+                      {item.value}
+                    </span>
+                  </div>
+
+                  <span
+                    className="
+                text-xs
+                text-(--foreground-secondary)
+              "
+                  >
+                    {item.count}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div>
-        <div className="flex items-center gap-2 mb-3">
-          <PackageCheck size={18} className="text-orange-500" />
+      {/* Przyciski */}
 
-          <h3 className="font-semibold">Dostępność</h3>
-        </div>
-
-        <label className=" flex items-center gap-3 text-sm cursor-pointer">
-          <input
-            type="checkbox"
-            checked={inStock}
-            onChange={() => setInStock(!inStock)}
-            className=" accent-orange-500 w-4 h-4"
-          />
-          Tylko dostępne
-        </label>
-      </div>
-
-      <div className="space-y-3">
+      <div
+        className="
+        pt-4
+        space-y-3
+        border-t
+        border-(--border)
+      "
+      >
         <button
-          onClick={updateURL}
-          className=" hover:bg-orange-600 flex items-center justify-center w-full gap-2 py-3 font-semibold text-white transition bg-orange-500 cursor-pointer"
+          onClick={applyFilters}
+          className="
+          flex
+          items-center
+          justify-center
+          gap-2
+          w-full
+          py-3
+          font-semibold
+          text-white
+          bg-(--primary)
+          transition
+          hover:bg-(--primary-hover)
+          cursor-pointer
+        "
         >
           <Search size={18} />
           Szukaj
@@ -200,13 +287,17 @@ const FiltersSidebar = ({ brands = [] }: FiltersSidebarProps) => {
         <button
           onClick={resetFilters}
           className="
-          flex w-full
-          items-center justify-center
+          flex
+          items-center
+          justify-center
           gap-2
-          border border-(--border)
-          bg-(--surface)
+          w-full
           py-3
+          font-semibold
           text-(--foreground)
+          bg-(--surface)
+          border
+          border-(--border)
           transition
           hover:bg-(--surface-secondary)
           cursor-pointer

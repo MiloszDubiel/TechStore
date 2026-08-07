@@ -6,6 +6,7 @@ import {
   saveOrderToDB,
   getCategoriesFromDB,
   getSubcategoriesFromDB,
+  getFiltersService,
 } from "../services/prodcuts.service";
 import { scrapeMediaMarkt } from "../scrapper/scraper";
 import { saveToDatabase } from "../scrapper/saveDataToDatabase";
@@ -22,6 +23,18 @@ export const getOffersFromDatabase = async (req: Request, res: Response) => {
   }
 };
 
+export const getFilters = async (req: Request, res: Response) => {
+  try {
+    const filters = await getFiltersService();
+
+    res.json(filters);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Błąd pobierania filtrów",
+    });
+  }
+};
 export const scrapeProdcuts = async (req: Request, res: Response) => {
   try {
     const offers: any = await scrapeMediaMarkt();

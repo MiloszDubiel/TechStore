@@ -55,7 +55,7 @@ router.patch(
   editSeller,
 );
 
-router.get("/:slug/seller_id", getSellerPage);
+router.get("/:slug/:seller_id", getSellerPage);
 
 router.patch(
   "/products/:id",

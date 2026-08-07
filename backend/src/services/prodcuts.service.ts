@@ -1,3 +1,4 @@
+import console from "node:console";
 import { connection } from "../config/db.config";
 import { RowDataPacket } from "mysql2";
 
@@ -52,7 +53,7 @@ function mapMainCategory(categoryName: string | null) {
     sub: null,
   };
 }
-export const getProducts = async (params: any) => {
+export const getProducts = async (query: any) => {
   const {
     categories,
     brands,
@@ -62,15 +63,22 @@ export const getProducts = async (params: any) => {
     search,
     limit = 10,
     page = 1,
-  } = params;
+    ...filters
+  } = query;
 
-  const offset = (page - 1) * limit;
+  const offset = (Number(page) - 1) * Number(limit);
 
   let where = `
-    WHERE p.stock > 0
+    WHERE 1=1
   `;
 
   const queryParams: any[] = [];
+
+  if (stock === "1") {
+    where += `
+      AND p.stock > 0
+    `;
+  }
 
   if (categories) {
     const cats = categories.split(",");
@@ -83,13 +91,13 @@ export const getProducts = async (params: any) => {
   }
 
   if (brands) {
-    const b = brands.split(",");
+    const brandList = brands.split(",");
 
     where += `
-      AND p.brand IN (${b.map(() => "?").join(",")})
+      AND p.brand IN (${brandList.map(() => "?").join(",")})
     `;
 
-    queryParams.push(...b);
+    queryParams.push(...brandList);
   }
 
   if (min) {
@@ -108,12 +116,6 @@ export const getProducts = async (params: any) => {
     queryParams.push(Number(max));
   }
 
-  if (stock === "1") {
-    where += `
-      AND p.stock > 0
-    `;
-  }
-
   if (search) {
     where += `
       AND p.name LIKE ?
@@ -121,6 +123,17 @@ export const getProducts = async (params: any) => {
 
     queryParams.push(`%${search}%`);
   }
+
+  Object.entries(filters).forEach(([label, value]) => {
+    where += `
+    AND JSON_SEARCH(
+      p.attributes,
+      'one',
+      ?
+    ) IS NOT NULL
+  `;
+    queryParams.push(value);
+  });
 
   const [[count]]: any = await connection.query(
     `
@@ -136,15 +149,17 @@ export const getProducts = async (params: any) => {
     queryParams,
   );
 
-  const productParams = [...queryParams, Number(limit), offset];
+  const productParams = [...queryParams, Number(limit), Number(offset)];
 
   const [rows]: any = await connection.query(
     `
     SELECT
+
       p.*,
 
       c.name AS category_name,
       sc.name AS subcategory_name,
+
 
       sp.shop_name,
       sp.company_name,
@@ -152,6 +167,7 @@ export const getProducts = async (params: any) => {
       sp.slug,
       sp.created_at AS seller_created_at,
       sp.is_verified,
+
 
       COALESCE(
         JSON_ARRAYAGG(
@@ -163,23 +179,33 @@ export const getProducts = async (params: any) => {
         JSON_ARRAY()
       ) AS images
 
+
     FROM products p
+
 
     LEFT JOIN categories c
       ON c.id = p.category_id
 
+
     LEFT JOIN subcategories sc
       ON sc.id = p.subcategory_id
+
 
     LEFT JOIN product_images pi
       ON pi.product_id = p.id
 
+
     LEFT JOIN seller_profiles sp
       ON sp.user_id = p.seller_id
 
+
+
     ${where}
 
+
+
     GROUP BY
+
       p.id,
       c.name,
       sc.name,
@@ -190,10 +216,14 @@ export const getProducts = async (params: any) => {
       sp.created_at,
       sp.is_verified
 
+
+
     ORDER BY p.created_at DESC
+
 
     LIMIT ?
     OFFSET ?
+
     `,
     productParams,
   );
@@ -201,16 +231,25 @@ export const getProducts = async (params: any) => {
   return {
     products: rows.map((product: any) => ({
       ...product,
+
       images:
         typeof product.images === "string"
           ? JSON.parse(product.images)
           : product.images,
+
+      attributes:
+        typeof product.attributes === "string"
+          ? JSON.parse(product.attributes)
+          : product.attributes,
     })),
 
     page: Number(page),
+
     limit: Number(limit),
+
     total: count.total,
-    totalPages: Math.ceil(count.total / limit),
+
+    totalPages: Math.ceil(count.total / Number(limit)),
   };
 };
 
@@ -270,6 +309,8 @@ sp.banner,
     [id],
   );
 
+  console.log(rows);
+
   return (rows as any[])[0] ?? null;
 };
 
@@ -286,7 +327,6 @@ export const getCurrtentProdcutByID = async (id: string) => {
 
 export const saveOrderToDB = async (data: any) => {
   const conn = await connection.getConnection();
-
 
   try {
     await conn.beginTransaction();
@@ -384,7 +424,6 @@ export const saveOrderToDB = async (data: any) => {
       [
         userId,
 
-
         customer.name,
         customer.last_name,
         customer.email,
@@ -418,7 +457,6 @@ export const saveOrderToDB = async (data: any) => {
       throw new Error("ORDER_CREATION_FAILED");
     }
 
-    // 3. Dodanie produktów do zamówienia
     for (const product of productsData) {
       await conn.query(
         `
@@ -499,5 +537,34 @@ export const getSubcategoriesFromDB = async () => {
   if (!rows) {
     return null;
   }
+  return rows;
+};
+
+export const getFiltersService = async (categoryId?: number) => {
+  const [rows]: any = await connection.query(
+    `SELECT
+    jt.label,
+    jt.value,
+    COUNT(*) AS count
+
+FROM products p
+
+JOIN JSON_TABLE(
+    p.attributes,
+    '$[*]' COLUMNS(
+        label VARCHAR(255) PATH '$.label',
+        value VARCHAR(255) PATH '$.value'
+    )
+) jt
+
+GROUP BY 
+    jt.label,
+    jt.value
+
+ORDER BY
+    jt.label,
+    count DESC;`,
+  );
+
   return rows;
 };

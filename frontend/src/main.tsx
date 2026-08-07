@@ -20,11 +20,17 @@ root.render(
         <App />
         <ToastContainer
           position="top-right"
-          autoClose={3000}
+          // autoClose={3000}
           hideProgressBar={false}
           closeOnClick
           pauseOnHover
           draggable
+          toastClassName="
+    bg-(--surface)
+    text-(--foreground)
+    border
+    border-(--border)
+  "
         />
       </>
     </React.StrictMode>

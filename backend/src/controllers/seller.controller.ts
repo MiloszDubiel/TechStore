@@ -338,7 +338,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       product_data: {
         ...product.product_data,
 
-        images: finalImages,
+        url: finalImages,
       },
     });
 

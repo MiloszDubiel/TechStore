@@ -47,9 +47,11 @@ const NavbarActions = ({
             }}
             className="hover:text-orange-500 transition cursor-pointer"
           />
-          <div className="absolute left-4 top-4 grid h-4 w-4 place-content-center rounded-full bg-orange-500 text-[10px] text-white">
-            {favorites.length}
-          </div>
+          {favorites.length > 0 && (
+            <div className="absolute left-4 top-4 grid h-4 w-4 place-content-center rounded-full bg-orange-500 text-[10px] text-white">
+              {favorites.length}
+            </div>
+          )}
           {active === "fav" && (
             <FavoritesDropdown onClose={() => setActive(null)} />
           )}

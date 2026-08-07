@@ -387,7 +387,7 @@ SELECT
                     SELECT 
                     JSON_ARRAYAGG(
                         JSON_OBJECT(
-                            'image',
+                            'url',
                             pi2.url
                         )
                     )
@@ -531,43 +531,45 @@ export const updateProductService = async (data: any) => {
     product_data,
   } = data;
 
-  const [result] = await connection.query(
-    `
-    UPDATE products
-    SET
-      name = ?,
-      description = ?,
-      price = ?,
-      stock = ?,
-      brand = ?,
-      model = ?,
-      category_id = ?,
-      subcategory_id = ?,
-      attributes = ?,
-      product_data = ?,
-      updated_at = NOW()
+  console.log(data);
 
-    WHERE id = ?
-    AND seller_id = ?
-    `,
-    [
-      name,
-      description,
-      price,
-      stock,
-      brand,
-      model,
-      category_id,
-      subcategory_id,
-      JSON.stringify(attributes),
-      JSON.stringify(product_data),
+  // const [result] = await connection.query(
+  //   `
+  //   UPDATE products
+  //   SET
+  //     name = ?,
+  //     description = ?,
+  //     price = ?,
+  //     stock = ?,
+  //     brand = ?,
+  //     model = ?,
+  //     category_id = ?,
+  //     subcategory_id = ?,
+  //     attributes = ?,
+  //     product_data = ?,
+  //     updated_at = NOW()
 
-      id,
-      sellerId,
-    ],
-  );
+  //   WHERE id = ?
+  //   AND seller_id = ?
+  //   `,
+  //   [
+  //     name,
+  //     description,
+  //     price,
+  //     stock,
+  //     brand,
+  //     model,
+  //     category_id,
+  //     subcategory_id,
+  //     JSON.stringify(attributes),
+  //     JSON.stringify(product_data),
 
-  return result;
+  //     id,
+  //     sellerId,
+  //   ],
+  // );
+
+  // return result;
 };
 
 export const updateProductImages = async (
