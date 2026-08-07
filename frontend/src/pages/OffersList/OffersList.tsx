@@ -81,9 +81,7 @@ const OffersList = () => {
       <Navbar />
 
       <div className="max-w-7xl flex gap-6 p-6 mx-auto">
-        <FiltersSidebar
-          brands={[...new Set(products.map((el: any) => el.brand))] as string[]}
-        />
+        <FiltersSidebar />
 
         <div className="flex flex-col w-full gap-6">
           {isLoading ? (

@@ -1,6 +1,7 @@
 import { useCartStore } from "../../../zustand/states/cartState";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
+import { useImage } from "../../../hooks/useImage";
 
 const CartDropdown = ({ onClose }: any) => {
   const navigate = useNavigate();
@@ -53,13 +54,7 @@ const CartDropdown = ({ onClose }: any) => {
                 "
               >
                 <img
-                  src={
-                    item.images?.[0]
-                      ? `${import.meta.env.VITE_API_URL}uploads/products/${
-                          item.seller_id
-                        }/${item.id}/${item.images[0].image}`
-                      : "/no-image.png"
-                  }
+                  src={useImage(item)}
                   className="
                     h-16 w-16
                     object-cover

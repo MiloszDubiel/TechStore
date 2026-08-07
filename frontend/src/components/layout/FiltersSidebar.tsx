@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { Filter, Euro, RotateCcw, Search } from "lucide-react";
+import { Filter, Euro, RotateCcw, Search, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../axios";
 import { useQuery } from "@tanstack/react-query";
@@ -52,6 +52,8 @@ const FiltersSidebar = () => {
     return acc;
   }, {} as Record<string, FilterItem[]>);
 
+  const [openFilters, setOpenFilter] = useState<string[]>([]);
+
   const toggleFilter = (label: string, value: string) => {
     setSelectedFilters((prev) => {
       const current = prev[label] || [];
@@ -101,6 +103,8 @@ const FiltersSidebar = () => {
 
     setSearchParams({});
   };
+
+  console.log(openFilters);
 
   return (
     <aside
@@ -195,12 +199,42 @@ const FiltersSidebar = () => {
             mb-3
             font-semibold
             text-(--foreground)
+            flex
+          justify-between
+          cursor-pointer 
           "
+              onClick={() => {
+                const checkIsInList = openFilters?.includes(label);
+
+                if (checkIsInList) {
+                  const filter = openFilters?.filter((e) => e !== label);
+                  return setOpenFilter(filter);
+                }
+
+                setOpenFilter([...openFilters, label]);
+              }}
             >
-              {label}
+              {label}{" "}
+              <ChevronDown
+                size={18}
+                className={`${
+                  openFilters.includes(label) ? "rotate-180" : "rotate-0"
+                }`}
+              />
             </h3>
 
-            <div className=" max-h-44 pr-2 space-y-2 overflow-y-auto">
+            <div
+              className={`
+    overflow-hidden
+    transition-all
+    duration-300
+    ${
+      openFilters.includes(label)
+        ? "max-h-44 opacity-100 pr-2 space-y-2 overflow-y-auto"
+        : "max-h-0 opacity-0"
+    }
+  `}
+            >
               {items.map((item: any) => (
                 <label
                   key={item.value}
@@ -252,8 +286,6 @@ const FiltersSidebar = () => {
           </div>
         ))}
       </div>
-
-      {/* Przyciski */}
 
       <div
         className="

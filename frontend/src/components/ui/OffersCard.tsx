@@ -113,7 +113,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
               : "Brak w magazynie"}
           </p>
 
-          {product?.seller_id != user?.id && (
+          {product?.seller_id != user?.id && product.stock > 0 && (
             <button
               className=" hover:bg-orange-600 px-6 py-2 font-semibold text-white transition bg-orange-500 cursor-pointer"
               onClick={() => addToCart(product)}

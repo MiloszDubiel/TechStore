@@ -78,6 +78,7 @@ export default function ParcelLockerMap() {
                         locker,
                       },
                     });
+                    window.scrollBy(0,400)
                   }}
                 >
                   Wybierz
@@ -89,7 +90,7 @@ export default function ParcelLockerMap() {
       </MapContainer>
 
       {checkoutData.delivery?.locker && (
-        <div className="bg-orange-50 p-4 mt-4 border border-orange-300">
+        <div className=" p-4 mt-4 border border-orange-500 bg-(--surface-secondary) ring-1 ring-orange-500">
           <p className="font-semibold">Wybrany paczkomat:</p>
 
           <p>{checkoutData.delivery.locker.name}</p>
