@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 import NavbarActions from "./NavbarActions";
 import { useSeller } from "../../../hooks/useSeller";
 import { toast } from "react-toastify";
+import { SearchIcon } from "lucide-react";
 
 const Navbar: React.FC = () => {
   const { i18n } = useTranslation();
@@ -32,20 +33,34 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="flex w-full items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md">
+    <nav className="flex w-full h-18  items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md ">
       <Link to="/" className="text-2xl font-bold text-orange-500">
         IT E-commerce
       </Link>
 
-      <div className="flex items-center flex-1 gap-6 mx-6">
+      <div className="lg:flex 2xl:mx-6 items-center flex-1 hidden gap-4 mx-2">
         <SearchBar search={search} setSearch={setSearch} />
 
         <Link
           to="/offers"
-          className="whitespace-nowrap font-medium text-(--foreground-secondary) transition hover:text-orange-500"
+          className="
+      whitespace-nowrap
+      text-sm
+      font-medium
+      text-(--foreground-secondary)
+      transition-colors
+      hover:text-orange-500
+      2xl:text-base
+    "
         >
           Wszystkie produkty
         </Link>
+      </div>
+
+      <div className="lg:hidden flex items-center flex-1 min-w-0 m-8  text-( --foreground) ">
+        <div className="flex items-center gap-2.5 p-2 borde cursor-pointer">
+          <SearchIcon size={20} />
+        </div>
       </div>
 
       <NavbarActions

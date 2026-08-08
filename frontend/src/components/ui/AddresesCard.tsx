@@ -35,7 +35,7 @@ export default function AddressCard({
     shadow-sm
   "
     >
-      <div className="flex items-center justify-between gap-2 mb-2">
+      <div className="md:flex items-center justify-between gap-2 mb-2">
         <div>
           <div className="flex items-center gap-3 mb-2">
             <h3 className="text-lg font-semibold">{title}</h3>

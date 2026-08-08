@@ -76,3 +76,35 @@
   height: 2px !important;
   background: var(--border) !important;
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--surface-secondary);
+}
+
+/* Chrome, Edge, Safari */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+* {
+  box-sizing: border-box;
+}
+.show {
+  display: flex !important;
+}

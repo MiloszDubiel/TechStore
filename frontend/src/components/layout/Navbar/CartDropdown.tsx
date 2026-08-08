@@ -2,6 +2,7 @@ import { useCartStore } from "../../../zustand/states/cartState";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useImage } from "../../../hooks/useImage";
+import { X } from "lucide-react";
 
 const CartDropdown = ({ onClose }: any) => {
   const navigate = useNavigate();
@@ -30,14 +31,26 @@ const CartDropdown = ({ onClose }: any) => {
     <div
       ref={dropdownRef}
       className="
-        absolute right-0 top-10 z-50 w-125
+        md:absolute right-0  z-50 md:w-125
         border border-(--border)
         bg-(--surface)
         p-4
         text-(--foreground)
         shadow-xl
+        fixed
+        top-0
+        left-0
+        w-full
+        h-full
+        md:h-auto
+  md:inset-auto
+  md:right-0
+  md:top-10
       "
     >
+      <div className="md:hidden flex justify-end w-full">
+        <X onClick={onClose} className="cursor-pointer" />
+      </div>
       <h2 className="mb-4 text-xl font-bold">Twój koszyk</h2>
 
       {cart.length === 0 ? (

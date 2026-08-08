@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { LogIn, UserPlus, User, Store, Shield, LogOut } from "lucide-react";
+import { LogIn, UserPlus, User, Store, Shield, LogOut, X } from "lucide-react";
 import { useSeller } from "../../../hooks/useSeller";
 import { useEffect, useRef } from "react";
 
@@ -40,13 +40,26 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
     <div
       ref={dropdownRef}
       className="
-        absolute right-0 top-10 z-50 w-56
+        md:absolute right-0  z-50 md:w-125
         border border-(--border)
         bg-(--surface)
+        p-4
         text-(--foreground)
-        shadow-lg
+        shadow-xl
+        fixed
+        top-0
+        left-0
+        w-full
+        h-full
+        md:h-auto
+  md:inset-auto
+  md:right-0
+  md:top-10
       "
     >
+      <div className="md:hidden flex justify-end w-full">
+        <X onClick={onClose} className="cursor-pointer" />
+      </div>
       {!isAuthenticated ? (
         <>
           <Link to="/login" onClick={onClose} className={itemClass}>

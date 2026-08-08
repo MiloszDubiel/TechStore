@@ -72,8 +72,8 @@ const AccountPage = () => {
         <p className="mt-2">Zarządzaj swoim profilem i zamówieniami</p>
       </section>
 
-      <main className="container grid grid-cols-12 gap-8 px-6 py-10 mx-auto">
-        <aside className="h-fit col-span-3 bg-(--surface) shadow-md">
+      <main className="lg:grid-cols-12 container lg:grid flex flex-col gap-8 px-6 py-10 mx-auto">
+        <aside className="h-fit w-auto lg:grid lg:col-span-3 bg-(--surface) shadow-md flex overflow-x-auto">
           <button
             onClick={() => setActiveTab("orders")}
             className={`flex w-full items-center gap-3 border-b border-(--border) p-4 text-left cursor-pointer ${

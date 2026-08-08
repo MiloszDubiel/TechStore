@@ -49,31 +49,36 @@ export default function AddressModal({
 
   return (
     <div className="bg-black/50 fixed inset-0 z-10 flex items-center justify-center">
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div
-          className="
-        w-full max-w-md
+      <div
+        className="
+        w-full
         border border-(--border)
         bg-(--surface)
         p-6
         text-(--foreground)
         shadow-xl
+        h-full
+        flex
+        flex-col
+        justify-center
+        md:h-fit
+        md:w-96
       "
+      >
+        <h2 className="mb-4 text-xl font-bold">Adres dostawy</h2>
+
+        <form
+          onSubmit={(e) => {
+            handleSubmit(onSubmit)(e);
+          }}
+          className="space-y-4"
         >
-          <h2 className="mb-4 text-xl font-bold">Adres dostawy</h2>
+          <div>
+            <label className="block mb-1 text-sm font-medium">Miasto</label>
 
-          <form
-            onSubmit={(e) => {
-              handleSubmit(onSubmit)(e);
-            }}
-            className="space-y-4"
-          >
-            <div>
-              <label className="block mb-1 text-sm font-medium">Miasto</label>
-
-              <input
-                {...register("city")}
-                className="
+            <input
+              {...register("city")}
+              className="
               w-full
               border border-(--border)
               bg-(--surface-secondary)
@@ -83,29 +88,27 @@ export default function AddressModal({
               placeholder:text-(--foreground-secondary)
               focus:border-orange-500
             "
-              />
+            />
 
-              {errors.city && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.city.message}
-                </p>
-              )}
-            </div>
+            {errors.city && (
+              <p className="mt-1 text-sm text-red-500">{errors.city.message}</p>
+            )}
+          </div>
 
-            <div>
-              <label className="block mb-1 text-sm font-medium">
-                Kod pocztowy
-              </label>
+          <div>
+            <label className="block mb-1 text-sm font-medium">
+              Kod pocztowy
+            </label>
 
-              <input
-                {...register("postal_code")}
-                onChange={(e) => {
-                  setValue("postal_code", formatPostalCode(e.target.value), {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  });
-                }}
-                className="
+            <input
+              {...register("postal_code")}
+              onChange={(e) => {
+                setValue("postal_code", formatPostalCode(e.target.value), {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                });
+              }}
+              className="
               w-full
               border border-(--border)
               bg-(--surface-secondary)
@@ -114,23 +117,23 @@ export default function AddressModal({
               outline-none
               focus:border-orange-500
             "
-              />
+            />
 
-              {errors.postal_code && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.postal_code.message}
-                </p>
-              )}
-            </div>
+            {errors.postal_code && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.postal_code.message}
+              </p>
+            )}
+          </div>
 
-            <div>
-              <label className="block mb-1 text-sm font-medium">
-                Ulica i numer
-              </label>
+          <div>
+            <label className="block mb-1 text-sm font-medium">
+              Ulica i numer
+            </label>
 
-              <input
-                {...register("street")}
-                className="
+            <input
+              {...register("street")}
+              className="
               w-full
               border border-(--border)
               bg-(--surface-secondary)
@@ -139,38 +142,38 @@ export default function AddressModal({
               outline-none
               focus:border-orange-500
             "
-              />
+            />
 
-              {errors.street && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.street.message}
-                </p>
-              )}
-            </div>
+            {errors.street && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.street.message}
+              </p>
+            )}
+          </div>
 
-            <div className="flex items-center gap-3">
-              <input
-                id="is_default"
-                type="checkbox"
-                {...register("is_default", {
-                  setValueAs: (value) => Boolean(value),
-                })}
-                className="accent-orange-500 w-4 h-4 cursor-pointer"
-              />
+          <div className="flex items-center gap-3">
+            <input
+              id="is_default"
+              type="checkbox"
+              {...register("is_default", {
+                setValueAs: (value) => Boolean(value),
+              })}
+              className="accent-orange-500 w-4 h-4 cursor-pointer"
+            />
 
-              <label
-                htmlFor="is_default"
-                className=" text-sm cursor-pointer select-none"
-              >
-                Ustaw jako adres domyślny
-              </label>
-            </div>
+            <label
+              htmlFor="is_default"
+              className=" text-sm cursor-pointer select-none"
+            >
+              Ustaw jako adres domyślny
+            </label>
+          </div>
 
-            <div className="flex gap-3 pt-3">
-              <button
-                type="button"
-                onClick={closeModal}
-                className="
+          <div className="sm:justify-start flex justify-center gap-3 pt-3">
+            <button
+              type="button"
+              onClick={closeModal}
+              className="
               cursor-pointer
               border border-(--border)
               bg-(--surface)
@@ -178,20 +181,20 @@ export default function AddressModal({
               text-(--foreground)
               transition
               hover:bg-(--surface-secondary)
+          
             "
-              >
-                Anuluj
-              </button>
+            >
+              Anuluj
+            </button>
 
-              <button
-                type="submit"
-                className=" hover:bg-orange-600 px-4 py-2 text-white transition bg-orange-500 cursor-pointer"
-              >
-                Zapisz adres
-              </button>
-            </div>
-          </form>
-        </div>
+            <button
+              type="submit"
+              className=" hover:bg-orange-600 px-4 py-2 text-white transition bg-orange-500 cursor-pointer"
+            >
+              Zapisz adres
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

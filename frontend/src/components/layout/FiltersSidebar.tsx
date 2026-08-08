@@ -109,16 +109,20 @@ const FiltersSidebar = () => {
   return (
     <aside
       className="
-      w-80
-      space-y-6
-      p-6
-      bg-(--surface)
-      border
-      border-(--border)
-      shadow-sm
+        sticky
+    top-6
+    w-80
+    max-h-[calc(100vh-1.5rem)]
+    overflow-y-auto
+    space-y-6
+    p-6
+    bg-(--surface)
+    border
+    border-(--border)
+    shadow-sm
     "
     >
-      <div className="flex items-center gap-3 pb-4 border-b border-(--border)">
+      <div className="flex items-center gap-3 pb-4 border-b border-(--border) h-auto">
         <Filter size={22} className="text-(--primary)" />
 
         <h2
