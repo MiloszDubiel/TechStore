@@ -37,7 +37,7 @@ const tabs = [
   },
 ];
 
-const SellerDashboard = () => {
+const SellerDashboard = ({ children }: any) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const activeTab = searchParams.get("tab") || "overview";
@@ -69,7 +69,7 @@ const SellerDashboard = () => {
 
   return (
     <>
-      <Navbar />
+      {children}
       <div className="min-h-screen bg-(--background)">
         <section className="bg-orange-500 py-14 text-center text-white">
           <h1 className="text-4xl font-bold">Panel sprzedawcy</h1>
@@ -77,8 +77,8 @@ const SellerDashboard = () => {
           <p className="mt-2">Zarządzaj swoim sklepem</p>
         </section>
 
-        <main className="container mx-auto grid grid-cols-12 gap-8 px-6 py-10">
-          <aside className="col-span-3 h-fit bg-(--surface) shadow">
+        <main className="mx-auto flex flex-col gap-8 lg:container lg:grid lg:grid-cols-12 lg:px-6 lg:py-10">
+          <aside className="flex h-fit w-auto overflow-x-auto bg-(--surface) shadow-md lg:col-span-3 lg:grid">
             {tabs.map((tab) => {
               const Icon = tab.icon;
 
@@ -86,7 +86,7 @@ const SellerDashboard = () => {
                 <button
                   key={tab.id}
                   onClick={() => changeTab(tab.id)}
-                  className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-(--foreground) ${
+                  className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
                     activeTab === tab.id ? "bg-(--primary) text-white" : "hover:bg-(--surface-secondary)"
                   } `}
                 >
@@ -98,7 +98,7 @@ const SellerDashboard = () => {
             })}
           </aside>
 
-          <section className="col-span-9 border border-(--border) bg-(--surface) p-6 shadow">{renderContent()}</section>
+          <section className="col-span-9 min-h-150 border border-(--border) bg-(--surface) p-6 shadow-md">{renderContent()}</section>
         </main>
       </div>
     </>

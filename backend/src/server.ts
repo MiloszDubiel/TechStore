@@ -49,10 +49,10 @@ initSocket(server);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-// server.listen(5000, "0.0.0.0", () => {
-//   console.log("HTTP + Socket.IO działa na porcie 5000");
-// }); //Dla Dockera
-
-server.listen(5000, () => {
+server.listen(5000, "0.0.0.0", () => {
   console.log("HTTP + Socket.IO działa na porcie 5000");
-});
+}); //Dla Dockera
+
+// server.listen(5000, () => {
+//   console.log("HTTP + Socket.IO działa na porcie 5000");
+// });

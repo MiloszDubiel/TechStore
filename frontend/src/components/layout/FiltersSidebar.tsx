@@ -7,14 +7,15 @@ interface FilterItem {
   value: string;
   count: number;
 }
+import { useFilterStore } from "../../zustand/states/filterStore";
 
 const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
-  const [min, setMin] = useState(searchParams.get("min") || "");
-  const [max, setMax] = useState(searchParams.get("max") || "");
+  const { min, max, selectedFilters, setMin, setMax, toggleFilter, resetFilters } = useFilterStore();
+
+  const [openFilters, setOpenFilter] = useState<string[]>([]);
 
   const { data: filters = [] } = useQuery({
     queryKey: ["filters"],
-
     queryFn: async () => {
       const { data } = await api.get("/api/products/filters");
 
@@ -32,38 +33,11 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
     return acc;
   }, {});
 
-  const [openFilters, setOpenFilter] = useState<string[]>([]);
-
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
-    const result: Record<string, string[]> = {};
-
-    filters.forEach((filter: FilterItem) => {
-      const values = searchParams.get(filter.label);
-
-      if (values) {
-        result[filter.label] = values.split(",");
-      }
-    });
-
-    return result;
-  });
-
-  const toggleFilter = (label: string, value: string) => {
-    setSelectedFilters((prev) => {
-      const current = prev[label] || [];
-
-      return {
-        ...prev,
-        [label]: current.includes(value) ? current.filter((v) => v !== value) : [...current, value],
-      };
-    });
-  };
-
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
 
-    Object.entries(selectedFilters).forEach(([label, values]) => {
-      if (values.length) {
+    Object.entries(selectedFilters).forEach(([label, values]: any) => {
+      if (values.length > 0) {
         params.set(label, values.join(","));
       } else {
         params.delete(label);
@@ -85,14 +59,6 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
     params.set("page", "1");
 
     setSearchParams(params);
-  };
-
-  const resetFilters = () => {
-    setSelectedFilters({});
-    setMin("");
-    setMax("");
-
-    setSearchParams({});
   };
 
   return (

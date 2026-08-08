@@ -14,6 +14,7 @@ const Navbar: React.FC = () => {
   const { i18n } = useTranslation();
 
   const [search, setSearch] = useState("");
+  const [showSearch, setShowSearch] = useState<boolean>(false);
 
   const { logout, isAuthenticated, user } = useAuth();
   const {
@@ -33,37 +34,48 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="flex h-18 w-full items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md">
-      <Link to="/" className="text-2xl font-bold text-orange-500">
-        IT E-commerce
-      </Link>
-
-      <div className="mx-2 hidden flex-1 items-center gap-4 lg:flex 2xl:mx-6">
-        <SearchBar search={search} setSearch={setSearch} />
-
-        <Link
-          to="/offers"
-          className="text-sm font-medium whitespace-nowrap text-(--foreground-secondary) transition-colors hover:text-orange-500 2xl:text-base"
-        >
-          Wszystkie produkty
+    <>
+      <nav className="flex h-18 w-full items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md">
+        <Link to="/" className="text-2xl font-bold text-orange-500">
+          IT E-commerce
         </Link>
-      </div>
 
-      <div className="text-( --foreground) m-8 flex min-w-0 flex-1 items-center lg:hidden">
-        <div className="borde flex cursor-pointer items-center gap-2.5 p-2">
-          <SearchIcon size={20} />
+        <div className="mx-2 hidden flex-1 items-center gap-4 lg:flex 2xl:mx-6">
+          <SearchBar search={search} setSearch={setSearch} />
+
+          <Link
+            to="/offers"
+            className="text-sm font-medium whitespace-nowrap text-(--foreground-secondary) transition-colors hover:text-orange-500 2xl:text-base"
+          >
+            Wszystkie produkty
+          </Link>
         </div>
-      </div>
 
-      <NavbarActions
-        toggleLanguage={toggleLanguage}
-        language={i18n.language}
-        isAuthenticated={isAuthenticated}
-        user={user}
-        logout={handleLogout}
-        seller={data}
-      />
-    </nav>
+        <div className="flex items-center justify-center gap-6">
+          <SearchIcon size={20} onClick={() => setShowSearch((prev) => !prev)} className="cursor-pointer lg:hidden" />
+          <NavbarActions
+            toggleLanguage={toggleLanguage}
+            language={i18n.language}
+            isAuthenticated={isAuthenticated}
+            user={user}
+            logout={handleLogout}
+            seller={data}
+          />
+        </div>
+      </nav>
+      {showSearch && (
+        <div className="flex items-center justify-between gap-4 bg-(--surface) px-6 py-3 text-(--foreground) lg:hidden">
+          <SearchBar search={search} setSearch={setSearch} />
+
+          <Link
+            to="/offers"
+            className="text-xs font-medium whitespace-nowrap text-(--foreground-secondary) transition-colors hover:text-orange-500"
+          >
+            Wszystkie produkty
+          </Link>
+        </div>
+      )}
+    </>
   );
 };
 export default Navbar;

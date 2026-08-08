@@ -23,6 +23,7 @@ import SellerDashboard from "./pages/SellerPage/SellerDashboardPage/SellerDashbo
 import SellerPage from "./pages/SellerPage/SellerPage";
 import { useAuth } from "./context/AuthContext";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import Navbar from "./components/layout/Navbar/Navbar";
 
 const AppContent = () => {
   const { isLoggingOut } = useAuth();
@@ -121,7 +122,9 @@ const AppContent = () => {
                 <ProtectedRoute allowedRoles={["SELLER"]}>
                   <CheckIsLoggedIn>
                     <CheckIsSeller>
-                      <SellerDashboard />
+                      <SellerDashboard>
+                        <Navbar />
+                      </SellerDashboard>
                     </CheckIsSeller>
                   </CheckIsLoggedIn>
                 </ProtectedRoute>

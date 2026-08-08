@@ -2,6 +2,8 @@ import { Filter, Euro, RotateCcw, Search, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../axios";
 import { useQuery } from "@tanstack/react-query";
+import { useFilterStore } from "../../zustand/states/filterStore";
+
 interface FilterItem {
   label: string;
   value: string;
@@ -9,8 +11,7 @@ interface FilterItem {
 }
 
 const MobileFilterSideBar = ({ searchParams, setSearchParams }: any) => {
-  const [min, setMin] = useState(searchParams.get("min") || "");
-  const [max, setMax] = useState(searchParams.get("max") || "");
+  const { min, max, selectedFilters, setMin, setMax, toggleFilter, resetFilters } = useFilterStore();
 
   const [openFilters, setOpenFilter] = useState<string[]>([]);
   const [showMenu, setShowMenu] = useState(false);
@@ -34,36 +35,11 @@ const MobileFilterSideBar = ({ searchParams, setSearchParams }: any) => {
     return acc;
   }, {});
 
-  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
-    const result: Record<string, string[]> = {};
-
-    filters.forEach((filter: FilterItem) => {
-      const values = searchParams.get(filter.label);
-
-      if (values) {
-        result[filter.label] = values.split(",");
-      }
-    });
-
-    return result;
-  });
-
-  const toggleFilter = (label: string, value: string) => {
-    setSelectedFilters((prev) => {
-      const current = prev[label] || [];
-
-      return {
-        ...prev,
-        [label]: current.includes(value) ? current.filter((v) => v !== value) : [...current, value],
-      };
-    });
-  };
-
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);
 
     Object.entries(selectedFilters).forEach(([label, values]) => {
-      if (values.length) {
+      if (values.length > 0) {
         params.set(label, values.join(","));
       } else {
         params.delete(label);
@@ -88,18 +64,9 @@ const MobileFilterSideBar = ({ searchParams, setSearchParams }: any) => {
     setShowMenu(false);
   };
 
-  const resetFilters = () => {
-    setSelectedFilters({});
-    setMin("");
-    setMax("");
-
-    setSearchParams({});
-    setShowMenu(false);
-  };
-
   return (
     <aside
-      className={`w-auto border border-(--border) bg-(--surface) p-3 shadow-sm ${showMenu ? "fixed" : "static"} ${showMenu ? "top-0 left-0 h-full w-full overflow-auto" : ""} lg:hidden`}
+      className={`w-auto border border-(--border) bg-(--surface) p-5 shadow-sm ${showMenu ? "fixed" : "static"} ${showMenu ? "top-0 left-0 h-full w-full overflow-auto" : ""} lg:hidden`}
     >
       <div
         className="m-0 flex h-auto cursor-pointer items-center justify-between border-(--border) lg:mb-4"
@@ -201,7 +168,10 @@ const MobileFilterSideBar = ({ searchParams, setSearchParams }: any) => {
           </button>
 
           <button
-            onClick={resetFilters}
+            onClick={() => {
+              resetFilters();
+              setShowMenu(false);
+            }}
             className="flex w-full cursor-pointer items-center justify-center gap-2 border border-(--border) bg-(--surface) py-3 font-semibold text-(--foreground) transition hover:bg-(--surface-secondary)"
           >
             <RotateCcw size={18} />

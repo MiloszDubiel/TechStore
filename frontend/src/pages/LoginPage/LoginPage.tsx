@@ -60,40 +60,48 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md border border-gray-300 bg-white p-8 shadow-md">
-        <h2 className="mb-6 text-center text-2xl font-bold text-orange-600">Logowanie</h2>
+    <div className="flex min-h-screen items-center justify-center bg-(--background) px-4 py-8 sm:px-6 lg:px-8">
+      <div className="place fixed top-0 left-0 grid h-full w-full border border-(--border) bg-(--surface) p-8 md:static md:w-md">
+        <h2 className="mb-6 text-center text-2xl font-bold text-(--foreground)">Logowanie</h2>
 
-        {error && <div className="mb-4 border border-red-400 bg-red-100 p-2 text-red-700">{(error as any)?.response?.data.message}</div>}
+        {error && (
+          <div className="mb-4 border border-(--danger) bg-(--surface-secondary) p-3 text-sm text-(--danger)">
+            {(error as any)?.response?.data.message}
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label className="mb-1 block text-sm font-semibold">Email</label>
+            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)">Email</label>
 
-            <input {...register("email")} className="w-full border border-gray-300 px-3 py-2 outline-none focus:border-orange-500" />
+            <input
+              type="email"
+              {...register("email")}
+              className="w-full border border-(--border) bg-(--surface) px-3 py-2.5 text-(--foreground) transition outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
+            />
 
-            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+            {errors.email && <p className="mt-1 text-sm text-(--danger)">{errors.email.message}</p>}
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-semibold">Hasło</label>
+            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)">Hasło</label>
 
             <input
               type="password"
               {...register("password")}
-              className="w-full border border-gray-300 px-3 py-2 outline-none focus:border-orange-500"
+              className="w-full border border-(--border) bg-(--surface) px-3 py-2.5 text-(--foreground) transition outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
             />
 
-            {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+            {errors.password && <p className="mt-1 text-sm text-(--danger)">{errors.password.message}</p>}
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" {...register("rememberMe")} className="accent-orange-500" />
+          <div className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <label className="flex items-center gap-2 text-(--foreground-secondary)">
+              <input type="checkbox" {...register("rememberMe")} className="accent-(--primary)" />
               Zapamiętaj mnie
             </label>
 
-            <Link to="/forgot-password" className="text-orange-600 hover:underline">
+            <Link to="/forgot-password" className="text-(--primary) transition hover:text-(--primary-hover) hover:underline">
               Zapomniałem hasła
             </Link>
           </div>
@@ -101,15 +109,15 @@ const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full bg-orange-500 py-2 text-white transition hover:bg-orange-600 disabled:opacity-50"
+            className="w-full cursor-pointer bg-(--primary) py-2.5 font-semibold text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isPending ? "Logowanie..." : "Zaloguj się"}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm">
+        <p className="mt-6 text-center text-sm text-(--foreground-secondary)">
           Nie masz konta?{" "}
-          <Link to="/register" className="font-semibold text-orange-600 hover:underline">
+          <Link to="/register" className="font-semibold text-(--primary) transition hover:text-(--primary-hover) hover:underline">
             Zarejestruj się
           </Link>
         </p>

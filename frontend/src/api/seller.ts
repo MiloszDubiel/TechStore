@@ -1,6 +1,6 @@
 import { api } from "../axios";
 
-const API = "http://localhost:5000/api/seller";
+const API = "/api/seller";
 
 export const getProducts = async (params: any) => {
   const { data } = await api.get(`${API}/products`, {
@@ -29,7 +29,7 @@ export const addProduct = async (product: any) => {
 };
 
 export const getCategories = async () => {
-  const { data } = await api.get(`http://localhost:5000/api/products/categories`);
+  const { data } = await api.get(`/api/products/categories`);
 
   return data;
 };

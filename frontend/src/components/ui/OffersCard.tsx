@@ -42,67 +42,75 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
     });
   };
   return (
-    <div className="block overflow-hidden border border-(--border) bg-(--surface) p-4 text-(--foreground) transition hover:shadow-lg">
-      <div className="flex items-start gap-6">
-        <img src={getImage(product.images)} alt={product.name} className="h-48 w-48 bg-(--surface-secondary) object-contain" />
+    <div className="flex min-w-0 flex-col gap-4 bg-(--surface) p-4 text-(--foreground) sm:flex-row sm:items-start sm:justify-between">
+      <Link
+        to={`/offers/${product.slug}/${product.id}`}
+        className="flex h-48 w-full shrink-0 items-center justify-center overflow-hidden bg-(--surface-secondary) sm:h-32 sm:w-32"
+      >
+        <img src={getImage(product.images)} alt={product.name} className="h-full w-full object-contain" />
+      </Link>
 
-        <div className="flex-1">
-          <Link to={`/offers/${product.slug}/${product.id}`}>
-            <h3 className="line-clamp-2 text-lg font-semibold transition hover:text-orange-600 hover:underline">{product.name}</h3>
-          </Link>
+      <div className="min-w-0 flex-1">
+        <Link to={`/offers/${product.slug}/${product.id}`}>
+          <h3 className="line-clamp-2 text-lg font-semibold text-(--foreground) transition hover:text-(--primary) hover:underline">
+            {product.name}
+          </h3>
+        </Link>
 
-          <p className="mt-1 text-sm text-(--foreground-secondary)">Kategoria: {product.category_name ?? "Brak"}</p>
+        <p className="mt-1 text-sm text-(--foreground-secondary)">Kategoria: {product.category_name ?? "Brak"}</p>
 
-          <ul className="mt-2 space-y-1 text-sm text-(--foreground-secondary)">
-            {displayedParams.map((param) => (
-              <li key={param}>{param}</li>
-            ))}
-          </ul>
+        <ul className="mt-2 space-y-1 text-sm text-(--foreground-secondary)">
+          {displayedParams.map((param) => (
+            <li key={param}>{param}</li>
+          ))}
+        </ul>
 
-          <p className="mt-2 text-sm text-(--foreground-secondary)">Dostępna szybka wysyłka • Gwarancja 24 miesiące</p>
-        </div>
+        <p className="mt-2 text-sm text-(--foreground-secondary)">Dostępna szybka wysyłka • Gwarancja 24 miesiące</p>
+      </div>
 
-        <div className="flex flex-col items-end gap-3">
-          <p className="text-2xl font-bold">{product.price} zł</p>
+      {/* Cena i akcje */}
+      <div className="flex min-w-0 flex-col items-stretch gap-3 sm:w-40 sm:shrink-0 sm:items-end">
+        <p className="text-2xl font-bold text-(--foreground)">{product.price} zł</p>
 
-          <p className={product.stock > 0 ? "text-sm text-green-500" : "text-sm text-red-500"}>
-            {product.stock > 0 ? `Dostępne: ${product.stock} szt.` : "Brak w magazynie"}
-          </p>
+        <p className={product.stock > 0 ? "text-sm text-(--success)" : "text-sm text-(--danger)"}>
+          {product.stock > 0 ? `Dostępne: ${product.stock} szt.` : "Brak w magazynie"}
+        </p>
 
-          {product?.seller_id != user?.id && product.stock > 0 && (
-            <button
-              className="cursor-pointer bg-orange-500 px-6 py-2 font-semibold text-white transition hover:bg-orange-600"
-              onClick={() => addToCart(product)}
-            >
-              Dodaj do koszyka
-            </button>
-          )}
+        {product?.seller_id != user?.id && product.stock > 0 && (
+          <button
+            className="w-full cursor-pointer bg-(--primary) px-4 py-2 font-semibold text-white transition hover:bg-(--primary-hover) sm:w-auto sm:whitespace-nowrap"
+            onClick={() => addToCart(product)}
+          >
+            Dodaj do koszyka
+          </button>
+        )}
 
-          {product?.seller_id == user?.id && (
-            <button
-              className="flex cursor-pointer items-center gap-2 bg-orange-500 px-6 py-2 font-semibold text-white transition hover:bg-orange-600"
-              onClick={() => {
-                navigate(`/seller/dashboard?tab=products&edit=${product.id}`);
-              }}
-            >
-              <Edit size={13} />
-              Edytuj
-            </button>
-          )}
+        {product?.seller_id == user?.id && (
+          <button
+            className="flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) px-4 py-2 font-semibold text-white transition hover:bg-(--primary-hover) sm:w-auto sm:whitespace-nowrap"
+            onClick={() => {
+              navigate(`/seller/dashboard?tab=products&edit=${product.id}`);
+            }}
+          >
+            <Edit size={13} />
+            Edytuj
+          </button>
+        )}
 
-          {isAuthenticated && product?.seller_id !== user?.id && (
-            <button
-              onClick={() => {
-                toggleFavorite(product.id);
-                const message = favorite ? "Usunięto z ulubionych" : "Dodano do ulubionych";
+        {isAuthenticated && product?.seller_id !== user?.id && (
+          <button
+            className="flex cursor-pointer justify-center"
+            onClick={() => {
+              toggleFavorite(product.id);
 
-                toast.success(message);
-              }}
-            >
-              <Heart fill={favorite ? "#f97316" : "none"} color="#f97316" className="cursor-pointer" />
-            </button>
-          )}
-        </div>
+              const message = favorite ? "Usunięto z ulubionych" : "Dodano do ulubionych";
+
+              toast.success(message);
+            }}
+          >
+            <Heart fill={favorite ? "var(--primary)" : "none"} color="var(--primary)" className="transition" />
+          </button>
+        )}
       </div>
     </div>
   );

@@ -35,11 +35,8 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
   return (
     <div
       ref={dropdownRef}
-      className="fixed top-0 right-0 left-0 z-50 h-full w-full border border-(--border) bg-(--surface) p-4 text-(--foreground) shadow-xl md:absolute md:inset-auto md:top-10 md:right-0 md:h-auto md:w-125"
+      className="absolute top-18 right-0 z-50 border border-(--border) bg-(--surface) p-2 text-(--foreground) shadow-xl"
     >
-      <div className="flex w-full justify-end md:hidden">
-        <X onClick={onClose} className="cursor-pointer" />
-      </div>
       {!isAuthenticated ? (
         <>
           <Link to="/login" onClick={onClose} className={itemClass}>

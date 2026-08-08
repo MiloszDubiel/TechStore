@@ -75,48 +75,59 @@ const OrderDetails = ({ id, onBack }: any) => {
           const seller = item.seller;
 
           return (
-            <div key={product.id} className={`flex gap-6 p-6 ${index !== items.length - 1 ? "border-b border-(--border)" : ""} `}>
-              <img src={useImage(product)} className="h-32 w-32 border border-(--border) object-contain" alt={product.name} />
-
-              <div className="flex-1">
-                <h4 className="text-xl font-semibold text-(--foreground)">{product.name}</h4>
-
-                <p className="text-(--foreground-secondary)">
-                  {product.brand} {product.model}
-                </p>
-
-                <div className="mt-4 border border-(--border) bg-(--surface-secondary) p-4">
-                  <p className="text-sm text-(--foreground-secondary)">Sprzedawca</p>
-
-                  <Link
-                    to={`/seller/${seller.slug}/${seller.seller_id}`}
-                    className="mt-1 block font-semibold text-(--foreground) transition hover:text-(--primary)"
-                  >
-                    {seller.shop_name}
-                  </Link>
-
-                  <p className="text-sm text-(--foreground-secondary)">{seller.company_name}</p>
-
-                  {seller.is_verified === 1 && <span className="text-sm text-green-600">✓ Zweryfikowany sprzedawca</span>}
+            <div
+              key={product.id}
+              className={`items-c flex flex-col gap-6 p-6 ${index !== items.length - 1 ? "border-b border-(--border)" : ""} `}
+            >
+              <div className="flex min-w-0 flex-col gap-4 sm:flex-row">
+                {/* Zdjęcie */}
+                <div className="flex h-40 w-full shrink-0 items-center justify-center border border-(--border) bg-(--surface) p-2 sm:h-32 sm:w-32">
+                  <img src={useImage(product)} className="h-full w-full object-contain" alt={product.name} />
                 </div>
 
-                <div className="mt-5 flex justify-between">
-                  <div className="text-(--foreground)">
-                    <p>
-                      Ilość:
-                      <span className="ml-2 font-semibold">{item.quantity}</span>
-                    </p>
+                {/* Informacje o produkcie */}
+                <div className="min-w-0 flex-1">
+                  <h4 className="line-clamp-2 text-lg font-semibold break-words text-(--foreground) sm:text-xl">{product.name}</h4>
 
-                    <p>
-                      Cena sztuki:
-                      <span className="ml-2 font-semibold">{Number(item.price).toFixed(2)} zł</span>
-                    </p>
+                  <p className="mt-1 truncate text-sm text-(--foreground-secondary) sm:text-base">
+                    {product.brand} {product.model}
+                  </p>
+
+                  {/* Sprzedawca */}
+                  <div className="mt-4 border border-(--border) bg-(--surface-secondary) p-3 sm:p-4">
+                    <p className="text-sm text-(--foreground-secondary)">Sprzedawca</p>
+
+                    <Link
+                      to={`/seller/${seller.slug}/${seller.seller_id}`}
+                      className="mt-1 block truncate font-semibold text-(--foreground) transition hover:text-(--primary)"
+                    >
+                      {seller.shop_name}
+                    </Link>
+
+                    <p className="truncate text-sm text-(--foreground-secondary)">{seller.company_name}</p>
+
+                    {seller.is_verified === 1 && <span className="mt-1 block text-sm text-(--success)">✓ Zweryfikowany sprzedawca</span>}
                   </div>
 
-                  <div className="text-right">
-                    <p className="text-sm text-(--foreground-secondary)">Razem</p>
+                  {/* Cena i ilość */}
+                  <div className="mt-5 flex flex-col gap-4 border-t border-(--border) pt-4 min-[400px]:flex-row min-[400px]:items-end min-[400px]:justify-between">
+                    <div className="text-sm text-(--foreground) sm:text-base">
+                      <p>
+                        Ilość:
+                        <span className="ml-2 font-semibold">{item.quantity}</span>
+                      </p>
 
-                    <p className="text-xl font-bold text-(--primary)">{(item.quantity * Number(item.price)).toFixed(2)} zł</p>
+                      <p className="mt-1">
+                        Cena sztuki:
+                        <span className="ml-2 font-semibold">{Number(item.price).toFixed(2)} zł</span>
+                      </p>
+                    </div>
+
+                    <div className="text-left min-[400px]:text-right">
+                      <p className="text-sm text-(--foreground-secondary)">Razem</p>
+
+                      <p className="text-lg font-bold text-(--primary) sm:text-xl">{(item.quantity * Number(item.price)).toFixed(2)} zł</p>
+                    </div>
                   </div>
                 </div>
               </div>

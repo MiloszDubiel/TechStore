@@ -59,11 +59,11 @@ const AccountPage = () => {
         <p className="mt-2">Zarządzaj swoim profilem i zamówieniami</p>
       </section>
 
-      <main className="container mx-auto flex flex-col gap-8 px-6 py-10 lg:grid lg:grid-cols-12">
+      <main className="mx-auto flex flex-col gap-8 lg:container lg:grid lg:grid-cols-12 lg:px-6 lg:py-10">
         <aside className="flex h-fit w-auto overflow-x-auto bg-(--surface) shadow-md lg:col-span-3 lg:grid">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-left ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
               activeTab === "orders" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
@@ -73,7 +73,7 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("profile")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-left ${
+            className={`text-(--foreground)t flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 ${
               activeTab === "profile" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
@@ -83,7 +83,7 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("addresses")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-left ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
               activeTab === "addresses" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
@@ -93,7 +93,7 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-left ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
               activeTab === "security" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
@@ -103,7 +103,7 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("settings")}
-            className={`flex w-full cursor-pointer items-center gap-3 p-4 text-left ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
               activeTab === "settings" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
