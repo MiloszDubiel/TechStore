@@ -80,7 +80,7 @@ const OffersList = () => {
     <>
       <Navbar />
 
-      <div className="max-w-7xl flex gap-6 p-6 mx-auto">
+      <div className="max-w-7xl lg:flex-row flex flex-col gap-6 p-6 mx-auto">
         <FiltersSidebar />
 
         <div className="flex flex-col w-full gap-6">

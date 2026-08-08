@@ -55,6 +55,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
     text-(--foreground)
     transition
     hover:shadow-lg
+    overflow-hidden
   "
     >
       <div className="flex items-start gap-6">
