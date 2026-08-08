@@ -5,6 +5,7 @@ import SellerProfileForm from "../../components/ui/SellerForm";
 import { useSeller } from "../../hooks/useSeller";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 const BecomeSellerForm = () => {
   const queryClient = useQueryClient();
@@ -38,10 +39,16 @@ const BecomeSellerForm = () => {
     formData.append("user_id", String(user!.id));
 
     createProfile.mutate(formData, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({
           queryKey: ["company-info"],
         });
+
+        await queryClient.invalidateQueries({
+          queryKey: ["user"],
+        });
+
+        toast.success("Utworzono sklep");
         navigate("/seller/dashboard");
       },
     });
