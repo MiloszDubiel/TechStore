@@ -4,13 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
-const AddReview = ({
-  productId,
-  seller_id,
-}: {
-  productId: string;
-  seller_id: string;
-}) => {
+const AddReview = ({ productId, seller_id }: { productId: string; seller_id: string }) => {
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -50,24 +44,14 @@ const AddReview = ({
   }
   if (!user?.id) {
     return (
-      <div
-        className="
-      border border-(--border)
-      bg-(--surface)
-      p-6
-      text-center
-      text-(--foreground)
-    "
-      >
+      <div className="border border-(--border) bg-(--surface) p-6 text-center text-(--foreground)">
         <h3 className="mb-2 text-lg font-semibold">Chcesz dodać opinię?</h3>
 
-        <p className="mb-4 text-(--foreground-secondary)">
-          Zaloguj się, aby móc ocenić ten produkt.
-        </p>
+        <p className="mb-4 text-(--foreground-secondary)">Zaloguj się, aby móc ocenić ten produkt.</p>
 
         <button
           onClick={() => navigate("/login")}
-          className=" hover:bg-orange-600 px-6 py-3 text-white transition bg-orange-500 cursor-pointer"
+          className="cursor-pointer bg-orange-500 px-6 py-3 text-white transition hover:bg-orange-600"
         >
           Zaloguj się
         </button>
@@ -75,19 +59,12 @@ const AddReview = ({
     );
   }
   return (
-    <div
-      className="
-    border border-(--border)
-    bg-(--surface)
-    p-6
-    text-(--foreground)
-  "
-    >
+    <div className="border border-(--border) bg-(--surface) p-6 text-(--foreground)">
       <h3 className="mb-4 text-xl font-semibold">Dodaj opinię</h3>
 
       <p className="mb-2 text-sm text-(--foreground-secondary)">Twoja ocena</p>
 
-      <div className="flex gap-1 mb-5" onMouseLeave={() => setHoverRating(0)}>
+      <div className="mb-5 flex gap-1" onMouseLeave={() => setHoverRating(0)}>
         {[1, 2, 3, 4, 5].map((star) => {
           const active = star <= (hoverRating || rating);
 
@@ -97,42 +74,22 @@ const AddReview = ({
               size={34}
               onMouseEnter={() => setHoverRating(star)}
               onClick={() => setRating(star)}
-              className={`
-            cursor-pointer
-            transition
-            ${active ? "fill-yellow-400 text-yellow-400" : "text-(--border)"}
-          `}
+              className={`cursor-pointer transition ${active ? "fill-yellow-400 text-yellow-400" : "text-(--border)"} `}
             />
           );
         })}
       </div>
 
       <textarea
-        className="
-      min-h-32
-      w-full
-      resize-none
-      border border-(--border)
-      bg-(--surface-secondary)
-      p-3
-      text-(--foreground)
-      outline-none
-      placeholder:text-(--foreground-secondary)
-      focus:border-orange-500
-    "
+        className="min-h-32 w-full resize-none border border-(--border) bg-(--surface-secondary) p-3 text-(--foreground) outline-none placeholder:text-(--foreground-secondary) focus:border-orange-500"
         placeholder="Napisz swoją opinię..."
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
 
-      {message && (
-        <p className="mt-3 text-sm text-(--foreground-secondary)">{message}</p>
-      )}
+      {message && <p className="mt-3 text-sm text-(--foreground-secondary)">{message}</p>}
 
-      <button
-        onClick={submit}
-        className=" hover:bg-orange-600 px-6 py-3 mt-4 text-white transition bg-orange-500 cursor-pointer"
-      >
+      <button onClick={submit} className="mt-4 cursor-pointer bg-orange-500 px-6 py-3 text-white transition hover:bg-orange-600">
         Dodaj opinię
       </button>
     </div>

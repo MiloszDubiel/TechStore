@@ -20,10 +20,7 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -33,31 +30,14 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [onClose]);
 
-  const itemClass =
-    "flex items-center gap-3 px-4 py-2 transition hover:bg-(--surface-secondary) hover:text-orange-500";
+  const itemClass = "flex items-center gap-3 px-4 py-2 transition hover:bg-(--surface-secondary) hover:text-orange-500";
 
   return (
     <div
       ref={dropdownRef}
-      className="
-        md:absolute right-0  z-50 md:w-125
-        border border-(--border)
-        bg-(--surface)
-        p-4
-        text-(--foreground)
-        shadow-xl
-        fixed
-        top-0
-        left-0
-        w-full
-        h-full
-        md:h-auto
-  md:inset-auto
-  md:right-0
-  md:top-10
-      "
+      className="fixed top-0 right-0 left-0 z-50 h-full w-full border border-(--border) bg-(--surface) p-4 text-(--foreground) shadow-xl md:absolute md:inset-auto md:top-10 md:right-0 md:h-auto md:w-125"
     >
-      <div className="md:hidden flex justify-end w-full">
+      <div className="flex w-full justify-end md:hidden">
         <X onClick={onClose} className="cursor-pointer" />
       </div>
       {!isAuthenticated ? (
@@ -86,11 +66,7 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
           </Link>
 
           {user?.role === "SELLER" && user?.id === data?.user_id && (
-            <Link
-              to="/seller/dashboard"
-              onClick={onClose}
-              className={itemClass}
-            >
+            <Link to="/seller/dashboard" onClick={onClose} className={itemClass}>
               <Store size={18} />
               Panel sprzedawcy
             </Link>
@@ -112,7 +88,7 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
 
           <button
             onClick={logout}
-            className=" hover:bg-red-500/10 flex items-center w-full gap-3 px-4 py-2 text-left text-red-500 transition cursor-pointer"
+            className="flex w-full cursor-pointer items-center gap-3 px-4 py-2 text-left text-red-500 transition hover:bg-red-500/10"
           >
             <LogOut size={18} />
             Wyloguj

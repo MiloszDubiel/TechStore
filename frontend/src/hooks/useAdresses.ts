@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {api} from "../axios";
+import { api } from "../axios";
 
 const useAdresses = (userID: string | unknown) => {
   const queryClient = useQueryClient();
@@ -11,8 +11,7 @@ const useAdresses = (userID: string | unknown) => {
 
   const { mutate: saveAddress, isSuccess: addressSetSuccess } = useMutation({
     mutationKey: ["save-address"],
-    mutationFn: async (data) =>
-      await api.post("/api/settings/edit-user/adresses", data),
+    mutationFn: async (data) => await api.post("/api/settings/edit-user/adresses", data),
 
     onSuccess: (response) => {
       queryClient.invalidateQueries({
@@ -23,25 +22,21 @@ const useAdresses = (userID: string | unknown) => {
     },
   });
 
-  const { mutate: updateAddress, isSuccess: addressUpdateSuccess } =
-    useMutation({
-      mutationKey: ["update-address"],
-      mutationFn: async (data) =>
-        await api.patch("/api/settings/edit-user/adresses", data),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
-      },
-    });
+  const { mutate: updateAddress, isSuccess: addressUpdateSuccess } = useMutation({
+    mutationKey: ["update-address"],
+    mutationFn: async (data) => await api.patch("/api/settings/edit-user/adresses", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
+    },
+  });
 
-  const { mutate: deleteAddress, isSuccess: addressDeleteSuccess } =
-    useMutation({
-      mutationKey: ["delete-address"],
-      mutationFn: async (id: string) =>
-        await api.delete(`/api/settings/edit-user/adresses/${id}`),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
-      },
-    });
+  const { mutate: deleteAddress, isSuccess: addressDeleteSuccess } = useMutation({
+    mutationKey: ["delete-address"],
+    mutationFn: async (id: string) => await api.delete(`/api/settings/edit-user/adresses/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adressess", userID] });
+    },
+  });
 
   if (!userID) {
     return {

@@ -97,21 +97,13 @@ export default function CheckoutLayout() {
     <>
       <Navbar />
 
-      <div className="container px-6 py-10 mx-auto">
+      <div className="container mx-auto px-6 py-10">
         <CheckoutSteps steps={steps} current={step} />
 
-        <div
-          className={`lg:grid-cols-${
-            step !== 5 ? 3 : 2
-          } grid grid-cols-1 gap-8 mt-10`}
-        >
-          <div className="lg:col-span-2 p-6 bg-(--surface) text-(--foreground) border border-(--border) shadow">
-            {renderStep()}
-          </div>
+        <div className={`lg:grid-cols-${step !== 5 ? 3 : 2} mt-10 grid grid-cols-1 gap-8`}>
+          <div className="border border-(--border) bg-(--surface) p-6 text-(--foreground) shadow lg:col-span-2">{renderStep()}</div>
 
-          <div className="lg:order-last order-first">
-            {step !== 5 && <OrderSummary />}
-          </div>
+          <div className="order-first lg:order-last">{step !== 5 && <OrderSummary />}</div>
         </div>
       </div>
     </>

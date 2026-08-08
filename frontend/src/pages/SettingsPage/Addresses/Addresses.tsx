@@ -6,7 +6,6 @@ import useAdresses from "../../../hooks/useAdresses";
 import type { AddressFrom } from "../../../schemas/addressSchema";
 import { useAuth } from "../../../context/AuthContext";
 
-
 export const Addresses = () => {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [currentEditAddress, setCurrentEditAdress] = useState<AddressFrom>({
@@ -21,30 +20,14 @@ export const Addresses = () => {
 
   const { user } = useAuth();
 
-
-
-  const {
-    userAddresses,
-    saveAddress,
-    updateAddress,
-    deleteAddress,
-  } = useAdresses(user?.id);
+  const { userAddresses, saveAddress, updateAddress, deleteAddress } = useAdresses(user?.id);
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold text-(--foreground)">
-        Adresy dostawy
-      </h2>
+      <h2 className="mb-4 text-2xl font-bold text-(--foreground)">Adresy dostawy</h2>
 
       <button
-        className="
-      hover:bg-(--primary-hover)
-      px-4 py-2 mb-4
-      text-white
-      bg-(--primary)
-      transition
-      cursor-pointer
-    "
+        className="mb-4 cursor-pointer bg-(--primary) px-4 py-2 text-white transition hover:bg-(--primary-hover)"
         onClick={() => {
           setIsAddressModalOpen(true);
           setCurrentEditAdress({
@@ -115,9 +98,7 @@ export const Addresses = () => {
           confirmText="Usuń"
           cancelText="Anuluj"
           confirmVariant="danger"
-          onCancel={() =>
-            setOpenConfirm((prev) => ({ ...prev, isOpen: false }))
-          }
+          onCancel={() => setOpenConfirm((prev) => ({ ...prev, isOpen: false }))}
           onConfirm={() => {
             deleteAddress(openConfirm.id);
             setOpenConfirm({ id: "", isOpen: false });

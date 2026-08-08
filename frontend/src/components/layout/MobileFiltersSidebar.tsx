@@ -8,13 +8,15 @@ interface FilterItem {
   count: number;
 }
 
-const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
+const MobileFilterSideBar = ({ searchParams, setSearchParams }: any) => {
   const [min, setMin] = useState(searchParams.get("min") || "");
   const [max, setMax] = useState(searchParams.get("max") || "");
 
+  const [openFilters, setOpenFilter] = useState<string[]>([]);
+  const [showMenu, setShowMenu] = useState(false);
+
   const { data: filters = [] } = useQuery({
     queryKey: ["filters"],
-
     queryFn: async () => {
       const { data } = await api.get("/api/products/filters");
 
@@ -31,8 +33,6 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
 
     return acc;
   }, {});
-
-  const [openFilters, setOpenFilter] = useState<string[]>([]);
 
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>(() => {
     const result: Record<string, string[]> = {};
@@ -85,6 +85,7 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
     params.set("page", "1");
 
     setSearchParams(params);
+    setShowMenu(false);
   };
 
   const resetFilters = () => {
@@ -93,22 +94,27 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
     setMax("");
 
     setSearchParams({});
+    setShowMenu(false);
   };
 
   return (
     <aside
-      className={`sticky top-6 hidden h-fit max-h-[calc(100vh-1.5rem)] w-80 border border-(--border) bg-(--surface) p-3 shadow-sm lg:block lg:overflow-y-auto lg:p-6`}
+      className={`w-auto border border-(--border) bg-(--surface) p-3 shadow-sm ${showMenu ? "fixed" : "static"} ${showMenu ? "top-0 left-0 h-full w-full overflow-auto" : ""} lg:hidden`}
     >
-      <div className="m-0 flex h-auto cursor-pointer items-center justify-between border-(--border)">
-        <div className="flex items-center gap-3">
+      <div
+        className="m-0 flex h-auto cursor-pointer items-center justify-between border-(--border) lg:mb-4"
+        onClick={() => {
+          setShowMenu((prev) => !prev);
+        }}
+      >
+        <div className="flex items-center justify-between gap-3">
           <Filter size={22} className="text-(--primary)" />
           <h2 className="text-2xl text-(--foreground)">Filtry</h2>
         </div>
-
-        <ChevronDown className="text-(--foreground)"></ChevronDown>
+        <ChevronDown size={22} className="text-(--foreground)" />
       </div>
 
-      <div className="block">
+      <div className={`${showMenu ? "block" : "hidden"}`}>
         <div className="mb-2">
           <div className="mt-4 mb-4 flex items-center gap-2">
             <Euro size={18} className="text-(--primary)" />
@@ -184,7 +190,10 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
 
         <div className="space-y-3 border-t border-(--border) pt-4">
           <button
-            onClick={applyFilters}
+            onClick={() => {
+              applyFilters();
+              setShowMenu(false);
+            }}
             className="flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) py-3 font-semibold text-white transition hover:bg-(--primary-hover)"
           >
             <Search size={18} />
@@ -203,4 +212,4 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
     </aside>
   );
 };
-export default FiltersSidebar;
+export default MobileFilterSideBar;

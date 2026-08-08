@@ -33,9 +33,7 @@ const LoginPage: React.FC = () => {
 
   const fromCart = searchParams.get("cart");
 
-  const removeSellerProducts = useCartStore(
-    (state: any) => state.removeSellerProducts
-  );
+  const removeSellerProducts = useCartStore((state: any) => state.removeSellerProducts);
 
   const queryClient = useQueryClient();
 
@@ -62,60 +60,40 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="w-full max-w-md p-8 bg-white border border-gray-300 shadow-md">
-        <h2 className="mb-6 text-2xl font-bold text-center text-orange-600">
-          Logowanie
-        </h2>
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="w-full max-w-md border border-gray-300 bg-white p-8 shadow-md">
+        <h2 className="mb-6 text-center text-2xl font-bold text-orange-600">Logowanie</h2>
 
-        {error && (
-          <div className="p-2 mb-4 text-red-700 bg-red-100 border border-red-400">
-            {(error as any)?.response?.data.message}
-          </div>
-        )}
+        {error && <div className="mb-4 border border-red-400 bg-red-100 p-2 text-red-700">{(error as any)?.response?.data.message}</div>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block mb-1 text-sm font-semibold">Email</label>
+            <label className="mb-1 block text-sm font-semibold">Email</label>
 
-            <input
-              {...register("email")}
-              className="focus:border-orange-500 w-full px-3 py-2 border border-gray-300 outline-none"
-            />
+            <input {...register("email")} className="w-full border border-gray-300 px-3 py-2 outline-none focus:border-orange-500" />
 
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
-            )}
+            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-semibold">Hasło</label>
+            <label className="mb-1 block text-sm font-semibold">Hasło</label>
 
             <input
               type="password"
               {...register("password")}
-              className="focus:border-orange-500 w-full px-3 py-2 border border-gray-300 outline-none"
+              className="w-full border border-gray-300 px-3 py-2 outline-none focus:border-orange-500"
             />
 
-            {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
-            )}
+            {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
           </div>
 
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                {...register("rememberMe")}
-                className="accent-orange-500"
-              />
+              <input type="checkbox" {...register("rememberMe")} className="accent-orange-500" />
               Zapamiętaj mnie
             </label>
 
-            <Link
-              to="/forgot-password"
-              className="hover:underline text-orange-600"
-            >
+            <Link to="/forgot-password" className="text-orange-600 hover:underline">
               Zapomniałem hasła
             </Link>
           </div>
@@ -123,18 +101,15 @@ const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={isPending}
-            className="hover:bg-orange-600 disabled:opacity-50 w-full py-2 text-white transition bg-orange-500"
+            className="w-full bg-orange-500 py-2 text-white transition hover:bg-orange-600 disabled:opacity-50"
           >
             {isPending ? "Logowanie..." : "Zaloguj się"}
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-center">
+        <p className="mt-4 text-center text-sm">
           Nie masz konta?{" "}
-          <Link
-            to="/register"
-            className="hover:underline font-semibold text-orange-600"
-          >
+          <Link to="/register" className="font-semibold text-orange-600 hover:underline">
             Zarejestruj się
           </Link>
         </p>

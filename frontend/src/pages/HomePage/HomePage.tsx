@@ -35,67 +35,49 @@ const HomePage = () => {
   return (
     <>
       <Navbar />
-      <section className="py-16 text-center text-white bg-orange-500">
+      <section className="bg-orange-500 py-16 text-center text-white">
         <h1 className="mb-4 text-4xl font-bold">Aktualne Oferty</h1>
         <p className="text-lg">Najlepsze promocje w My IT Store</p>
       </section>
 
       <main className="container mx-auto flex-1 bg-(--background) px-6 py-12">
-        <div className="sm:grid-cols-2 lg:grid-cols-4 grid grid-cols-1 gap-8">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {isLoading &&
             [...Array(4)].map((_, i) => (
-              <div
-                key={i}
-                className="h-95 animate-pulse overflow-hidden  border border-(--border) bg-(--surface) shadow-sm"
-              >
+              <div key={i} className="h-95 animate-pulse overflow-hidden border border-(--border) bg-(--surface) shadow-sm">
                 <div className="h-48 w-full bg-(--surface-secondary)" />
 
-                <div className="flex flex-col h-full p-4">
-                  <div className="mb-3 h-5 w-3/4  bg-(--surface-secondary)" />
-                  <div className="mb-2 h-5 w-1/2  bg-(--surface-secondary)" />
-                  <div className="mt-auto mb-3 h-5 w-1/3  bg-(--surface-secondary)" />
-                  <div className="h-10  bg-(--surface-secondary)" />
+                <div className="flex h-full flex-col p-4">
+                  <div className="mb-3 h-5 w-3/4 bg-(--surface-secondary)" />
+                  <div className="mb-2 h-5 w-1/2 bg-(--surface-secondary)" />
+                  <div className="mt-auto mb-3 h-5 w-1/3 bg-(--surface-secondary)" />
+                  <div className="h-10 bg-(--surface-secondary)" />
                 </div>
               </div>
             ))}
 
           {!isLoading &&
             data?.products?.map((product: any) => (
-              <Link
-                key={product.id}
-                to={`/offers/${product.slug}/${product.id}`}
-              >
-                <div className="hover:border-orange-500 flex h-95 flex-col overflow-hidden  border border-(--border) bg-(--surface) text-(--foreground) shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl">
+              <Link key={product.id} to={`/offers/${product.slug}/${product.id}`}>
+                <div className="flex h-95 flex-col overflow-hidden border border-(--border) bg-(--surface) text-(--foreground) shadow-sm transition-all hover:-translate-y-1 hover:border-orange-500 hover:shadow-xl">
                   <div className="relative flex h-52 items-center justify-center bg-(--surface-secondary)">
-                    <img
-                      src={useImage(product) || "/no-image.png"}
-                      alt={product.name}
-                      className="max-h-44 object-contain"
-                    />
+                    <img src={useImage(product) || "/no-image.png"} alt={product.name} className="max-h-44 object-contain" />
 
-                    <span className="top-3 left-3 absolute px-3 py-1 text-xs text-white bg-orange-500 ">
-                      PROMOCJA
-                    </span>
+                    <span className="absolute top-3 left-3 bg-orange-500 px-3 py-1 text-xs text-white">PROMOCJA</span>
                   </div>
 
-                  <div className="flex flex-col flex-1 p-4">
-                    <h3 className="line-clamp-2 min-h-14 hover:text-orange-500 text-lg font-semibold transition-colors">
-                      {product.name}
-                    </h3>
+                  <div className="flex flex-1 flex-col p-4">
+                    <h3 className="line-clamp-2 min-h-14 text-lg font-semibold transition-colors hover:text-orange-500">{product.name}</h3>
 
                     <div className="mb-2">
-                      <span className="text-2xl font-bold text-orange-500">
-                        {product.price} zł
-                      </span>
+                      <span className="text-2xl font-bold text-orange-500">{product.price} zł</span>
                     </div>
 
-                    <div className="mb-2 text-sm text-(--foreground-secondary)">
-                      {product.stock} szt. dostępnych
-                    </div>
+                    <div className="mb-2 text-sm text-(--foreground-secondary)">{product.stock} szt. dostępnych</div>
 
                     {product?.seller_id != user?.id && (
                       <button
-                        className="hover:bg-orange-600 w-full py-2 mt-auto font-medium text-white transition bg-orange-500"
+                        className="mt-auto w-full bg-orange-500 py-2 font-medium text-white transition hover:bg-orange-600"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -108,11 +90,9 @@ const HomePage = () => {
 
                     {product?.seller_id == user?.id && (
                       <button
-                        className=" hover:bg-orange-600 flex items-center justify-center w-full gap-2 py-2 mt-auto text-white transition bg-orange-500 cursor-pointer"
+                        className="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-orange-500 py-2 text-white transition hover:bg-orange-600"
                         onClick={() => {
-                          navigate(
-                            `/seller/dashboard?tab=products&edit=${product.id}`
-                          );
+                          navigate(`/seller/dashboard?tab=products&edit=${product.id}`);
                         }}
                       >
                         <Edit size={18} />

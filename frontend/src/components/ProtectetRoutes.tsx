@@ -53,11 +53,7 @@ export const CheckIsSeller = ({ children }: Props) => {
   } = useSeller();
 
   if (isPending) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        Ładowanie...
-      </div>
-    );
+    return <div className="flex min-h-screen items-center justify-center">Ładowanie...</div>;
   }
 
   if (user?.role === "SELLER" && !seller) {

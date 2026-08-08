@@ -18,14 +18,11 @@ export default function AddressStep({ next, back }: Props) {
   const { updateCheckout } = useCheckout();
   const [closeModal, setCloseModal] = useState(false);
 
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    null
-  );
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
   useEffect(() => {
     if (userAddresses && userAddresses.length > 0 && !selectedAddressId) {
-      const defaultAddress =
-        userAddresses.find((a: any) => a.is_default) ?? userAddresses[0];
+      const defaultAddress = userAddresses.find((a: any) => a.is_default) ?? userAddresses[0];
 
       setSelectedAddressId(defaultAddress.id);
 
@@ -35,57 +32,28 @@ export default function AddressStep({ next, back }: Props) {
     }
   }, [userAddresses]);
 
-  const currentAddress = user
-    ? userAddresses?.find((address: any) => address.id === selectedAddressId)
-    : guestAddress;
+  const currentAddress = user ? userAddresses?.find((address: any) => address.id === selectedAddressId) : guestAddress;
 
   return (
     <div>
-      <h2 className="mb-6 text-2xl font-bold text-(--foreground)">
-        Adres zamieszkania
-      </h2>
+      <h2 className="mb-6 text-2xl font-bold text-(--foreground)">Adres zamieszkania</h2>
 
       {currentAddress ? (
         <div className="mb-4 space-y-6">
-          <div
-            className="
-          p-5
-          bg-(--surface-secondary)
-          border
-          border-(--border)
-        "
-          >
-            <h2 className="mb-3 font-semibold text-(--foreground)">
-              Dane do zamówienia
-            </h2>
+          <div className="border border-(--border) bg-(--surface-secondary) p-5">
+            <h2 className="mb-3 font-semibold text-(--foreground)">Dane do zamówienia</h2>
 
-            <p className="font-medium text-(--foreground)">
-              {currentAddress.street}
-            </p>
+            <p className="font-medium text-(--foreground)">{currentAddress.street}</p>
 
             <p className="text-(--foreground-secondary)">
               {currentAddress.postal_code} {currentAddress.city}
             </p>
 
-            {currentAddress.country && (
-              <p className="text-(--foreground-secondary)">
-                {currentAddress.country}
-              </p>
-            )}
+            {currentAddress.country && <p className="text-(--foreground-secondary)">{currentAddress.country}</p>}
           </div>
         </div>
       ) : (
-        <div
-          className="
-        p-5
-        bg-(--surface-secondary)
-        border
-        border-(--border)
-        text-(--foreground)
-      "
-        >
-          Nie wybrano adresu
-        </div>
+        <div className="border border-(--border) bg-(--surface-secondary) p-5 text-(--foreground)">Nie wybrano adresu</div>
       )}
 
       {user && userAddresses && userAddresses.length > 0 ? (
@@ -93,21 +61,11 @@ export default function AddressStep({ next, back }: Props) {
           {userAddresses.map((address: any) => (
             <label
               key={address.id}
-              className={`
-            flex
-            items-start
-            gap-4
-            p-4
-            cursor-pointer
-            border
-            transition
-
-            ${
-              selectedAddressId === address.id
-                ? "border-orange-500 bg-(--surface-secondary) ring-1 ring-orange-500"
-                : "border-(--border) bg-(--surface) hover:border-orange-500"
-            }
-          `}
+              className={`flex cursor-pointer items-start gap-4 border p-4 transition ${
+                selectedAddressId === address.id
+                  ? "border-orange-500 bg-(--surface-secondary) ring-1 ring-orange-500"
+                  : "border-(--border) bg-(--surface) hover:border-orange-500"
+              } `}
             >
               <input
                 type="radio"
@@ -122,15 +80,9 @@ export default function AddressStep({ next, back }: Props) {
 
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-(--foreground)">
-                    {address.street}
-                  </p>
+                  <p className="font-semibold text-(--foreground)">{address.street}</p>
 
-                  {address.is_default && (
-                    <span className=" px-2 py-1 text-xs text-green-700 bg-green-100 rounded-full">
-                      Domyślny
-                    </span>
-                  )}
+                  {address.is_default && <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">Domyślny</span>}
                 </div>
 
                 <p className="text-(--foreground-secondary)">
@@ -141,17 +93,7 @@ export default function AddressStep({ next, back }: Props) {
           ))}
         </div>
       ) : guestAddress ? (
-        <div
-          className="
-        p-6
-        text-center
-        text-(--foreground-secondary)
-        border
-        border-(--border)
-        border-dashed
-        bg-(--surface)
-      "
-        >
+        <div className="border border-dashed border-(--border) bg-(--surface) p-6 text-center text-(--foreground-secondary)">
           Nie masz zapisanych adresów.
         </div>
       ) : (
@@ -160,13 +102,13 @@ export default function AddressStep({ next, back }: Props) {
 
       <button
         type="button"
-        className=" hover:bg-orange-50 px-5 py-3 mt-6 text-orange-500 transition border border-orange-500 cursor-pointer"
+        className="mt-6 cursor-pointer border border-orange-500 px-5 py-3 text-orange-500 transition hover:bg-orange-50"
         onClick={() => setCloseModal(true)}
       >
         {user ? "+ Dodaj nowy adres" : "Zmień adres"}
       </button>
 
-      <div className="flex justify-between mt-8">
+      <div className="mt-8 flex justify-between">
         <GrayButton onClick={back}>Wstecz</GrayButton>
 
         <OrangeButton onClick={next} disabled={!selectedAddressId}>

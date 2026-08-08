@@ -17,14 +17,12 @@ const ReviewsList = ({ productId }: { productId: string }) => {
   });
 
   if (isLoading) {
-    return (
-      <div className="p-6 text-center text-gray-500">Ładowanie opinii...</div>
-    );
+    return <div className="p-6 text-center text-gray-500">Ładowanie opinii...</div>;
   }
 
   if (!reviews.length) {
     return (
-      <div className="p-6 text-center border border-gray-200">
+      <div className="border border-gray-200 p-6 text-center">
         <p className="text-gray-500">Ten produkt nie posiada jeszcze opinii.</p>
       </div>
     );
@@ -33,41 +31,23 @@ const ReviewsList = ({ productId }: { productId: string }) => {
   return (
     <div className="mb-5 space-y-5">
       {reviews.map((review: any) => (
-        <div
-          key={review.id}
-          className="
-          border border-(--border)
-          bg-(--surface)
-          p-5
-          text-(--foreground)
-        "
-        >
+        <div key={review.id} className="border border-(--border) bg-(--surface) p-5 text-(--foreground)">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
-              <div className=" flex items-center justify-center w-10 h-10 font-bold text-white bg-orange-500 rounded-full">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-500 font-bold text-white">
                 {review.email?.charAt(0).toUpperCase()}
               </div>
 
               <div>
                 <p className="font-semibold">{review.email}</p>
 
-                <p className="text-xs text-(--foreground-secondary)">
-                  {new Date(review.created_at).toLocaleDateString()}
-                </p>
+                <p className="text-xs text-(--foreground-secondary)">{new Date(review.created_at).toLocaleDateString()}</p>
               </div>
             </div>
 
             <div className="flex">
               {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  size={20}
-                  className={
-                    star <= review.rating
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-(--border)"
-                  }
-                />
+                <Star key={star} size={20} className={star <= review.rating ? "fill-yellow-400 text-yellow-400" : "text-(--border)"} />
               ))}
             </div>
           </div>
@@ -75,26 +55,14 @@ const ReviewsList = ({ productId }: { productId: string }) => {
           <p className="mt-4 text-(--foreground)">{review.comment}</p>
 
           {review.seller_reply && (
-            <div
-              className="
-              mt-4
-              border-l-4
-              border-orange-500
-              bg-(--surface-secondary)
-              p-4
-            "
-            >
+            <div className="mt-4 border-l-4 border-orange-500 bg-(--surface-secondary) p-4">
               <p className="font-semibold">Odpowiedź sprzedawcy</p>
 
-              <p className="mt-1 text-(--foreground-secondary)">
-                {review.seller_reply}
-              </p>
+              <p className="mt-1 text-(--foreground-secondary)">{review.seller_reply}</p>
             </div>
           )}
 
-          {user?.role === "SELLER" && !review.seller_reply && (
-            <SellerReply reviewId={review.id} />
-          )}
+          {user?.role === "SELLER" && !review.seller_reply && <SellerReply reviewId={review.id} />}
         </div>
       ))}
     </div>

@@ -9,9 +9,7 @@ const editUserSecurity = async (data: ChangePasswordSchema) => {
 };
 
 const getPasswordUpdatedAt = async () => {
-  const response = await api.get(
-    "/api/settings/edit-user/security/password-date"
-  );
+  const response = await api.get("/api/settings/edit-user/security/password-date");
 
   return response.data;
 };

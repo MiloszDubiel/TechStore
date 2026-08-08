@@ -43,8 +43,7 @@ export const PersonalData = () => {
   }, [user, reset]);
 
   const { mutate, isError } = useMutation({
-    mutationFn: (data: ProfileFormData) =>
-      api.patch("/api/settings/edit-user/personal-data", data),
+    mutationFn: (data: ProfileFormData) => api.patch("/api/settings/edit-user/personal-data", data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -62,143 +61,69 @@ export const PersonalData = () => {
 
   return (
     <div>
-      <h2 className="mb-4 text-2xl font-bold text-(--foreground)">
-        Dane osobowe
-      </h2>
+      <h2 className="mb-4 text-2xl font-bold text-(--foreground)">Dane osobowe</h2>
       <div className="space-y-3">
         <div>
-          <p className="mb-2 text-(--foreground-secondary)">
-            Zarządzaj swoimi danymi konta
-          </p>
+          <p className="mb-2 text-(--foreground-secondary)">Zarządzaj swoimi danymi konta</p>
 
           {isError && (
-            <div className="bg-orange-50 p-4 text-sm text-red-700 border-l-4 border-(--primary)">
-              Wystąpił błąd podczas zapisu
-            </div>
+            <div className="border-l-4 border-(--primary) bg-orange-50 p-4 text-sm text-red-700">Wystąpił błąd podczas zapisu</div>
           )}
 
-          <form
-            className="max-w-xl space-y-4"
-            onSubmit={handleSubmit(onSubmit, onError)}
-          >
+          <form className="max-w-xl space-y-4" onSubmit={handleSubmit(onSubmit, onError)}>
             <fieldset>
               <div>
-                <label className="text-sm text-(--foreground-secondary)">
-                  Imię
-                </label>
+                <label className="text-sm text-(--foreground-secondary)">Imię</label>
 
                 <input
                   {...register("name")}
                   placeholder="Imię"
-                  className="
-            focus:outline-none
-            focus:border-(--primary)
-            w-full
-            p-3
-            border
-            border-(--border)
-            bg-(--surface)
-            text-(--foreground)
-            placeholder:text-(--foreground-secondary)
-          "
+                  className="w-full border border-(--border) bg-(--surface) p-3 text-(--foreground) placeholder:text-(--foreground-secondary) focus:border-(--primary) focus:outline-none"
                 />
               </div>
 
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
 
               <div>
-                <label className="text-sm text-(--foreground-secondary)">
-                  Nazwisko
-                </label>
+                <label className="text-sm text-(--foreground-secondary)">Nazwisko</label>
 
                 <input
                   placeholder="Nazwisko"
                   {...register("last_name")}
-                  className="
-            focus:outline-none
-            focus:border-(--primary)
-            w-full
-            p-3
-            border
-            border-(--border)
-            bg-(--surface)
-            text-(--foreground)
-            placeholder:text-(--foreground-secondary)
-          "
+                  className="w-full border border-(--border) bg-(--surface) p-3 text-(--foreground) placeholder:text-(--foreground-secondary) focus:border-(--primary) focus:outline-none"
                 />
               </div>
 
-              {errors.last_name && (
-                <p className="text-sm text-red-500">
-                  {errors.last_name.message}
-                </p>
-              )}
+              {errors.last_name && <p className="text-sm text-red-500">{errors.last_name.message}</p>}
 
               <div>
-                <label className="text-sm text-(--foreground-secondary)">
-                  Email
-                </label>
+                <label className="text-sm text-(--foreground-secondary)">Email</label>
 
                 <input
                   {...register("email")}
                   placeholder="Email"
-                  className="
-            focus:outline-none
-            focus:border-(--primary)
-            w-full
-            p-3
-            border
-            border-(--border)
-            bg-(--surface)
-            text-(--foreground)
-            placeholder:text-(--foreground-secondary)
-          "
+                  className="w-full border border-(--border) bg-(--surface) p-3 text-(--foreground) placeholder:text-(--foreground-secondary) focus:border-(--primary) focus:outline-none"
                 />
 
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
+                {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
               </div>
 
               <div>
-                <label className="text-sm text-(--foreground-secondary)">
-                  Telefon
-                </label>
+                <label className="text-sm text-(--foreground-secondary)">Telefon</label>
 
                 <input
                   {...register("phone")}
                   placeholder="Telefon"
                   maxLength={9}
-                  className="
-            focus:outline-none
-            focus:border-(--primary)
-            w-full
-            p-3
-            border
-            border-(--border)
-            bg-(--surface)
-            text-(--foreground)
-            placeholder:text-(--foreground-secondary)
-          "
+                  className="w-full border border-(--border) bg-(--surface) p-3 text-(--foreground) placeholder:text-(--foreground-secondary) focus:border-(--primary) focus:outline-none"
                 />
 
-                {errors.phone && (
-                  <p className="text-sm text-red-500">{errors.phone.message}</p>
-                )}
+                {errors.phone && <p className="text-sm text-red-500">{errors.phone.message}</p>}
               </div>
 
               <div className="flex gap-3 pt-4">
                 <button
-                  className="
-            hover:bg-(--primary-hover)
-            flex-1
-            py-3
-            text-white
-            transition
-            bg-(--primary)
-          "
+                  className="flex-1 bg-(--primary) py-3 text-white transition hover:bg-(--primary-hover)"
                   disabled={isSubmitting}
                   type="submit"
                 >
@@ -206,15 +131,7 @@ export const PersonalData = () => {
                 </button>
 
                 <button
-                  className="
-            hover:bg-(--surface-secondary)
-            flex-1
-            py-3
-            transition
-            border
-            border-(--border)
-            text-(--foreground)
-          "
+                  className="flex-1 border border-(--border) py-3 text-(--foreground) transition hover:bg-(--surface-secondary)"
                   type="reset"
                 >
                   Anuluj

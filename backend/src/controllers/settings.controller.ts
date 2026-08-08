@@ -15,10 +15,8 @@ import {
 
 export const updateUserProfile = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id; 
+    const userId = (req as any).user.id;
     const { last_name, name, phone, email } = req.body;
-
- 
 
     if (!userId) {
       return res.status(400).json({
@@ -231,7 +229,6 @@ export const getPasswordUpdatedAt = async (req: Request, res: Response) => {
 
     const result = await getPassword(userId);
 
-    
     return res.status(200).json({
       message: "Data ostatniej zmiany hasła",
       result: result.passwordUpdatedAt,

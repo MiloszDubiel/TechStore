@@ -19,21 +19,14 @@ import {
   getAdminOrderDetailsApi,
 } from "../api/admin";
 
-export const useAdmin = (
-
-  params?: {
-    page: number;
-    limit: number;
-    search: string;
-  }
-) => {
+export const useAdmin = (params?: { page: number; limit: number; search: string }) => {
   const queryClient = useQueryClient();
 
   const users = useQuery({
     queryKey: ["admin-users", params?.page, params?.limit, params?.search],
 
     queryFn: () => {
-      return getUsers( {
+      return getUsers({
         page: params?.page,
         limit: params?.limit,
         search: params?.search,
@@ -58,12 +51,12 @@ export const useAdmin = (
 
       queryFn: () => getAdminOrderDetailsApi(id!),
 
-      enabled: !!id ,
+      enabled: !!id,
     });
   };
 
   const updateOrderStatus = useMutation({
-    mutationFn: (data: any) => updateAdminOrderStatus(data, ),
+    mutationFn: (data: any) => updateAdminOrderStatus(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -73,7 +66,7 @@ export const useAdmin = (
   });
 
   const removeUser = useMutation({
-    mutationFn: (id: number) => deleteUser(id, ),
+    mutationFn: (id: number) => deleteUser(id),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -83,7 +76,7 @@ export const useAdmin = (
   });
 
   const changeRole = useMutation({
-    mutationFn: (payload: any) => updateUserRole(payload, ),
+    mutationFn: (payload: any) => updateUserRole(payload),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -93,7 +86,7 @@ export const useAdmin = (
   });
 
   const editUser = useMutation({
-    mutationFn: (data: any) => updateUser(data, ),
+    mutationFn: (data: any) => updateUser(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -103,7 +96,7 @@ export const useAdmin = (
   });
 
   const activeUser = useMutation({
-    mutationFn: (id: number) => active(id, ),
+    mutationFn: (id: number) => active(id),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -113,7 +106,7 @@ export const useAdmin = (
   });
 
   const BanUser = useMutation({
-    mutationFn: (id: number) => banUser(id, ),
+    mutationFn: (id: number) => banUser(id),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -125,16 +118,14 @@ export const useAdmin = (
     queryKey: ["admin-products", params?.page, params?.limit, params?.search],
 
     queryFn: () =>
-      getAdminProducts( {
+      getAdminProducts({
         page: params?.page,
         limit: params?.limit,
         search: params?.search,
       }),
-
-  
   });
   const hideProduct = useMutation({
-    mutationFn: (id: number) => hideAdminProduct(id, ),
+    mutationFn: (id: number) => hideAdminProduct(id),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -143,7 +134,7 @@ export const useAdmin = (
     },
   });
   const showProduct = useMutation({
-    mutationFn: (id: number) => showAdminProduct(id, ),
+    mutationFn: (id: number) => showAdminProduct(id),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -152,7 +143,7 @@ export const useAdmin = (
     },
   });
   const deleteProduct = useMutation({
-    mutationFn: (id: number) => deleteAdminProduct(id, ),
+    mutationFn: (id: number) => deleteAdminProduct(id),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -162,7 +153,7 @@ export const useAdmin = (
   });
 
   const updateProduct = useMutation({
-    mutationFn: (data: any) => updateAdminProduct(data, ),
+    mutationFn: (data: any) => updateAdminProduct(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -172,7 +163,7 @@ export const useAdmin = (
   });
 
   const updateSeller = useMutation({
-    mutationFn: ({ id, data }: any) => updateSellerData({ id, data }, ),
+    mutationFn: ({ id, data }: any) => updateSellerData({ id, data }),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -181,13 +172,13 @@ export const useAdmin = (
     },
   });
 
-  const getAdminSeller = ( sellerId?: number) => {
+  const getAdminSeller = (sellerId?: number) => {
     const getSeller = useQuery({
       queryKey: ["seller", sellerId],
 
       queryFn: () => getSellerById(sellerId!),
 
-      enabled: !!sellerId 
+      enabled: !!sellerId,
     });
 
     return {

@@ -70,15 +70,15 @@ const SellerDashboard = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-(--background) min-h-screen">
-        <section className="py-14 text-center text-white bg-orange-500">
+      <div className="min-h-screen bg-(--background)">
+        <section className="bg-orange-500 py-14 text-center text-white">
           <h1 className="text-4xl font-bold">Panel sprzedawcy</h1>
 
           <p className="mt-2">Zarządzaj swoim sklepem</p>
         </section>
 
-        <main className="container grid grid-cols-12 gap-8 px-6 py-10 mx-auto">
-          <aside className="h-fit col-span-3 bg-(--surface) shadow">
+        <main className="container mx-auto grid grid-cols-12 gap-8 px-6 py-10">
+          <aside className="col-span-3 h-fit bg-(--surface) shadow">
             {tabs.map((tab) => {
               const Icon = tab.icon;
 
@@ -86,23 +86,9 @@ const SellerDashboard = () => {
                 <button
                   key={tab.id}
                   onClick={() => changeTab(tab.id)}
-                  className={`
-              w-full
-              flex
-              items-center
-              gap-3
-              p-4
-              border-b
-              border-(--border)
-              cursor-pointer
-              text-(--foreground)
-              
-              ${
-                activeTab === tab.id
-                  ? "bg-(--primary) text-white"
-                  : "hover:bg-(--surface-secondary)"
-              }
-            `}
+                  className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-(--foreground) ${
+                    activeTab === tab.id ? "bg-(--primary) text-white" : "hover:bg-(--surface-secondary)"
+                  } `}
                 >
                   <Icon size={20} />
 
@@ -112,9 +98,7 @@ const SellerDashboard = () => {
             })}
           </aside>
 
-          <section className="col-span-9 p-6 bg-(--surface) border border-(--border) shadow">
-            {renderContent()}
-          </section>
+          <section className="col-span-9 border border-(--border) bg-(--surface) p-6 shadow">{renderContent()}</section>
         </main>
       </div>
     </>

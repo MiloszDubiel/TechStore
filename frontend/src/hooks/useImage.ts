@@ -1,6 +1,4 @@
 export const useImage = (checkElement: any) => {
-
-
   if (!checkElement?.images[0].url) return [];
 
   return checkElement.images.map((img: any) => {

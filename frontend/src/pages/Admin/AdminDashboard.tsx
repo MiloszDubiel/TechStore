@@ -1,11 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Users as UsersIcon,
-  Package,
-  ShoppingCart,
-  Shield,
-} from "lucide-react";
+import { LayoutDashboard, Users as UsersIcon, Package, ShoppingCart, Shield } from "lucide-react";
 
 import Users from "./tabs/Users/Users";
 import Products from "./tabs/Products/Products";
@@ -66,30 +60,16 @@ const AdminDashboard = () => {
       <Navbar />
 
       <div className="flex min-h-screen bg-(--background)">
-        <aside
-          className="
-          flex
-          flex-col
-          min-h-screen
-          w-72
-          p-6
-          bg-(--surface)
-          text-(--foreground)
-          border-r
-          border-(--border)
-        "
-        >
-          <div className="flex items-center gap-3 mb-10">
-            <div className="p-2 text-white bg-orange-500">
+        <aside className="flex min-h-screen w-72 flex-col border-r border-(--border) bg-(--surface) p-6 text-(--foreground)">
+          <div className="mb-10 flex items-center gap-3">
+            <div className="bg-orange-500 p-2 text-white">
               <Shield size={22} />
             </div>
 
             <div>
               <h1 className="text-xl font-bold">Admin Panel</h1>
 
-              <p className="text-sm text-(--foreground-secondary)">
-                My IT Store
-              </p>
+              <p className="text-sm text-(--foreground-secondary)">My IT Store</p>
             </div>
           </div>
 
@@ -101,22 +81,11 @@ const AdminDashboard = () => {
                 <button
                   key={item.id}
                   onClick={() => setParams({ tab: item.id })}
-                  className={`
-                  w-full
-                  flex
-                  items-center
-                  gap-3
-                  px-4
-                  py-3
-                  transition
-                  cursor-pointer
-
-                  ${
+                  className={`flex w-full cursor-pointer items-center gap-3 px-4 py-3 transition ${
                     tab === item.id
                       ? "bg-orange-500 text-white"
-                      : "text-(--foreground-secondary) hover:bg-(--surface-secondary)hover:text-(--foreground)"
-                  }
-                `}
+                      : "hover:bg-(--surface-secondary)hover:text-(--foreground) text-(--foreground-secondary)"
+                  } `}
                 >
                   <Icon size={20} />
 
@@ -126,21 +95,12 @@ const AdminDashboard = () => {
             })}
           </nav>
 
-          <div
-            className="
-            pt-6
-            mt-auto
-            text-sm
-            text-(--foreground-secondary)
-            border-t
-            border-(--border)
-          "
-          >
+          <div className="mt-auto border-t border-(--border) pt-6 text-sm text-(--foreground-secondary)">
             <p className="mb-4">Panel administracyjny</p>
 
             <button
               onClick={handleLogout}
-              className=" hover:bg-orange-600 w-full px-4 py-2 text-sm font-medium text-white transition bg-orange-500 cursor-pointer"
+              className="w-full cursor-pointer bg-orange-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-orange-600"
             >
               Wyloguj
             </button>
@@ -149,37 +109,12 @@ const AdminDashboard = () => {
 
         <main className="flex-1 p-8">
           <div className="mb-8">
-            <h2
-              className="
-              text-3xl
-              font-bold
-              text-(--foreground)
-            "
-            >
-              {menu.find((item) => item.id === tab)?.name}
-            </h2>
+            <h2 className="text-3xl font-bold text-(--foreground)">{menu.find((item) => item.id === tab)?.name}</h2>
 
-            <p
-              className="
-              mt-1
-              text-(--foreground-secondary)
-            "
-            >
-              Zarządzaj swoją platformą
-            </p>
+            <p className="mt-1 text-(--foreground-secondary)">Zarządzaj swoją platformą</p>
           </div>
 
-          <div
-            className="
-            p-6
-            bg-(--surface)
-            border
-            border-(--border)
-            shadow-sm
-          "
-          >
-            {render()}
-          </div>
+          <div className="border border-(--border) bg-(--surface) p-6 shadow-sm">{render()}</div>
         </main>
       </div>
     </>

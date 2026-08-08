@@ -30,9 +30,7 @@ const PaymentStep = ({ next, back }: any) => {
       : null,
   ].filter(Boolean);
 
-  const [selectedPayment, setSelectedPayment] = useState(
-    checkoutData.payment?.method ?? null
-  );
+  const [selectedPayment, setSelectedPayment] = useState(checkoutData.payment?.method ?? null);
 
   const selectPayment = (method: any) => {
     setSelectedPayment(method);
@@ -52,26 +50,14 @@ const PaymentStep = ({ next, back }: any) => {
         {payments.map((payment) => (
           <label
             key={payment?.id}
-            className={`
-block
-border
-p-4
-cursor-pointer
-transition
-${
-  selectedPayment === payment?.id
-    ? "border-orange-500 bg-(--surface-secondary) ring-1 ring-orange-500"
-    : "border-(--border) bg-(--surface) hover:border-orange-500"
-}
-`}
+            className={`block cursor-pointer border p-4 transition ${
+              selectedPayment === payment?.id
+                ? "border-orange-500 bg-(--surface-secondary) ring-1 ring-orange-500"
+                : "border-(--border) bg-(--surface) hover:border-orange-500"
+            } `}
           >
             <div className="flex gap-3">
-              <input
-                type="radio"
-                name="payment"
-                checked={selectedPayment === payment?.id}
-                onChange={() => selectPayment(payment?.id)}
-              />
+              <input type="radio" name="payment" checked={selectedPayment === payment?.id} onChange={() => selectPayment(payment?.id)} />
 
               <div>
                 <p className="font-semibold">{payment?.name}</p>
@@ -83,7 +69,7 @@ ${
         ))}
       </div>
 
-      <div className="flex justify-between mt-8">
+      <div className="mt-8 flex justify-between">
         <GrayButton onClick={back}>Wstecz</GrayButton>
 
         <OrangeButton disabled={!selectedPayment} onClick={next}>

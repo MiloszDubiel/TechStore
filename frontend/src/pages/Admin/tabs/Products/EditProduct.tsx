@@ -16,8 +16,6 @@ type Props = {
 const ProductEditForm = ({ product, onBack }: any) => {
   const [newImages] = useState<File[]>([]);
 
-
-
   const {
     getCategories: { data: categories },
     getSubcategories: { data: subcategories },
@@ -33,11 +31,8 @@ const ProductEditForm = ({ product, onBack }: any) => {
     const check = product?.images.some((el: any) => !el.id);
     if (check) return [];
 
-    return product.images.map(
-      (img: any) => `${import.meta.env.VITE_API_URL}${img.url}`
-    );
+    return product.images.map((img: any) => `${import.meta.env.VITE_API_URL}${img.url}`);
   };
-
 
   const onSubmit = (data: any) => {
     const formData = new FormData();
@@ -70,7 +65,7 @@ const ProductEditForm = ({ product, onBack }: any) => {
         onError: () => {
           toast.error("Błąd aktualizacji");
         },
-      }
+      },
     );
   };
 
@@ -78,10 +73,7 @@ const ProductEditForm = ({ product, onBack }: any) => {
 
   return (
     <div className="space-y-6">
-      <button
-        onClick={onBack}
-        className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500"
-      >
+      <button onClick={onBack} className="bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
         ← Powrót
       </button>
 
@@ -98,10 +90,7 @@ const ProductEditForm = ({ product, onBack }: any) => {
           category_id: String(product.category_id),
           subcategory_id: String(product.subcategory_id),
 
-          attributes:
-            typeof product.attributes === "string"
-              ? JSON.parse(product.attributes)
-              : product.attributes ?? [],
+          attributes: typeof product.attributes === "string" ? JSON.parse(product.attributes) : (product.attributes ?? []),
 
           images: [],
           existingImages: getImages(),

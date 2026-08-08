@@ -7,8 +7,6 @@ import { notificationSocket } from "./notification.socket";
 let io: Server;
 
 export const initSocket = (server: ReturnType<typeof createServer>) => {
-
-
   io = new Server(server, {
     cors: {
       origin: "http://localhost:5173",

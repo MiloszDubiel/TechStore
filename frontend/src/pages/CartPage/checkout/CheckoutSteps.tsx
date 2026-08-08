@@ -12,7 +12,7 @@ export default function CheckoutSteps({ steps, current }: Props) {
             className={`mx-auto flex h-8 w-8 items-center justify-center rounded-full ${
               index <= current
                 ? "bg-orange-500 text-white"
-                : "bg-(--surface-secondary) text-(--foreground-secondary) border border-(--border)"
+                : "border border-(--border) bg-(--surface-secondary) text-(--foreground-secondary)"
             }`}
           >
             {index + 1}

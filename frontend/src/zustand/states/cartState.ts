@@ -53,7 +53,7 @@ export const useCartStore = create<CartStore>((set) => ({
                 ...item,
                 quantity: item.quantity + 1,
               }
-            : item
+            : item,
         );
       } else {
         updatedCart = [
@@ -122,9 +122,7 @@ export const useCartStore = create<CartStore>((set) => ({
 
   removeSellerProducts: (sellerId) =>
     set((state) => {
-      const updatedCart = state.cart.filter(
-        (product) => product.seller_id !== sellerId
-      );
+      const updatedCart = state.cart.filter((product) => product.seller_id !== sellerId);
 
       saveCart(updatedCart);
 

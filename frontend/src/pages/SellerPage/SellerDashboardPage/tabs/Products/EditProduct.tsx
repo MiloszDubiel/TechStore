@@ -24,10 +24,7 @@ const EditProduct = ({ product, onBack }: Props) => {
 
   return (
     <div className="space-y-6">
-      <button
-        onClick={onBack}
-        className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500 cursor-pointer"
-      >
+      <button onClick={onBack} className="cursor-pointer bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
         ← Powrót
       </button>
 
@@ -44,10 +41,7 @@ const EditProduct = ({ product, onBack }: Props) => {
           category_id: String(product.category_id),
           subcategory_id: String(product.subcategory_id),
 
-          attributes:
-            typeof product.attributes === "string"
-              ? JSON.parse(product.attributes)
-              : product.attributes ?? [],
+          attributes: typeof product.attributes === "string" ? JSON.parse(product.attributes) : (product.attributes ?? []),
 
           images: [],
           existingImages: useImage(product),
@@ -101,21 +95,17 @@ const EditProduct = ({ product, onBack }: Props) => {
 
                     {
                       onSuccess: () => {
-                        toast.success(
-                          "Produkt oraz zdjęcia zostały zaktualizowane"
-                        );
+                        toast.success("Produkt oraz zdjęcia zostały zaktualizowane");
 
                         onBack();
                       },
 
                       onError: () => {
-                        toast.warning(
-                          "Produkt zapisany, ale zdjęcia nie zostały dodane"
-                        );
+                        toast.warning("Produkt zapisany, ale zdjęcia nie zostały dodane");
 
                         onBack();
                       },
-                    }
+                    },
                   );
                 } else {
                   toast.success("Produkt został zaktualizowany");
@@ -127,7 +117,7 @@ const EditProduct = ({ product, onBack }: Props) => {
               onError: () => {
                 toast.error("Nie udało się zaktualizować produktu");
               },
-            }
+            },
           );
         }}
       />

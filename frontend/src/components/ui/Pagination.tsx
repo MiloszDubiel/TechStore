@@ -6,33 +6,19 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
-  page,
-  totalPages,
-  onPageChange,
-}) => {
+const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;
 
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1).filter(
-    (number) =>
-      number === 1 || number === totalPages || Math.abs(number - page) <= 2
+    (number) => number === 1 || number === totalPages || Math.abs(number - page) <= 2,
   );
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-2 m-4">
+    <div className="m-4 flex flex-wrap items-center justify-center gap-2">
       <button
         disabled={page === 1}
         onClick={() => onPageChange(page - 1)}
-        className="
-      cursor-pointer
-      border border-(--border)
-      bg-(--surface)
-      px-3 py-1
-      text-(--foreground)
-      transition
-      hover:bg-orange-500/10
-      disabled:opacity-40
-    "
+        className="cursor-pointer border border-(--border) bg-(--surface) px-3 py-1 text-(--foreground) transition hover:bg-orange-500/10 disabled:opacity-40"
       >
         ←
       </button>
@@ -42,25 +28,15 @@ const Pagination: React.FC<PaginationProps> = ({
 
         return (
           <React.Fragment key={item}>
-            {previous && item - previous > 1 && (
-              <span className="px-2 text-(--foreground-secondary)">...</span>
-            )}
+            {previous && item - previous > 1 && <span className="px-2 text-(--foreground-secondary)">...</span>}
 
             <button
               onClick={() => onPageChange(item)}
-              className={`
-            cursor-pointer
-            border
-            px-3 py-1
-            transition
-              
-            ${
-              page === item
-                ? "border-orange-500 bg-orange-500 text-white"
-                : " border-(--border) bg-(--surface) text-(--foreground) hover:bg-orange-500/10"
-            }
-              
-          `}
+              className={`cursor-pointer border px-3 py-1 transition ${
+                page === item
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-(--border) bg-(--surface) text-(--foreground) hover:bg-orange-500/10"
+              } `}
             >
               {item}
             </button>
@@ -71,16 +47,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         disabled={page === totalPages}
         onClick={() => onPageChange(page + 1)}
-        className="
-      cursor-pointer
-      border border-(--border)
-      bg-(--surface)
-      px-3 py-1
-      text-(--foreground)
-      transition
-      hover:bg-orange-500/10
-      disabled:opacity-40
-    "
+        className="cursor-pointer border border-(--border) bg-(--surface) px-3 py-1 text-(--foreground) transition hover:bg-orange-500/10 disabled:opacity-40"
       >
         →
       </button>

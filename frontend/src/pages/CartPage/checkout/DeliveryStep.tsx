@@ -22,7 +22,7 @@ const DeliveryStep = ({ next, back }: any) => {
     <div>
       <h2 className="mb-5 text-2xl font-bold">Metoda dostawy</h2>
 
-      <label className="block p-4 mb-3 border border-gray-200 cursor-pointer">
+      <label className="mb-3 block cursor-pointer border border-gray-200 p-4">
         <input
           type="radio"
           name="delivery"
@@ -43,7 +43,7 @@ const DeliveryStep = ({ next, back }: any) => {
         <span className="ml-3">Kurier DHL - 15 zł</span>
       </label>
 
-      <label className="block p-4 border border-gray-200 cursor-pointer">
+      <label className="block cursor-pointer border border-gray-200 p-4">
         <input
           type="radio"
           name="delivery"
@@ -66,15 +66,10 @@ const DeliveryStep = ({ next, back }: any) => {
 
       {method === "locker" && <ParcelLockerMap />}
 
-      <div className="flex justify-between mt-8">
+      <div className="mt-8 flex justify-between">
         <GrayButton onClick={back}>Wstecz</GrayButton>
 
-        <OrangeButton
-          disabled={
-            !method || (method === "locker" && !checkoutData.delivery?.locker)
-          }
-          onClick={next}
-        >
+        <OrangeButton disabled={!method || (method === "locker" && !checkoutData.delivery?.locker)} onClick={next}>
           Dalej
         </OrangeButton>
       </div>

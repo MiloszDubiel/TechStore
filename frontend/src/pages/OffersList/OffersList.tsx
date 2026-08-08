@@ -6,6 +6,7 @@ import Pagination from "../../components/ui/Pagination";
 import { useSearchParams } from "react-router-dom";
 import FiltersSidebar from "../../components/layout/FiltersSidebar";
 import { useQuery } from "@tanstack/react-query";
+import MobileFiltersSidebar from "../../components/layout/MobileFiltersSidebar";
 
 const OffersList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -76,35 +77,32 @@ const OffersList = () => {
 
     setSearchParams(params);
   };
+
   return (
     <>
       <Navbar />
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 p-6 lg:flex-row">
+        <FiltersSidebar searchParams={searchParams} setSearchParams={setSearchParams} />
 
-      <div className="max-w-7xl lg:flex-row flex flex-col gap-6 p-6 mx-auto">
-        <FiltersSidebar />
+        <MobileFiltersSidebar searchParams={searchParams} setSearchParams={setSearchParams} />
 
-        <div className="flex flex-col w-full gap-6">
+        <div className="flex w-full flex-col gap-6">
           {isLoading ? (
             <>
-              <div className="flex flex-col items-end mb-4">
+              <div className="mb-4 flex flex-col items-end">
                 <div className="w-full">
                   {searchParams.get("search") && (
                     <h1 className="mb-2 text-(--foreground-secondary)">
-                      Wyniki wyszukiwania dla frazy:{" "}
-                      <span className="font-semibold text-orange-500">
-                        {searchParams.get("search")}
-                      </span>
+                      Wyniki wyszukiwania dla frazy: <span className="font-semibold text-orange-500">{searchParams.get("search")}</span>
                     </h1>
                   )}
                 </div>
 
-                <h3 className="mb-2 font-semibold text-(--foreground)">
-                  Sortuj
-                </h3>
+                <h3 className="mb-2 font-semibold text-(--foreground)">Sortuj</h3>
 
                 <select
                   disabled
-                  className="w-52 focus:border-orange-500 focus:ring focus:ring-orange-200 px-2 py-1 border border-(--border) bg-(--surface) text-(--foreground)"
+                  className="w-52 border border-(--border) bg-(--surface) px-2 py-1 text-(--foreground) focus:border-orange-500 focus:ring focus:ring-orange-200"
                 >
                   <option value="">Domyślnie</option>
                   <option value="price_asc">Cena rosnąco</option>
@@ -114,56 +112,48 @@ const OffersList = () => {
               </div>
 
               {[...Array(10)].map((_, i) => (
-                <div
-                  key={i}
-                  className="hover:shadow-lg flex items-start gap-6 p-4 transition bg-(--surface) border border-(--border)"
-                >
-                  <div className="shrink-0 w-40 h-32 bg-(--surface-secondary) rounded-md" />
+                <div key={i} className="flex items-start gap-6 border border-(--border) bg-(--surface) p-4 transition hover:shadow-lg">
+                  <div className="h-32 w-40 shrink-0 rounded-md bg-(--surface-secondary)" />
 
                   <div className="flex-1 space-y-2">
-                    <div className="w-3/4 h-5 bg-(--surface-secondary) rounded" />
+                    <div className="h-5 w-3/4 rounded bg-(--surface-secondary)" />
 
-                    <div className="w-1/2 h-4 bg-(--surface-secondary) rounded" />
+                    <div className="h-4 w-1/2 rounded bg-(--surface-secondary)" />
 
                     <div className="mt-1 space-y-1">
-                      <div className="w-full h-3 bg-(--surface-secondary) rounded" />
-                      <div className="w-5/6 h-3 bg-(--surface-secondary) rounded" />
-                      <div className="w-2/3 h-3 bg-(--surface-secondary) rounded" />
+                      <div className="h-3 w-full rounded bg-(--surface-secondary)" />
+                      <div className="h-3 w-5/6 rounded bg-(--surface-secondary)" />
+                      <div className="h-3 w-2/3 rounded bg-(--surface-secondary)" />
                     </div>
 
-                    <div className="w-2/3 h-4 mt-2 bg-(--surface-secondary) rounded" />
+                    <div className="mt-2 h-4 w-2/3 rounded bg-(--surface-secondary)" />
                   </div>
 
                   <div className="flex flex-col items-end gap-3">
-                    <div className="w-16 h-6 bg-(--surface-secondary) rounded" />
+                    <div className="h-6 w-16 rounded bg-(--surface-secondary)" />
 
-                    <div className="w-32 h-10 bg-(--surface-secondary) rounded" />
+                    <div className="h-10 w-32 rounded bg-(--surface-secondary)" />
 
-                    <div className="w-6 h-6 bg-(--surface-secondary) rounded" />
+                    <div className="h-6 w-6 rounded bg-(--surface-secondary)" />
                   </div>
                 </div>
               ))}
             </>
           ) : sortedProducts.length > 0 ? (
             <>
-              <div className="flex flex-col items-end mb-4 border-b border-(--border) pb-4">
+              <div className="mb-4 flex flex-col items-end border-b border-(--border) pb-4">
                 {search && (
                   <h1 className="mb-2 text-(--foreground-secondary)">
-                    Wyniki dla:{" "}
-                    <span className="font-semibold text-orange-500">
-                      {search}
-                    </span>
+                    Wyniki dla: <span className="font-semibold text-orange-500">{search}</span>
                   </h1>
                 )}
 
-                <h3 className="mb-2 font-semibold text-(--foreground)">
-                  Sortuj
-                </h3>
+                <h3 className="mb-2 font-semibold text-(--foreground)">Sortuj</h3>
 
                 <select
                   value={sort}
                   onChange={(e) => handleSortChange(e.target.value)}
-                  className="w-52 px-2 py-1 border border-(--border) bg-(--surface) text-(--foreground)"
+                  className="w-52 border border-(--border) bg-(--surface) px-2 py-1 text-(--foreground)"
                 >
                   <option value="">Domyślnie</option>
                   <option value="price_asc">Cena rosnąco</option>
@@ -177,16 +167,10 @@ const OffersList = () => {
               ))}
             </>
           ) : (
-            <p className="text-(--foreground-secondary)">
-              Brak produktów spełniających kryteria.
-            </p>
+            <p className="text-(--foreground-secondary)">Brak produktów spełniających kryteria.</p>
           )}
 
-          <Pagination
-            page={page}
-            totalPages={data?.totalPages ?? 1}
-            onPageChange={handlePageChange}
-          />
+          <Pagination page={page} totalPages={data?.totalPages ?? 1} onPageChange={handlePageChange} />
         </div>
       </div>
     </>

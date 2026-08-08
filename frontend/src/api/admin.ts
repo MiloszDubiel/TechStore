@@ -2,11 +2,7 @@ import { api } from "../axios";
 
 const API = "/api/admin";
 
-export const getUsers = async (params?: {
-  page: number | undefined;
-  limit: number | undefined;
-  search: string | undefined;
-}) => {
+export const getUsers = async (params?: { page: number | undefined; limit: number | undefined; search: string | undefined }) => {
   const { data } = await api.get(`${API}/users`, {
     params,
   });
@@ -14,11 +10,7 @@ export const getUsers = async (params?: {
   return data;
 };
 
-export const getOrders = async (params?: {
-  page: number | undefined;
-  limit: number | undefined;
-  search: string | undefined;
-}) => {
+export const getOrders = async (params?: { page: number | undefined; limit: number | undefined; search: string | undefined }) => {
   const { data } = await api.get(`${API}/orders`, {
     params,
   });
@@ -74,11 +66,7 @@ export const unactiveUser = async (id: any) => {
 
   return response.data;
 };
-export const getAdminProducts = async (params?: {
-  page: number | undefined;
-  limit: number | undefined;
-  search: string | undefined;
-}) => {
+export const getAdminProducts = async (params?: { page: number | undefined; limit: number | undefined; search: string | undefined }) => {
   const { data } = await api.get(`${API}/products`, {
     params,
   });
@@ -104,35 +92,19 @@ export const deleteAdminProduct = async (id: number) => {
   return data;
 };
 
-export const updateSellerData = async ({
-  id,
-  data,
-}: {
-  id: number;
-  data: FormData;
-}) => {
+export const updateSellerData = async ({ id, data }: { id: number; data: FormData }) => {
   const response = await api.patch(`${API}/users/${id}/seller`, data, {});
 
   return response.data;
 };
 
-export const updateAdminProduct = async ({
-  id,
-  formData,
-}: {
-  id: number;
-  formData: any;
-}) => {
+export const updateAdminProduct = async ({ id, formData }: { id: number; formData: any }) => {
   const { data } = await api.patch(`${API}/products/${id}`, formData, {});
 
   return data;
 };
 
-export const uploadImage = async (
-  productId: string,
-  seller_id: string,
-  formData: FormData
-) => {
+export const uploadImage = async (productId: string, seller_id: string, formData: FormData) => {
   api.post(`${API}/products/${seller_id}/${productId}/images/`, formData, {});
 };
 

@@ -1,26 +1,19 @@
 const Footer: React.FC = () => {
   return (
-    <footer className=" py-10 text-gray-300 bg-gray-900">
-      <div className="md:grid-cols-3 container grid grid-cols-1 gap-8 px-6 mx-auto">
+    <footer className="bg-gray-900 py-10 text-gray-300">
+      <div className="container mx-auto grid grid-cols-1 gap-8 px-6 md:grid-cols-3">
         <div>
-          <h4 className="mb-4 text-lg font-semibold text-white">
-            IT E-commerce
-          </h4>
-          <p className="text-sm">
-            Najlepszy sklep z elektroniką i sprzętem IT. Szybka wysyłka i
-            gwarancja jakości.
-          </p>
+          <h4 className="mb-4 text-lg font-semibold text-white">IT E-commerce</h4>
+          <p className="text-sm">Najlepszy sklep z elektroniką i sprzętem IT. Szybka wysyłka i gwarancja jakości.</p>
         </div>
 
         <div>
           <h4 className="mb-4 text-lg font-semibold text-white">Informacje</h4>
           <ul className="space-y-2 text-sm">
-            <li className="hover:text-orange-500 cursor-pointer">O nas</li>
-            <li className="hover:text-orange-500 cursor-pointer">Regulamin</li>
-            <li className="hover:text-orange-500 cursor-pointer">
-              Polityka prywatności
-            </li>
-            <li className="hover:text-orange-500 cursor-pointer">Kontakt</li>
+            <li className="cursor-pointer hover:text-orange-500">O nas</li>
+            <li className="cursor-pointer hover:text-orange-500">Regulamin</li>
+            <li className="cursor-pointer hover:text-orange-500">Polityka prywatności</li>
+            <li className="cursor-pointer hover:text-orange-500">Kontakt</li>
           </ul>
         </div>
 
@@ -31,7 +24,7 @@ const Footer: React.FC = () => {
         </div>
       </div>
 
-      <div className="pt-4 mt-8 text-sm text-center text-gray-500 border-t border-gray-700">
+      <div className="mt-8 border-t border-gray-700 pt-4 text-center text-sm text-gray-500">
         © {new Date().getFullYear()} IT E-commerce. Wszelkie prawa zastrzeżone.
       </div>
     </footer>

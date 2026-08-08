@@ -74,11 +74,9 @@ const AddProduct = () => {
               },
 
               onError: () => {
-                toast.warning(
-                  "Produkt dodany, ale zdjęcia nie zostały przesłane"
-                );
+                toast.warning("Produkt dodany, ale zdjęcia nie zostały przesłane");
               },
-            }
+            },
           );
         } else {
           queryClient.invalidateQueries({
@@ -98,13 +96,9 @@ const AddProduct = () => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-(--foreground)">
-          Dodaj produkt
-        </h2>
+        <h2 className="text-2xl font-bold text-(--foreground)">Dodaj produkt</h2>
 
-        <p className="text-(--foreground-secondary)">
-          Utwórz nową ofertę w swoim sklepie
-        </p>
+        <p className="text-(--foreground-secondary)">Utwórz nową ofertę w swoim sklepie</p>
       </div>
 
       <ProductForm

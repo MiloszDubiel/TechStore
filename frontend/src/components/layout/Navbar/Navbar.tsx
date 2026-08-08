@@ -33,32 +33,24 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="flex w-full h-18  items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md ">
+    <nav className="flex h-18 w-full items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md">
       <Link to="/" className="text-2xl font-bold text-orange-500">
         IT E-commerce
       </Link>
 
-      <div className="lg:flex 2xl:mx-6 items-center flex-1 hidden gap-4 mx-2">
+      <div className="mx-2 hidden flex-1 items-center gap-4 lg:flex 2xl:mx-6">
         <SearchBar search={search} setSearch={setSearch} />
 
         <Link
           to="/offers"
-          className="
-      whitespace-nowrap
-      text-sm
-      font-medium
-      text-(--foreground-secondary)
-      transition-colors
-      hover:text-orange-500
-      2xl:text-base
-    "
+          className="text-sm font-medium whitespace-nowrap text-(--foreground-secondary) transition-colors hover:text-orange-500 2xl:text-base"
         >
           Wszystkie produkty
         </Link>
       </div>
 
-      <div className="lg:hidden flex items-center flex-1 min-w-0 m-8  text-( --foreground) ">
-        <div className="flex items-center gap-2.5 p-2 borde cursor-pointer">
+      <div className="text-( --foreground) m-8 flex min-w-0 flex-1 items-center lg:hidden">
+        <div className="borde flex cursor-pointer items-center gap-2.5 p-2">
           <SearchIcon size={20} />
         </div>
       </div>

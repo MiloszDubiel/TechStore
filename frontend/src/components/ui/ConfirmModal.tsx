@@ -25,29 +25,15 @@ export default function ConfirmModal({
   if (!isOpen) return null;
 
   return (
-    <div className="bg-black/40 fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        className="
-      w-full max-w-md
-      border border-(--border)
-      bg-(--surface)
-      text-(--foreground)
-      shadow-xl
-    "
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="w-full max-w-md border border-(--border) bg-(--surface) text-(--foreground) shadow-xl">
         <div className="border-b border-(--border) p-5">
           <h2 className="text-xl font-semibold">{title}</h2>
         </div>
 
-        <div className="p-5">
-          {typeof message === "string" ? (
-            <p className="text-(--foreground-secondary)">{message}</p>
-          ) : (
-            message
-          )}
-        </div>
+        <div className="p-5">{typeof message === "string" ? <p className="text-(--foreground-secondary)">{message}</p> : message}</div>
 
-        <div className="flex justify-end gap-3border-t border-(--border) p-5">
+        <div className="gap-3border-t flex justify-end border-(--border) p-5">
           <GrayButton onClick={onCancel}>{cancelText}</GrayButton>
 
           <OrangeButton onClick={onConfirm}>{confirmText}</OrangeButton>

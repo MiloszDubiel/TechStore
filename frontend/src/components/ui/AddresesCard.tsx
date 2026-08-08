@@ -13,38 +13,15 @@ type AddressCardProps = {
   onDelete: () => void;
 };
 
-export default function AddressCard({
-  title,
-  street,
-  postalCode,
-  city,
-  country,
-  isDefault,
-  onEdit,
-  onDelete,
-}: AddressCardProps) {
+export default function AddressCard({ title, street, postalCode, city, country, isDefault, onEdit, onDelete }: AddressCardProps) {
   return (
-    <div
-      className="
-    mb-2
-    gap-2
-    border border-(--border)
-    bg-(--surface)
-    p-6
-    text-(--foreground)
-    shadow-sm
-  "
-    >
-      <div className="md:flex items-center justify-between gap-2 mb-2">
+    <div className="mb-2 gap-2 border border-(--border) bg-(--surface) p-6 text-(--foreground) shadow-sm">
+      <div className="mb-2 items-center justify-between gap-2 md:flex">
         <div>
-          <div className="flex items-center gap-3 mb-2">
+          <div className="mb-2 flex items-center gap-3">
             <h3 className="text-lg font-semibold">{title}</h3>
 
-            {isDefault && (
-              <span className=" bg-green-500/15 px-2 py-1 text-xs text-green-500 rounded-full">
-                Domyślny
-              </span>
-            )}
+            {isDefault && <span className="rounded-full bg-green-500/15 px-2 py-1 text-xs text-green-500">Domyślny</span>}
           </div>
 
           <p>{street}</p>

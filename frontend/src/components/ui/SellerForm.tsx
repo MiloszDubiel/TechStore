@@ -2,10 +2,7 @@ import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploader from "../ui/ImageUploader";
-import {
-  sellerProfileSchema,
-  type SellerProfileType,
-} from "../../schemas/sellerSchemta";
+import { sellerProfileSchema, type SellerProfileType } from "../../schemas/sellerSchemta";
 
 import { Save, Store, Building2 } from "lucide-react";
 
@@ -19,15 +16,7 @@ type Props = {
   onBack?: any;
 };
 
-const SellerProfileForm = ({
-  mode,
-  defaultValues,
-  onSubmit,
-  isLoading,
-  hideButton,
-  storeData = null,
-  onBack,
-}: Props) => {
+const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButton, storeData = null, onBack }: Props) => {
   let data = storeData;
 
   const {
@@ -69,110 +58,54 @@ const SellerProfileForm = ({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
-      <section
-        className="
-      border border-(--border)
-      bg-(--surface)
-      p-6
-    "
-      >
+      <section className="border border-(--border) bg-(--surface) p-6">
         {hideButton && (
           <button
             type="button"
             onClick={onBack}
-            className="
-          hover:bg-(--primary-hover)
-          px-4 py-3 mb-2
-          text-white
-          transition
-          bg-(--primary)
-          cursor-pointer
-        "
+            className="mb-2 cursor-pointer bg-(--primary) px-4 py-3 text-white transition hover:bg-(--primary-hover)"
           >
             ← Powrót
           </button>
         )}
 
-        <div className="flex items-center gap-3 mb-6">
+        <div className="mb-6 flex items-center gap-3">
           <Store size={22} className="text-(--primary)" />
 
-          <h2 className="text-xl font-semibold text-(--foreground)">
-            Dane sklepu
-          </h2>
+          <h2 className="text-xl font-semibold text-(--foreground)">Dane sklepu</h2>
         </div>
 
         <div className="space-y-5">
           <div>
-            <label className="block mb-2 font-medium text-(--foreground)">
-              Nazwa sklepu
-            </label>
+            <label className="mb-2 block font-medium text-(--foreground)">Nazwa sklepu</label>
 
             <input
               {...register("shop_name")}
               placeholder="Nazwa sklepu"
-              className="
-            w-full
-            border border-(--border)
-            bg-(--surface-secondary)
-            px-4 py-3
-            text-(--foreground)
-            outline-none
-            placeholder:text-(--foreground-secondary)
-            focus:border-(--primary)
-          "
+              className="w-full border border-(--border) bg-(--surface-secondary) px-4 py-3 text-(--foreground) outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
             />
 
-            {errors.shop_name && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.shop_name.message}
-              </p>
-            )}
+            {errors.shop_name && <p className="mt-1 text-sm text-red-500">{errors.shop_name.message}</p>}
           </div>
 
           <div>
-            <label className="block mb-2 font-medium text-(--foreground)">
-              Opis sklepu
-            </label>
+            <label className="mb-2 block font-medium text-(--foreground)">Opis sklepu</label>
 
             <textarea
               {...register("description")}
               rows={5}
               placeholder="Opis sklepu..."
-              className="
-            w-full
-            resize-none
-            border border-(--border)
-            bg-(--surface-secondary)
-            px-4 py-3
-            text-(--foreground)
-            outline-none
-            placeholder:text-(--foreground-secondary)
-            focus:border-(--primary)
-          "
+              className="w-full resize-none border border-(--border) bg-(--surface-secondary) px-4 py-3 text-(--foreground) outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
             />
 
-            {errors.description && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.description.message}
-              </p>
-            )}
+            {errors.description && <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>}
           </div>
 
           <div>
-            <label className="block mb-2 font-medium text-(--foreground)">
-              Logo sklepu
-            </label>
+            <label className="mb-2 block font-medium text-(--foreground)">Logo sklepu</label>
 
             <ImageUploader
-              images={
-                data?.logo
-                  ? [
-                      `${import.meta.env.VITE_API_URL}uploads/sellers/${
-                        data.user_id || data.id
-                      }/${data.logo}`,
-                    ]
-                  : []
-              }
+              images={data?.logo ? [`${import.meta.env.VITE_API_URL}uploads/sellers/${data.user_id || data.id}/${data.logo}`] : []}
               value={values}
               onChange={(files) => {
                 setValues(files);
@@ -188,29 +121,19 @@ const SellerProfileForm = ({
               multiple={false}
             />
 
-            {errors.logo && (
-              <p className="mt-1 text-sm text-red-500">{errors.logo.message}</p>
-            )}
+            {errors.logo && <p className="mt-1 text-sm text-red-500">{errors.logo.message}</p>}
           </div>
         </div>
       </section>
 
-      <section
-        className="
-      border border-(--border)
-      bg-(--surface)
-      p-6
-    "
-      >
-        <div className="flex items-center gap-3 mb-6">
+      <section className="border border-(--border) bg-(--surface) p-6">
+        <div className="mb-6 flex items-center gap-3">
           <Building2 size={22} className="text-(--primary)" />
 
-          <h2 className="text-xl font-semibold text-(--foreground)">
-            Dane firmy
-          </h2>
+          <h2 className="text-xl font-semibold text-(--foreground)">Dane firmy</h2>
         </div>
 
-        <div className="md:grid-cols-2 grid grid-cols-1 gap-5">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {[
             ["company_name", "Nazwa firmy"],
             ["nip", "NIP"],
@@ -222,23 +145,10 @@ const SellerProfileForm = ({
               <input
                 {...register(field)}
                 placeholder={placeholder}
-                className="
-              w-full
-              border border-(--border)
-              bg-(--surface-secondary)
-              px-4 py-3
-              text-(--foreground)
-              outline-none
-              placeholder:text-(--foreground-secondary)
-              focus:border-(--primary)
-            "
+                className="w-full border border-(--border) bg-(--surface-secondary) px-4 py-3 text-(--foreground) outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
               />
 
-              {(errors as any)[field] && (
-                <p className="mt-1 text-sm text-red-500">
-                  {(errors as any)[field]?.message}
-                </p>
-              )}
+              {(errors as any)[field] && <p className="mt-1 text-sm text-red-500">{(errors as any)[field]?.message}</p>}
             </div>
           ))}
         </div>
@@ -247,19 +157,7 @@ const SellerProfileForm = ({
       {!hideButton && (
         <button
           disabled={isLoading}
-          className="
-        hover:bg-(--primary-hover)
-        disabled:opacity-50
-        flex items-center justify-center
-        w-full
-        gap-2
-        py-3
-        font-semibold
-        text-white
-        transition
-        bg-(--primary)
-        cursor-pointer
-      "
+          className="flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) py-3 font-semibold text-white transition hover:bg-(--primary-hover) disabled:opacity-50"
         >
           {isEdit ? (
             <>

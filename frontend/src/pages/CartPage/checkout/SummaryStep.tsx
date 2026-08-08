@@ -21,10 +21,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
   const { user } = useAuth();
   const [orderCompleted] = useState(false);
 
-  const productsPrice = cartItems.reduce(
-    (sum: number, item: any) => sum + item.price * item.quantity,
-    0
-  );
+  const productsPrice = cartItems.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
 
   const deliveryPrice = checkoutData.delivery?.price ?? 0;
 
@@ -61,9 +58,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     },
 
     onError: (error: any) => {
-      toast.error(
-        error.response?.data?.message ?? "Nie udało się utworzyć zamówienia"
-      );
+      toast.error(error.response?.data?.message ?? "Nie udało się utworzyć zamówienia");
     },
   });
 
@@ -105,9 +100,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
           <div>
             <p>Paczkomat InPost</p>
 
-            <p className="text-gray-600">
-              {checkoutData.delivery.locker?.name}
-            </p>
+            <p className="text-gray-600">{checkoutData.delivery.locker?.name}</p>
 
             <p>{checkoutData.delivery.locker?.address}</p>
           </div>
@@ -143,13 +136,13 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       </div>
 
       {!orderCompleted && (
-        <div className="flex justify-between mt-8">
+        <div className="mt-8 flex justify-between">
           <GrayButton onClick={back}>Wstecz</GrayButton>
 
           <button
             onClick={order}
             disabled={isPending}
-            className="hover:bg-orange-600 disabled:bg-gray-400 disabled:cursor-not-allowed px-6 py-3 text-white bg-orange-500 cursor-pointer"
+            className="cursor-pointer bg-orange-500 px-6 py-3 text-white hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-400"
           >
             {isPending ? "Tworzenie zamówienia..." : "Zamawiam"}
           </button>

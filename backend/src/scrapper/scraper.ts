@@ -149,8 +149,6 @@ export async function scrapeMediaMarkt() {
               categoryId: category.categoryId,
               subcategoryId: category.subcategoryId,
             });
-
-          
           } catch (err) {
             console.error(`Błąd produktu: ${product.link}`);
             console.error(err);
@@ -165,6 +163,5 @@ export async function scrapeMediaMarkt() {
   await page.close();
   await browser.close();
 
-  
   return results;
 }

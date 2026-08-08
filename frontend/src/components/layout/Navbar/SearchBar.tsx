@@ -18,28 +18,19 @@ const SearchBar = ({ search, setSearch }: Props) => {
   };
 
   return (
-    <form
-      className="flex items-center w-80 overflow-hidden border border-gray-300"
-      onSubmit={(e) => e.preventDefault()}
-    >
+    <form className="flex w-80 items-center overflow-hidden border border-gray-300" onSubmit={(e) => e.preventDefault()}>
       <div className="relative flex-1">
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Szukaj produktów..."
-          className=" w-full py-2 pl-10 pr-4 outline-none"
+          className="w-full py-2 pr-4 pl-10 outline-none"
         />
 
-        <Search
-          className=" left-3 top-1/2 absolute text-gray-400 -translate-y-1/2"
-          size={18}
-        />
+        <Search className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" size={18} />
       </div>
 
-      <button
-        onClick={searchProduct}
-        className=" px-5 py-2 text-white bg-orange-500 cursor-pointer hover:bg-orange-600"
-      >
+      <button onClick={searchProduct} className="cursor-pointer bg-orange-500 px-5 py-2 text-white hover:bg-orange-600">
         Szukaj
       </button>
     </form>

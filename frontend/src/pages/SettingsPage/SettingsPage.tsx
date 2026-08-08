@@ -9,13 +9,7 @@ import Preferences from "./Preferences/Preferrences";
 import { PersonalData } from "./PersonalData/PersonalData";
 import Orders from "./Orders/Orders";
 import { Package, User, MapPinned, ShieldCheck, Settings } from "lucide-react";
-type Tab =
-  | "orders"
-  | "order-details"
-  | "profile"
-  | "addresses"
-  | "security"
-  | "settings";
+type Tab = "orders" | "order-details" | "profile" | "addresses" | "security" | "settings";
 
 const AccountPage = () => {
   const [activeTab, setActiveTab] = useState<Tab>("orders");
@@ -31,20 +25,13 @@ const AccountPage = () => {
       case "order-details":
         return (
           <div>
-            <button
-              onClick={() => setActiveTab("orders")}
-              className="hover:underline mb-4 text-sm text-gray-500"
-            >
+            <button onClick={() => setActiveTab("orders")} className="mb-4 text-sm text-gray-500 hover:underline">
               ← Powrót
             </button>
 
-            <h2 className="mb-4 text-2xl font-bold">
-              Zamówienie #{selectedOrderId}
-            </h2>
+            <h2 className="mb-4 text-2xl font-bold">Zamówienie #{selectedOrderId}</h2>
 
-            <p className="text-gray-500">
-              Szczegóły zamówienia (produkty, status, dostawa)
-            </p>
+            <p className="text-gray-500">Szczegóły zamówienia (produkty, status, dostawa)</p>
           </div>
         );
 
@@ -67,19 +54,17 @@ const AccountPage = () => {
   return (
     <>
       <Navbar />
-      <section className="py-14 text-center text-white bg-(--primary)">
+      <section className="bg-(--primary) py-14 text-center text-white">
         <h1 className="text-4xl font-bold">Moje konto</h1>
         <p className="mt-2">Zarządzaj swoim profilem i zamówieniami</p>
       </section>
 
-      <main className="lg:grid-cols-12 container lg:grid flex flex-col gap-8 px-6 py-10 mx-auto">
-        <aside className="h-fit w-auto lg:grid lg:col-span-3 bg-(--surface) shadow-md flex overflow-x-auto">
+      <main className="container mx-auto flex flex-col gap-8 px-6 py-10 lg:grid lg:grid-cols-12">
+        <aside className="flex h-fit w-auto overflow-x-auto bg-(--surface) shadow-md lg:col-span-3 lg:grid">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`flex w-full items-center gap-3 border-b border-(--border) p-4 text-left cursor-pointer ${
-              activeTab === "orders"
-                ? "bg-(--primary) text-white"
-                : "text-(--foreground) hover:bg-(--surface-secondary)"
+            className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-left ${
+              activeTab === "orders" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
             <Package size={20} />
@@ -88,10 +73,8 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("profile")}
-            className={`flex w-full items-center gap-3 border-b border-(--border) p-4 text-left cursor-pointer ${
-              activeTab === "profile"
-                ? "bg-(--primary) text-white"
-                : "text-(--foreground) hover:bg-(--surface-secondary)"
+            className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-left ${
+              activeTab === "profile" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
             <User size={20} />
@@ -100,10 +83,8 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("addresses")}
-            className={`flex w-full items-center gap-3 border-b border-(--border) p-4 text-left cursor-pointer ${
-              activeTab === "addresses"
-                ? "bg-(--primary) text-white"
-                : "text-(--foreground) hover:bg-(--surface-secondary)"
+            className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-left ${
+              activeTab === "addresses" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
             <MapPinned size={20} />
@@ -112,10 +93,8 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`flex w-full items-center gap-3 border-b border-(--border) p-4 text-left cursor-pointer ${
-              activeTab === "security"
-                ? "bg-(--primary) text-white"
-                : "text-(--foreground) hover:bg-(--surface-secondary)"
+            className={`flex w-full cursor-pointer items-center gap-3 border-b border-(--border) p-4 text-left ${
+              activeTab === "security" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
             <ShieldCheck size={20} />
@@ -124,10 +103,8 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("settings")}
-            className={`flex w-full items-center gap-3 p-4 text-left cursor-pointer ${
-              activeTab === "settings"
-                ? "bg-(--primary) text-white"
-                : "text-(--foreground) hover:bg-(--surface-secondary)"
+            className={`flex w-full cursor-pointer items-center gap-3 p-4 text-left ${
+              activeTab === "settings" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
             <Settings size={20} />
@@ -135,9 +112,7 @@ const AccountPage = () => {
           </button>
         </aside>
 
-        <section className="min-h-150 col-span-9 p-6 bg-(--surface) border border-(--border) shadow-md">
-          {renderContent()}
-        </section>
+        <section className="col-span-9 min-h-150 border border-(--border) bg-(--surface) p-6 shadow-md">{renderContent()}</section>
       </main>
     </>
   );

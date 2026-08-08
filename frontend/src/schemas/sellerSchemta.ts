@@ -2,12 +2,7 @@ import { z } from "zod";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
-const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 export const logoSchema = z
   .instanceof(File, {
@@ -23,10 +18,7 @@ export const logoSchema = z
 const sellerFields = {
   shop_name: z.string().min(3, "Podaj nazwę sklepu").max(100),
 
-  description: z
-    .string()
-    .min(20, "Opis powinien mieć minimum 20 znaków")
-    .max(1000),
+  description: z.string().min(20, "Opis powinien mieć minimum 20 znaków").max(1000),
 
   company_name: z.string().min(3, "Podaj nazwę firmy"),
 
@@ -36,9 +28,7 @@ const sellerFields = {
 
   city: z.string().min(2, "Podaj miasto"),
 
-  postal_code: z
-    .string()
-    .regex(/^\d{2}-\d{3}$/, "Kod powinien mieć format XX-XXX"),
+  postal_code: z.string().regex(/^\d{2}-\d{3}$/, "Kod powinien mieć format XX-XXX"),
 };
 
 // Tworzenie sklepu - logo wymagane

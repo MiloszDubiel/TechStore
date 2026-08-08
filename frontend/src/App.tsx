@@ -16,13 +16,7 @@ import { FavoriteProvider } from "./context/FavoritesContext";
 import { CheckoutProvider } from "./context/CheckoutContext";
 import { ThemeProvider } from "./context/ThemeProvider";
 import { NotificationProvider } from "./context/NotificationContext";
-import {
-  CheckIsEmptyCart,
-  CheckIsLoggedIn,
-  CheckIsLoggedOut,
-  CheckIsSeller,
-  ProtectedRoute,
-} from "./components/ProtectetRoutes";
+import { CheckIsEmptyCart, CheckIsLoggedIn, CheckIsLoggedOut, CheckIsSeller, ProtectedRoute } from "./components/ProtectetRoutes";
 
 import BecomeSellerPage from "./pages/SellerPage/BecomeSellerPage";
 import SellerDashboard from "./pages/SellerPage/SellerDashboardPage/SellerDashboard";
@@ -37,9 +31,9 @@ const AppContent = () => {
     return (
       <>
         {isLoggingOut && (
-          <div className=" bg-black/40 fixed inset-0 z-50 flex items-center justify-center">
-            <div className=" rounded-xl flex flex-col items-center gap-3 p-6 bg-white shadow-lg">
-              <div className=" border-t-transparent animate-spin w-10 h-10 border-4 border-orange-500 rounded-full" />
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="flex flex-col items-center gap-3 rounded-xl bg-white p-6 shadow-lg">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
 
               <p>Wylogowywanie...</p>
             </div>
@@ -52,7 +46,7 @@ const AppContent = () => {
   }
   return (
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen bg-(--background)">
+      <div className="flex min-h-screen flex-col bg-(--background)">
         <div className="flex-1">
           <Routes>
             <Route path="/" element={<HomePage />} />

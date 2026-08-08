@@ -13,10 +13,7 @@ const FavoritesDropdown = ({ onClose }: Props) => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -31,71 +28,35 @@ const FavoritesDropdown = ({ onClose }: Props) => {
   return (
     <div
       ref={dropdownRef}
-      className="
-        md:absolute right-0  z-50 md:w-125
-        border border-(--border)
-        bg-(--surface)
-        p-4
-        text-(--foreground)
-        shadow-xl
-        fixed
-        top-0
-        left-0
-        w-full
-        h-full
-        md:h-auto
-  md:inset-auto
-  md:right-0
-  md:top-10
-      ">
-      <div className="md:hidden flex justify-end w-full">
+      className="fixed top-0 right-0 left-0 z-50 h-full w-full border border-(--border) bg-(--surface) p-4 text-(--foreground) shadow-xl md:absolute md:inset-auto md:top-10 md:right-0 md:h-auto md:w-125"
+    >
+      <div className="flex w-full justify-end md:hidden">
         <X onClick={onClose} className="cursor-pointer" />
       </div>
       <h3 className="mb-3 text-lg font-bold">Ulubione produkty</h3>
 
       {favorites.length === 0 ? (
-        <p className="text-sm text-(--foreground-secondary)">
-          Brak ulubionych produktów
-        </p>
+        <p className="text-sm text-(--foreground-secondary)">Brak ulubionych produktów</p>
       ) : (
         <ul className="space-y-3">
           {favorites.map((product: any) => (
-            <li
-              key={product.id}
-              className="
-                flex items-center gap-3
-                border-b border-(--border)
-                pb-2
-              "
-            >
+            <li key={product.id} className="flex items-center gap-3 border-b border-(--border) pb-2">
               <img
-                src={
-                  product.images?.[0]
-                    ? `${import.meta.env.VITE_API_URL}${
-                        product.images.at(-1).url
-                      }`
-                    : "/no-image.png"
-                }
+                src={product.images?.[0] ? `${import.meta.env.VITE_API_URL}${product.images.at(-1).url}` : "/no-image.png"}
                 alt={product.name}
-                className="
-                  h-12 w-12
-                  object-cover
-                  bg-(--surface-secondary)
-                "
+                className="h-12 w-12 bg-(--surface-secondary) object-cover"
               />
 
               <div className="flex-1">
                 <p className="line-clamp-2 font-medium">{product.name}</p>
 
-                <p className="text-sm text-(--foreground-secondary)">
-                  {product.price} zł
-                </p>
+                <p className="text-sm text-(--foreground-secondary)">{product.price} zł</p>
               </div>
 
               <Link
                 onClick={onClose}
                 to={`/offers/${product.slug}/${product.id}`}
-                className=" hover:text-orange-400 text-sm text-orange-500 transition"
+                className="text-sm text-orange-500 transition hover:text-orange-400"
               >
                 Zobacz
               </Link>

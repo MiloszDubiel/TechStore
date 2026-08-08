@@ -4,11 +4,7 @@ import * as sellerApi from "../api/seller";
 import { useUser } from "./useUser";
 import { useAuth } from "../context/AuthContext";
 
-export const useSeller = (params?: {
-  page: number;
-  limit: number;
-  search: string;
-}) => {
+export const useSeller = (params?: { page: number; limit: number; search: string }) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
@@ -97,13 +93,7 @@ export const useSeller = (params?: {
   });
 
   const uploadImage = useMutation({
-    mutationFn: ({
-      productId,
-      formData,
-    }: {
-      productId: string;
-      formData: FormData;
-    }) => sellerApi.uploadImage(productId, formData),
+    mutationFn: ({ productId, formData }: { productId: string; formData: FormData }) => sellerApi.uploadImage(productId, formData),
   });
 
   const getCompanyInfo = useQuery({

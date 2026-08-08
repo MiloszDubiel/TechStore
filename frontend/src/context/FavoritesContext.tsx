@@ -18,9 +18,7 @@ interface FavoritesContextType {
 
 const FavoriteContext = createContext<FavoritesContextType | null>(null);
 
-export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
 
   /*

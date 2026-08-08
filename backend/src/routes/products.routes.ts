@@ -7,7 +7,7 @@ import {
   getCategories,
   getSubcategories,
   scrapeProdcuts,
-  getFilters
+  getFilters,
 } from "../controllers/prodcuts.controller";
 import { verifyToken } from "../middleware/auth.middleware";
 import { getOrders, getOrderDetails } from "../controllers/settings.controller";

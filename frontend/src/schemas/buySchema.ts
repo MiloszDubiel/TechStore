@@ -6,9 +6,7 @@ export const buySchema = z.object({
   email: z.string().email("Niepoprawny email"),
   phone: z.string().min(9, "Za krótki numer"),
   city: z.string().min(2, "Podaj miasto"),
-  postalCode: z
-    .string()
-    .regex(/^\d{2}-\d{3}$/, "Kod musi być w formacie XX-XXX"),
+  postalCode: z.string().regex(/^\d{2}-\d{3}$/, "Kod musi być w formacie XX-XXX"),
   street: z.string().min(3, "Podaj ulicę"),
   deliveryMethod: z.enum(["courier", "parcel"]),
   paymentMethod: z.enum(["blik", "transfer"]),

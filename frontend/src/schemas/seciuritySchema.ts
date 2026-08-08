@@ -9,10 +9,7 @@ export const changePasswordSchema = z
       .regex(/[A-Z]/, "Hasło musi zawierać co najmniej jedną wielką literę")
       .regex(/[a-z]/, "Hasło musi zawierać co najmniej jedną małą literę")
       .regex(/[0-9]/, "Hasło musi zawierać co najmniej jedną cyfrę")
-      .regex(
-        /[!@#$%^&*()_\-+=\[\]{};:'"\\|,.<>/?`~]/,
-        "Hasło musi zawierać co najmniej jeden znak specjalny"
-      ),
+      .regex(/[!@#$%^&*()_\-+=\[\]{};:'"\\|,.<>/?`~]/, "Hasło musi zawierać co najmniej jeden znak specjalny"),
 
     confirmPassword: z.string().min(1, "Potwierdź nowe hasło"),
   })

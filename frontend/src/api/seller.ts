@@ -1,4 +1,4 @@
-import {api} from "../axios";
+import { api } from "../axios";
 
 const API = "http://localhost:5000/api/seller";
 
@@ -29,9 +29,7 @@ export const addProduct = async (product: any) => {
 };
 
 export const getCategories = async () => {
-  const { data } = await api.get(
-    `http://localhost:5000/api/products/categories`
-  );
+  const { data } = await api.get(`http://localhost:5000/api/products/categories`);
 
   return data;
 };
@@ -47,9 +45,7 @@ export const getCompanyInfo = async () => {
 };
 
 export const getSubcategories = async () => {
-  const { data } = await api.get(
-    `http://localhost:5000/api/products/subcategories`
-  );
+  const { data } = await api.get(`http://localhost:5000/api/products/subcategories`);
 
   return data;
 };
@@ -60,13 +56,7 @@ export const createStore = async (storeData: FormData) => {
   return data;
 };
 
-export const updateProduct = async ({
-  id,
-  product,
-}: {
-  id: number;
-  product: any;
-}) => {
+export const updateProduct = async ({ id, product }: { id: number; product: any }) => {
   const { data } = await api.patch(`${API}/products/${id}`, product);
 
   return data;
@@ -94,13 +84,7 @@ export const getOrders = async () => {
   return data;
 };
 
-export const updateOrderStatus = async ({
-  id,
-  status,
-}: {
-  id: number;
-  status: string;
-}) => {
+export const updateOrderStatus = async ({ id, status }: { id: number; status: string }) => {
   const { data } = await api.patch(`${API}/orders/${id}/status`, { status });
 
   return data;

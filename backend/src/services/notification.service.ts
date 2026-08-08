@@ -51,7 +51,6 @@ export const getUserNotificationsService = async (userId: number) => {
   return rows;
 };
 
-
 export const markNotificationAsReadService = async (
   notificationId: number,
   userId: number,
@@ -68,7 +67,6 @@ export const markNotificationAsReadService = async (
 
   return result.affectedRows > 0;
 };
-
 
 export const markAllNotificationsAsReadService = async (userId: number) => {
   const [result]: any = await connection.query(

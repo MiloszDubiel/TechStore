@@ -29,40 +29,22 @@ const Orders = () => {
   };
 
   if (selectedOrderId) {
-    return (
-      <EditOrder
-        orderId={selectedOrderId}
-        onBack={() => setSelectedOrderId(null)}
-      />
-    );
+    return <EditOrder orderId={selectedOrderId} onBack={() => setSelectedOrderId(null)} />;
   }
   return (
     <div>
-      <div className="flex justify-between mb-6">
+      <div className="mb-6 flex justify-between">
         <h1 className="text-2xl font-bold text-(--foreground)">Zamówienia</h1>
 
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Szukaj zamówienia..."
-          className="
-        px-4 py-2
-        border border-(--border)
-        bg-(--input)
-        text-(--foreground)
-        outline-none
-        focus:border-orange-500
-      "
+          className="border border-(--border) bg-(--input) px-4 py-2 text-(--foreground) outline-none focus:border-orange-500"
         />
       </div>
 
-      <div
-        className="
-      overflow-hidden
-      bg-(--surface)
-      border border-(--border)
-    "
-      >
+      <div className="overflow-hidden border border-(--border) bg-(--surface)">
         <table className="w-full text-left text-(--foreground)">
           <thead className="bg-(--surface-secondary)">
             <tr>
@@ -83,43 +65,29 @@ const Orders = () => {
                 <td className="p-4 font-semibold">#{order.order_number}</td>
 
                 <td className="p-4">
-                  {order.user_name || order.first_name}{" "}
-                  {order.user_last_name || order.last_name}
+                  {order.user_name || order.first_name} {order.user_last_name || order.last_name}
                 </td>
 
-                <td className="p-4 text-(--foreground-secondary)">
-                  {order.email}
-                </td>
+                <td className="p-4 text-(--foreground-secondary)">{order.email}</td>
 
-                <td className="p-4">
-                  {Number(order.total_price).toFixed(2)} zł
-                </td>
+                <td className="p-4">{Number(order.total_price).toFixed(2)} zł</td>
 
                 <td className="p-4">{order.payment_method}</td>
 
                 <td className="p-4">
                   <span
                     className={
-                      order.status === "COMPLETED"
-                        ? "text-green-500"
-                        : order.status === "CANCELLED"
-                        ? "text-red-500"
-                        : "text-orange-500"
+                      order.status === "COMPLETED" ? "text-green-500" : order.status === "CANCELLED" ? "text-red-500" : "text-orange-500"
                     }
                   >
                     {orderStatusLabels[order.status]}
                   </span>
                 </td>
 
-                <td className="p-4 text-(--foreground-secondary)">
-                  {new Date(order.created_at).toLocaleDateString("pl-PL")}
-                </td>
+                <td className="p-4 text-(--foreground-secondary)">{new Date(order.created_at).toLocaleDateString("pl-PL")}</td>
 
                 <td className="p-4">
-                  <button
-                    className=" hover:text-blue-600 text-blue-500 cursor-pointer"
-                    onClick={() => setSelectedOrderId(order.id)}
-                  >
+                  <button className="cursor-pointer text-blue-500 hover:text-blue-600" onClick={() => setSelectedOrderId(order.id)}>
                     <Eye size={18} />
                   </button>
                 </td>
@@ -128,14 +96,7 @@ const Orders = () => {
 
             {orderList.length === 0 && (
               <tr>
-                <td
-                  colSpan={8}
-                  className="
-                p-8
-                text-center
-                text-(--foreground-secondary)
-              "
-                >
+                <td colSpan={8} className="p-8 text-center text-(--foreground-secondary)">
                   Brak zamówień
                 </td>
               </tr>
@@ -144,11 +105,7 @@ const Orders = () => {
         </table>
       </div>
 
-      <Pagination
-        page={page}
-        totalPages={data?.totalPages ?? 1}
-        onPageChange={setPage}
-      />
+      <Pagination page={page} totalPages={data?.totalPages ?? 1} onPageChange={setPage} />
     </div>
   );
 };

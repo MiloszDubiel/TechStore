@@ -2,14 +2,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
 import { useAdmin } from "../../../../hooks/useAdmin";
-import {
-  editUserAdminSchema,
-  type EditUserAdminForm,
-} from "../../../../schemas/editUserAdminSchema";
+import { editUserAdminSchema, type EditUserAdminForm } from "../../../../schemas/editUserAdminSchema";
 
 const EditUser = ({ user, onSuccess, onBack }: any) => {
-
-
   const { editUser } = useAdmin();
 
   const {
@@ -38,74 +33,64 @@ const EditUser = ({ user, onSuccess, onBack }: any) => {
           onSuccess();
           onBack();
         },
-      }
+      },
     );
   };
 
   return (
-    <div className=" w-full space-y-6">
+    <div className="w-full space-y-6">
       <div>
-        <button
-          type="button"
-          onClick={onBack}
-          className="hover:bg-orange-600 px-4 py-3 text-white bg-orange-500 cursor-pointer"
-        >
+        <button type="button" onClick={onBack} className="cursor-pointer bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
           ← Powrót
         </button>
         <h1 className="text-2xl font-bold">Edytuj użytkownika</h1>
 
-        <p className="mt-1 text-gray-500">
-          Zmień dane konta użytkownika oraz jego uprawnienia.
-        </p>
+        <p className="mt-1 text-gray-500">Zmień dane konta użytkownika oraz jego uprawnienia.</p>
       </div>
 
-      <div className="w-full p-8 bg-white border border-gray-300">
+      <div className="w-full border border-gray-300 bg-white p-8">
         <form onSubmit={handleSubmit(submit)} className="space-y-6">
           <div className="grid grid-cols-2 gap-5">
             <div>
-              <label className="block mb-2 font-medium">Imię</label>
+              <label className="mb-2 block font-medium">Imię</label>
 
               <input
                 {...register("name")}
-                className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+                className="w-full border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
               />
 
-              <p className="mt-1 text-sm text-red-500">
-                {errors.name?.message}
-              </p>
+              <p className="mt-1 text-sm text-red-500">{errors.name?.message}</p>
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Nazwisko</label>
+              <label className="mb-2 block font-medium">Nazwisko</label>
 
               <input
                 {...register("last_name")}
-                className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+                className="w-full border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
               />
 
-              <p className="mt-1 text-sm text-red-500">
-                {errors.last_name?.message}
-              </p>
+              <p className="mt-1 text-sm text-red-500">{errors.last_name?.message}</p>
             </div>
           </div>
 
           <div>
-            <label className="block mb-2 font-medium">Adres e-mail</label>
+            <label className="mb-2 block font-medium">Adres e-mail</label>
 
             <input
               {...register("email")}
-              className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+              className="w-full border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
             />
 
             <p className="mt-1 text-sm text-red-500">{errors.email?.message}</p>
           </div>
 
           <div>
-            <label className="block mb-2 font-medium">Rola</label>
+            <label className="mb-2 block font-medium">Rola</label>
 
             <select
               {...register("role")}
-              className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+              className="w-full border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
             >
               <option value="USER">Użytkownik</option>
               <option value="SELLER">Sprzedawca</option>
@@ -113,55 +98,45 @@ const EditUser = ({ user, onSuccess, onBack }: any) => {
             </select>
           </div>
 
-          <div className="pt-6 border-t border-gray-300">
-            <h2 className="mb-4 text-lg font-semibold">
-              Zmiana hasła (opcjonalnie)
-            </h2>
+          <div className="border-t border-gray-300 pt-6">
+            <h2 className="mb-4 text-lg font-semibold">Zmiana hasła (opcjonalnie)</h2>
 
             <div className="grid grid-cols-2 gap-5">
               <div>
-                <label className="block mb-2 font-medium">Nowe hasło</label>
+                <label className="mb-2 block font-medium">Nowe hasło</label>
 
                 <input
                   type="password"
                   {...register("password")}
-                  className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+                  className="w-full border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
                 />
 
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.password?.message}
-                </p>
+                <p className="mt-1 text-sm text-red-500">{errors.password?.message}</p>
               </div>
 
               <div>
-                <label className="block mb-2 font-medium">Powtórz hasło</label>
+                <label className="mb-2 block font-medium">Powtórz hasło</label>
 
                 <input
                   type="password"
                   {...register("confirmPassword")}
-                  className="focus:ring-2 focus:ring-orange-500 w-full px-4 py-3 border border-gray-300 outline-none"
+                  className="w-full border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-500"
                 />
 
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.confirmPassword?.message}
-                </p>
+                <p className="mt-1 text-sm text-red-500">{errors.confirmPassword?.message}</p>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-6 border-t border-gray-300">
-            <button
-              type="button"
-              onClick={onBack}
-              className="hover:bg-gray-100 px-6 py-3 border border-gray-300 cursor-pointer"
-            >
+          <div className="flex justify-end gap-3 border-t border-gray-300 pt-6">
+            <button type="button" onClick={onBack} className="cursor-pointer border border-gray-300 px-6 py-3 hover:bg-gray-100">
               Anuluj
             </button>
 
             <button
               type="submit"
               disabled={editUser.isPending}
-              className="hover:bg-orange-600 disabled:opacity-50 flex items-center gap-2 px-6 py-3 text-white bg-orange-500 cursor-pointer"
+              className="flex cursor-pointer items-center gap-2 bg-orange-500 px-6 py-3 text-white hover:bg-orange-600 disabled:opacity-50"
             >
               <Save size={18} />
 

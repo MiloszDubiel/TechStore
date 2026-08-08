@@ -33,41 +33,23 @@ const Products = () => {
   const productList = data?.products ?? [];
 
   if (editingProduct) {
-    return (
-      <EditProduct
-        product={editingProduct}
-        onBack={() => setEditingProduct(null)}
-      />
-    );
+    return <EditProduct product={editingProduct} onBack={() => setEditingProduct(null)} />;
   }
 
   return (
     <div>
-      <div className="flex justify-between mb-6">
+      <div className="mb-6 flex justify-between">
         <h1 className="text-2xl font-bold text-(--foreground)">Produkty</h1>
 
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Szukaj..."
-          className="
-        px-4 py-2
-        border border-(--border)
-        bg-(--input)
-        text-(--foreground)
-        outline-none
-        focus:border-orange-500
-      "
+          className="border border-(--border) bg-(--input) px-4 py-2 text-(--foreground) outline-none focus:border-orange-500"
         />
       </div>
 
-      <div
-        className="
-      overflow-hidden
-      bg-(--surface)
-      border border-(--border)
-    "
-      >
+      <div className="overflow-hidden border border-(--border) bg-(--surface)">
         <table className="w-full text-left text-(--foreground)">
           <thead className="bg-(--surface-secondary)">
             <tr>
@@ -89,9 +71,7 @@ const Products = () => {
 
                 <td className="p-4">{product.shop_name}</td>
 
-                <td className="p-4 text-(--foreground-secondary)">
-                  {product.email}
-                </td>
+                <td className="p-4 text-(--foreground-secondary)">{product.email}</td>
 
                 <td className="p-4">{product.price} zł</td>
 
@@ -108,7 +88,7 @@ const Products = () => {
                 <td className="p-4">
                   <div className="flex gap-3">
                     <button
-                      className=" hover:text-blue-600 text-blue-500 cursor-pointer"
+                      className="cursor-pointer text-blue-500 hover:text-blue-600"
                       onClick={() => {
                         setEditingProduct(product);
                       }}
@@ -118,7 +98,7 @@ const Products = () => {
 
                     {product.is_visible ? (
                       <button
-                        className=" hover:text-orange-600 text-orange-500 cursor-pointer"
+                        className="cursor-pointer text-orange-500 hover:text-orange-600"
                         onClick={() => {
                           setConfirmData({
                             title: "Ukryć produkt?",
@@ -134,7 +114,7 @@ const Products = () => {
                       </button>
                     ) : (
                       <button
-                        className=" hover:text-green-600 text-green-500 cursor-pointer"
+                        className="cursor-pointer text-green-500 hover:text-green-600"
                         onClick={() => {
                           showProduct.mutate(product.id);
                         }}
@@ -145,7 +125,7 @@ const Products = () => {
 
                     {product.is_deleted != 1 && (
                       <button
-                        className=" hover:text-red-600 text-red-500 cursor-pointer"
+                        className="cursor-pointer text-red-500 hover:text-red-600"
                         onClick={() => {
                           setConfirmData({
                             title: "Usunąć produkt?",
@@ -168,11 +148,7 @@ const Products = () => {
         </table>
       </div>
 
-      <Pagination
-        page={page}
-        totalPages={data?.totalPages ?? 1}
-        onPageChange={setPage}
-      />
+      <Pagination page={page} totalPages={data?.totalPages ?? 1} onPageChange={setPage} />
 
       <ConfirmModal
         isOpen={isOpen}

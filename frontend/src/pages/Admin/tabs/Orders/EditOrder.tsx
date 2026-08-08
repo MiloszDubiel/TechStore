@@ -1,11 +1,4 @@
-import {
-  ArrowLeft,
-  Package,
-  CreditCard,
-  Truck,
-  User,
-  MapPin,
-} from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Truck, User, MapPin } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useAdmin } from "../../../../hooks/useAdmin";
 import { useState, useEffect } from "react";
@@ -37,10 +30,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
   if (!order) {
     return (
       <div className="p-6">
-        <button
-          onClick={onBack}
-          className=" hover:bg-orange-600 flex items-center gap-2 px-4 py-3 text-white bg-orange-500"
-        >
+        <button onClick={onBack} className="flex items-center gap-2 bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
           <ArrowLeft size={18} />
           Powrót
         </button>
@@ -61,7 +51,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
           onBack();
           queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
         },
-      }
+      },
     );
   };
 
@@ -75,57 +65,25 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
 
   return (
     <div className="space-y-6">
-      <button
-        onClick={onBack}
-        className=" hover:bg-orange-600 flex items-center gap-2 px-4 py-3 text-white transition bg-orange-500"
-      >
+      <button onClick={onBack} className="flex items-center gap-2 bg-orange-500 px-4 py-3 text-white transition hover:bg-orange-600">
         <ArrowLeft size={18} />
         Powrót
       </button>
 
-      <div
-        className="
-      flex
-      items-center
-      justify-between
-      border border-(--border)
-      bg-(--surface)
-      p-6
-    "
-      >
+      <div className="flex items-center justify-between border border-(--border) bg-(--surface) p-6">
         <div>
-          <h1 className="text-2xl font-bold">
-            Zamówienie #{order.order_number}
-          </h1>
+          <h1 className="text-2xl font-bold">Zamówienie #{order.order_number}</h1>
 
-          <p className="text-(--foreground-secondary)">
-            {new Date(order.created_at).toLocaleString()}
-          </p>
+          <p className="text-(--foreground-secondary)">{new Date(order.created_at).toLocaleString()}</p>
         </div>
 
         <div className="flex items-center gap-3">
-          <span
-            className={`
-          px-3 py-1
-          rounded-full
-          text-sm
-          font-semibold
-          ${statusColors[status]}
-        `}
-          >
-            {status}
-          </span>
+          <span className={`rounded-full px-3 py-1 text-sm font-semibold ${statusColors[status]} `}>{status}</span>
 
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="
-          border border-(--border)
-          bg-(--surface-secondary)
-          px-4 py-2
-          text-(--foreground)
-          outline-none
-        "
+            className="border border-(--border) bg-(--surface-secondary) px-4 py-2 text-(--foreground) outline-none"
           >
             <option value="NEW">Nowe</option>
 
@@ -141,22 +99,16 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
           <button
             onClick={saveStatus}
             disabled={updateOrderStatus.isPending}
-            className=" hover:bg-orange-600 disabled:opacity-50 px-4 py-2 text-white transition bg-orange-500"
+            className="bg-orange-500 px-4 py-2 text-white transition hover:bg-orange-600 disabled:opacity-50"
           >
             {updateOrderStatus.isPending ? "Zapisywanie..." : "Zapisz"}
           </button>
         </div>
       </div>
 
-      <div className="lg:grid-cols-2 grid grid-cols-1 gap-6">
-        <section
-          className="
-        border border-(--border)
-        bg-(--surface)
-        p-6
-      "
-        >
-          <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section className="border border-(--border) bg-(--surface) p-6">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
             <User size={20} />
             Klient
           </h2>
@@ -164,42 +116,28 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
           <div className="space-y-2 text-(--foreground-secondary)">
             <p>
               Email:
-              <b className="ml-2 text-(--foreground)">
-                {order.customer?.email}
-              </b>
+              <b className="ml-2 text-(--foreground)">{order.customer?.email}</b>
             </p>
 
             <p>
               Imię:
-              <b className="ml-2 text-(--foreground)">
-                {order.customer?.first_name}
-              </b>
+              <b className="ml-2 text-(--foreground)">{order.customer?.first_name}</b>
             </p>
 
             <p>
               Nazwisko:
-              <b className="ml-2 text-(--foreground)">
-                {order.customer?.last_name}
-              </b>
+              <b className="ml-2 text-(--foreground)">{order.customer?.last_name}</b>
             </p>
 
             <p>
               Telefon:
-              <b className="ml-2 text-(--foreground)">
-                {order.customer?.phone}
-              </b>
+              <b className="ml-2 text-(--foreground)">{order.customer?.phone}</b>
             </p>
           </div>
         </section>
 
-        <section
-          className="
-        border border-(--border)
-        bg-(--surface)
-        p-6
-      "
-        >
-          <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
+        <section className="border border-(--border) bg-(--surface) p-6">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
             <MapPin size={20} />
             Dostawa
           </h2>
@@ -221,14 +159,8 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
         </section>
       </div>
 
-      <section
-        className="
-      border border-(--border)
-      bg-(--surface)
-      p-6
-    "
-      >
-        <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
+      <section className="border border-(--border) bg-(--surface) p-6">
+        <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold">
           <CreditCard size={20} />
           Płatność
         </h2>

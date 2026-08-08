@@ -31,14 +31,7 @@ const SellerSettings = () => {
 
   return (
     <>
-      <SellerProfileForm
-        mode="edit"
-        defaultValues={data}
-        onSubmit={onSubmit}
-        isLoading={isPending}
-        storeData={data}
-        hideButton={false}
-      />
+      <SellerProfileForm mode="edit" defaultValues={data} onSubmit={onSubmit} isLoading={isPending} storeData={data} hideButton={false} />
     </>
   );
 };

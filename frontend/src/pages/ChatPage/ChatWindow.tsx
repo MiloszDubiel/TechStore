@@ -29,9 +29,7 @@ const ChatWindow = ({ conversation }: any) => {
     enabled: !!conversation?.id,
 
     queryFn: async () => {
-      const { data } = await api.get(
-        `/api/socket/conversations/${conversation.id}/messages`
-      );
+      const { data } = await api.get(`/api/socket/conversations/${conversation.id}/messages`);
 
       return data;
     },
@@ -74,29 +72,17 @@ const ChatWindow = ({ conversation }: any) => {
   }, [conversation?.id]);
 
   if (!conversation) {
-    return (
-      <div className="flex items-center justify-center flex-1 text-(--foreground-secondary)">
-        Wybierz rozmowę
-      </div>
-    );
+    return <div className="flex flex-1 items-center justify-center text-(--foreground-secondary)">Wybierz rozmowę</div>;
   }
   const isSeller = user?.id === conversation.seller_id;
-  const name = isSeller
-    ? `${conversation.buyer_first_name} ${
-        conversation.buyer_last_name || "Klient"
-      }`
-    : conversation.shop_name;
+  const name = isSeller ? `${conversation.buyer_first_name} ${conversation.buyer_last_name || "Klient"}` : conversation.shop_name;
   return (
-    <div className="flex flex-col flex-1">
-      <div className="p-5 font-bold text-(--foreground) border-b border-(--border)">
-        {name}
-      </div>
+    <div className="flex flex-1 flex-col">
+      <div className="border-b border-(--border) p-5 font-bold text-(--foreground)">{name}</div>
 
-      <div className="flex-1 p-5 space-y-3 overflow-y-auto">
+      <div className="flex-1 space-y-3 overflow-y-auto p-5">
         {isLoading ? (
-          <p className="text-(--foreground-secondary)">
-            Ładowanie wiadomości...
-          </p>
+          <p className="text-(--foreground-secondary)">Ładowanie wiadomości...</p>
         ) : messages?.length ? (
           messages.map((msg: any) => {
             const mine = msg.sender_id === user?.id;
@@ -104,62 +90,30 @@ const ChatWindow = ({ conversation }: any) => {
             return (
               <div
                 key={msg.id}
-                className={`
-              max-w-[70%]
-              p-3
-
-              ${
-                mine
-                  ? "ml-auto bg-orange-500 text-white"
-                  : "bg-(--surface-secondary) text-(--foreground)"
-              }
-            `}
+                className={`max-w-[70%] p-3 ${mine ? "ml-auto bg-orange-500 text-white" : "bg-(--surface-secondary) text-(--foreground)"} `}
               >
                 <p>{msg.message}</p>
 
-                <span
-                  className={`
-                block
-                mt-1
-                text-xs
-
-                ${mine ? "text-orange-100" : "text-(--foreground-secondary)"}
-              `}
-                >
+                <span className={`mt-1 block text-xs ${mine ? "text-orange-100" : "text-(--foreground-secondary)"} `}>
                   {new Date(msg.created_at).toLocaleString()}
                 </span>
               </div>
             );
           })
         ) : (
-          <div className="text-center text-(--foreground-secondary)">
-            Brak wiadomości
-          </div>
+          <div className="text-center text-(--foreground-secondary)">Brak wiadomości</div>
         )}
       </div>
 
-      <div className="flex gap-3 p-4 border-t border-(--border)">
+      <div className="flex gap-3 border-t border-(--border) p-4">
         <input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Napisz wiadomość..."
-          className="
-        flex-1
-        px-4
-        py-3
-        bg-(--surface)
-        text-(--foreground)
-        border
-        border-(--border)
-        outline-none
-        focus:border-orange-500
-      "
+          className="flex-1 border border-(--border) bg-(--surface) px-4 py-3 text-(--foreground) outline-none focus:border-orange-500"
         />
 
-        <button
-          className="hover:bg-orange-600 px-5 text-white transition bg-orange-500 cursor-pointer"
-          onClick={send}
-        >
+        <button className="cursor-pointer bg-orange-500 px-5 text-white transition hover:bg-orange-600" onClick={send}>
           Wyślij
         </button>
       </div>

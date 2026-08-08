@@ -45,21 +45,11 @@ export default function ParcelLockerMap() {
     <div className="mt-6">
       <h3 className="mb-3 font-semibold">Wybierz paczkomat</h3>
 
-      <MapContainer
-        center={[50.0413, 21.999] as [number, number]}
-        zoom={13}
-        className="h-100 w-full"
-      >
-        <TileLayer
-          attribution="&copy; OpenStreetMap"
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+      <MapContainer center={[50.0413, 21.999] as [number, number]} zoom={13} className="h-100 w-full">
+        <TileLayer attribution="&copy; OpenStreetMap" url="https://tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         {lockers.map((locker) => (
-          <Marker
-            key={locker.id}
-            position={locker.position as [number, number]}
-          >
+          <Marker key={locker.id} position={locker.position as [number, number]}>
             <Popup>
               <div className="space-y-2">
                 <p className="font-bold">{locker.name}</p>
@@ -67,7 +57,7 @@ export default function ParcelLockerMap() {
                 <p>{locker.address}</p>
 
                 <button
-                  className="hover:bg-orange-600 px-3 py-2 text-white transition-colors bg-orange-500"
+                  className="bg-orange-500 px-3 py-2 text-white transition-colors hover:bg-orange-600"
                   onClick={(e) => {
                     e.stopPropagation();
 
@@ -78,7 +68,7 @@ export default function ParcelLockerMap() {
                         locker,
                       },
                     });
-                    window.scrollBy(0,400)
+                    window.scrollBy(0, 400);
                   }}
                 >
                   Wybierz
@@ -90,7 +80,7 @@ export default function ParcelLockerMap() {
       </MapContainer>
 
       {checkoutData.delivery?.locker && (
-        <div className=" p-4 mt-4 border border-orange-500 bg-(--surface-secondary) ring-1 ring-orange-500">
+        <div className="mt-4 border border-orange-500 bg-(--surface-secondary) p-4 ring-1 ring-orange-500">
           <p className="font-semibold">Wybrany paczkomat:</p>
 
           <p>{checkoutData.delivery.locker.name}</p>

@@ -20,7 +20,7 @@ const attributesSchema = z
     {
       message: "Wartość musi być liczbą większą lub równą 0",
       path: ["value"],
-    }
+    },
   );
 
 const baseProductSchema = {
@@ -28,12 +28,8 @@ const baseProductSchema = {
   brand: z.string().min(2, "Podaj producenta"),
   model: z.string().min(1, "Podaj model"),
   description: z.string().min(10, "Opis musi mieć minimum 10 znaków"),
-  price: z.coerce
-    .number()
-    .min(1, "Wartość musi być liczbą większą lub równą 0"),
-  stock: z.coerce
-    .number()
-    .min(1, "Wartość musi być liczbą większą lub równą 0"),
+  price: z.coerce.number().min(1, "Wartość musi być liczbą większą lub równą 0"),
+  stock: z.coerce.number().min(1, "Wartość musi być liczbą większą lub równą 0"),
   category_id: z.string().min(1, "Wybierz kategorię"),
   subcategory_id: z.string().min(1, "Wybierz podkategorię"),
 
@@ -45,7 +41,7 @@ const baseProductSchema = {
     },
     {
       message: "Każdy parametr może wystąpić tylko raz.",
-    }
+    },
   ),
 };
 
@@ -65,14 +61,10 @@ export const productEditSchema = z
 
     removedImages: z.array(z.string()).optional(),
   })
-  .refine(
-    (data) =>
-      (data.images?.length ?? 0) > 0 || (data.existingImages?.length ?? 0) > 0,
-    {
-      message: "Produkt musi posiadać minimum jedno zdjęcie",
-      path: ["images"],
-    }
-  );
+  .refine((data) => (data.images?.length ?? 0) > 0 || (data.existingImages?.length ?? 0) > 0, {
+    message: "Produkt musi posiadać minimum jedno zdjęcie",
+    path: ["images"],
+  });
 
 export type ProductCreateForm = z.infer<typeof productCreateSchema>;
 

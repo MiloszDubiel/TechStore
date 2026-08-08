@@ -2,7 +2,7 @@ import { createContext, useEffect, useContext, useState } from "react";
 import { socket } from "../socket";
 import { useAuth } from "./AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {api} from "../axios";
+import { api } from "../axios";
 import { toast } from "react-toastify";
 
 interface NotificationContextType {
@@ -95,9 +95,7 @@ export const useNotification = () => {
   const context = useContext(NotificationContext);
 
   if (!context) {
-    throw new Error(
-      "useNotification musi być użyty wewnątrz NotificationProvider"
-    );
+    throw new Error("useNotification musi być użyty wewnątrz NotificationProvider");
   }
 
   return context;
