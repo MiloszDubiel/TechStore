@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { api } from "../../axios";
 import Navbar from "../../components/layout/Navbar/Navbar";
 import ReviewsList from "../../components/layout/ReviewList";
@@ -11,12 +11,21 @@ import { useAuth } from "../../context/AuthContext";
 import { Edit, Flag } from "lucide-react";
 import ReportOffer from "../../components/ui/ReportOffert";
 import { toast } from "react-toastify";
+import { OrangeButton } from "../../components/ui/Buttons";
 
 const OfferDetails = () => {
   const { slug, id } = useParams();
   const { user } = useAuth();
   const [openReport, setOpenReport] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [showDescription, setShowDescription] = useState(false);
+  const [showAttributes, setShowAttributes] = useState(false);
+
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const attributesRef = useRef<HTMLDivElement>(null);
+
+  const [descriptionOverflow, setDescriptionOverflow] = useState(false);
+  const [attributesOverflow, setAttributesOverflow] = useState(false);
 
   const addToCart = useCartStore((state) => state.addToCart);
 
@@ -46,6 +55,26 @@ const OfferDetails = () => {
   };
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (descriptionRef.current) {
+        setDescriptionOverflow(descriptionRef.current.scrollHeight >= descriptionRef.current.clientHeight);
+      }
+
+      if (attributesRef.current) {
+        setAttributesOverflow(attributesRef.current.scrollHeight >= attributesRef.current.clientHeight);
+      }
+    };
+
+    checkOverflow();
+
+    window.addEventListener("resize", checkOverflow);
+
+    return () => {
+      window.removeEventListener("resize", checkOverflow);
+    };
+  });
 
   if (isLoading) {
     return (
@@ -94,7 +123,7 @@ const OfferDetails = () => {
             </div>
 
             <div className="lg:col-span-5">
-              <div className="sticky top-20 border border-(--border) bg-(--surface) p-6 shadow-sm">
+              <div className="top-20 flex h-full flex-col justify-center border border-(--border) bg-(--surface) p-6 shadow-sm">
                 <h1 className="text-3xl leading-tight font-bold text-(--foreground)">{product.name}</h1>
 
                 <div className="mt-6 text-4xl font-bold text-orange-500">{Number(product.price).toFixed(2)} zł</div>
@@ -107,23 +136,27 @@ const OfferDetails = () => {
                     </span>
                   </span>
 
-                  {product?.seller_id !== user?.id && (
-                    <button
-                      disabled={!product.stock}
-                      onClick={() => setOpenReport(true)}
-                      className="flex w-full cursor-pointer items-center justify-center gap-3 bg-orange-500 p-4 font-semibold text-white transition hover:bg-orange-600"
-                    >
-                      <Flag size={18} />
-                      Zgłoś
-                    </button>
-                  )}
+                  {product?.seller_id !== user?.id ||
+                    (user && (
+                      <button
+                        disabled={!product.stock}
+                        onClick={() => setOpenReport(true)}
+                        className="flex w-full cursor-pointer items-center justify-center gap-3 bg-orange-500 p-4 font-semibold text-white transition hover:bg-orange-600"
+                      >
+                        <Flag size={18} />
+                        Zgłoś
+                      </button>
+                    ))}
                 </div>
 
                 <div className="mt-6 flex flex-col gap-3">
                   {product?.seller_id !== user?.id && (
                     <button
                       disabled={!product.stock}
-                      onClick={() => addToCart(product)}
+                      onClick={() => {
+                        addToCart(product);
+                        toast.success("Dodano do koszuka");
+                      }}
                       className="flex w-full cursor-pointer items-center justify-center gap-3 bg-orange-500 py-4 font-semibold text-white transition hover:bg-orange-600 disabled:cursor-not-allowed disabled:bg-gray-300"
                     >
                       <ShoppingCart size={20} />
@@ -179,31 +212,63 @@ const OfferDetails = () => {
             </div>
           </section>
 
-          <section className="mt-8 border border-(--border) bg-(--surface) p-6">
+          <section
+            ref={descriptionRef}
+            className={`relative mt-8 overflow-hidden border border-(--border) bg-(--surface) p-6 transition-[max-height] duration-500 ease-in-out ${showDescription ? "max-h-fit" : "max-h-125"} `}
+          >
             <h2 className="mb-4 text-2xl font-semibold text-(--foreground)">Opis</h2>
 
             <p
               className="whitespace-pre-line text-(--foreground-secondary)"
               dangerouslySetInnerHTML={{
-                __html: product.description,
+                __html: product?.description,
               }}
             />
           </section>
 
-          {product.attributes?.length > 0 && (
-            <section className="mt-8 border border-(--border) bg-(--surface) p-6">
-              <h2 className="mb-6 text-2xl font-semibold text-(--foreground)">Dane techniczne</h2>
-
-              <div className="border border-(--border)">
-                {product.attributes.map((attr: any) => (
-                  <div key={attr.name} className="grid grid-cols-2 border-b border-(--border) p-4">
-                    <span className="font-medium text-(--foreground)">{attr.label}</span>
-
-                    <span className="text-(--foreground-secondary)">{attr.value}</span>
-                  </div>
-                ))}
-              </div>
+          {descriptionOverflow && (
+            <section className="flex w-full justify-center border border-(--border) bg-(--surface) p-4">
+              <OrangeButton
+                onClick={() => {
+                  setShowDescription((prev) => !prev);
+                }}
+              >
+                {showDescription ? "Zobacz mniej" : "Zobacz więcej"}
+              </OrangeButton>
             </section>
+          )}
+
+          {product.attributes?.length > 0 && (
+            <>
+              <section
+                className={`mt-8 overflow-hidden border border-(--border) bg-(--surface) p-6 transition-[max-height] duration-500 ease-in-out ${showAttributes ? "max-h-fit" : "max-h-125"} `}
+                ref={attributesRef}
+              >
+                <h2 className="mb-6 text-2xl font-semibold text-(--foreground)">Dane techniczne</h2>
+
+                <div className="border border-(--border)">
+                  {product.attributes.map((attr: any) => (
+                    <div key={attr.name} className="grid grid-cols-2 border-b border-(--border) p-4">
+                      <span className="font-medium text-(--foreground)">{attr.label}</span>
+
+                      <span className="text-(--foreground-secondary)">{attr.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {attributesOverflow && (
+                <section className="flex w-full justify-center border border-(--border) bg-(--surface) p-4">
+                  <OrangeButton
+                    onClick={() => {
+                      setShowAttributes((prev) => !prev);
+                    }}
+                  >
+                    {showAttributes ? "Zobacz mniej" : "Zobacz więcej"}
+                  </OrangeButton>
+                </section>
+              )}
+            </>
           )}
 
           <section className="mt-8 border border-(--border) bg-(--surface) p-6">

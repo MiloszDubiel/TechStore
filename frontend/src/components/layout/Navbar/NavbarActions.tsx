@@ -27,13 +27,19 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
   return (
     <>
       <div className="flex shrink-0 items-center gap-6">
-        <Menu
-          className="block cursor-pointer md:hidden"
-          onClick={() => {
-            setHidden((prev) => !prev);
-          }}
-        />
-
+        <div className="relative">
+          <Menu
+            className="block cursor-pointer md:hidden"
+            onClick={() => {
+              setHidden((prev) => !prev);
+            }}
+          />
+          {favorites.length > 0 ||
+            notificationData[0] ||
+            (cart.length > 0 && (
+              <div className="absolute -right-1 -bottom-1 grid h-3 w-3 place-content-center rounded-full bg-orange-500 text-[9px] font-medium text-white md:hidden"></div>
+            ))}
+        </div>
         <div
           className={` ${hidden ? "hidden" : "flex"} border-0.5 absolute top-18 left-0 flex h-20 w-full items-center justify-around gap-6 border border-(--border) bg-(--surface) md:static md:flex! md:justify-start md:gap-4 md:border-0 md:bg-transparent`}
         >
@@ -48,7 +54,7 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
                 className="cursor-pointer transition-colors hover:text-orange-500"
               />
               <span
-                className="md:hidden"
+                className="text-xs md:hidden"
                 onMouseDown={(e) => {
                   e.stopPropagation();
                   setActive((prev: any) => (prev === "fav" ? null : "fav"));
@@ -71,7 +77,7 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
             <div className="f relative shrink-0">
               <Link to="/chat" className="flex flex-col items-center justify-center">
                 <MessageCircle size={20} className="cursor-pointer transition-colors hover:text-orange-500" />
-                <span className="md:hidden">Wiadomości</span>
+                <span className="text-xs md:hidden">Wiadomości</span>
 
                 {data > 0 && (
                   <div className="absolute -top-2 -right-2 grid h-4 w-4 place-content-center rounded-full bg-orange-500 text-[9px] font-medium text-white">
@@ -97,9 +103,9 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
                   e.stopPropagation();
                   setActive((prev: any) => (prev === "bell" ? null : "bell"));
                 }}
-                className="md:hidden"
+                className="text-xs md:hidden"
               >
-                Koszyk
+                Ulubione
               </span>
 
               {notificationData[0] && (
@@ -126,7 +132,7 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
                 e.stopPropagation();
                 setActive((prev: any) => (prev === "cart" ? null : "cart"));
               }}
-              className="md:hidden"
+              className="text-xs md:hidden"
             >
               Koszyk
             </span>

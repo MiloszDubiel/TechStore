@@ -65,13 +65,11 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
     <aside
       className={`sticky top-6 hidden h-fit max-h-[calc(100vh-1.5rem)] w-80 border border-(--border) bg-(--surface) p-3 shadow-sm lg:block lg:overflow-y-auto lg:p-6`}
     >
-      <div className="m-0 flex h-auto cursor-pointer items-center justify-between border-(--border)">
+      <div className="m-0 flex h-auto items-center justify-between border-(--border)">
         <div className="flex items-center gap-3">
           <Filter size={22} className="text-(--primary)" />
           <h2 className="text-2xl text-(--foreground)">Filtry</h2>
         </div>
-
-        <ChevronDown className="text-(--foreground)"></ChevronDown>
       </div>
 
       <div className="block">

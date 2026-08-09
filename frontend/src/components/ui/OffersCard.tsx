@@ -79,7 +79,14 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
         {product?.seller_id != user?.id && product.stock > 0 && (
           <button
             className="w-full cursor-pointer bg-(--primary) px-4 py-2 font-semibold text-white transition hover:bg-(--primary-hover) sm:w-auto sm:whitespace-nowrap"
-            onClick={() => addToCart(product)}
+            onClick={() => {
+              addToCart(product);
+              toast.success("Dodano do koszuka");
+              document.getElementById("navbar")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
           >
             Dodaj do koszyka
           </button>

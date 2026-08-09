@@ -35,7 +35,10 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <nav className="flex h-18 w-full items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md">
+      <nav
+        className="flex h-18 w-full items-center justify-between border-b border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) shadow-md"
+        id="navbar"
+      >
         <Link to="/" className="text-2xl font-bold text-orange-500">
           IT E-commerce
         </Link>
@@ -51,7 +54,7 @@ const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        <div className="flex items-center justify-center gap-6">
+        <div className="flex items-center justify-center gap-6 md:gap-0">
           <SearchIcon size={20} onClick={() => setShowSearch((prev) => !prev)} className="cursor-pointer lg:hidden" />
           <NavbarActions
             toggleLanguage={toggleLanguage}

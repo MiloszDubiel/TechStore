@@ -82,6 +82,10 @@ const HomePage = () => {
                           e.preventDefault();
                           e.stopPropagation();
                           addToCart(product);
+                          document.getElementById("navbar")?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
                         }}
                       >
                         Dodaj do koszyka
