@@ -1,8 +1,9 @@
 import { useCartStore } from "../../../zustand/states/cartState";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useImage } from "../../../hooks/useImage";
 import { X } from "lucide-react";
+import { ca } from "zod/locales";
 
 const CartDropdown = ({ onClose }: any) => {
   const navigate = useNavigate();
@@ -40,15 +41,24 @@ const CartDropdown = ({ onClose }: any) => {
         <>
           <ul className="max-h-65 overflow-y-auto">
             {cart.map((item: any) => (
-              <li key={item.id} className="mb-3 flex gap-3 border-b border-(--border) pb-3">
-                <img src={useImage(item)} className="h-16 w-16 bg-(--surface-secondary) object-cover" alt={item.name} />
+              <li className="flex items-center gap-3">
+                <img src={useImage(item)} className="h-16 w-16 shrink-0 bg-(--surface-secondary) object-cover" alt={item.name} />
 
-                <div className="flex-1">
-                  <p className="font-medium">{item.name}</p>
+                <div className="min-w-0 flex-1">
+                  <p
+                    className="truncate font-medium text-(--foreground)"
+                    title={item.name}
+                    onClick={() => {
+                      navigate(`/offers/${item.slug}/${item.id}`);
+                      onClose();
+                    }}
+                  >
+                    {item.name}
+                  </p>
 
                   <div className="mt-1 flex items-center">
                     <button
-                      className="cursor-pointer text-lg transition hover:text-orange-500"
+                      className="cursor-pointer text-lg transition hover:text-(--primary)"
                       onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
                     >
                       -
@@ -57,7 +67,7 @@ const CartDropdown = ({ onClose }: any) => {
                     <span className="px-3 text-sm">{item.quantity}</span>
 
                     <button
-                      className="cursor-pointer text-lg transition hover:text-orange-500"
+                      className="cursor-pointer text-lg transition hover:text-(--primary)"
                       onClick={() => updateQuantity(item.id, Math.min(item.stock, item.quantity + 1))}
                     >
                       +
@@ -65,12 +75,12 @@ const CartDropdown = ({ onClose }: any) => {
                   </div>
                 </div>
 
-                <div className="text-right">
+                <div className="shrink-0 text-right">
                   <p className="font-bold">{(item.price * item.quantity).toFixed(2)} zł</p>
 
                   <button
                     onClick={() => removeFromCart(item.id)}
-                    className="cursor-pointer text-xs text-red-500 transition hover:text-red-400"
+                    className="cursor-pointer text-xs text-(--danger) transition hover:opacity-80"
                   >
                     Usuń
                   </button>

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Star } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import SellerReply from "./../layout/SellerReply";
+import LoadingScreen from "../LoadingScreen";
 
 const ReviewsList = ({ productId }: { productId: string }) => {
   const { user } = useAuth();
@@ -17,12 +18,12 @@ const ReviewsList = ({ productId }: { productId: string }) => {
   });
 
   if (isLoading) {
-    return <div className="p-6 text-center text-gray-500">Ładowanie opinii...</div>;
+    return <LoadingScreen />;
   }
 
   if (!reviews.length) {
     return (
-      <div className="border border-gray-200 p-6 text-center">
+      <div className="border border-gray-200 p-6 text-center mt-3">
         <p className="text-gray-500">Ten produkt nie posiada jeszcze opinii.</p>
       </div>
     );

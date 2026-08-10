@@ -2,11 +2,12 @@ import { OrangeButton } from "../../../components/ui/Buttons";
 import { useOrder } from "../../../hooks/useOrders";
 import { Link } from "react-router-dom";
 import { useImage } from "../../../hooks/useImage";
+import LoadingScreen from "../../../components/LoadingScreen";
 const OrderDetails = ({ id, onBack }: any) => {
   const { data, isLoading } = useOrder(id);
 
   if (isLoading) {
-    return <p>Ładowanie...</p>;
+    return <LoadingScreen />;
   }
 
   if (!data) {

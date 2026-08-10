@@ -4,6 +4,7 @@ import { useAdmin } from "../../../../hooks/useAdmin";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
+import LoadingScreen from "../../../../components/LoadingScreen";
 
 type Props = {
   orderId: number;
@@ -24,7 +25,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
     }
   }, [order]);
   if (isLoading) {
-    return <div className="p-6">Ładowanie zamówienia...</div>;
+    return <LoadingScreen />;
   }
 
   if (!order) {

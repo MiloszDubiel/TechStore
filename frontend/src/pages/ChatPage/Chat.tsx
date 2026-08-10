@@ -13,7 +13,7 @@ const ChatPage = () => {
   return (
     <>
       <Navbar />
-      <div className="flex h-[calc(100vh-80px)] border border-(--border) bg-(--surface)">
+      <div className="flex h-[calc(100vh-80px)] min-h-0 flex-col overflow-hidden border border-(--border) bg-(--surface) md:flex-row">
         <ConversationList selected={selectedConversation} onSelect={setSelectedConversation} seller_id={seller_ID} />
 
         <ChatWindow conversation={selectedConversation} />

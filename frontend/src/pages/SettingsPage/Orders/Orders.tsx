@@ -2,6 +2,7 @@ import { useOrders } from "../../../hooks/useOrders";
 import { useState } from "react";
 import OrderDetails from "./OrderDetails";
 import { OrangeButton } from "../../../components/ui/Buttons";
+import LoadingScreen from "../../../components/LoadingScreen";
 
 const Orders = () => {
   const { data: orders, isLoading } = useOrders();
@@ -12,7 +13,7 @@ const Orders = () => {
     return <OrderDetails id={selectedOrder} onBack={() => setSelectedOrder(null)} />;
   }
   if (isLoading) {
-    return <p>Ładowanie...</p>;
+    return <LoadingScreen />;
   }
   return (
     <>

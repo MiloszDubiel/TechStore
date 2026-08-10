@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import { socket } from "../../socket";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const ChatWindow = ({ conversation }: any) => {
   const [message, setMessage] = useState("");
@@ -74,15 +75,12 @@ const ChatWindow = ({ conversation }: any) => {
   if (!conversation) {
     return <div className="flex flex-1 items-center justify-center text-(--foreground-secondary)">Wybierz rozmowę</div>;
   }
-  const isSeller = user?.id === conversation.seller_id;
-  const name = isSeller ? `${conversation.buyer_first_name} ${conversation.buyer_last_name || "Klient"}` : conversation.shop_name;
-  return (
-    <div className="flex flex-1 flex-col">
-      <div className="border-b border-(--border) p-5 font-bold text-(--foreground)">{name}</div>
 
-      <div className="flex-1 space-y-3 overflow-y-auto p-5">
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-5">
         {isLoading ? (
-          <p className="text-(--foreground-secondary)">Ładowanie wiadomości...</p>
+          <LoadingScreen />
         ) : messages?.length ? (
           messages.map((msg: any) => {
             const mine = msg.sender_id === user?.id;
@@ -90,11 +88,13 @@ const ChatWindow = ({ conversation }: any) => {
             return (
               <div
                 key={msg.id}
-                className={`max-w-[70%] p-3 ${mine ? "ml-auto bg-orange-500 text-white" : "bg-(--surface-secondary) text-(--foreground)"} `}
+                className={`max-w-[70%] p-3 wrap-break-word ${
+                  mine ? "ml-auto bg-(--primary) text-white" : "bg-(--surface-secondary) text-(--foreground)"
+                }`}
               >
                 <p>{msg.message}</p>
 
-                <span className={`mt-1 block text-xs ${mine ? "text-orange-100" : "text-(--foreground-secondary)"} `}>
+                <span className={`mt-1 block text-xs ${mine ? "text-orange-100" : "text-(--foreground-secondary)"}`}>
                   {new Date(msg.created_at).toLocaleString()}
                 </span>
               </div>
@@ -105,15 +105,15 @@ const ChatWindow = ({ conversation }: any) => {
         )}
       </div>
 
-      <div className="flex gap-3 border-t border-(--border) p-4">
+      <div className="flex shrink-0 gap-3 border-t border-(--border) bg-(--surface) p-4">
         <input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Napisz wiadomość..."
-          className="flex-1 border border-(--border) bg-(--surface) px-4 py-3 text-(--foreground) outline-none focus:border-orange-500"
+          className="min-w-0 flex-1 border border-(--border) bg-(--surface) px-4 py-3 text-(--foreground) outline-none focus:border-(--primary)"
         />
 
-        <button className="cursor-pointer bg-orange-500 px-5 text-white transition hover:bg-orange-600" onClick={send}>
+        <button className="shrink-0 cursor-pointer bg-(--primary) px-5 text-white transition hover:bg-(--primary-hover)" onClick={send}>
           Wyślij
         </button>
       </div>

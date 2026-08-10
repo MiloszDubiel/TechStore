@@ -12,6 +12,7 @@ import { Edit, Flag } from "lucide-react";
 import ReportOffer from "../../components/ui/ReportOffert";
 import { toast } from "react-toastify";
 import { OrangeButton } from "../../components/ui/Buttons";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const OfferDetails = () => {
   const { slug, id } = useParams();
@@ -80,7 +81,7 @@ const OfferDetails = () => {
     return (
       <>
         <Navbar />
-        <div className="p-10 text-center">Ładowanie produktu...</div>
+        <LoadingScreen />
       </>
     );
   }

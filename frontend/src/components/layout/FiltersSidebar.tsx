@@ -1,4 +1,4 @@
-import { Filter, Euro, RotateCcw, Search, ChevronDown } from "lucide-react";
+import { Euro, RotateCcw, Search, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { api } from "../../axios";
 import { useQuery } from "@tanstack/react-query";
@@ -62,18 +62,10 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
   };
 
   return (
-    <aside
-      className={`sticky top-6 hidden h-fit max-h-[calc(100vh-1.5rem)] w-80 border border-(--border) bg-(--surface) p-3 shadow-sm lg:block lg:overflow-y-auto lg:p-6`}
-    >
-      <div className="m-0 flex h-auto items-center justify-between border-(--border)">
-        <div className="flex items-center gap-3">
-          <Filter size={22} className="text-(--primary)" />
-          <h2 className="text-2xl text-(--foreground)">Filtry</h2>
-        </div>
-      </div>
+    <aside className="lg:flex w-full shrink-0 flex-col overflow-hidden border border-(--border) bg-(--surface) p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:max-h-[calc(100vh-3rem)] lg:w-80 hidden">
 
-      <div className="block">
-        <div className="mb-2">
+      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className="mb-6">
           <div className="mt-4 mb-4 flex items-center gap-2">
             <Euro size={18} className="text-(--primary)" />
 
@@ -103,18 +95,23 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
           {Object.entries(groupedFilters).map(([label, items]: [string, any]) => (
             <div key={label}>
               <h3
-                className="mb-3 flex cursor-pointer justify-between font-semibold text-(--foreground)"
+                className="mb-3 flex cursor-pointer items-center justify-between font-semibold text-(--foreground)"
                 onClick={() => {
-                  const checkIsInList = openFilters?.includes(label);
+                  const isOpen = openFilters.includes(label);
 
-                  if (checkIsInList) {
-                    const filter = openFilters?.filter((e) => e !== label);
-                    return setOpenFilter(filter);
+                  if (isOpen) {
+                    setOpenFilter(openFilters.filter((e) => e !== label));
+                  } else {
+                    setOpenFilter([...openFilters, label]);
                   }
-                  setOpenFilter([...openFilters, label]);
                 }}
               >
-                {label} <ChevronDown size={18} className={`${openFilters.includes(label) ? "rotate-180" : "rotate-0"}`} />
+                {label}
+
+                <ChevronDown
+                  size={18}
+                  className={`transition-transform duration-300 ${openFilters.includes(label) ? "rotate-180" : "rotate-0"} `}
+                />
               </h3>
 
               <div
@@ -145,24 +142,25 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
             </div>
           ))}
         </div>
+      </div>
 
-        <div className="space-y-3 border-t border-(--border) pt-4">
-          <button
-            onClick={applyFilters}
-            className="flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) py-3 font-semibold text-white transition hover:bg-(--primary-hover)"
-          >
-            <Search size={18} />
-            Szukaj
-          </button>
+      {/* PRZYCISKI - ZAWSZE NA DOLE */}
+      <div className="shrink-0 space-y-3 border-t border-(--border) bg-(--surface) pt-4">
+        <button
+          onClick={applyFilters}
+          className="flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) py-3 font-semibold text-white transition hover:bg-(--primary-hover)"
+        >
+          <Search size={18} />
+          Szukaj
+        </button>
 
-          <button
-            onClick={resetFilters}
-            className="flex w-full cursor-pointer items-center justify-center gap-2 border border-(--border) bg-(--surface) py-3 font-semibold text-(--foreground) transition hover:bg-(--surface-secondary)"
-          >
-            <RotateCcw size={18} />
-            Resetuj
-          </button>
-        </div>
+        <button
+          onClick={resetFilters}
+          className="flex w-full cursor-pointer items-center justify-center gap-2 border border-(--border) bg-(--surface) py-3 font-semibold text-(--foreground) transition hover:bg-(--surface-secondary)"
+        >
+          <RotateCcw size={18} />
+          Resetuj
+        </button>
       </div>
     </aside>
   );

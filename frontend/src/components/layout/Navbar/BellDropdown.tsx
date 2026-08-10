@@ -42,7 +42,7 @@ const BellDropdown = ({ onClose, notifications = [] }: any) => {
       {notifications?.length === 0 ? (
         <p className="text-sm text-(--foreground-secondary)">Brak powiadomień</p>
       ) : (
-        <div className="max-h-80 space-y-3 overflow-y-auto">
+        <div className="max-h-[calc(100vh-9rem)] space-y-3 overflow-y-auto">
           {notifications?.map((notification: any) => (
             <div
               key={notification?.id}

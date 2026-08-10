@@ -69,16 +69,10 @@ export const getProducts = async (query: any) => {
   const offset = (Number(page) - 1) * Number(limit);
 
   let where = `
-    WHERE 1=1
+    WHERE 1=1 AND p.stock > 0
   `;
 
   const queryParams: any[] = [];
-
-  if (stock === "1") {
-    where += `
-      AND p.stock > 0
-    `;
-  }
 
   if (categories) {
     const cats = categories.split(",");

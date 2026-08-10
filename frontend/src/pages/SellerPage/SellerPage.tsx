@@ -7,6 +7,7 @@ import Navbar from "../../components/layout/Navbar/Navbar";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import Pagination from "../../components/ui/Pagination";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const SellerPage = () => {
   const { slug, id } = useParams();
@@ -41,7 +42,7 @@ const SellerPage = () => {
     return (
       <>
         <Navbar />
-        <p className="p-10 text-center">Ładowanie sklepu...</p>
+        <LoadingScreen />
       </>
     );
   }

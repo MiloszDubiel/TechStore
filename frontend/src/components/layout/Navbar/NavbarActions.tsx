@@ -105,7 +105,7 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
                 }}
                 className="text-xs md:hidden"
               >
-                Ulubione
+                Powiadomienia
               </span>
 
               {notificationData[0] && (

@@ -4,6 +4,7 @@ import { useSeller } from "../../../../../hooks/useSeller";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { socket } from "../../../../../socket";
+import LoadingScreen from "../../../../../components/LoadingScreen";
 type Props = {
   orderId: number;
   onBack: () => void;
@@ -19,7 +20,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
   const clientQuery = useQueryClient();
 
   if (isLoading) {
-    return <p>Ładowanie...</p>;
+    return <LoadingScreen />;
   }
 
   if (!order) {

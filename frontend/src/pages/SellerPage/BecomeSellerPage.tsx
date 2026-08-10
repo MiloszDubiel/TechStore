@@ -6,6 +6,7 @@ import { useSeller } from "../../hooks/useSeller";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const BecomeSellerForm = () => {
   const queryClient = useQueryClient();
@@ -55,7 +56,7 @@ const BecomeSellerForm = () => {
   };
 
   if (isLoading) {
-    return <div>Ładowanie...</div>;
+    return <LoadingScreen />;
   }
 
   return (

@@ -45,8 +45,8 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
   }, [seller_id, conversationsData?.id]);
 
   return (
-    <div className="w-80 border-r border-(--border)">
-      <h2 className="p-5 text-xl font-bold text-(--foreground)">Wiadomości</h2>
+    <div className="flex overflow-auto border-r border-(--border) md:block md:w-80 landscape:h-">
+      <h2 className="hidden p-5 text-xl font-bold text-(--foreground)">Wiadomości</h2>
 
       {conversationsData?.length > 0 ? (
         conversationsData.map((c: any) => {
