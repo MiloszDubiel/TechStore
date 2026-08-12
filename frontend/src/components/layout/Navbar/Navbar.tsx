@@ -40,7 +40,7 @@ const Navbar: React.FC = () => {
         id="navbar"
       >
         <Link to="/" className="text-2xl font-bold text-orange-500">
-          IT E-commerce
+          TechStore
         </Link>
 
         <div className="mx-2 hidden flex-1 items-center gap-4 lg:flex 2xl:mx-6">

@@ -3,7 +3,7 @@ const Footer: React.FC = () => {
     <footer className="bg-gray-900 py-10 text-gray-300">
       <div className="container mx-auto grid grid-cols-1 gap-8 px-6 md:grid-cols-3">
         <div>
-          <h4 className="mb-4 text-lg font-semibold text-white">IT E-commerce</h4>
+          <h4 className="mb-4 text-lg font-semibold text-white">TechStore</h4>
           <p className="text-sm">Najlepszy sklep z elektroniką i sprzętem IT. Szybka wysyłka i gwarancja jakości.</p>
         </div>
 
@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
       </div>
 
       <div className="mt-8 border-t border-gray-700 pt-4 text-center text-sm text-gray-500">
-        © {new Date().getFullYear()} IT E-commerce. Wszelkie prawa zastrzeżone.
+        © {new Date().getFullYear()} TechStore. Wszelkie prawa zastrzeżone.
       </div>
     </footer>
   );
