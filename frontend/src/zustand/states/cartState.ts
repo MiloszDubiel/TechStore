@@ -7,14 +7,11 @@ export interface CartItem extends Product {
 
 interface CartStore {
   cart: CartItem[];
-  toggleShowCart: boolean;
 
   addToCart: (product: Product) => void;
   removeFromCart: (id: number) => void;
   updateQuantity: (id: number, quantity: number) => void;
   clearCart: () => void;
-
-  setToggleShowCart: (show: boolean) => void;
 
   removeSellerProducts: (sellerId: number) => void;
 }
@@ -37,8 +34,7 @@ const saveCart = (cart: CartItem[]) => {
 
 export const useCartStore = create<CartStore>((set) => ({
   cart: getStoredCart(),
-
-  toggleShowCart: false,
+  hasOwnProduct: false,
 
   addToCart: (product) =>
     set((state) => {
@@ -113,11 +109,6 @@ export const useCartStore = create<CartStore>((set) => ({
       return {
         cart: [],
       };
-    }),
-
-  setToggleShowCart: (show) =>
-    set({
-      toggleShowCart: show,
     }),
 
   removeSellerProducts: (sellerId) =>

@@ -14,11 +14,11 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange 
   );
 
   return (
-    <div className="m-4 flex flex-wrap items-center justify-center gap-2">
+    <div className="m-4 flex flex-wrap items-center justify-center gap-1 sm:gap-2">
       <button
         disabled={page === 1}
         onClick={() => onPageChange(page - 1)}
-        className="cursor-pointer border border-(--border) bg-(--surface) px-3 py-1 text-(--foreground) transition hover:bg-orange-500/10 disabled:opacity-40"
+        className="cursor-pointer border border-(--border) bg-(--surface) px-2 py-1 text-sm text-(--foreground) transition hover:bg-orange-500/10 disabled:cursor-not-allowed disabled:opacity-40 sm:px-3 sm:text-base"
       >
         ←
       </button>
@@ -28,15 +28,15 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange 
 
         return (
           <React.Fragment key={item}>
-            {previous && item - previous > 1 && <span className="px-2 text-(--foreground-secondary)">...</span>}
+            {previous && item - previous > 1 && <span className="px-1 text-(--foreground-secondary) sm:px-2">...</span>}
 
             <button
               onClick={() => onPageChange(item)}
-              className={`cursor-pointer border px-3 py-1 transition ${
+              className={`cursor-pointer border px-2 py-1 text-sm transition sm:px-3 sm:text-base ${
                 page === item
                   ? "border-orange-500 bg-orange-500 text-white"
                   : "border-(--border) bg-(--surface) text-(--foreground) hover:bg-orange-500/10"
-              } `}
+              }`}
             >
               {item}
             </button>
@@ -47,7 +47,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange 
       <button
         disabled={page === totalPages}
         onClick={() => onPageChange(page + 1)}
-        className="cursor-pointer border border-(--border) bg-(--surface) px-3 py-1 text-(--foreground) transition hover:bg-orange-500/10 disabled:opacity-40"
+        className="cursor-pointer border border-(--border) bg-(--surface) px-2 py-1 text-sm text-(--foreground) transition hover:bg-orange-500/10 disabled:cursor-not-allowed disabled:opacity-40 sm:px-3 sm:text-base"
       >
         →
       </button>

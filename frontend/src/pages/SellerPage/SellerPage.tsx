@@ -32,12 +32,15 @@ const SellerPage = () => {
     enabled: !!slug && !!id,
   });
 
-  const filteredProducts = seller.products.filter((product: any) => product.name.toLowerCase().includes(search.toLowerCase()));
+  const filteredProducts = seller?.products.filter((product: any) => product.name.toLowerCase().includes(search.toLowerCase()));
 
-  const totalPages = Math.ceil(filteredProducts.length / limit);
+  const totalPages = Math.ceil(filteredProducts?.length / limit);
 
-  const products = filteredProducts.slice((page - 1) * limit, page * limit);
+  const products = filteredProducts?.slice((page - 1) * limit, page * limit);
 
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
   if (isLoading) {
     return (
       <>
@@ -55,9 +58,7 @@ const SellerPage = () => {
       </>
     );
   }
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
+
   return (
     <>
       <Navbar />
@@ -121,36 +122,42 @@ const SellerPage = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {products
-                .filter((p: any) => p.id)
-                .map((product: any) => (
-                  <div
-                    key={product.id}
-                    className="overflow-hidden border border-(--border) bg-(--surface) shadow-sm transition hover:shadow-lg"
-                  >
-                    <div className="flex items-center justify-center bg-(--surface-secondary) p-4">
-                      <img src={useImage(product)} className="h-48 w-full object-contain" />
+              {products?.length > 0 ? (
+                products
+                  .filter((p: any) => p.id)
+                  .map((product: any) => (
+                    <div
+                      key={product.id}
+                      className="overflow-hidden border border-(--border) bg-(--surface) shadow-sm transition hover:shadow-lg"
+                    >
+                      <div className="flex items-center justify-center bg-(--surface-secondary) p-4">
+                        <img src={useImage(product)} className="h-48 w-full object-contain" />
+                      </div>
+
+                      <div className="p-4">
+                        <h3 className="line-clamp-2 font-semibold text-(--foreground)">{product.name}</h3>
+
+                        <p className="mt-3 text-2xl font-bold text-(--primary)">{product.price} zł</p>
+
+                        <p className="mt-1 text-sm text-(--foreground-secondary)">Dostępne: {product.stock}</p>
+
+                        {seller.seller_id === user?.id && (
+                          <button
+                            onClick={() => navigate(`/seller/dashboard?tab=products&edit=${product.id}`)}
+                            className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) py-2 text-white transition hover:bg-(--primary-hover)"
+                          >
+                            <Edit size={17} />
+                            Edytuj produkt
+                          </button>
+                        )}
+                      </div>
                     </div>
-
-                    <div className="p-4">
-                      <h3 className="line-clamp-2 font-semibold text-(--foreground)">{product.name}</h3>
-
-                      <p className="mt-3 text-2xl font-bold text-(--primary)">{product.price} zł</p>
-
-                      <p className="mt-1 text-sm text-(--foreground-secondary)">Dostępne: {product.stock}</p>
-
-                      {seller.seller_id === user?.id && (
-                        <button
-                          onClick={() => navigate(`/seller/dashboard?tab=products&edit=${product.id}`)}
-                          className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) py-2 text-white transition hover:bg-(--primary-hover)"
-                        >
-                          <Edit size={17} />
-                          Edytuj produkt
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))
+              ) : (
+                <div className="text-(--foreground)">
+                  Nie znaleziono produktu dla: <span className="font-bold text-orange-500"> {search}</span>
+                </div>
+              )}
             </div>
             <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </section>

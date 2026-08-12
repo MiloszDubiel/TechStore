@@ -13,7 +13,6 @@ import CheckoutLayout from "./pages/CartPage/checkout/CheckoutLayout";
 import Chat from "./pages/ChatPage/Chat";
 import { AuthProvider } from "./context/AuthContext";
 import { FavoriteProvider } from "./context/FavoritesContext";
-import { CheckoutProvider } from "./context/CheckoutContext";
 import { ThemeProvider } from "./context/ThemeProvider";
 import { NotificationProvider } from "./context/NotificationContext";
 import { CheckIsEmptyCart, CheckIsLoggedIn, CheckIsLoggedOut, CheckIsSeller, ProtectedRoute } from "./components/ProtectetRoutes";
@@ -153,13 +152,11 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <CheckoutProvider>
-          <FavoriteProvider>
-            <NotificationProvider>
-              <AppContent />
-            </NotificationProvider>
-          </FavoriteProvider>
-        </CheckoutProvider>
+        <FavoriteProvider>
+          <NotificationProvider>
+            <AppContent />
+          </NotificationProvider>
+        </FavoriteProvider>
       </ThemeProvider>
     </AuthProvider>
   );

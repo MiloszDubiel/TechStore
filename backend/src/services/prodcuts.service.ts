@@ -325,6 +325,8 @@ export const saveOrderToDB = async (data: any) => {
   try {
     await conn.beginTransaction();
 
+    console.log;
+
     const {
       customer,
       address,
@@ -340,7 +342,6 @@ export const saveOrderToDB = async (data: any) => {
 
     const productsData: any[] = [];
 
-    // 1. Sprawdzenie produktów i blokada rekordów
     for (const item of products) {
       const [rows]: any = await conn.query(
         `
@@ -349,6 +350,7 @@ export const saveOrderToDB = async (data: any) => {
           name,
           price,
           stock,
+          seller_id,
           product_data
         FROM products
         WHERE id = ?
@@ -358,13 +360,19 @@ export const saveOrderToDB = async (data: any) => {
       );
 
       if (!rows.length) {
-        throw new Error("PRODUCT_NOT_FOUND");
+        throw new Error("Nie znaleziono produktu");
       }
 
       const product = rows[0];
 
+      console.log(product.stock, item.quantity);
+
       if (product.stock < item.quantity) {
-        throw new Error("OUT_OF_STOCK");
+        throw new Error("Jeden z produktów jest juz niedostępny");
+      }
+
+      if (product.seller_id === userId) {
+        throw new Error("Nie możesz zamówić produktu ze swojego sklepu");
       }
 
       productsTotal += Number(product.price) * item.quantity;

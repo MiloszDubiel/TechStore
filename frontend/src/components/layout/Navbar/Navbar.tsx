@@ -67,7 +67,7 @@ const Navbar: React.FC = () => {
         </div>
       </nav>
       {showSearch && (
-        <div className="absolute w-full flex items-center justify-between gap-4 border-(--border) border bg-(--surface) px-6 py-3 text-(--foreground) lg:hidden">
+        <div className="absolute flex w-full items-center justify-between gap-4 border border-(--border) bg-(--surface) px-6 py-3 text-(--foreground) lg:hidden">
           <SearchBar search={search} setSearch={setSearch} />
 
           <Link

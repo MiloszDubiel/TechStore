@@ -1,11 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
 import { GrayButton } from "../../../components/ui/Buttons";
-import { useCheckout } from "../../../context/CheckoutContext";
 import { useCartStore } from "../../../zustand/states/cartState";
 import { useState } from "react";
 import { api } from "../../../axios";
 import { useAuth } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
+import { useCheckout } from "../../../zustand/states/checkOutStore";
 
 const methods = {
   blik: "Kod BLIK",
@@ -15,7 +15,10 @@ const methods = {
 };
 
 const SummaryStep = ({ back, onSuccess }: any) => {
-  const { checkoutData, setIsComplete } = useCheckout();
+  const checkoutData = useCheckout((state) => state.checkoutData);
+
+  const setIsComplete = useCheckout((state) => state.setIsComplete);
+
   const cartItems = useCartStore((state) => state.cart);
   const clearCart = useCartStore((state) => state.clearCart);
   const { user } = useAuth();
@@ -44,6 +47,8 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       user_id: user?.id,
     });
   };
+
+  console.log(checkoutData);
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: any) => api.post("/api/products/products/order", data),

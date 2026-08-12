@@ -2,12 +2,6 @@ import React, { createContext, useContext } from "react";
 import { api } from "../axios";
 import { useAuth } from "./AuthContext";
 
-/*
-React Query hooki:
-useQuery → pobieranie danych za pomoca -  GET
-useMutation → zmiana danych za pomocą - POST/PUT/DELETE
-useQueryClient → dostęp do cache React Query
-*/
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface FavoritesContextType {
@@ -21,12 +15,6 @@ const FavoriteContext = createContext<FavoritesContextType | null>(null);
 export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
 
-  /*
-  queryClient daje dostęp do cache React Query
-  dzięki temu możemy np:
-  - odświeżyć dane
-  - zmienić cache ręcznie
-  */
   const queryClient = useQueryClient();
 
   const fetchFavorites = async () => {

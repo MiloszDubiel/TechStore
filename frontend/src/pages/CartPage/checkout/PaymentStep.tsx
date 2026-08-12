@@ -1,9 +1,10 @@
 import { GrayButton, OrangeButton } from "../../../components/ui/Buttons";
-import { useCheckout } from "../../../context/CheckoutContext";
 import { useState } from "react";
+import { useCheckout } from "../../../zustand/states/checkOutStore";
 
 const PaymentStep = ({ next, back }: any) => {
-  const { updateCheckout, checkoutData } = useCheckout();
+  const checkoutData = useCheckout((state) => state.checkoutData);
+  const updateCheckout = useCheckout((state) => state.setCheckoutData);
 
   const payments = [
     {

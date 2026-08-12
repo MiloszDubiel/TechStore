@@ -66,6 +66,7 @@ export const scrapeProdcuts = async (req: Request, res: Response) => {
 export const orderProdcuts = async (req: Request, res: Response) => {
   try {
     const { orderId, success, orderNumber } = await saveOrderToDB(req.body);
+
     return res.status(200).json({
       orderId,
       success,

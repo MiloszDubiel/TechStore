@@ -1,11 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
-import { useCheckout, type LockerData } from "../../../context/CheckoutContext";
-
-// Import stylów Leaflet (wymagane!)
 import "leaflet/dist/leaflet.css";
-
-// Naprawa problemu z domyślnymi ikonami w React Leaflet
+import { useCheckout } from "../../../zustand/states/checkOutStore";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 
@@ -39,7 +35,8 @@ const lockers: LockerData[] = [
 ];
 
 export default function ParcelLockerMap() {
-  const { updateCheckout, checkoutData } = useCheckout();
+  const checkoutData = useCheckout((state) => state.chackoutData);
+  const updateCheckout = useCheckout((state) => state.setCheckoutData);
 
   return (
     <div className="mt-6">

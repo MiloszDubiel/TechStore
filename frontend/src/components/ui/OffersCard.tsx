@@ -68,7 +68,6 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
         <p className="mt-2 text-sm text-(--foreground-secondary)">Dostępna szybka wysyłka • Gwarancja 24 miesiące</p>
       </div>
 
-      {/* Cena i akcje */}
       <div className="flex min-w-0 flex-col items-stretch gap-3 sm:w-40 sm:shrink-0 sm:items-end">
         <p className="text-2xl font-bold text-(--foreground)">{product.price} zł</p>
 

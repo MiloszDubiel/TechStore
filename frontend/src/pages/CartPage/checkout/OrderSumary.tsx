@@ -10,10 +10,10 @@ export default function OrderSummary() {
       <h2 className="mb-4 text-xl font-bold">Podsumowanie</h2>
 
       {cart.map((item) => (
-        <div key={item.id} className="mb-2 flex justify-between text-(--foreground-secondary)">
-          <span>{item.name}</span>
+        <div key={item.id} className="mb-2 flex min-w-0 justify-between gap-2 text-(--foreground-secondary)">
+          <span className="min-w-0 truncate">{item.name}</span>
 
-          <span className="text-(--foreground)">{(item.price * item.quantity).toFixed(2)} zł</span>
+          <span className="shrink-0 text-(--foreground)">{(item.price * item.quantity).toFixed(2)} zł</span>
         </div>
       ))}
 

@@ -23,7 +23,7 @@ const ReviewsList = ({ productId }: { productId: string }) => {
 
   if (!reviews.length) {
     return (
-      <div className="border border-gray-200 p-6 text-center mt-3">
+      <div className="mt-3 border border-gray-200 p-6 text-center">
         <p className="text-gray-500">Ten produkt nie posiada jeszcze opinii.</p>
       </div>
     );

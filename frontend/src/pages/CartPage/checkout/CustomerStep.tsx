@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useCheckout } from "../../../context/CheckoutContext";
+import { useCheckout } from "../../../zustand/states/checkOutStore";
 import { useAuth } from "../../../context/AuthContext";
 import { type CustomerForm } from "../../../schemas/customerSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +13,8 @@ type Props = {
 };
 
 export default function CustomerStep({ next }: Props) {
-  const { updateCheckout, checkoutData } = useCheckout();
+  const updateCheckout = useCheckout((state) => state.setCheckoutData);
+  const checkoutData = useCheckout((state) => state.checkoutData);
 
   const { user: currentUser } = useAuth();
 
@@ -21,6 +22,8 @@ export default function CustomerStep({ next }: Props) {
   const [guestCheckout, setGuestCheckout] = useState(false);
   const [useOtherData, setUseOtherData] = useState(false);
   const navigate = useNavigate();
+
+  const customer = currentUser && !guestCheckout && !useOtherData ? currentUser : checkoutData?.customer;
 
   const {
     register,
@@ -30,10 +33,10 @@ export default function CustomerStep({ next }: Props) {
     resolver: zodResolver(customerSchema),
 
     defaultValues: {
-      name: checkoutData.customer?.name ?? "",
-      last_name: checkoutData.customer?.last_name ?? "",
-      email: checkoutData.customer?.email ?? "",
-      phone: checkoutData.customer?.phone ?? "",
+      name: checkoutData?.customer?.name ?? "",
+      last_name: checkoutData?.customer?.last_name ?? "",
+      email: checkoutData?.customer?.email ?? "",
+      phone: checkoutData?.customer?.phone ?? "",
     },
   });
 
@@ -67,54 +70,44 @@ export default function CustomerStep({ next }: Props) {
       <h2 className="mb-6 text-2xl font-bold text-(--foreground)">Dane klienta</h2>
 
       {!currentUser && !guestCheckout && (
-        <div className="mb-6 border border-(--border) bg-(--surface-secondary) p-5">
-          <h3 className="mb-3 font-semibold text-(--foreground)">Masz już konto?</h3>
+        <div className="mb-6 flex flex-col gap-2 border border-(--border) bg-(--surface-secondary) p-5">
+          <h3 className="mb-1 font-semibold text-(--foreground)">Masz już konto?</h3>
 
-          <p className="mb-4 text-(--foreground-secondary)">Zaloguj się lub kontynuuj jako gość.</p>
+          <p className="mb-3 text-(--foreground-secondary)">Zaloguj się lub kontynuuj jako gość.</p>
 
-          <button
-            className="mr-3 cursor-pointer bg-orange-500 px-5 py-3 text-white transition hover:bg-orange-600"
-            onClick={() => navigate("/login?cart=1")}
-          >
-            Zaloguj się
-          </button>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              className="w-full cursor-pointer bg-orange-500 px-5 py-3 text-white transition hover:bg-orange-600 sm:w-auto"
+              onClick={() => navigate("/login?cart=1")}
+            >
+              Zaloguj się
+            </button>
 
-          <button
-            className="cursor-pointer border border-(--border) px-5 py-3 text-(--foreground) transition hover:bg-(--surface-hover)"
-            onClick={() => setGuestCheckout(true)}
-          >
-            Kontynuuj jako gość
-          </button>
+            <button
+              className="w-full cursor-pointer border border-(--border) px-5 py-3 text-(--foreground) transition hover:bg-(--surface-hover) sm:w-auto"
+              onClick={() => setGuestCheckout(true)}
+            >
+              Kontynuuj jako gość
+            </button>
+          </div>
         </div>
       )}
 
       {currentUser && !guestCheckout && !useOtherData ? (
         <div className="space-y-6">
-          {checkoutData?.customer?.name && checkoutData?.customer?.last_name && checkoutData?.customer?.email ? (
+          {customer?.name && customer?.last_name && customer?.email ? (
             <div className="border border-(--border) bg-(--surface-secondary) p-5">
               <h2 className="mb-3 font-semibold text-(--foreground)">Dane do zamówienia</h2>
 
               <p className="text-(--foreground)">
-                {checkoutData?.customer?.name} {checkoutData?.customer?.last_name}
+                {customer.name} {customer.last_name}
               </p>
 
-              <p className="text-(--foreground-secondary)">{checkoutData?.customer?.email}</p>
+              <p className="text-(--foreground-secondary)">{customer.email}</p>
 
-              <p className="text-(--foreground-secondary)">{checkoutData?.customer?.phone}</p>
+              <p className="text-(--foreground-secondary)">{customer.phone}</p>
             </div>
-          ) : (
-            <div className="border border-(--border) bg-(--surface-secondary) p-5">
-              <h2 className="mb-3 font-semibold text-(--foreground)">Dane do zamówienia</h2>
-
-              <p className="text-(--foreground)">
-                {currentUser?.name} {currentUser?.last_name}
-              </p>
-
-              <p className="text-(--foreground-secondary)">{currentUser?.email}</p>
-
-              <p className="text-(--foreground-secondary)">{currentUser?.phone}</p>
-            </div>
-          )}
+          ) : null}
 
           <div className="flex justify-between">
             <div className="flex gap-2">

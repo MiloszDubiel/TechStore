@@ -45,7 +45,7 @@ const ConversationList = ({ selected, onSelect, seller_id }: Props) => {
   }, [seller_id, conversationsData?.id]);
 
   return (
-    <div className="flex overflow-auto border-r border-(--border) md:block md:w-80 landscape:h-">
+    <div className="landscape:h- flex overflow-auto border-r border-(--border) md:block md:w-80">
       <h2 className="hidden p-5 text-xl font-bold text-(--foreground)">Wiadomości</h2>
 
       {conversationsData?.length > 0 ? (

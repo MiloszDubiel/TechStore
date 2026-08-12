@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import useAdresses from "../../../hooks/useAdresses";
 import AddressModal from "../../../components/ui/AddressModal";
-import { useCheckout } from "../../../context/CheckoutContext";
+import { useCheckout } from "../../../zustand/states/checkOutStore";
 import { GrayButton, OrangeButton } from "../../../components/ui/Buttons";
 
 type Props = {
@@ -13,9 +13,10 @@ type Props = {
 export default function AddressStep({ next, back }: Props) {
   const { user } = useAuth();
   const [guestAddress, setGuestAddress] = useState<any | null>(null);
-
   const { userAddresses, saveAddress } = useAdresses(user?.id);
-  const { updateCheckout } = useCheckout();
+
+  const updateCheckout = useCheckout((state) => state.setCheckoutData);
+
   const [closeModal, setCloseModal] = useState(false);
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);

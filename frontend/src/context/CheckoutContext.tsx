@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { useAuth } from "./AuthContext";
 
 export type CustomerData = {
   name: string;
@@ -51,8 +52,10 @@ type CheckoutContextType = {
 const CheckoutContext = createContext<CheckoutContextType | null>(null);
 
 export function CheckoutProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+
   const [checkoutData, setCheckoutData] = useState<CheckoutData>({
-    customer: null,
+    customer: user,
 
     address: null,
 
@@ -66,6 +69,7 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
       method: "blik",
     },
   });
+
   const [isComplete, setIsComplete] = useState(false);
 
   const updateCheckout = (data: Partial<CheckoutData>) => {

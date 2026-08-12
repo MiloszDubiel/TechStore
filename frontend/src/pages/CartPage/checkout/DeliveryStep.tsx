@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import ParcelLockerMap from "./ParcelLockerMap";
-import { useCheckout } from "../../../context/CheckoutContext";
 import { GrayButton, OrangeButton } from "../../../components/ui/Buttons";
+import { useCheckout } from "../../../zustand/states/checkOutStore";
 
 const DeliveryStep = ({ next, back }: any) => {
-  const { updateCheckout, checkoutData } = useCheckout();
-
-  const [method, setMethod] = useState(checkoutData.delivery?.method ?? "");
+  const checkoutData = useCheckout((state) => state.checkoutData);
+  const updateCheckout = useCheckout((state) => state.setCheckoutData);
+  const [method, setMethod] = useState(checkoutData?.delivery?.method ?? "");
 
   useEffect(() => {
     updateCheckout({

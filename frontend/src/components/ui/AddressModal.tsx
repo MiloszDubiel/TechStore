@@ -42,7 +42,7 @@ export default function AddressModal({ closeModal, saveAddress, defaultValues, u
   };
 
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="flex h-full w-full flex-col justify-center border border-(--border) bg-(--surface) p-6 text-(--foreground) shadow-xl md:h-fit md:w-96">
         <h2 className="mb-4 text-xl font-bold">Adres dostawy</h2>
 

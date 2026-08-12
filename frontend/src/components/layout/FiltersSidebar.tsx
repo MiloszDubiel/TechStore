@@ -62,8 +62,7 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
   };
 
   return (
-    <aside className="lg:flex w-full shrink-0 flex-col overflow-hidden border border-(--border) bg-(--surface) p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:max-h-[calc(100vh-3rem)] lg:w-80 hidden">
-
+    <aside className="hidden w-full shrink-0 flex-col overflow-hidden border border-(--border) bg-(--surface) p-4 lg:sticky lg:top-6 lg:flex lg:h-[calc(100vh-3rem)] lg:max-h-[calc(100vh-3rem)] lg:w-80">
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         <div className="mb-6">
           <div className="mt-4 mb-4 flex items-center gap-2">
@@ -144,7 +143,6 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
         </div>
       </div>
 
-      {/* PRZYCISKI - ZAWSZE NA DOLE */}
       <div className="shrink-0 space-y-3 border-t border-(--border) bg-(--surface) pt-4">
         <button
           onClick={applyFilters}

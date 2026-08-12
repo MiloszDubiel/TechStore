@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { Navigate } from "react-router-dom";
 import CheckoutSteps from "./CheckoutSteps";
 import OrderSummary from "./OrderSumary";
 import CustomerStep from "./CustomerStep";
@@ -7,12 +7,14 @@ import AddressStep from "./AddressStep";
 import DeliveryStep from "./DeliveryStep";
 import PaymentStep from "./PaymentStep";
 import SummaryStep from "./SummaryStep";
-import { useCheckout } from "../../../context/CheckoutContext";
 import Navbar from "../../../components/layout/Navbar/Navbar";
+import { useCheckout } from "../../../zustand/states/checkOutStore";
 import OrderSuccess from "./OrderSuccess";
+import { useCartStore } from "../../../zustand/states/cartState";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function CheckoutLayout() {
-  const { checkoutData } = useCheckout();
+  const checkoutData = useCheckout((state) => state.checkoutData);
 
   const [step, setStep] = useState(0);
   const [orderNumber, setOrderNumber] = useState<string | null>(null);
@@ -29,6 +31,15 @@ export default function CheckoutLayout() {
   const back = () => {
     setStep((prev) => Math.max(prev - 1, 0));
   };
+
+  const cart = useCartStore((state) => state.cart);
+  const { user } = useAuth();
+
+  const hasOwnProduct = cart.some((item) => item.seller_id === user?.id);
+
+  if (hasOwnProduct) {
+    return <Navigate to="/cart" replace />;
+  }
 
   const renderStep = () => {
     if (checkoutData.delivery?.method === "locker") {

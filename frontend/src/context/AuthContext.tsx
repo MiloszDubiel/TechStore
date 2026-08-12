@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useLogout } from "../hooks/useLogin";
 import { socket } from "../socket";
 import { useEffect } from "react";
+import { useCheckout } from "../zustand/states/checkOutStore";
 
 export type User = {
   id: number;
@@ -29,6 +30,7 @@ export const AuthProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const queryClient = useQueryClient();
+  const setCheckoutData = useCheckout((state) => state.setCheckoutData);
 
   const { mutate: logoutMutation, isPending: isLoggingOut } = useLogout();
 
@@ -49,6 +51,22 @@ export const AuthProvider: React.FC<{
       },
     });
     localStorage.clear();
+
+    setCheckoutData({
+      customer: user,
+
+      address: null,
+
+      delivery: {
+        method: "courier",
+        price: 15,
+        locker: null,
+      },
+
+      payment: {
+        method: "blik",
+      },
+    });
   };
 
   useEffect(() => {

@@ -81,12 +81,10 @@ const OrderDetails = ({ id, onBack }: any) => {
               className={`items-c flex flex-col gap-6 p-6 ${index !== items.length - 1 ? "border-b border-(--border)" : ""} `}
             >
               <div className="flex min-w-0 flex-col gap-4 sm:flex-row">
-                {/* Zdjęcie */}
                 <div className="flex h-40 w-full shrink-0 items-center justify-center border border-(--border) bg-(--surface) p-2 sm:h-32 sm:w-32">
                   <img src={useImage(product)} className="h-full w-full object-contain" alt={product.name} />
                 </div>
 
-                {/* Informacje o produkcie */}
                 <div className="min-w-0 flex-1">
                   <h4 className="line-clamp-2 text-lg font-semibold break-words text-(--foreground) sm:text-xl">{product.name}</h4>
 
@@ -94,7 +92,6 @@ const OrderDetails = ({ id, onBack }: any) => {
                     {product.brand} {product.model}
                   </p>
 
-                  {/* Sprzedawca */}
                   <div className="mt-4 border border-(--border) bg-(--surface-secondary) p-3 sm:p-4">
                     <p className="text-sm text-(--foreground-secondary)">Sprzedawca</p>
 
@@ -110,7 +107,6 @@ const OrderDetails = ({ id, onBack }: any) => {
                     {seller.is_verified === 1 && <span className="mt-1 block text-sm text-(--success)">✓ Zweryfikowany sprzedawca</span>}
                   </div>
 
-                  {/* Cena i ilość */}
                   <div className="mt-5 flex flex-col gap-4 border-t border-(--border) pt-4 min-[400px]:flex-row min-[400px]:items-end min-[400px]:justify-between">
                     <div className="text-sm text-(--foreground) sm:text-base">
                       <p>
