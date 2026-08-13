@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import * as sellerApi from "../api/seller";
-import { useUser } from "./useUser";
 import { useAuth } from "../context/AuthContext";
 
 export const useSeller = (params?: { page: number; limit: number; search: string }) => {
@@ -33,8 +32,13 @@ export const useSeller = (params?: { page: number; limit: number; search: string
   });
 
   const orders = useQuery({
-    queryKey: ["seller-orders"],
-    queryFn: sellerApi.getOrders,
+    queryKey: ["seller-orders", params?.page, params?.limit, params?.search],
+    queryFn: () =>
+      sellerApi.getOrders({
+        page: params?.page,
+        limit: params?.limit,
+        search: params?.search,
+      }),
     enabled: !!user,
   });
 

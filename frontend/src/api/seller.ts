@@ -78,8 +78,10 @@ export const editProfile = async (data: FormData) => {
   return response.data;
 };
 
-export const getOrders = async () => {
-  const { data } = await api.get(`${API}/orders`);
+export const getOrders = async (params?: any) => {
+  const { data } = await api.get(`${API}/orders`, {
+    params,
+  });
 
   return data;
 };

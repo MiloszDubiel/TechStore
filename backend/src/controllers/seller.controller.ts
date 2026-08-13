@@ -410,8 +410,14 @@ export const getSellerOverview = async (req: any, res: Response) => {
 export const getSellerOrders = async (req: Request, res: Response) => {
   try {
     const sellerId = (req as any).user.id;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const search = String(req.query.search || "");
 
-    const orders = await getSellerOrdersService(sellerId);
+
+
+
+    const orders = await getSellerOrdersService(sellerId, page, limit, search);
 
     res.json(orders);
   } catch (err) {

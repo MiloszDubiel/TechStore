@@ -48,7 +48,7 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     });
   };
 
-  console.log(checkoutData);
+
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: any) => api.post("/api/products/products/order", data),

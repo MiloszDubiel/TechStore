@@ -531,45 +531,43 @@ export const updateProductService = async (data: any) => {
     product_data,
   } = data;
 
-  console.log(data);
+  const [result] = await connection.query(
+    `
+    UPDATE products
+    SET
+      name = ?,
+      description = ?,
+      price = ?,
+      stock = ?,
+      brand = ?,
+      model = ?,
+      category_id = ?,
+      subcategory_id = ?,
+      attributes = ?,
+      product_data = ?,
+      updated_at = NOW()
 
-  // const [result] = await connection.query(
-  //   `
-  //   UPDATE products
-  //   SET
-  //     name = ?,
-  //     description = ?,
-  //     price = ?,
-  //     stock = ?,
-  //     brand = ?,
-  //     model = ?,
-  //     category_id = ?,
-  //     subcategory_id = ?,
-  //     attributes = ?,
-  //     product_data = ?,
-  //     updated_at = NOW()
+    WHERE id = ?
+    AND seller_id = ?
+    `,
+    [
+      name,
+      description,
+      price,
+      stock,
+      brand,
+      model,
+      category_id,
+      subcategory_id,
+      JSON.stringify(attributes),
+      JSON.stringify(product_data),
 
-  //   WHERE id = ?
-  //   AND seller_id = ?
-  //   `,
-  //   [
-  //     name,
-  //     description,
-  //     price,
-  //     stock,
-  //     brand,
-  //     model,
-  //     category_id,
-  //     subcategory_id,
-  //     JSON.stringify(attributes),
-  //     JSON.stringify(product_data),
+      id,
+      sellerId,
+    ],
+  );
 
-  //     id,
-  //     sellerId,
-  //   ],
-  // );
-
-  // return result;
+  return result;
 };
 
 export const updateProductImages = async (
@@ -676,7 +674,7 @@ export const getSellerOverviewService = async (sellerId: number) => {
     JOIN order_items oi ON oi.order_id = o.id
     JOIN products p ON p.id = oi.product_id
     WHERE p.seller_id = ?
-      AND o.status = 'DELIVERED'
+      AND o.status = 'COMPLETED'
     `,
     [sellerId],
   );
@@ -729,7 +727,7 @@ export const getSellerOverviewService = async (sellerId: number) => {
     WHERE p.seller_id = ?
     GROUP BY o.id
     ORDER BY o.created_at DESC
-    LIMIT 5
+    LIMIT 4
     `,
     [sellerId],
   );
@@ -743,53 +741,68 @@ export const getSellerOverviewService = async (sellerId: number) => {
   };
 };
 
-export const getSellerOrdersService = async (sellerId: number) => {
-  const [rows]: any = await connection.query(
+export const getSellerOrdersService = async (
+  sellerId: number,
+  page: number,
+  limit: number,
+  search: string = "",
+) => {
+  const offset = (page - 1) * limit;
+
+  console.log(page);
+
+  const [[count]]: any = await connection.query(
     `
-SELECT DISTINCT
-
-o.id,
-o.order_number,
-o.status,
-o.total_price,
-o.delivery_method,
-o.created_at,
-
-o.customer_name,
-o.customer_last_name,
-o.email,
-
-u.email as user_email,
-u.name as user_name,
-u.last_name as user_last_name
-
-FROM orders o
-
-
-JOIN order_items oi
-ON oi.order_id = o.id
-
-
-JOIN products p
-ON p.id = oi.product_id
-
-
-LEFT JOIN users u
-ON u.id = o.user_id
-
-
-
-WHERE p.seller_id = ?
-
-
-ORDER BY o.created_at DESC
-
-`,
+      SELECT COUNT(DISTINCT o.id) AS total
+      FROM orders o
+      JOIN order_items oi
+        ON oi.order_id = o.id
+      JOIN products p
+        ON p.id = oi.product_id
+      WHERE p.seller_id = ?
+    `,
     [sellerId],
   );
 
-  return rows;
+  const [rows]: any = await connection.query(
+    `
+      SELECT DISTINCT
+        o.id,
+        o.order_number,
+        o.status,
+        o.total_price,
+        o.delivery_method,
+        o.created_at,
+        o.customer_name,
+        o.customer_last_name,
+        o.email,
+        u.email AS user_email,
+        u.name AS user_name,
+        u.last_name AS user_last_name
+      FROM orders o
+      JOIN order_items oi
+        ON oi.order_id = o.id
+      JOIN products p
+        ON p.id = oi.product_id
+      LEFT JOIN users u
+        ON u.id = o.user_id
+      WHERE p.seller_id = ?
+      ORDER BY o.created_at DESC
+      LIMIT ?
+      OFFSET ?
+    `,
+    [sellerId, limit, offset],
+  );
+
+  return {
+    orders: rows,
+    total: count.total,
+    page,
+    limit,
+    totalPages: Math.ceil(count.total / limit),
+  };
 };
+
 export const getSellerOrderDetailsService = async (
   orderId: number,
   sellerId: number,

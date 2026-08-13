@@ -18,7 +18,7 @@ const Overview = () => {
     },
     {
       title: "Zamówienia",
-      value: overview?.orders ?? 0,
+      value: overview?.orders?.length ?? 0,
       icon: ShoppingCart,
     },
     {

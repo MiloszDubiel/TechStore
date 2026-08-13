@@ -71,7 +71,7 @@ const EditProduct = ({ product, onBack }: Props) => {
           formData.append("attributes", JSON.stringify(data.attributes));
           formData.append("removedImages", JSON.stringify(removedImages));
 
-          console.log(data.stock);
+   
 
           updateProduct(
             {

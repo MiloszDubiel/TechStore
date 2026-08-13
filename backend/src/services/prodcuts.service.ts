@@ -303,8 +303,6 @@ sp.banner,
     [id],
   );
 
-  console.log(rows);
-
   return (rows as any[])[0] ?? null;
 };
 
@@ -365,7 +363,7 @@ export const saveOrderToDB = async (data: any) => {
 
       const product = rows[0];
 
-      console.log(product.stock, item.quantity);
+    
 
       if (product.stock < item.quantity) {
         throw new Error("Jeden z produktów jest juz niedostępny");

@@ -2,7 +2,7 @@ import { Search, Eye } from "lucide-react";
 import { useState } from "react";
 import { useSeller } from "../../../../../hooks/useSeller";
 import OrderDetails from "./OrderDetails";
-
+import Pagination from "../../../../../components/ui/Pagination";
 const getStatusClasses = (status: string) => {
   switch (status) {
     case "NEW":
@@ -34,10 +34,20 @@ export const orderStatusLabels: Record<string, string> = {
 
 const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+
+
 
   const {
     orders: { data = [] },
-  } = useSeller();
+  } = useSeller({
+    page: page,
+    limit: 10,
+    search,
+  });
+
+
 
   if (selectedOrder) {
     return <OrderDetails orderId={selectedOrder} onBack={() => setSelectedOrder(null)} />;
@@ -54,7 +64,13 @@ const Orders = () => {
       <div className="mb-6 flex items-center gap-3 border border-(--border) px-4 py-3">
         <Search size={20} className="text-(--foreground-secondary)" />
 
-        <input placeholder="Szukaj zamówienia..." className="w-full bg-transparent text-(--foreground) outline-none" />
+        <input
+          placeholder="Szukaj zamówienia..."
+          className="w-full bg-transparent text-(--foreground) outline-none"
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
       </div>
 
       <div className="overflow-x-auto border border-(--border)">
@@ -76,8 +92,8 @@ const Orders = () => {
           </thead>
 
           <tbody>
-            {data.length ? (
-              data.map((order: any) => (
+            {data?.orders?.length ? (
+              data?.orders?.map((order: any) => (
                 <tr key={order.id} className="border-t border-(--border) hover:bg-(--surface-secondary)">
                   <td className="p-4 font-semibold text-(--foreground)">{order.order_number}</td>
 
@@ -111,6 +127,7 @@ const Orders = () => {
             )}
           </tbody>
         </table>
+        <Pagination page={page} totalPages={data?.totalPages ?? 1} onPageChange={setPage} />
       </div>
     </div>
   );

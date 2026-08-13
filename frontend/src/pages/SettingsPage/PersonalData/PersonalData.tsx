@@ -52,9 +52,6 @@ export const PersonalData = () => {
     },
   });
 
-  const onError = (er: any) => {
-    console.log(er);
-  };
   const onSubmit = (data: ProfileFormData) => {
     mutate(data, { onSuccess: () => toast.success("Zmieniono dane") });
   };
@@ -70,7 +67,7 @@ export const PersonalData = () => {
             <div className="border-l-4 border-(--primary) bg-orange-50 p-4 text-sm text-red-700">Wystąpił błąd podczas zapisu</div>
           )}
 
-          <form className="max-w-xl space-y-4" onSubmit={handleSubmit(onSubmit, onError)}>
+          <form className="max-w-xl space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <fieldset>
               <div>
                 <label className="text-sm text-(--foreground-secondary)">Imię</label>
