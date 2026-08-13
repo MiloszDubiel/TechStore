@@ -1,4 +1,4 @@
-# Fullstack E-commerce
+# Fullstack projekt - TechStore
 
 Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności FullStack Web Development
 
