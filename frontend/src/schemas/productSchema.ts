@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-const attributesSchema = z
+export const attributesSchema = z
   .object({
     parameter_id: z.number().positive("ID parametru musi być większe od 0"),
     name: z.string(),
-    value: z.string(),
+    value: z.coerce.number(),
     type: z.string(),
   })
   .passthrough()
@@ -32,17 +32,6 @@ const baseProductSchema = {
   stock: z.coerce.number().min(1, "Wartość musi być liczbą większą lub równą 0"),
   category_id: z.string().min(1, "Wybierz kategorię"),
   subcategory_id: z.string().min(1, "Wybierz podkategorię"),
-
-  attributes: z.array(attributesSchema).refine(
-    (attributes) => {
-      const names = attributes.map((a) => a.name.toUpperCase());
-
-      return names.length == new Set(names).size;
-    },
-    {
-      message: "Każdy parametr może wystąpić tylko raz.",
-    },
-  ),
 };
 
 export const productCreateSchema = z.object({

@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { useImage } from "../../hooks/useImage";
 import { useAuth } from "../../context/AuthContext";
 
+export const totalPrice = (cart: any) => cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0).toFixed(2);
+
 const CartPage = () => {
   const cart = useCartStore((state) => state.cart);
 
@@ -12,11 +14,8 @@ const CartPage = () => {
   const clearCart = useCartStore((state) => state.clearCart);
   const navigate = useNavigate();
 
-  const totalPrice = useMemo(
-    () => cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2),
+  const totalPrice = useMemo(() => cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0).toFixed(2), [cart]);
 
-    [cart],
-  );
   const { user } = useAuth();
 
   const hasOwnProduct = cart.some((item) => item.seller_id === user?.id);
