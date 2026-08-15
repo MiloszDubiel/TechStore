@@ -29,9 +29,25 @@ const baseProductSchema = {
   model: z.string().min(1, "Podaj model"),
   description: z.string().min(10, "Opis musi mieć minimum 10 znaków"),
   price: z.coerce.number().min(1, "Wartość musi być liczbą większą lub równą 0"),
-  stock: z.coerce.number().min(1, "Wartość musi być liczbą większą lub równą 0"),
+  stock: z.coerce.number().min(0, "Wartość musi być liczbą większą lub równą 0"),
   category_id: z.string().min(1, "Wybierz kategorię"),
   subcategory_id: z.string().min(1, "Wybierz podkategorię"),
+  attributes: z.array(
+    z.object({
+      parameter_id: z.number(),
+      name: z.string(),
+      label: z.string(),
+      type: z.string(),
+      required: z.number(),
+      options: z.array(
+        z.object({
+          id: z.number().nullable(),
+          value: z.string().nullable(),
+        }),
+      ),
+      value: z.union([z.string(), z.number()]),
+    }),
+  ),
 };
 
 export const productCreateSchema = z.object({

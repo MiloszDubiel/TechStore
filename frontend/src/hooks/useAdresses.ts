@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../axios";
+import { toast } from "react-toastify";
 
 const useAdresses = (userID: string | unknown) => {
   const queryClient = useQueryClient();
@@ -20,6 +21,7 @@ const useAdresses = (userID: string | unknown) => {
 
       return response.data.address;
     },
+    onError: (err: any) => toast.error(err.response?.data?.message),
   });
 
   const { mutate: updateAddress, isSuccess: addressUpdateSuccess } = useMutation({

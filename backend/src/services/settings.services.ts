@@ -56,6 +56,15 @@ export const saveAdressesToDB = async (
   try {
     await conn.beginTransaction();
 
+    const [addresses]: any = await conn.query(
+      "SELECT COUNT(*) AS number_of_addresses FROM addresses WHERE user_id = ?",
+      [id],
+    );
+
+    if (addresses[0].number_of_addresses > 4) {
+      return "Osiągnięto maksymalną liczbe adresów";
+    }
+
     if (is_default) {
       await conn.query(
         `

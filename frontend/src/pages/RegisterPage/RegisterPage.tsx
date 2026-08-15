@@ -54,21 +54,27 @@ const RegisterPage = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)">Imię</label>
+            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)" htmlFor="name">
+              Imię
+            </label>
 
             <input
               {...register("name")}
               className="w-full border border-(--border) bg-(--surface) px-3 py-2.5 text-sm text-(--foreground) transition outline-none focus:border-(--primary) sm:text-base"
+              id="name"
             />
 
             {errors.name?.message && <p className="mt-1 text-sm text-(--danger)">{errors.name.message}</p>}
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)">Email</label>
+            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)" htmlFor="email">
+              Email
+            </label>
 
             <input
               type="email"
+              id="email"
               {...register("email")}
               className="w-full border border-(--border) bg-(--surface) px-3 py-2.5 text-sm text-(--foreground) transition outline-none focus:border-(--primary) sm:text-base"
             />
@@ -77,10 +83,13 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)">Hasło</label>
+            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)" htmlFor="password">
+              Hasło
+            </label>
 
             <input
               type="password"
+              id="password"
               {...register("password")}
               className="w-full border border-(--border) bg-(--surface) px-3 py-2.5 text-sm text-(--foreground) transition outline-none focus:border-(--primary) sm:text-base"
             />
@@ -89,10 +98,13 @@ const RegisterPage = () => {
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)">Powtórz hasło</label>
+            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)" htmlFor="repeat-password">
+              Powtórz hasło
+            </label>
 
             <input
               type="password"
+              id="repeat-password"
               {...register("confirmPassword")}
               className="w-full border border-(--border) bg-(--surface) px-3 py-2.5 text-sm text-(--foreground) transition outline-none focus:border-(--primary) sm:text-base"
             />

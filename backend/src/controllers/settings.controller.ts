@@ -134,6 +134,12 @@ export const setAdresses = async (req: Request, res: Response) => {
       is_default,
     );
 
+    if (typeof result === "string") {
+      return res.status(400).json({
+        message: result,
+      });
+    }
+
     const newAddress = {
       id: result.insertId,
       street,

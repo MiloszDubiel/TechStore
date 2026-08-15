@@ -41,6 +41,8 @@ const Products = () => {
     search,
   });
 
+  console.log(data);
+
   const { data: selectedProduct } = productsById(editId);
 
   useEffect(() => {
@@ -121,7 +123,7 @@ const Products = () => {
                   <td className="p-4">
                     <span
                       className={`rounded-full px-3 py-1 text-sm ${
-                        product.stock > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                       !product.is_deleted || (product.stock  < 0) ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                       } `}
                     >
                       {getStatus(product)}
@@ -161,6 +163,17 @@ const Products = () => {
         </table>
 
         <Pagination page={page} totalPages={data?.totalPages ?? 1} onPageChange={setPage} />
+        <ConfirmModal
+          isOpen={isOpen}
+          message={"Czy chcesz usunąć produkt? "}
+          title="Czy usunąć?"
+          onConfirm={() => {
+            mutate(productData.id);
+            setIsOpen(false);
+            toast.success("Usunięto produkt");
+          }}
+          onCancel={() => setIsOpen(false)}
+        />
       </div>
     </div>
   );

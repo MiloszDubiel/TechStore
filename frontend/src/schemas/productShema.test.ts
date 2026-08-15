@@ -10,6 +10,18 @@ const mockProduct = {
   stock: "10",
   category_id: "1",
   subcategory_id: "2",
+
+  attributes: [
+    {
+      parameter_id: 1,
+      name: "Disk size",
+      label: "Disk size",
+      value: 512,
+      type: "number",
+      required: 1,
+      options: [],
+    },
+  ],
 };
 
 describe("productSchema tests", () => {

@@ -22,6 +22,8 @@ export const Addresses = () => {
 
   const { userAddresses, saveAddress, updateAddress, deleteAddress } = useAdresses(user?.id);
 
+
+ 
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold text-(--foreground)">Adresy dostawy</h2>
@@ -42,6 +44,7 @@ export const Addresses = () => {
       >
         Dodaj adres dostawy
       </button>
+      <h4 className="mb-4 text-sm font-bold text-(--foreground)">Maksymalnie 4 adresy</h4>
 
       {userAddresses && userAddresses.length > 0 ? (
         userAddresses?.map((address: any) => (

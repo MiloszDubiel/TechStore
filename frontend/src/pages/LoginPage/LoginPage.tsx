@@ -72,10 +72,13 @@ const LoginPage: React.FC = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)">Email</label>
+            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)" htmlFor="Email">
+              Email
+            </label>
 
             <input
               type="email"
+              id="Email"
               {...register("email")}
               className="w-full border border-(--border) bg-(--surface) px-3 py-2.5 text-(--foreground) transition outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
             />
@@ -84,10 +87,13 @@ const LoginPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)">Hasło</label>
+            <label className="mb-1.5 block text-sm font-semibold text-(--foreground)" htmlFor="password">
+              Hasło
+            </label>
 
             <input
               type="password"
+              id="password"
               {...register("password")}
               className="w-full border border-(--border) bg-(--surface) px-3 py-2.5 text-(--foreground) transition outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
             />
@@ -110,6 +116,7 @@ const LoginPage: React.FC = () => {
             type="submit"
             disabled={isPending}
             className="w-full cursor-pointer bg-(--primary) py-2.5 font-semibold text-white transition hover:bg-(--primary-hover) disabled:cursor-not-allowed disabled:opacity-50"
+            name="zaloguj"
           >
             {isPending ? "Logowanie..." : "Zaloguj się"}
           </button>
