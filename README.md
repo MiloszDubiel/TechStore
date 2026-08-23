@@ -73,6 +73,9 @@ USER
  ├── składa zamówienia
  ├── zarządza profilem
  ├── stworzenie profilu sklepu
+
+SELLER
+ ├── wszytsko co USER
  ├── wystawia produkty
  ├── zarządza sklepem
  └── obsługuje zamówienia
@@ -95,14 +98,18 @@ ADMIN
 ### 1. Sklonuj repozytorium
 
 ```bash
-git clone https://github.com/MiloszDubiel/fullstack_e-commerce.git
+git clone https://github.com/MiloszDubiel/TechStore.git
 ```
 
 ### 2. Przejdź do katalogu projektu
 
 ```bash
-cd fullstack-ecommerce
+cd techstore
 ```
+### 3. Zmienne środowiskowe
+W folderach backend i frontend są przygotowane pliki .evn.exmaple przedstawiające strukture plików .env
+potrzebnych do uruchomienia projektu
+
 
 ### 3. Uruchom kontener Docker
 
@@ -114,7 +121,7 @@ docker compose up --build
 
 ---
 
-## 📌 Planowane funkcjonalności
+## Planowane funkcjonalności
 
 - Integracja płatności (Stripe)
 - Powiadomienia e-mail
