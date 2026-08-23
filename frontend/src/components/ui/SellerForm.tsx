@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploader from "../ui/ImageUploader";
 import { sellerProfileSchema, type SellerProfileType } from "../../schemas/sellerSchemta";
-
+import { formatPostalCode } from "./AddressModal";
 import { Save, Store, Building2 } from "lucide-react";
 
 type Props = {
@@ -145,6 +145,15 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
               <input
                 {...register(field)}
                 placeholder={placeholder}
+                onChange={(e: any) => {
+                  if (field !== "postal_code") return;
+
+                  setValue("postal_code", formatPostalCode(e.target.value), {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                }}
+
                 className="w-full border border-(--border) bg-(--surface-secondary) px-4 py-3 text-(--foreground) outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
               />
 

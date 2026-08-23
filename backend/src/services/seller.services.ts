@@ -749,7 +749,7 @@ export const getSellerOrdersService = async (
 ) => {
   const offset = (page - 1) * limit;
 
-  console.log(page);
+ 
 
   const [[count]]: any = await connection.query(
     `

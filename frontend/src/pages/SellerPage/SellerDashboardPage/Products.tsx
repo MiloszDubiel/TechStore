@@ -41,8 +41,6 @@ const Products = () => {
     search,
   });
 
-  console.log(data);
-
   const { data: selectedProduct } = productsById(editId);
 
   useEffect(() => {

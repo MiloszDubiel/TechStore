@@ -11,6 +11,17 @@ type Props = {
   updateAddress: (data: any) => any;
 };
 
+export const formatPostalCode = (value: string) => {
+  const digits = value.replace(/\D/g, "");
+  const limited = digits.slice(0, 5);
+
+  if (limited.length > 2) {
+    return `${limited.slice(0, 2)}-${limited.slice(2)}`;
+  }
+
+  return limited;
+};
+
 export default function AddressModal({ closeModal, saveAddress, defaultValues, updateAddress, isEdited }: Props) {
   const {
     register,
@@ -21,17 +32,6 @@ export default function AddressModal({ closeModal, saveAddress, defaultValues, u
     resolver: zodResolver(adressesSchema),
     defaultValues: defaultValues,
   });
-
-  const formatPostalCode = (value: string) => {
-    const digits = value.replace(/\D/g, "");
-    const limited = digits.slice(0, 5);
-
-    if (limited.length > 2) {
-      return `${limited.slice(0, 2)}-${limited.slice(2)}`;
-    }
-
-    return limited;
-  };
 
   const onSubmit = (data: AddressFrom) => {
     if (isEdited) {

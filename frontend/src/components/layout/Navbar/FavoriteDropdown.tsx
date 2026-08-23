@@ -2,13 +2,14 @@ import { Link } from "react-router-dom";
 import { useFavorite } from "../../../context/FavoritesContext";
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
+import { useImage } from "../../../hooks/useImage";
 
 type Props = {
   onClose: () => void;
 };
 
 const FavoritesDropdown = ({ onClose }: Props) => {
-  const { favorites } = useFavorite();
+  const { favorites, toggleFavorite } = useFavorite();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,18 +42,12 @@ const FavoritesDropdown = ({ onClose }: Props) => {
         <ul className="space-y-3">
           {favorites.map((product: any) => (
             <li key={product.id} className="flex items-center gap-3 border-b border-(--border) pb-2">
-              <img
-                src={product.images?.[0] ? `${import.meta.env.VITE_API_URL}${product.images.at(-1).url}` : "/no-image.png"}
-                alt={product.name}
-                className="h-12 w-12 bg-(--surface-secondary) object-cover"
-              />
-
+              <img src={useImage(product)} className="h-12 w-12 bg-(--surface-secondary) object-cover" />
               <div className="flex-1">
                 <p className="line-clamp-2 font-medium">{product.name}</p>
 
                 <p className="text-sm text-(--foreground-secondary)">{product.price} zł</p>
               </div>
-
               <Link
                 onClick={onClose}
                 to={`/offers/${product.slug}/${product.id}`}
@@ -60,6 +55,10 @@ const FavoritesDropdown = ({ onClose }: Props) => {
               >
                 Zobacz
               </Link>
+              <p className="cursor-pointer text-sm text-red-500 transition hover:text-red-400" onClick={() => toggleFavorite(product.id)}>
+                {" "}
+                Usuń
+              </p>
             </li>
           ))}
         </ul>

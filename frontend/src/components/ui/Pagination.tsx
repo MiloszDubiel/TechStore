@@ -47,6 +47,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, onPageChange 
       <button
         disabled={page === totalPages}
         onClick={() => onPageChange(page + 1)}
+        test-id="next"
         className="cursor-pointer border border-(--border) bg-(--surface) px-2 py-1 text-sm text-(--foreground) transition hover:bg-orange-500/10 disabled:cursor-not-allowed disabled:opacity-40 sm:px-3 sm:text-base"
       >
         →

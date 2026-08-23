@@ -18,7 +18,6 @@ export default function ConfirmModal({
   message,
   confirmText = "Potwierdź",
   cancelText = "Anuluj",
-  confirmVariant = "primary",
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
@@ -33,7 +32,7 @@ export default function ConfirmModal({
 
         <div className="p-5">{typeof message === "string" ? <p className="text-(--foreground-secondary)">{message}</p> : message}</div>
 
-        <div className="gap-3border-t flex justify-end border-(--border) p-5">
+        <div className="gap-3 border-t flex justify-end border-(--border) p-5">
           <GrayButton onClick={onCancel}>{cancelText}</GrayButton>
 
           <OrangeButton onClick={onConfirm}>{confirmText}</OrangeButton>

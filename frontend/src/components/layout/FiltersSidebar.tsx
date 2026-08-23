@@ -97,7 +97,6 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
                 className="mb-3 flex cursor-pointer items-center justify-between font-semibold text-(--foreground)"
                 onClick={() => {
                   const isOpen = openFilters.includes(label);
-
                   if (isOpen) {
                     setOpenFilter(openFilters.filter((e) => e !== label));
                   } else {
@@ -122,12 +121,15 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
                   <label
                     key={item.value}
                     className="group flex cursor-pointer items-center justify-between px-2 py-1.5 text-sm transition hover:bg-(--surface-secondary)"
+                    htmlFor={item.value}
                   >
                     <div className="flex items-center gap-3">
                       <input
                         type="checkbox"
                         checked={selectedFilters[label]?.includes(item.value) || false}
                         onChange={() => toggleFilter(label, item.value)}
+
+                        id={item.value}
                         className="h-4 w-4 cursor-pointer accent-orange-500"
                       />
 

@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import { useCheckout } from "../../../zustand/states/checkOutStore";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import { type LockerData } from "../../../context/CheckoutContext";
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -35,7 +36,7 @@ const lockers: LockerData[] = [
 ];
 
 export default function ParcelLockerMap() {
-  const checkoutData = useCheckout((state) => state.chackoutData);
+  const checkoutData = useCheckout((state) => state.checkoutData);
   const updateCheckout = useCheckout((state) => state.setCheckoutData);
 
   return (
@@ -76,7 +77,7 @@ export default function ParcelLockerMap() {
         ))}
       </MapContainer>
 
-      {checkoutData.delivery?.locker && (
+      {checkoutData?.delivery?.locker && (
         <div className="mt-4 border border-orange-500 bg-(--surface-secondary) p-4 ring-1 ring-orange-500">
           <p className="font-semibold">Wybrany paczkomat:</p>
 

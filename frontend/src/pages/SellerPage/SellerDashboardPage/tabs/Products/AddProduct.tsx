@@ -45,8 +45,6 @@ const AddProduct = () => {
       seller_id: sellerData.seller_id,
     };
 
-    console.log(productData);
-
     mutate(productData, {
       onSuccess: (product) => {
         if (data.images?.length) {

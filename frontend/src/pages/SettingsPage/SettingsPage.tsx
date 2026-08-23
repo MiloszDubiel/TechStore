@@ -63,7 +63,7 @@ const AccountPage = () => {
         <aside className="flex h-fit w-auto overflow-x-auto bg-(--surface) shadow-md lg:col-span-3 lg:grid">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b  lg:border-t-0 border-(--border) p-4 text-(--foreground) ${
               activeTab === "orders" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
@@ -73,7 +73,7 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("profile")}
-            className={`text-(--foreground)t flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 ${
+            className={`text-(--foreground)t flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 lg:border-t-0 ${
               activeTab === "profile" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
@@ -83,7 +83,7 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("addresses")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) lg:border-t-0 ${
               activeTab === "addresses" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
@@ -93,7 +93,7 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) lg:border-t-0 ${
               activeTab === "security" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >
@@ -103,7 +103,7 @@ const AccountPage = () => {
 
           <button
             onClick={() => setActiveTab("settings")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) lg:border-t-0 ${
               activeTab === "settings" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >

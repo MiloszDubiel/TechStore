@@ -323,7 +323,7 @@ export const saveOrderToDB = async (data: any) => {
   try {
     await conn.beginTransaction();
 
-    console.log;
+
 
     const {
       customer,

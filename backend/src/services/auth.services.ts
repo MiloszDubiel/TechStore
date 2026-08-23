@@ -80,6 +80,7 @@ export const loginUser = async (email: string, password: string) => {
   const accessToken = jwt.sign(
     {
       id: user.id,
+      role: user.role,
     },
     process.env.JWT_ACCESS_SECRET as string,
     {

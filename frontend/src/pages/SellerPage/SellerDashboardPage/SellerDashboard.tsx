@@ -4,9 +4,8 @@ import Orders from "./tabs/Orders/Orders";
 import AddProduct from "./tabs/Products/AddProduct";
 import SellerSettings from "./SellerSettings";
 import Overview from "./Overview";
-
 import { Package, ShoppingCart, Plus, Settings, Store } from "lucide-react";
-import Navbar from "../../../components/layout/Navbar/Navbar";
+
 
 const tabs = [
   {
@@ -86,7 +85,7 @@ const SellerDashboard = ({ children }: any) => {
                 <button
                   key={tab.id}
                   onClick={() => changeTab(tab.id)}
-                  className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) ${
+                  className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) lg:border-t-0 ${
                     activeTab === tab.id ? "bg-(--primary) text-white" : "hover:bg-(--surface-secondary)"
                   } `}
                 >

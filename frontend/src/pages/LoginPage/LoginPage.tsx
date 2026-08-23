@@ -64,13 +64,12 @@ const LoginPage: React.FC = () => {
       <div className="place fixed top-0 left-0 grid h-full w-full border border-(--border) bg-(--surface) p-8 md:static md:w-md">
         <h2 className="mb-6 text-center text-2xl font-bold text-(--foreground)">Logowanie</h2>
 
-        {error && (
-          <div className="mb-4 border border-(--danger) bg-(--surface-secondary) p-3 text-sm text-(--danger)">
-            {(error as any)?.response?.data.message}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {error && (
+            <div className="mb-4 h-10 border border-(--danger) bg-(--surface-secondary) p-3 text-sm text-(--danger)">
+              {(error as any)?.response?.data.message}
+            </div>
+          )}
           <div>
             <label className="mb-1.5 block text-sm font-semibold text-(--foreground)" htmlFor="Email">
               Email

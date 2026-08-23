@@ -5,6 +5,7 @@ import { useState } from "react";
 import useAdresses from "../../../hooks/useAdresses";
 import type { AddressFrom } from "../../../schemas/addressSchema";
 import { useAuth } from "../../../context/AuthContext";
+import { toast } from "react-toastify";
 
 export const Addresses = () => {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
@@ -22,8 +23,6 @@ export const Addresses = () => {
 
   const { userAddresses, saveAddress, updateAddress, deleteAddress } = useAdresses(user?.id);
 
-
- 
   return (
     <div>
       <h2 className="mb-4 text-2xl font-bold text-(--foreground)">Adresy dostawy</h2>
@@ -44,7 +43,7 @@ export const Addresses = () => {
       >
         Dodaj adres dostawy
       </button>
-      <h4 className="mb-4 text-sm font-bold text-(--foreground)">Maksymalnie 4 adresy</h4>
+      <h4 className="mb-4 text-sm font-bold text-(--foreground)">Maksymalnie 5 adresów</h4>
 
       {userAddresses && userAddresses.length > 0 ? (
         userAddresses?.map((address: any) => (
@@ -74,7 +73,7 @@ export const Addresses = () => {
           />
         ))
       ) : (
-        <p className="text-(--foreground-secondary)">Brak zapisanych adresów</p>
+        <p className="text-(--foreground-secondary) text-center">Brak zapisanych adresów</p>
       )}
 
       {isAddressModalOpen && (
@@ -103,7 +102,7 @@ export const Addresses = () => {
           confirmVariant="danger"
           onCancel={() => setOpenConfirm((prev) => ({ ...prev, isOpen: false }))}
           onConfirm={() => {
-            deleteAddress(openConfirm.id);
+            deleteAddress(openConfirm.id, { onSuccess: () => toast.success("Usunięto adres") });
             setOpenConfirm({ id: "", isOpen: false });
           }}
         />

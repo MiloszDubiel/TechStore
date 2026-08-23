@@ -26,7 +26,6 @@ describe("LoginForm", () => {
     const user = userEvent.setup();
 
     await user.type(screen.getByLabelText(/email/i), "test@test.pl");
-
     await user.type(screen.getByLabelText(/hasło/i), "Password123");
 
     await user.click(
