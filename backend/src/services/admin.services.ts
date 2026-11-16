@@ -384,10 +384,10 @@ export const updateProductService = async (productId: number, data: any) => {
 
 export const addProductImagesService = async (
   productId: number,
-  sellerId: number,
+  sellerId: number | null,
   files: Express.Multer.File[],
 ) => {
-  if (!files.length) return;
+  if (!files.length || !sellerId) return;
 
   const values = files.map((file, index) => ({
     productId,

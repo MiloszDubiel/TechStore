@@ -205,7 +205,7 @@ export const updateAdminProduct = async (req: Request, res: Response) => {
       });
     }
 
-    const sellerId = product.seller_id;
+    const sellerId = product.sellerId;
 
     const removedImages = req.body.removedImages
       ? JSON.parse(req.body.removedImages)

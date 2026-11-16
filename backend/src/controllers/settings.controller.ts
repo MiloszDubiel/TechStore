@@ -141,7 +141,7 @@ export const setAdresses = async (req: Request, res: Response) => {
     }
 
     const newAddress = {
-      id: result.insertId,
+      id: result.id,
       street,
       postal_code,
       city,

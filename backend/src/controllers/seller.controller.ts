@@ -293,7 +293,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       ? JSON.parse(req.body.removedImages)
       : [];
 
-    const oldImages = product.product_data?.images ?? [];
+    const oldImages = product.images ?? [];
 
     const filteredImages = oldImages.filter(
       (img: any) => !removedImages.includes(img.image),
@@ -336,7 +336,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       attributes,
 
       product_data: {
-        ...product.product_data,
+        ...product.productData as any,
 
         url: finalImages,
       },
