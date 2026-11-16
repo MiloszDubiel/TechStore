@@ -63,7 +63,7 @@ const AccountPage = () => {
         <aside className="flex h-fit w-auto overflow-x-auto bg-(--surface) shadow-md lg:col-span-3 lg:grid">
           <button
             onClick={() => setActiveTab("orders")}
-            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b  lg:border-t-0 border-(--border) p-4 text-(--foreground) ${
+            className={`flex w-full cursor-pointer items-center gap-3 border-t-3 border-b border-(--border) p-4 text-(--foreground) lg:border-t-0 ${
               activeTab === "orders" ? "bg-(--primary) text-white" : "text-(--foreground) hover:bg-(--surface-secondary)"
             }`}
           >

@@ -37,8 +37,6 @@ const Orders = () => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-
-
   const {
     orders: { data = [] },
   } = useSeller({
@@ -46,8 +44,6 @@ const Orders = () => {
     limit: 10,
     search,
   });
-
-
 
   if (selectedOrder) {
     return <OrderDetails orderId={selectedOrder} onBack={() => setSelectedOrder(null)} />;

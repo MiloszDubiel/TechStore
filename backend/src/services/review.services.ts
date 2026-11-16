@@ -1,4 +1,4 @@
-import { connection } from "../config/db.config";
+import { prisma } from "../lib/prisma";
 
 export const insertReview = async (
   product_id: string | number,
@@ -7,44 +7,54 @@ export const insertReview = async (
   id: string | number,
 ) => {
   try {
-    const [results] = await connection.query(
-      `
-      INSERT INTO product_reviews(product_id, user_id, rating, comment)
-      VALUES(?,?,?,?)
-      `,
-      [product_id, id, rating, comment],
-    );
+    const result = await prisma.productReview.create({
+      data: {
+        productId: Number(product_id),
+        userId: Number(id),
+        rating: Number(rating),
+        comment,
+      },
+    });
 
-    return results;
+    return result;
   } catch (error) {
     console.log(error);
   }
 };
 
 export const getProductRev = async (productId: string | number) => {
-  const [result] = await connection.query(
-    `
-    SELECT r.*, u.email
-    FROM product_reviews r
-    JOIN users u ON u.id = r.user_id
-    WHERE product_id = ?
-    ORDER BY created_at DESC
-    `,
-    [productId],
-  );
+  const reviews = await prisma.productReview.findMany({
+    where: {
+      productId: Number(productId),
+    },
+    include: {
+      user: {
+        select: {
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-  return result;
+  return reviews.map((review) => ({
+    ...review,
+    email: review.user.email,
+    user: undefined,
+  }));
 };
 
 export const setComment = async (reviewId: number | string, reply: string) => {
-  const result = await connection.query(
-    `
-    UPDATE product_reviews
-    SET seller_reply = ?
-    WHERE id = ?
-    `,
-    [reply, reviewId],
-  );
+  const result = await prisma.productReview.updateMany({
+    where: {
+      id: Number(reviewId),
+    },
+    data: {
+      sellerReply: reply,
+    },
+  });
 
   return result;
 };

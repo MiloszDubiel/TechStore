@@ -73,7 +73,7 @@ export const Addresses = () => {
           />
         ))
       ) : (
-        <p className="text-(--foreground-secondary) text-center">Brak zapisanych adresów</p>
+        <p className="text-center text-(--foreground-secondary)">Brak zapisanych adresów</p>
       )}
 
       {isAddressModalOpen && (

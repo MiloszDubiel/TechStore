@@ -10,7 +10,6 @@ const mockCustomer = {
   phone: "123456789",
 };
 
-
 const mockLocker = {
   id: "LOCKER-001",
   name: "Paczkomat RZE01A",

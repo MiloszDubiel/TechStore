@@ -2,7 +2,7 @@ import { connection } from "../config/db.config";
 import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import slugify from "slugify";
 import { createNotificationService } from "./notification.service";
-import { getIO } from "../socket/indext";
+import { prisma } from "../lib/prisma";
 
 export interface CreateProductDTO {
   name: string;
@@ -24,21 +24,23 @@ export interface CreateProductDTO {
 }
 
 export const getSellerByUserId = async (userId: number) => {
-  const [rows] = await connection.query<RowDataPacket[]>(
-    "SELECT * FROM seller_profiles WHERE user_id = ?",
-    [userId],
-  );
+  const seller = await prisma.sellerProfile.findFirst({
+    where: {
+      userId,
+    },
+  });
 
-  return rows[0] ?? null;
+  return seller ?? null;
 };
 
 export const getCompanyInfo = async (userId: number) => {
-  const [rows] = await connection.query<RowDataPacket[]>(
-    "SELECT * FROM seller_profiles WHERE user_id = ?",
-    [userId],
-  );
+  const company = await prisma.sellerProfile.findFirst({
+    where: {
+      userId,
+    },
+  });
 
-  return rows[0] ?? null;
+  return company ?? null;
 };
 
 export const createSellerProfile = async ({
@@ -64,122 +66,101 @@ export const createSellerProfile = async ({
   street?: string;
   company_name: string;
 }) => {
-  const [result] = await connection.query<ResultSetHeader>(
-    `
-    INSERT INTO seller_profiles
-    (
-      user_id,
-      shop_name,
-      slug,
-      description,
-      logo,
-      nip,
-      city,
-      postal_code,
-      street,
-      company_name
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `,
-    [
+  const result = await prisma.sellerProfile.create({
+    data: {
       userId,
-      shop_name,
+      shopName: shop_name,
       slug,
       description,
       logo,
       nip,
-      city || null,
-      postal_code || null,
-      street || null,
-      company_name,
-    ],
-  );
+      city: city || null,
+      postalCode: postal_code || null,
+      street: street || null,
+      companyName: company_name,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-  return result.insertId;
+  return result.id;
 };
 
 export const updateUserRoleToSeller = async (userId: number) => {
-  await connection.query(
-    `
-    UPDATE users
-    SET role = 'SELLER'
-    WHERE id = ?
-    `,
-    [userId],
-  );
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      role: "SELLER",
+    },
+  });
 };
 
 export const getSellerProductsByID = async (
   sellerId: number,
   productId: number,
 ) => {
-  const [[count]]: any = await connection.query(
-    `
-    SELECT * 
-    FROM products u
-    WHERE seller_id = ? AND id = ?
-    `,
-    [sellerId, productId],
-  );
+  const product = await prisma.product.findFirst({
+    where: {
+      sellerId,
+      id: productId,
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      price: true,
+      stock: true,
+      attributes: true,
+      createdAt: true,
+      brand: true,
+      model: true,
+      isDeleted: true,
+      isVisible: true,
 
-  if (count === 0) {
+      category: {
+        select: {
+          id: true,
+        },
+      },
+
+      subcategory: {
+        select: {
+          id: true,
+        },
+      },
+
+      images: {
+        select: {
+          id: true,
+          image: true,
+          url: true,
+          isMain: true,
+        },
+      },
+    },
+  });
+
+  if (!product) {
     throw new Error("Nie jestes włascicielem produktu");
   }
 
-  const [product] = await connection.query(
-    `
-    SELECT 
-      p.id,
-      p.name,
-      p.description,
-      p.price,
-      p.stock,
-      p.attributes,
-      p.created_at,
-      p.brand,
-      p.model,
-      p.is_deleted,
-      p.is_visible,
-
-      c.id AS category_id,
-      s.id AS subcategory_id,
-
-      COALESCE(
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
-            'id', pi.id,
-            'image', pi.image,
-            'url', pi.url,
-            'is_main', pi.is_main
-          )
-        ),
-        JSON_ARRAY()
-      ) AS images
-
-    FROM products p
-
-    LEFT JOIN categories c 
-      ON p.category_id = c.id
-      LEFT JOIN subcategories s
-      ON p.subcategory_id = s.id
-
-    LEFT JOIN product_images pi
-      ON p.id = pi.product_id
-
-    WHERE p.seller_id = ?
-    AND p.id = ?
-
-    GROUP BY p.id
-
-    `,
-    [sellerId, productId],
-  );
+  const { category, subcategory, images, ...productData } = product;
 
   return {
-    product,
+    product: {
+      ...productData,
+      category_id: category?.id ?? null,
+      subcategory_id: subcategory?.id ?? null,
+      images: images.map((image) => ({
+        ...image,
+        is_main: image.isMain,
+      })),
+    },
   };
 };
-
 export const getSellerProducts = async (
   sellerId: number,
   page: number,
@@ -188,119 +169,121 @@ export const getSellerProducts = async (
 ) => {
   const offset = (page - 1) * limit;
 
-  const searchValue = `%${search}%`;
+  const where = {
+    sellerId,
+    ...(search
+      ? {
+          OR: [
+            {
+              name: {
+                contains: search,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              price: {
+                equals: Number(search),
+              },
+            },
+          ],
+        }
+      : {}),
+  };
 
-  const [[count]]: any = await connection.query(
-    `
-    SELECT COUNT(*) AS total
-    FROM products u
-    WHERE seller_id = ?
-    `,
-    [sellerId, searchValue, searchValue, searchValue],
-  );
+  const [total, products] = await prisma.$transaction([
+    prisma.product.count({
+      where: {
+        sellerId,
+      },
+    }),
 
-  const [products] = await connection.query(
-    `
-    SELECT 
-      p.id,
-      p.name,
-      p.description,
-      p.price,
-      p.stock,
-      p.attributes,
-      p.created_at,
-      p.brand,
-      p.model,
-      p.is_deleted,
-      p.is_visible,
+    prisma.product.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        stock: true,
+        attributes: true,
+        createdAt: true,
+        brand: true,
+        model: true,
+        isDeleted: true,
+        isVisible: true,
 
-      c.id AS category_id,
-      s.id AS subcategory_id,
+        category: {
+          select: {
+            id: true,
+          },
+        },
 
-      COALESCE(
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
-            'id', pi.id,
-            'image', pi.image,
-            'url', pi.url,
-            'is_main', pi.is_main
-          )
-        ),
-        JSON_ARRAY()
-      ) AS images
+        subcategory: {
+          select: {
+            id: true,
+          },
+        },
 
-    FROM products p
-
-    LEFT JOIN categories c 
-      ON p.category_id = c.id
-      LEFT JOIN subcategories s
-      ON p.subcategory_id = s.id
-
-    LEFT JOIN product_images pi
-      ON p.id = pi.product_id
-
-    WHERE p.seller_id = ?
-    AND (
-       p.name LIKE ?
-      OR p.price LIKE ?
-    )
-
-    GROUP BY p.id
-
-    ORDER BY p.created_at DESC
-     LIMIT ?
-    OFFSET ?
-    `,
-    [sellerId, searchValue, searchValue, limit, offset],
-  );
+        images: {
+          select: {
+            id: true,
+            image: true,
+            url: true,
+            isMain: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: limit,
+      skip: offset,
+    }),
+  ]);
 
   return {
-    products: products,
-    total: count.total,
+    products: products.map(({ category, subcategory, images, ...product }) => ({
+      ...product,
+      category_id: category?.id ?? null,
+      subcategory_id: subcategory?.id ?? null,
+      images: images.map(({ isMain, ...image }) => ({
+        ...image,
+        is_main: isMain,
+      })),
+    })),
+    total,
     page,
     limit,
-    totalPages: Math.ceil(count.total / limit),
+    totalPages: Math.ceil(total / limit),
   };
 };
 
-export const saveProductImages = async (
-  productId: number,
-  files: Express.Multer.File[],
-) => {
-  for (const file of files) {
-    await connection.query(
-      `
-    INSERT INTO product_images
-    (
-      product_id,
-      image_url
-    )
+export const saveProductImages = async (productId: number, files: any) => {
+  if (files.length === 0) return;
 
-    VALUES (?,?)
-    `,
-      [productId, file.filename],
-    );
-  }
+  return await prisma.productImage.createMany({
+    data: files.map((file: any) => ({
+      productId,
+      image: file.filename,
+    })),
+  });
 };
 
 export const deleteProductFromDB = async (
   productId: number,
   sellerId: number,
 ) => {
-  const [result] = await connection.query(
-    `
-    UPDATE products
-SET is_deleted = 1,
-    is_visible = 0
- WHERE id = ?
-      AND seller_id = ?
-    `,
-    [productId, sellerId],
-  );
-
-  return result;
+  return await prisma.product.updateMany({
+    where: {
+      id: productId,
+      sellerId,
+    },
+    data: {
+      isDeleted: true,
+      isVisible: false,
+    },
+  });
 };
-
 export const editSellerProfile = async (data: {
   userId: number;
   shop_name: string;
@@ -323,129 +306,87 @@ export const editSellerProfile = async (data: {
       },
     );
 
-    const [result] = await connection.query(
-      `
-    UPDATE seller_profiles
-    SET
-      shop_name = ?,
-      slug = ?,
-      description = ?,
-      logo = ?,
-      nip = ?,
-      city = ?,
-      postal_code = ?,
-      street = ?,
-      company_name = ?
-    WHERE user_id = ?
-    `,
-      [
-        data.shop_name,
+    const result = await prisma.sellerProfile.updateMany({
+      where: {
+        userId: data.userId,
+      },
+      data: {
+        shopName: data.shop_name,
         slug,
-        data.description,
-        data.logo,
-        data.nip,
-        data.city,
-        data.postal_code,
-        data.street,
-        data.company_name,
-        data.userId,
-      ],
-    );
+        description: data.description,
+        logo: data.logo,
+        nip: data.nip,
+        city: data.city || null,
+        postalCode: data.postal_code || null,
+        street: data.street || null,
+        companyName: data.company_name,
+      },
+    });
 
     return result;
   } catch (err) {
     console.log(err);
+    throw err;
   }
 };
 
 export const getSellerById = async (id: number, slug: string) => {
-  const [rows]: any = await connection.query(
-    `
-SELECT
-    sp.user_id AS seller_id,
-    sp.shop_name,
-    sp.slug,
-    sp.description,
-    sp.logo,
-    sp.company_name,
-    sp.is_verified,
-    sp.created_at,
+  const seller = await prisma.sellerProfile.findFirst({
+    where: {
+      userId: id,
+      slug,
+    },
+    include: {
+      user: {
+        select: {
+          products: {
+            select: {
+              id: true,
+              name: true,
+              price: true,
+              stock: true,
+              brand: true,
+              model: true,
+              images: {
+                select: {
+                  url: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
-
-    COALESCE(
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'id',p.id,
-                'name',p.name,
-                'price',p.price,
-                'stock',p.stock,
-                'brand',p.brand,
-                'model',p.model,
-                
-                'images',
-                (
-                    SELECT 
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'url',
-                            pi2.url
-                        )
-                    )
-
-                    FROM product_images pi2
-                    WHERE pi2.product_id = p.id
-                )
-
-            )
-        ),
-        JSON_ARRAY()
-    ) AS products
-
-
-
-FROM seller_profiles sp
-
-
-LEFT JOIN products p
-    ON p.seller_id = sp.user_id
-
-
-
-WHERE 
-    sp.user_id = ?
-AND
-    sp.slug = ?
-
-
-
-GROUP BY sp.id
-
-`,
-    [id, slug],
-  );
-
-  if (!rows.length) {
+  if (!seller) {
     return null;
   }
 
-  const seller = rows[0];
+  const { user, ...sellerData } = seller;
 
-  seller.products =
-    typeof seller.products === "string"
-      ? JSON.parse(seller.products)
-      : seller.products;
+  return {
+    seller_id: sellerData.userId,
+    shop_name: sellerData.shopName,
+    slug: sellerData.slug,
+    description: sellerData.description,
+    logo: sellerData.logo,
+    company_name: sellerData.companyName,
+    is_verified: sellerData.isVerified,
+    created_at: sellerData.createdAt,
 
-  seller.products = seller.products.map((product: any) => ({
-    ...product,
-
-    images:
-      typeof product.images === "string"
-        ? JSON.parse(product.images)
-        : product.images,
-  }));
-
-  return seller;
+    products: user.products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      brand: product.brand,
+      model: product.model,
+      images: product.images,
+    })),
+  };
 };
+
 export const createProduct = async (
   sellerId: number,
   data: CreateProductDTO,
@@ -463,46 +404,29 @@ export const createProduct = async (
     attributes,
   } = data;
 
-  const [result] = await connection.query(
-    `
-    INSERT INTO products
-    (
-      seller_id,
-      name,
-      description,
-      price,
-      stock,
-      category_id,
-      subcategory_id,
-      attributes,
-      brand,
-      model,
-      slug,
-      is_visible,
-      is_deleted
-    )
-
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0)
-    `,
-    [
+  const product = await prisma.product.create({
+    data: {
       sellerId,
       name,
       description,
       price,
       stock,
-      category_id,
-      subcategory_id ?? null,
-      JSON.stringify(attributes),
+      categoryId: category_id,
+      subcategoryId: subcategory_id ?? null,
+      attributes,
       brand,
       model,
       slug,
-    ],
-  );
-
-  const productId = (result as any).insertId;
+      isVisible: true,
+      isDeleted: false,
+    },
+    select: {
+      id: true,
+    },
+  });
 
   return {
-    id: productId,
+    id: product.id,
     name,
     description,
     price,
@@ -531,41 +455,25 @@ export const updateProductService = async (data: any) => {
     product_data,
   } = data;
 
-  const [result] = await connection.query(
-    `
-    UPDATE products
-    SET
-      name = ?,
-      description = ?,
-      price = ?,
-      stock = ?,
-      brand = ?,
-      model = ?,
-      category_id = ?,
-      subcategory_id = ?,
-      attributes = ?,
-      product_data = ?,
-      updated_at = NOW()
-
-    WHERE id = ?
-    AND seller_id = ?
-    `,
-    [
+  const result = await prisma.product.updateMany({
+    where: {
+      id: Number(id),
+      sellerId: Number(sellerId),
+    },
+    data: {
       name,
       description,
       price,
       stock,
       brand,
       model,
-      category_id,
-      subcategory_id,
-      JSON.stringify(attributes),
-      JSON.stringify(product_data),
-
-      id,
-      sellerId,
-    ],
-  );
+      categoryId: category_id,
+      subcategoryId: subcategory_id ?? null,
+      attributes,
+      productData: product_data,
+      updatedAt: new Date(),
+    },
+  });
 
   return result;
 };
@@ -575,17 +483,17 @@ export const updateProductImages = async (
   sellerId: number,
   images: Express.Multer.File[],
 ) => {
-  const [products]: any = await connection.query(
-    `
-    SELECT id
-    FROM products
-    WHERE id = ?
-    AND seller_id = ?
-    `,
-    [productId, sellerId],
-  );
+  const product = await prisma.product.findFirst({
+    where: {
+      id: productId,
+      sellerId,
+    },
+    select: {
+      id: true,
+    },
+  });
 
-  if (products.length === 0) {
+  if (!product) {
     throw new Error("Produkt nie istnieje");
   }
 
@@ -593,32 +501,20 @@ export const updateProductImages = async (
     return [];
   }
 
-  const values = images.map((file, index) => [
+  const values = images.map((file, index) => ({
     productId,
+    image: file.filename,
+    url: `uploads/products/${sellerId}/${productId}/${file.filename}`,
+    isMain: index === 0,
+  }));
 
-    file.filename,
-
-    `uploads/products/${sellerId}/${productId}/${file.filename}`,
-
-    index === 0 ? 1 : 0,
-  ]);
-
-  await connection.query(
-    `
-    INSERT INTO product_images
-    (
-      product_id,
-      image,
-      url,
-      is_main
-    )
-    VALUES ?
-    `,
-    [values],
-  );
+  await prisma.productImage.createMany({
+    data: values,
+  });
 
   return values;
 };
+
 export const deleteProductImagesService = async (
   productId: number,
   sellerId: number,
@@ -626,121 +522,126 @@ export const deleteProductImagesService = async (
 ) => {
   if (!images.length) return;
 
-  await connection.query(
-    `
-    DELETE pi
-    FROM product_images pi
-
-    INNER JOIN products p
-    ON p.id = pi.product_id
-
-    WHERE pi.product_id = ?
-    AND p.seller_id = ?
-    AND pi.image IN (?)
-    `,
-    [productId, sellerId, images],
-  );
+  await prisma.productImage.deleteMany({
+    where: {
+      productId,
+      image: {
+        in: images,
+      },
+      product: {
+        sellerId,
+      },
+    },
+  });
 };
-export const getSellerByUserIdService = async (userId: number) => {
-  const [rows]: any = await connection.query(
-    `
-    SELECT
-      sp.id,
-      sp.user_id,
-      sp.shop_name,
-      sp.description,
-      sp.company_name,
-      sp.nip,
-      sp.street,
-      sp.city,
-      sp.postal_code,
-      sp.logo,
-      sp.created_at,
-      sp.updated_at
-    FROM seller_profiles sp
-    WHERE sp.user_id = ?
-    `,
-    [userId],
-  );
 
-  return rows[0] ?? null;
+export const getSellerByUserIdService = async (userId: number) => {
+  const seller = await prisma.sellerProfile.findFirst({
+    where: {
+      userId,
+    },
+    select: {
+      id: true,
+      userId: true,
+      shopName: true,
+      description: true,
+      companyName: true,
+      nip: true,
+      street: true,
+      city: true,
+      postalCode: true,
+      logo: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return seller
+    ? {
+        ...seller,
+        user_id: seller.userId,
+        shop_name: seller.shopName,
+        company_name: seller.companyName,
+        postal_code: seller.postalCode,
+        created_at: seller.createdAt,
+        updated_at: seller.updatedAt,
+      }
+    : null;
 };
 export const getSellerOverviewService = async (sellerId: number) => {
-  const [[revenue]]: any = await connection.query(
-    `
-    SELECT
-      COALESCE(SUM(o.total_price),0) AS revenue
-    FROM orders o
-    JOIN order_items oi ON oi.order_id = o.id
-    JOIN products p ON p.id = oi.product_id
-    WHERE p.seller_id = ?
-      AND o.status = 'COMPLETED'
-    `,
-    [sellerId],
-  );
+  const [revenue, orders, products, customers, lastOrders] = await Promise.all([
+    prisma.$queryRaw<{ revenue: number }[]>`
+        SELECT COALESCE(SUM(o.total_price), 0) AS revenue
+        FROM orders o
+        WHERE o.status = 'COMPLETED'
+          AND EXISTS (
+            SELECT 1
+            FROM order_items oi
+            JOIN products p ON p.id = oi.product_id
+            WHERE oi.order_id = o.id
+              AND p.seller_id = ${sellerId}
+          )
+      `,
 
-  const [[orders]]: any = await connection.query(
-    `
-    SELECT COUNT(DISTINCT o.id), o.order_number AS orders
-    FROM orders o
-    JOIN order_items oi ON oi.order_id = o.id
-    JOIN products p ON p.id = oi.product_id
-    WHERE p.seller_id = ?
-    GROUP BY o.order_number
-    `,
-    [sellerId],
-  );
+    prisma.$queryRaw<{ orders: number }[]>`
+        SELECT COUNT(DISTINCT o.id)::int AS orders
+        FROM orders o
+        WHERE EXISTS (
+          SELECT 1
+          FROM order_items oi
+          JOIN products p ON p.id = oi.product_id
+          WHERE oi.order_id = o.id
+            AND p.seller_id = ${sellerId}
+        )
+      `,
 
-  const [[products]]: any = await connection.query(
-    `
-    SELECT COUNT(*) AS products
-    FROM products
-    WHERE seller_id = ?
-    `,
-    [sellerId],
-  );
+    prisma.product.count({
+      where: {
+        sellerId,
+      },
+    }),
 
-  const [[customers]]: any = await connection.query(
-    `
-    SELECT COUNT(DISTINCT o.user_id) AS customers
-    FROM orders o
-    JOIN order_items oi ON oi.order_id = o.id
-    JOIN products p ON p.id = oi.product_id
-    WHERE p.seller_id = ?
-    `,
-    [sellerId],
-  );
+    prisma.$queryRaw<{ customers: number }[]>`
+        SELECT COUNT(DISTINCT o.user_id)::int AS customers
+        FROM orders o
+        WHERE EXISTS (
+          SELECT 1
+          FROM order_items oi
+          JOIN products p ON p.id = oi.product_id
+          WHERE oi.order_id = o.id
+            AND p.seller_id = ${sellerId}
+        )
+      `,
 
-  const [lastOrders]: any = await connection.query(
-    `
-    SELECT
-      o.id,
-      o.order_number,
-      o.total_price,
-      o.status,
-      o.created_at,
-      CONCAT(o.customer_name,' ',o.customer_last_name) AS customer
-    FROM orders o
-    JOIN order_items oi ON oi.order_id = o.id
-    JOIN products p ON p.id = oi.product_id
-   
-    WHERE p.seller_id = ?
-    GROUP BY o.id
-    ORDER BY o.created_at DESC
-    LIMIT 4
-    `,
-    [sellerId],
-  );
+    prisma.$queryRaw`
+        SELECT
+          o.id,
+          o.order_number,
+          o.total_price,
+          o.status,
+          o.created_at,
+          CONCAT(o.customer_name, ' ', o.customer_last_name) AS customer
+        FROM orders o
+        WHERE EXISTS (
+          SELECT 1
+          FROM order_items oi
+          JOIN products p ON p.id = oi.product_id
+          WHERE oi.order_id = o.id
+            AND p.seller_id = ${sellerId}
+        )
+        ORDER BY o.created_at DESC
+        LIMIT 4
+      `,
+  ]);
 
   return {
-    revenue: revenue?.revenue,
-    orders: orders?.orders,
-    products: products?.products,
-    customers: customers?.customers,
+    revenue: revenue[0]?.revenue ?? 0,
+    orders: orders[0]?.orders ?? 0,
+    products,
+    customers: customers[0]?.customers ?? 0,
     lastOrders,
   };
 };
-
 export const getSellerOrdersService = async (
   sellerId: number,
   page: number,
@@ -749,24 +650,23 @@ export const getSellerOrdersService = async (
 ) => {
   const offset = (page - 1) * limit;
 
- 
-
-  const [[count]]: any = await connection.query(
-    `
-      SELECT COUNT(DISTINCT o.id) AS total
+  const [count, orders] = await Promise.all([
+    // Liczba zamówień
+    prisma.$queryRaw<{ total: number }[]>`
+      SELECT COUNT(*)::int AS total
       FROM orders o
-      JOIN order_items oi
-        ON oi.order_id = o.id
-      JOIN products p
-        ON p.id = oi.product_id
-      WHERE p.seller_id = ?
+      WHERE EXISTS (
+        SELECT 1
+        FROM order_items oi
+        JOIN products p ON p.id = oi.product_id
+        WHERE oi.order_id = o.id
+          AND p.seller_id = ${sellerId}
+      )
     `,
-    [sellerId],
-  );
 
-  const [rows]: any = await connection.query(
-    `
-      SELECT DISTINCT
+    // Lista zamówień
+    prisma.$queryRaw`
+      SELECT
         o.id,
         o.order_number,
         o.status,
@@ -780,289 +680,248 @@ export const getSellerOrdersService = async (
         u.name AS user_name,
         u.last_name AS user_last_name
       FROM orders o
-      JOIN order_items oi
-        ON oi.order_id = o.id
-      JOIN products p
-        ON p.id = oi.product_id
-      LEFT JOIN users u
-        ON u.id = o.user_id
-      WHERE p.seller_id = ?
+      LEFT JOIN users u ON u.id = o.user_id
+      WHERE EXISTS (
+        SELECT 1
+        FROM order_items oi
+        JOIN products p ON p.id = oi.product_id
+        WHERE oi.order_id = o.id
+          AND p.seller_id = ${sellerId}
+      )
       ORDER BY o.created_at DESC
-      LIMIT ?
-      OFFSET ?
+      LIMIT ${limit}
+      OFFSET ${offset}
     `,
-    [sellerId, limit, offset],
-  );
+  ]);
+
+  const total = count[0]?.total ?? 0;
 
   return {
-    orders: rows,
-    total: count.total,
+    orders,
+    total,
     page,
     limit,
-    totalPages: Math.ceil(count.total / limit),
+    totalPages: Math.ceil(total / limit),
   };
 };
-
 export const getSellerOrderDetailsService = async (
   orderId: number,
   sellerId: number,
 ) => {
-  const [rows]: any = await connection.query(
-    `SELECT
+  const rows = await prisma.$queryRaw<any[]>`
+    SELECT
+      -- ZAMÓWIENIE
+      o.id,
+      o.order_number,
+      o.status,
+      o.total_price,
+      o.delivery_method,
+      o.delivery_price,
+      o.payment_method,
+      o.created_at,
 
-    -- ZAMÓWIENIE
-    o.id,
-    o.order_number,
-    o.status,
-    o.total_price,
-    o.delivery_method,
-    o.delivery_price,
-    o.payment_method,
-    o.created_at,
-o.customer_phone,
+      -- DOSTAWA
+      o.locker_id,
+      o.locker_name,
+      o.locker_address,
 
-  
+      -- KLIENT
+      o.customer_name,
+      o.customer_last_name,
+      o.customer_phone,
+      o.user_id,
+      o.email,
+      u.name,
+      u.last_name,
 
-    -- DOSTAWA
-    o.locker_id,
-    o.locker_name,
-    o.locker_address,
+      -- ADRES
+      o.customer_street,
+      o.customer_postal_code,
+      o.customer_city,
+      o.customer_country,
 
-    -- KLIENT
-    o.customer_name,
-    o.customer_last_name,
-    o.customer_phone,
-    o.user_id,
-    o.email,
+      -- PRODUKT
+      oi.id AS item_id,
+      oi.product_name,
+      oi.quantity,
+      oi.price,
+      oi.image,
 
-    -- ADRES
-    o.customer_street,
-    o.customer_postal_code,
-    o.customer_city,
-    o.customer_country,
-
-    -- PRODUKT
-    oi.id AS item_id,
-    oi.product_name,
-    oi.quantity,
-    oi.price,
-    oi.image,
-
-    -- ZDJĘCIA
-    (
-        SELECT 
-            JSON_ARRAYAGG(
-                JSON_OBJECT(
-                    'id', pi.id,
-                    'image', pi.image,
-                    'url', pi.url,
-                    'is_main', pi.is_main
-                )
-            )
+      -- ZDJĘCIA
+      (
+        SELECT JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'id', pi.id,
+            'image', pi.image,
+            'url', pi.url,
+            'is_main', pi.is_main
+          )
+          ORDER BY pi.id
+        )
         FROM product_images pi
         WHERE pi.product_id = p.id
-    ) AS images
+      ) AS images
 
+    FROM orders o
 
-FROM orders o
+    JOIN order_items oi
+      ON oi.order_id = o.id
 
-JOIN order_items oi
-    ON oi.order_id = o.id
+    JOIN products p
+      ON p.id = oi.product_id
 
-JOIN products p
-    ON p.id = oi.product_id
+    LEFT JOIN users u
+      ON u.id = o.user_id
 
+    WHERE o.id = ${orderId}
+      AND p.seller_id = ${sellerId}
 
-
-
-WHERE 
-    o.id = ?
-AND 
-    p.seller_id = ?
-
-ORDER BY oi.id ASC;;
-
-    `,
-    [orderId, sellerId],
-  );
+    ORDER BY oi.id ASC
+  `;
 
   if (!rows.length) {
     return null;
   }
 
-  return {
-    id: rows[0].id,
-    order_number: rows[0].order_number,
-    status: rows[0].status,
+  const order = rows[0];
 
-    total_price: rows[0].total_price,
+  return {
+    id: order.id,
+    order_number: order.order_number,
+    status: order.status,
+
+    total_price: order.total_price,
 
     delivery: {
-      method: rows[0].delivery_method,
-      price: rows[0].delivery_price,
+      method: order.delivery_method,
+      price: order.delivery_price,
 
-      locker: rows[0].locker_id
+      locker: order.locker_id
         ? {
-            id: rows[0].locker_id,
-            name: rows[0].locker_name,
-            address: rows[0].locker_address,
+            id: order.locker_id,
+            name: order.locker_name,
+            address: order.locker_address,
           }
         : null,
     },
 
-    payment_method: rows[0].payment_method,
+    payment_method: order.payment_method,
 
     customer: {
-      first_name: rows[0].name || rows[0].customer_name,
-      last_name: rows[0].last_name || rows[0].customer_last_name,
-      phone: rows[0].customer_phone,
-      email: rows[0].email,
-      user_id: rows[0].user_id,
+      first_name: order.name || order.customer_name,
+      last_name: order.last_name || order.customer_last_name,
+      phone: order.customer_phone,
+      email: order.email,
+      user_id: order.user_id,
 
       address: {
-        street: rows[0].customer_street,
-        postal_code: rows[0].customer_postal_code,
-        city: rows[0].customer_city,
-        country: rows[0].customer_country,
+        street: order.customer_street,
+        postal_code: order.customer_postal_code,
+        city: order.customer_city,
+        country: order.customer_country,
       },
     },
 
-    items: rows.map((item: any) => ({
+    items: rows.map((item) => ({
       id: item.item_id,
       name: item.product_name,
       quantity: item.quantity,
       price: item.price,
-
       image: item.image,
-
       images: item.images ?? [],
     })),
 
-    created_at: rows[0].created_at,
+    created_at: order.created_at,
   };
 };
-
 export const updateSellerOrderStatusService = async (
   orderId: number,
   sellerId: number,
   status: string,
 ) => {
-  const [result]: any = await connection.query(
-    `
+  const affectedRows = await prisma.$executeRaw`
     UPDATE orders o
+    SET status = ${status}
+    WHERE o.id = ${orderId}
+      AND EXISTS (
+        SELECT 1
+        FROM order_items oi
+        JOIN products p ON p.id = oi.product_id
+        WHERE oi.order_id = o.id
+          AND p.seller_id = ${sellerId}
+      )
+  `;
 
-    JOIN order_items oi
-    ON oi.order_id = o.id
-
-    JOIN products p
-    ON p.id = oi.product_id
-
-    SET o.status = ?
-
-    WHERE o.id = ?
-    AND p.seller_id = ?
-    `,
-    [status, orderId, sellerId],
-  );
-
-  if (!result.affectedRows) {
+  if (!affectedRows) {
     return false;
   }
 
-  const [orders]: any = await connection.query(
-    `
-    SELECT
-      id,
-      user_id,
-      order_number
-    FROM orders
-    WHERE id=?
-    `,
-    [orderId],
-  );
+  const order = await prisma.order.findUnique({
+    where: {
+      id: orderId,
+    },
+    select: {
+      userId: true,
+      orderNumber: true,
+    },
+  });
 
-  const order = orders[0];
-
-  if (!order.user_id) {
+  if (!order?.userId) {
     return true;
   }
 
-  const messages: any = {
+  const messages: Record<string, string> = {
     NEW: "Otrzymaliśmy Twoje zamówienie",
-
     PROCESSING: "Twoje zamówienie jest przygotowywane",
-
     SHIPPED: "Twoja przesyłka została wysłana",
-
     COMPLETED: "Twoje zamówienie zostało dostarczone",
-
     CANCELLED: "Twoje zamówienie zostało anulowane",
   };
 
   await createNotificationService({
-    userId: order.user_id,
-
+    userId: order.userId,
     type: "ORDER_STATUS",
-
     title: "Zmiana statusu zamówienia",
-
     message: messages[status] ?? "Status zamówienia został zmieniony",
   });
 
   return true;
 };
-
 export const getSubcategoryParameters = async (id: number) => {
-  const [rows] = await connection.query(
-    `
+  const rows = await prisma.$queryRaw`
+    SELECT
+      sp.id,
+      sp.name,
+      sp.label,
+      sp.type,
+      sp.required,
 
-SELECT
+      COALESCE(
+        JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'id', po.id,
+            'value', po.value
+          )
+        ) FILTER (WHERE po.id IS NOT NULL),
+        '[]'::json
+      ) AS options
 
-sp.id,
-sp.name,
-sp.label,
-sp.type,
-sp.required,
+    FROM subcategory_parameters sp
 
+    LEFT JOIN parameter_options po
+      ON po.parameter_id = sp.id
 
-COALESCE(
+    WHERE sp.subcategory_id = ${id || 0}
 
-JSON_ARRAYAGG(
+    GROUP BY
+      sp.id,
+      sp.name,
+      sp.label,
+      sp.type,
+      sp.required
 
-JSON_OBJECT(
-
-'id',po.id,
-'value',po.value
-
-)
-
-),
-
-JSON_ARRAY()
-
-) AS options
-
-
-FROM subcategory_parameters sp
-
-
-LEFT JOIN parameter_options po
-
-ON po.parameter_id = sp.id
-
-
-
-WHERE sp.subcategory_id = ?
-
-
-
-GROUP BY sp.id
-
-
-`,
-
-    [id || 0],
-  );
+    ORDER BY sp.id
+  `;
 
   return rows;
 };

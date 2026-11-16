@@ -24,8 +24,6 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-
-
     const { accessToken, refreshToken, user } = await loginUser(
       email,
       password,

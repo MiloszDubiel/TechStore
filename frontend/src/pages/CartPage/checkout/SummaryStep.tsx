@@ -48,8 +48,6 @@ const SummaryStep = ({ back, onSuccess }: any) => {
     });
   };
 
-
-
   const { mutate, isPending } = useMutation({
     mutationFn: (data: any) => api.post("/api/products/products/order", data),
 

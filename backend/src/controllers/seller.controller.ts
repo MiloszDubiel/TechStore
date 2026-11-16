@@ -414,9 +414,6 @@ export const getSellerOrders = async (req: Request, res: Response) => {
     const limit = Number(req.query.limit) || 10;
     const search = String(req.query.search || "");
 
-
-
-
     const orders = await getSellerOrdersService(sellerId, page, limit, search);
 
     res.json(orders);

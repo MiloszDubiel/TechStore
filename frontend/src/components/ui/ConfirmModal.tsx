@@ -32,7 +32,7 @@ export default function ConfirmModal({
 
         <div className="p-5">{typeof message === "string" ? <p className="text-(--foreground-secondary)">{message}</p> : message}</div>
 
-        <div className="gap-3 border-t flex justify-end border-(--border) p-5">
+        <div className="flex justify-end gap-3 border-t border-(--border) p-5">
           <GrayButton onClick={onCancel}>{cancelText}</GrayButton>
 
           <OrangeButton onClick={onConfirm}>{confirmText}</OrangeButton>

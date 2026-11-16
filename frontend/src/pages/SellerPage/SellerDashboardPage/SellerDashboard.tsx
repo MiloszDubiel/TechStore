@@ -6,7 +6,6 @@ import SellerSettings from "./SellerSettings";
 import Overview from "./Overview";
 import { Package, ShoppingCart, Plus, Settings, Store } from "lucide-react";
 
-
 const tabs = [
   {
     id: "overview",

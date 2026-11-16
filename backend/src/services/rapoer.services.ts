@@ -1,91 +1,71 @@
-import { connection } from "../config/db.config";
+import { prisma } from "../lib/prisma";
 
 export const createReportService = async (data: any) => {
-  const [result]: any = await connection.query(
-    `
-    INSERT INTO product_reports
-    (
-        product_id,
-        reporter_id,
-        reason,
-        description
-    )
-    VALUES (?, ?, ?, ?)
-    `,
-    [data.product_id, data.reporterId, data.reason, data.description],
-  );
-
-  const [rows]: any = await connection.query(
-    `
-    SELECT *
-    FROM product_reports
-    WHERE id=?
-    `,
-    [result.insertId],
-  );
-
-  return rows[0];
+  return await prisma.productReport.create({
+    data: {
+      productId: Number(data.product_id),
+      reporterId: Number(data.reporterId),
+      reason: data.reason,
+      description: data.description,
+    },
+  });
 };
 
 export const getReportsService = async () => {
-  const [rows] = await connection.query(
-    `
-    SELECT
+  const reports = await prisma.productReport.findMany({
+    include: {
+      product: {
+        select: {
+          name: true,
+        },
+      },
+      reporter: {
+        select: {
+          email: true,
+          name: true,
+          lastName: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
-        pr.*,
-
-        p.name AS product_name,
-
-        u.email,
-
-        u.first_name,
-        u.last_name
-
-    FROM product_reports pr
-
-    JOIN products p
-        ON p.id = pr.product_id
-
-    JOIN users u
-        ON u.id = pr.reporter_id
-
-    ORDER BY pr.created_at DESC
-    `,
-  );
-
-  return rows;
+  return reports.map((report) => ({
+    ...report,
+    product_name: report.product.name,
+    email: report.reporter.email,
+    first_name: report.reporter.name,
+    last_name: report.reporter.lastName,
+    product: undefined,
+    reporter: undefined,
+  }));
 };
+
 export const getReportService = async (id: string) => {
-  const [rows]: any = await connection.query(
-    `
-    SELECT *
-
-    FROM product_reports
-
-    WHERE id=?
-    `,
-    [id],
-  );
-
-  return rows[0];
+  return await prisma.productReport.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
 };
+
 export const updateReportStatusService = async (id: string, status: string) => {
-  await connection.query(
-    `
-    UPDATE product_reports
-    SET status=?
-    WHERE id=?
-    `,
-    [status, id],
-  );
+  await prisma.productReport.update({
+    where: {
+      id: Number(id),
+    },
+    data: {
+      status: status as any,
+    },
+  });
 };
+
 export const deleteReportService = async (id: string) => {
-  await connection.query(
-    `
-    DELETE
-    FROM product_reports
-    WHERE id=?
-    `,
-    [id],
-  );
+  await prisma.productReport.delete({
+    where: {
+      id: Number(id),
+    },
+  });
 };

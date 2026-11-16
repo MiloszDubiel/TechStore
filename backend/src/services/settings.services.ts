@@ -1,6 +1,7 @@
 import { connection } from "../config/db.config";
 import { ResultSetHeader } from "mysql2";
 import bcrypt from "bcryptjs";
+import { prisma } from "../lib/prisma";
 
 interface UpdateUserData {
   id: number;
@@ -19,31 +20,26 @@ interface EditPasswordProps {
 export const updateUserInDB = async (data: UpdateUserData) => {
   const { id, name, last_name, phone, email } = data;
 
-  const [result] = await connection.query(
-    `
-      UPDATE users
-      SET
-        name = ?,
-        last_name = ?,
-        phone = ?,
-        email = ?
-      WHERE id = ?
-    `,
-    [name, last_name, phone || null, email, id],
-  );
-
-  return result;
+  return await prisma.user.update({
+    where: {
+      id: Number(id),
+    },
+    data: {
+      name,
+      lastName: last_name,
+      phone: phone || null,
+      email,
+    },
+  });
 };
 
 export const getAdressesFromDB = async (id: string) => {
-  const [result] = await connection.query(
-    "SELECT * FROM addresses WHERE user_id = ?",
-    [id],
-  );
-
-  return result;
+  return await prisma.address.findMany({
+    where: {
+      userId: Number(id),
+    },
+  });
 };
-
 export const saveAdressesToDB = async (
   id: string,
   street: string,
@@ -51,55 +47,42 @@ export const saveAdressesToDB = async (
   city: string,
   is_default: boolean,
 ) => {
-  const conn = await connection.getConnection();
+  return await prisma.$transaction(async (tx) => {
+    const userId = Number(id);
 
-  try {
-    await conn.beginTransaction();
+    const addressesCount = await tx.address.count({
+      where: {
+        userId,
+      },
+    });
 
-    const [addresses]: any = await conn.query(
-      "SELECT COUNT(*) AS number_of_addresses FROM addresses WHERE user_id = ?",
-      [id],
-    );
-
-    if (addresses[0].number_of_addresses > 4) {
+    if (addressesCount > 4) {
       return "Osiągnięto maksymalną liczbe adresów";
     }
 
     if (is_default) {
-      await conn.query(
-        `
-        UPDATE addresses
-        SET is_default = false
-        WHERE user_id = ?
-        `,
-        [id],
-      );
+      await tx.address.updateMany({
+        where: {
+          userId,
+        },
+        data: {
+          isDefault: false,
+        },
+      });
     }
 
-    const [result] = await conn.query<ResultSetHeader>(
-      `
-      INSERT INTO addresses
-      (
-        user_id,
+    const result = await tx.address.create({
+      data: {
+        userId,
         street,
-        postal_code,
+        postalCode: postal_code,
         city,
-        is_default
-      )
-      VALUES (?, ?, ?, ?, ?)
-      `,
-      [id, street, postal_code, city, is_default],
-    );
-
-    await conn.commit();
+        isDefault: is_default,
+      },
+    });
 
     return result;
-  } catch (error) {
-    await conn.rollback();
-    throw error;
-  } finally {
-    conn.release();
-  }
+  });
 };
 
 export const updateAdressesToDB = async (
@@ -110,56 +93,43 @@ export const updateAdressesToDB = async (
   is_default: boolean,
   aid: string,
 ) => {
-  const conn = await connection.getConnection();
-
-  try {
-    await conn.beginTransaction();
+  return await prisma.$transaction(async (tx) => {
+    const userId = Number(id);
+    const addressId = Number(aid);
 
     if (is_default) {
-      await conn.query(
-        `
-        UPDATE addresses
-        SET is_default = false
-        WHERE user_id = ?
-        `,
-        [id],
-      );
+      await tx.address.updateMany({
+        where: {
+          userId,
+        },
+        data: {
+          isDefault: false,
+        },
+      });
     }
 
-    const result = await conn.query(
-      `
-      UPDATE addresses
-      SET 
-        street = ?,
-        postal_code = ?,
-        city = ?,
-        is_default = ?
-      WHERE user_id = ?
-      AND id = ?
-      `,
-      [street, postalCode, city, is_default, id, aid],
-    );
-
-    await conn.commit();
-
-    return result;
-  } catch (error) {
-    await conn.rollback();
-    throw error;
-  } finally {
-    conn.release();
-  }
+    return await tx.address.updateMany({
+      where: {
+        userId,
+        id: addressId,
+      },
+      data: {
+        street,
+        postalCode,
+        city,
+        isDefault: is_default,
+      },
+    });
+  });
 };
 
 export const deleteAddressFromDB = async (aid: string) => {
-  const result = await connection.query(
-    `
-      DELETE FROM addresses WHERE id = ? 
-      `,
-    [aid],
-  );
+  return await prisma.address.deleteMany({
+    where: {
+      id: Number(aid),
+    },
+  });
 };
-
 export const editPassword = async ({
   userId,
   currentPassword,
@@ -170,12 +140,14 @@ export const editPassword = async ({
     throw new Error("Hasła nie są takie same");
   }
 
-  const [rows]: any = await connection.query(
-    "SELECT password FROM users WHERE id = ?",
-    [userId],
-  );
-
-  const user = rows[0];
+  const user = await prisma.user.findUnique({
+    where: {
+      id: Number(userId),
+    },
+    select: {
+      password: true,
+    },
+  });
 
   if (!user) {
     throw new Error("Użytkownik nie znaleziony");
@@ -189,55 +161,56 @@ export const editPassword = async ({
 
   const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-  await connection.query(
-    `
-  UPDATE users 
-  SET password = ?, password_updated_at = NOW()
-  WHERE id = ?
-  `,
-    [hashedPassword, userId],
-  );
+  const updatedUser = await prisma.$transaction(async (tx) => {
+    const updated = await tx.user.update({
+      where: {
+        id: Number(userId),
+      },
+      data: {
+        password: hashedPassword,
+        passwordUpdatedAt: new Date().toISOString(),
+      },
+      select: {
+        passwordUpdatedAt: true,
+      },
+    });
 
-  const [row]: any = await connection.query(
-    `
-  SELECT password_updated_at 
-  FROM users
-  WHERE id = ?
-  `,
-    [userId],
-  );
+    await tx.refreshToken.updateMany({
+      where: {
+        userId: Number(userId),
+      },
+      data: {
+        isRevoked: true,
+      },
+    });
 
-  await connection.query(
-    `UPDATE refresh_tokens
-   SET is_revoked = 1
-   WHERE user_id = ?`,
-    [userId],
-  );
+    return updated;
+  });
 
   return {
     success: true,
     message: "Hasło zostało zmienione. Zaloguj się ponownie.",
-    passwordUpdatedAt: row[0].password_updated_at,
+    passwordUpdatedAt: updatedUser.passwordUpdatedAt,
   };
 };
 
 export const getPassword = async (userId: string) => {
   try {
-    const [rows]: any = await connection.query(
-      `
-      SELECT password_updated_at 
-      FROM users
-      WHERE id = ?
-      `,
-      [userId],
-    );
+    const user = await prisma.user.findUnique({
+      where: {
+        id: Number(userId),
+      },
+      select: {
+        passwordUpdatedAt: true,
+      },
+    });
 
-    if (!rows[0]) {
+    if (!user) {
       throw new Error("Użytkownik nie znaleziony");
     }
 
     return {
-      passwordUpdatedAt: rows[0].password_updated_at,
+      passwordUpdatedAt: user.passwordUpdatedAt,
     };
   } catch (error) {
     throw new Error("Wewnętrzny błąd serwera");
@@ -246,31 +219,37 @@ export const getPassword = async (userId: string) => {
 
 export const getOrdersFromDB = async (userId: string | null) => {
   try {
-    const [orders] = await connection.query(
-      `
-      SELECT
-        o.id,
-        o.total_price,
-        o.status,
-        o.created_at,
-        o.order_number,
-        COUNT(oi.id) as items_count
-      FROM orders o
-      LEFT JOIN order_items oi
-        ON oi.order_id = o.id
-      WHERE o.user_id = ?
-      GROUP BY o.id
-      ORDER BY o.created_at DESC
-      `,
-      [userId],
-    );
+    const orders = await prisma.order.findMany({
+      where: {
+        userId: userId !== null ? Number(userId) : null,
+      },
+      select: {
+        id: true,
+        totalPrice: true,
+        status: true,
+        createdAt: true,
+        orderNumber: true,
+        _count: {
+          select: {
+            items: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
     return {
-      orders,
+      orders: orders.map(({ _count, ...order }) => ({
+        ...order,
+        items_count: _count.items,
+      })),
       message: "Pobrano zamówienia",
     };
   } catch (err) {
     console.log(err);
+
     return {
       message: "Błąd pobierania zamówień",
     };
@@ -281,160 +260,133 @@ export const getOrderDetailsFromDB = async (
   orderId: string,
   userId: number,
 ) => {
-  const [rows]: any = await connection.query(
-    `
-    SELECT
+  const order = await prisma.order.findFirst({
+    where: {
+      id: Number(orderId),
+      userId,
+    },
+    include: {
+      items: true,
+    },
+  });
 
-      o.id AS order_id,
-      o.order_number,
-      o.total_price,
-      o.status,
-      o.created_at,
-
-      o.customer_name,
-      o.customer_last_name,
-      o.email,
-      o.customer_phone,
-
-      o.delivery_method,
-      o.delivery_price,
-
-      o.payment_method,
-
-      o.locker_id,
-      o.locker_name,
-      o.locker_address,
-
-
-      oi.quantity,
-      oi.price AS item_price,
-      oi.product_name,
-      oi.image AS item_image,
-
-
-      JSON_OBJECT(
-        'id', p.id,
-        'name', COALESCE(p.name, oi.product_name),
-        'description', p.description,
-        'brand', p.brand,
-        'model', p.model,
-        'attributes', p.attributes,
-
-        'category_name', c.name,
-        'subcategory_name', sc.name,
-
-        'images',
-        (
-          SELECT COALESCE(
-            JSON_ARRAYAGG(
-              JSON_OBJECT(
-                'image', pi.image,
-                'url', pi.url
-              )
-            ),
-            JSON_ARRAY()
-          )
-
-          FROM product_images pi
-
-          WHERE pi.product_id = p.id
-        )
-
-      ) AS product,
-
-
-      JSON_OBJECT(
-        'seller_id', sp.user_id,
-        'shop_name', sp.shop_name,
-        'company_name', sp.company_name,
-        'logo', sp.logo,
-        'slug', sp.slug,
-        'is_verified', sp.is_verified
-      ) AS seller
-
-
-    FROM orders o
-
-
-    LEFT JOIN order_items oi
-      ON oi.order_id = o.id
-
-
-    LEFT JOIN products p
-      ON p.id = oi.product_id
-
-
-    LEFT JOIN categories c
-      ON c.id = p.category_id
-
-
-    LEFT JOIN subcategories sc
-      ON sc.id = p.subcategory_id
-
-
-    LEFT JOIN seller_profiles sp
-      ON sp.user_id = p.seller_id
-
-
-    WHERE 
-      o.id = ?
-      AND o.user_id = ?
-
-    `,
-    [orderId, userId],
-  );
-
-  if (!rows.length) {
+  if (!order) {
     return null;
   }
 
-  const order = {
-    id: rows[0].order_id,
-    order_number: rows[0].order_number,
+  const productIds = order.items
+    .map((item) => item.productId)
+    .filter((id): id is number => id !== null);
 
-    total_price: rows[0].total_price,
-    status: rows[0].status,
-    created_at: rows[0].created_at,
-
-    customer: {
-      firstName: rows[0].customer_name,
-      lastName: rows[0].customer_lastname,
-      email: rows[0].customer_email,
-      phone: rows[0].customer_phone,
+  const products = await prisma.product.findMany({
+    where: {
+      id: {
+        in: productIds,
+      },
     },
-
-    delivery: {
-      method: rows[0].delivery_method,
-      price: rows[0].delivery_price,
-
-      locker: rows[0].locker_id
-        ? {
-            id: rows[0].locker_id,
-            name: rows[0].locker_name,
-            address: rows[0].locker_address,
-          }
-        : null,
+    include: {
+      category: {
+        select: {
+          name: true,
+        },
+      },
+      subcategory: {
+        select: {
+          name: true,
+        },
+      },
+      images: {
+        select: {
+          image: true,
+          url: true,
+        },
+      },
+      seller: {
+        select: {
+          id: true,
+          sellerProfiles: {
+            take: 1,
+            select: {
+              shopName: true,
+              companyName: true,
+              logo: true,
+              slug: true,
+              isVerified: true,
+            },
+          },
+        },
+      },
     },
+  });
 
-    payment_method: rows[0].payment_method,
-  };
+  const productsMap = new Map(products.map((product) => [product.id, product]));
 
-  const items = rows.map((item: any) => ({
-    quantity: item.quantity,
-    price: item.item_price,
-    image: item.item_image,
+  const items = order.items.map((item) => {
+    const product = item.productId ? productsMap.get(item.productId) : null;
 
-    product:
-      typeof item.product === "string"
-        ? JSON.parse(item.product)
-        : item.product,
+    const sellerProfile = product?.seller?.sellerProfiles[0];
 
-    seller:
-      typeof item.seller === "string" ? JSON.parse(item.seller) : item.seller,
-  }));
+    return {
+      quantity: item.quantity,
+      price: item.price,
+      image: item.image,
+
+      product: {
+        id: product?.id ?? null,
+        name: product?.name ?? item.productName,
+        description: product?.description ?? null,
+        brand: product?.brand ?? null,
+        model: product?.model ?? null,
+        attributes: product?.attributes ?? null,
+
+        category_name: product?.category?.name ?? null,
+        subcategory_name: product?.subcategory?.name ?? null,
+
+        images: product?.images ?? [],
+      },
+
+      seller: {
+        seller_id: product?.seller?.id ?? null,
+        shop_name: sellerProfile?.shopName ?? null,
+        company_name: sellerProfile?.companyName ?? null,
+        logo: sellerProfile?.logo ?? null,
+        slug: sellerProfile?.slug ?? null,
+        is_verified: sellerProfile?.isVerified ?? null,
+      },
+    };
+  });
 
   return {
-    order,
+    order: {
+      id: order.id,
+      order_number: order.orderNumber,
+      total_price: order.totalPrice,
+      status: order.status,
+      created_at: order.createdAt,
+
+      customer: {
+        firstName: order.customerName,
+        lastName: order.customerLastName,
+        email: order.email,
+        phone: order.customerPhone,
+      },
+
+      delivery: {
+        method: order.deliveryMethod,
+        price: order.deliveryPrice,
+
+        locker: order.lockerId
+          ? {
+              id: order.lockerId,
+              name: order.lockerName,
+              address: order.lockerAddress,
+            }
+          : null,
+      },
+
+      payment_method: order.paymentMethod,
+    },
+
     items,
   };
 };

@@ -1,6 +1,4 @@
-import console from "node:console";
-import { connection } from "../config/db.config";
-import { RowDataPacket } from "mysql2";
+import { prisma } from "../lib/prisma";
 
 const generateOrderNumber = async () => {
   const today = new Date();
@@ -11,15 +9,16 @@ const generateOrderNumber = async () => {
 
   const date = `${year}${month}${day}`;
 
-  const [rows] = await connection.query<RowDataPacket[]>(
-    `
-    SELECT COUNT(*) as count
-    FROM orders
-    WHERE DATE(created_at) = CURDATE()
-    `,
-  );
+  const count = await prisma.order.count({
+    where: {
+      createdAt: {
+        gte: new Date(year, today.getMonth(), today.getDate()),
+        lt: new Date(year, today.getMonth(), today.getDate() + 1),
+      },
+    },
+  });
 
-  const nextNumber = Number(rows[0]?.count) + 1;
+  const nextNumber = count + 1;
 
   return `MITS-${date}-${String(nextNumber).padStart(5, "0")}`;
 };
@@ -38,21 +37,22 @@ const componentsCategories = [
   "RAM",
 ];
 
-function mapMainCategory(categoryName: string | null) {
-  if (!categoryName) return null;
+// function mapMainCategory(categoryName: string | null) {
+//   if (!categoryName) return null;
 
-  if (componentsCategories.includes(categoryName)) {
-    return {
-      main: "Podzespoły",
-      sub: categoryName,
-    };
-  }
+//   if (componentsCategories.includes(categoryName)) {
+//     return {
+//       main: "Podzespoły",
+//       sub: categoryName,
+//     };
+//   }
 
-  return {
-    main: categoryName,
-    sub: null,
-  };
-}
+//   return {
+//     main: categoryName,
+//     sub: null,
+//   };
+// }
+
 export const getProducts = async (query: any) => {
   const {
     categories,
@@ -66,265 +66,227 @@ export const getProducts = async (query: any) => {
     ...filters
   } = query;
 
-  const offset = (Number(page) - 1) * Number(limit);
+  const currentPage = Number(page);
+  const pageSize = Number(limit);
+  const offset = (currentPage - 1) * pageSize;
 
-  let where = `
-    WHERE 1=1 AND p.stock > 0
-  `;
-
-  const queryParams: any[] = [];
+  const where: any = {
+    stock: {
+      gt: 0,
+    },
+  };
 
   if (categories) {
     const cats = categories.split(",");
 
-    where += `
-      AND c.name IN (${cats.map(() => "?").join(",")})
-    `;
-
-    queryParams.push(...cats);
+    where.category = {
+      is: {
+        name: {
+          in: cats,
+        },
+      },
+    };
   }
 
   if (brands) {
     const brandList = brands.split(",");
 
-    where += `
-      AND p.brand IN (${brandList.map(() => "?").join(",")})
-    `;
-
-    queryParams.push(...brandList);
+    where.brand = {
+      in: brandList,
+    };
   }
 
-  if (min) {
-    where += `
-      AND p.price >= ?
-    `;
-
-    queryParams.push(Number(min));
+  if (min !== undefined && min !== "") {
+    where.price = {
+      ...where.price,
+      gte: Number(min),
+    };
   }
 
-  if (max) {
-    where += `
-      AND p.price <= ?
-    `;
-
-    queryParams.push(Number(max));
+  if (max !== undefined && max !== "") {
+    where.price = {
+      ...where.price,
+      lte: Number(max),
+    };
   }
 
   if (search) {
-    where += `
-      AND p.name LIKE ?
-    `;
-
-    queryParams.push(`%${search}%`);
+    where.name = {
+      contains: search,
+      mode: "insensitive",
+    };
   }
 
   Object.entries(filters).forEach(([label, value]) => {
-    where += `
-    AND JSON_SEARCH(
-      p.attributes,
-      'one',
-      ?
-    ) IS NOT NULL
-  `;
-    queryParams.push(value);
+    if (value === undefined || value === "") return;
+
+    where.AND = [
+      ...(where.AND || []),
+      {
+        attributes: {
+          path: [label],
+          equals: String(value),
+        },
+      },
+    ];
   });
 
-  const [[count]]: any = await connection.query(
-    `
-    SELECT COUNT(DISTINCT p.id) AS total
+  const [total, products] = await prisma.$transaction([
+    prisma.product.count({
+      where,
+    }),
 
-    FROM products p
-
-    LEFT JOIN categories c
-      ON c.id = p.category_id
-
-    ${where}
-    `,
-    queryParams,
-  );
-
-  const productParams = [...queryParams, Number(limit), Number(offset)];
-
-  const [rows]: any = await connection.query(
-    `
-    SELECT
-
-      p.*,
-
-      c.name AS category_name,
-      sc.name AS subcategory_name,
-
-
-      sp.shop_name,
-      sp.company_name,
-      sp.logo,
-      sp.slug,
-      sp.created_at AS seller_created_at,
-      sp.is_verified,
-
-
-      COALESCE(
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
-            'image', pi.image,
-            'url', pi.url
-          )
-        ),
-        JSON_ARRAY()
-      ) AS images
-
-
-    FROM products p
-
-
-    LEFT JOIN categories c
-      ON c.id = p.category_id
-
-
-    LEFT JOIN subcategories sc
-      ON sc.id = p.subcategory_id
-
-
-    LEFT JOIN product_images pi
-      ON pi.product_id = p.id
-
-
-    LEFT JOIN seller_profiles sp
-      ON sp.user_id = p.seller_id
-
-
-
-    ${where}
-
-
-
-    GROUP BY
-
-      p.id,
-      c.name,
-      sc.name,
-      sp.shop_name,
-      sp.company_name,
-      sp.logo,
-      sp.slug,
-      sp.created_at,
-      sp.is_verified
-
-
-
-    ORDER BY p.created_at DESC
-
-
-    LIMIT ?
-    OFFSET ?
-
-    `,
-    productParams,
-  );
+    prisma.product.findMany({
+      where,
+      include: {
+        category: {
+          select: {
+            name: true,
+          },
+        },
+        subcategory: {
+          select: {
+            name: true,
+          },
+        },
+        images: {
+          select: {
+            image: true,
+            url: true,
+          },
+        },
+        seller: {
+          select: {
+            sellerProfiles: {
+              take: 1,
+              select: {
+                shopName: true,
+                companyName: true,
+                logo: true,
+                slug: true,
+                createdAt: true,
+                isVerified: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: pageSize,
+      skip: offset,
+    }),
+  ]);
 
   return {
-    products: rows.map((product: any) => ({
-      ...product,
+    products: products.map((product) => {
+      const { category, subcategory, seller, images, ...productData } = product;
 
-      images:
-        typeof product.images === "string"
-          ? JSON.parse(product.images)
-          : product.images,
+      const sellerProfile = seller?.sellerProfiles[0];
 
-      attributes:
-        typeof product.attributes === "string"
-          ? JSON.parse(product.attributes)
-          : product.attributes,
-    })),
+      return {
+        ...productData,
 
-    page: Number(page),
+        category_name: category?.name ?? null,
+        subcategory_name: subcategory?.name ?? null,
 
-    limit: Number(limit),
+        shop_name: sellerProfile?.shopName ?? null,
+        company_name: sellerProfile?.companyName ?? null,
+        logo: sellerProfile?.logo ?? null,
+        slug: sellerProfile?.slug ?? null,
+        seller_created_at: sellerProfile?.createdAt ?? null,
+        is_verified: sellerProfile?.isVerified ?? null,
 
-    total: count.total,
+        images,
+      };
+    }),
 
-    totalPages: Math.ceil(count.total / Number(limit)),
+    page: currentPage,
+    limit: pageSize,
+    total,
+    totalPages: Math.ceil(total / pageSize),
   };
 };
 
 export const getCurrtentProdcut = async (id: string) => {
-  const [rows] = await connection.query(
-    `
-    SELECT
-      p.*,
+  const product = await prisma.product.findUnique({
+    where: {
+      id: Number(id),
+    },
+    include: {
+      category: {
+        select: {
+          name: true,
+        },
+      },
+      subcategory: {
+        select: {
+          name: true,
+        },
+      },
+      images: {
+        select: {
+          url: true,
+        },
+      },
+      seller: {
+        select: {
+          sellerProfiles: {
+            take: 1,
+            select: {
+              shopName: true,
+              companyName: true,
+              logo: true,
+              slug: true,
+              createdAt: true,
+              isVerified: true,
+              banner: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
-      c.name AS category_name,
-      sc.name AS subcategory_name,
+  if (!product) return null;
 
-      sp.shop_name,
-      sp.company_name,
-      sp.logo,
-      sp.slug,
-      sp.created_at AS seller_created_at,
-      sp.is_verified,
-sp.banner,
+  const { category, subcategory, images, seller, ...productData } = product;
 
-      COALESCE(
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
-            'url', pi.url
-          )
-        ),
-        JSON_ARRAY()
-      ) AS images
+  const sellerProfile = seller?.sellerProfiles[0];
 
-    FROM products p
+  return {
+    ...productData,
 
-    LEFT JOIN categories c
-      ON c.id = p.category_id
+    category_name: category?.name ?? null,
+    subcategory_name: subcategory?.name ?? null,
 
-    LEFT JOIN subcategories sc
-      ON sc.id = p.subcategory_id
+    shop_name: sellerProfile?.shopName ?? null,
+    company_name: sellerProfile?.companyName ?? null,
+    logo: sellerProfile?.logo ?? null,
+    slug: sellerProfile?.slug ?? null,
+    seller_created_at: sellerProfile?.createdAt ?? null,
+    is_verified: sellerProfile?.isVerified ?? null,
+    banner: sellerProfile?.banner ?? null,
 
-    LEFT JOIN product_images pi
-      ON pi.product_id = p.id
-
-    LEFT JOIN seller_profiles sp
-      ON sp.user_id = p.seller_id
-
-    WHERE p.id = ?
-
-    GROUP BY
-      p.id,
-      c.name,
-      sc.name,
-      sp.shop_name,
-      sp.company_name,
-      sp.logo,
-      sp.slug,
-      sp.created_at,
-      sp.is_verified
-    `,
-    [id],
-  );
-
-  return (rows as any[])[0] ?? null;
+    images: images.map((image) => ({
+      url: image.url,
+    })),
+  };
 };
 
 export const getCurrtentProdcutByID = async (id: string) => {
-  const [rows] = await connection.query("SELECT * FROM products WHERE id = ?", [
-    id,
-  ]);
-  const row = (rows as any[])[0];
-  if (!row) {
-    return null;
-  }
-  return row;
+  const product = await prisma.product.findUnique({
+    where: {
+      id: Number(id),
+    },
+  });
+
+  return product ?? null;
 };
 
 export const saveOrderToDB = async (data: any) => {
-  const conn = await connection.getConnection();
-
-  try {
-    await conn.beginTransaction();
-
-
-
+  return await prisma.$transaction(async (tx) => {
     const {
       customer,
       address,
@@ -334,6 +296,8 @@ export const saveOrderToDB = async (data: any) => {
       user_id: userId = null,
     } = data;
 
+    const normalizedUserId = userId === null ? null : Number(userId);
+
     const deliveryMethod = delivery.method.toUpperCase();
 
     let productsTotal = 0;
@@ -341,46 +305,68 @@ export const saveOrderToDB = async (data: any) => {
     const productsData: any[] = [];
 
     for (const item of products) {
-      const [rows]: any = await conn.query(
-        `
-        SELECT
-          id,
-          name,
-          price,
-          stock,
-          seller_id,
-          product_data
-        FROM products
-        WHERE id = ?
-        FOR UPDATE
-        `,
-        [item.id],
-      );
+      const productId = Number(item.id);
+      const quantity = Number(item.quantity);
 
-      if (!rows.length) {
+      if (!Number.isInteger(quantity) || quantity <= 0) {
+        throw new Error("Nieprawidłowa ilość produktu");
+      }
+
+      const lockedProducts = await tx.$queryRaw<Array<{ id: number }>>`
+        SELECT id
+        FROM products
+        WHERE id = ${productId}
+        FOR UPDATE
+      `;
+
+      if (!lockedProducts.length) {
         throw new Error("Nie znaleziono produktu");
       }
 
-      const product = rows[0];
+      const product = await tx.product.findUnique({
+        where: {
+          id: productId,
+        },
+      });
 
-    
-
-      if (product.stock < item.quantity) {
-        throw new Error("Jeden z produktów jest juz niedostępny");
+      if (!product) {
+        throw new Error("Nie znaleziono produktu");
       }
 
-      if (product.seller_id === userId) {
+      if (product.stock < quantity) {
+        throw new Error("Jeden z produktów jest już niedostępny");
+      }
+
+      if (product.sellerId === normalizedUserId) {
         throw new Error("Nie możesz zamówić produktu ze swojego sklepu");
       }
 
-      productsTotal += Number(product.price) * item.quantity;
+      productsTotal += Number(product.price) * quantity;
+
+      const productData = product.productData as { image?: string } | null;
 
       productsData.push({
         id: product.id,
-        name: product.name,
+        name: product.name ?? "",
         price: product.price,
-        quantity: item.quantity,
-        image: product.product_data?.image ?? null,
+        quantity,
+        image: productData?.image ?? null,
+      });
+
+      const newStock = product.stock - quantity;
+
+      await tx.product.update({
+        where: {
+          id: product.id,
+        },
+        data: {
+          stock: {
+            decrement: quantity,
+          },
+          ...(newStock <= 0 && {
+            isVisible: false,
+          }),
+        },
       });
     }
 
@@ -388,183 +374,90 @@ export const saveOrderToDB = async (data: any) => {
 
     const orderNumber = await generateOrderNumber();
 
-    // 2. Tworzenie zamówienia
-    const [orderResult]: any = await conn.query(
-      `
-      INSERT INTO orders
-      (
-        user_id,
+    const order = await tx.order.create({
+      data: {
+        userId: normalizedUserId,
 
-
-        customer_name,
-        customer_last_name,
-        email,
-        customer_phone,
-
-        delivery_method,
-        delivery_price,
-
-        payment_method,
-
-        locker_id,
-        locker_name,
-        locker_address,
-
-        total_price,
-        order_number,
-        customer_street,
-        customer_postal_code,
-        customer_city,
-        customer_country,
-        status
-      )
-
-      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-      `,
-      [
-        userId,
-
-        customer.name,
-        customer.last_name,
-        customer.email,
-        customer.phone,
+        customerName: customer.name,
+        customerLastName: customer.last_name,
+        email: customer.email,
+        customerPhone: customer.phone,
 
         deliveryMethod,
-        delivery.price,
+        deliveryPrice: Number(delivery.price),
 
-        payment.method,
+        paymentMethod: payment.method,
 
-        deliveryMethod === "LOCKER" ? delivery.locker?.id : null,
+        lockerId: deliveryMethod === "LOCKER" ? delivery.locker?.id : null,
 
-        deliveryMethod === "LOCKER" ? delivery.locker?.name : null,
+        lockerName: deliveryMethod === "LOCKER" ? delivery.locker?.name : null,
 
-        deliveryMethod === "LOCKER" ? delivery.locker?.address : null,
+        lockerAddress:
+          deliveryMethod === "LOCKER" ? delivery.locker?.address : null,
 
-        finalTotal,
-
+        totalPrice: finalTotal,
         orderNumber,
-        address?.street ?? null,
-        address?.postal_code ?? null,
-        address?.city ?? null,
-        address?.country ?? null,
-        "NEW",
-      ],
-    );
 
-    const orderId = orderResult.insertId;
+        customerStreet: address?.street ?? null,
+        customerPostalCode: address?.postal_code ?? null,
+        customerCity: address?.city ?? null,
+        customerCountry: address?.country ?? null,
 
-    if (!orderId) {
-      throw new Error("ORDER_CREATION_FAILED");
-    }
+        status: "NEW",
 
-    for (const product of productsData) {
-      await conn.query(
-        `
-        INSERT INTO order_items
-        (
-          order_id,
-          product_id,
-          product_name,
-          quantity,
-          price,
-          image
-        )
-
-        VALUES(?,?,?,?,?,?)
-        `,
-        [
-          orderId,
-          product.id,
-          product.name,
-          product.quantity,
-          product.price,
-          product.image,
-        ],
-      );
-
-      // 4. Aktualizacja magazynu
-
-      await conn.query(
-        `
-        UPDATE products
-        SET stock = stock - ?
-        WHERE id = ?
-        `,
-        [product.quantity, product.id],
-      );
-
-      // 5. Ukrycie produktu gdy brak sztuk
-
-      await conn.query(
-        `
-        UPDATE products
-        SET is_visible = 0
-        WHERE id = ?
-        AND stock <= 0
-        `,
-        [product.id],
-      );
-    }
-
-    await conn.commit();
+        items: {
+          create: productsData.map((product) => ({
+            productId: product.id,
+            productName: product.name,
+            quantity: product.quantity,
+            price: product.price,
+            image: product.image,
+          })),
+        },
+      },
+    });
 
     return {
-      orderId,
+      orderId: order.id,
       orderNumber,
       total: finalTotal,
       success: true,
     };
-  } catch (error) {
-    await conn.rollback();
-
-    throw error;
-  } finally {
-    conn.release();
-  }
+  });
 };
 
 export const getCategoriesFromDB = async () => {
-  const [rows] = await connection.query("SELECT * FROM categories");
-  if (!rows) {
-    return null;
-  }
-  return rows;
+  return await prisma.category.findMany();
 };
-
 export const getSubcategoriesFromDB = async () => {
-  const [rows] = await connection.query("SELECT * FROM subcategories");
-
-  if (!rows) {
-    return null;
-  }
-  return rows;
+  return await prisma.subcategory.findMany();
+};
+type FilterResult = {
+  label: string;
+  value: string;
+  count: number;
 };
 
-export const getFiltersService = async (categoryId?: number) => {
-  const [rows]: any = await connection.query(
-    `SELECT
-    jt.label,
-    jt.value,
-    COUNT(*) AS count
-
-FROM products p
-
-JOIN JSON_TABLE(
-    p.attributes,
-    '$[*]' COLUMNS(
-        label VARCHAR(255) PATH '$.label',
-        value VARCHAR(255) PATH '$.value'
-    )
-) jt
-
-GROUP BY 
-    jt.label,
-    jt.value
-
-ORDER BY
-    jt.label,
-    count DESC;`,
-  );
-
-  return rows;
+export const getFiltersService = async (
+  categoryId?: number,
+): Promise<FilterResult[]> => {
+  return await prisma.$queryRaw<FilterResult[]>`
+    SELECT
+      attr->>'label' AS label,
+      attr->>'value' AS value,
+      COUNT(*)::int AS count
+    FROM products p
+    CROSS JOIN LATERAL jsonb_array_elements(p.attributes) AS attr
+    ${
+      categoryId !== undefined
+        ? prisma.$queryRaw`WHERE p.category_id = ${categoryId}`
+        : prisma.$queryRaw``
+    }
+    GROUP BY
+      attr->>'label',
+      attr->>'value'
+    ORDER BY
+      attr->>'label',
+      count DESC
+  `;
 };
