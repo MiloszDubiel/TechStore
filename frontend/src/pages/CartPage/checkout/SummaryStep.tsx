@@ -35,17 +35,20 @@ const SummaryStep = ({ back, onSuccess }: any) => {
       return;
     }
 
-    //Do sprawdzenia
-    // let user_id = user?.id || null;
-    // if (checkoutData.customer?.email != user?.email) user_id = null;
+    let user_id = user?.id || null;
+    if (checkoutData.customer?.email != user?.email) user_id = null;
 
     mutate({
       ...checkoutData,
+
       products: cartItems,
+
       total: totalPrice,
       user_id: user?.id,
     });
   };
+
+
 
   const { mutate, isPending } = useMutation({
     mutationFn: (data: any) => api.post("/api/products/products/order", data),

@@ -1,246 +1,238 @@
 import { connection } from "../config/db.config";
+import { prisma } from "../lib/prisma";
 
 export const getMessagesService = async (
   conversationId: string,
   userId: number,
 ) => {
-  const [conversation]: any = await connection.query(
-    `
-SELECT id
-FROM conversations
-WHERE id=?
-AND (
-    user_id=?
-    OR
-    seller_id=?
-)
-`,
-    [conversationId, userId, userId],
-  );
+  const id = Number(conversationId);
 
-  if (!conversation.length) {
+  if (!Number.isInteger(id)) {
     return null;
   }
 
-  const [messages]: any = await connection.query(
-    `
-SELECT
+  const conversation = await prisma.conversation.findFirst({
+    where: {
+      id,
+      OR: [{ userId }, { sellerId: userId }],
+    },
+    select: {
+      id: true,
+    },
+  });
 
-m.id,
-m.message,
-m.created_at,
-
-u.id AS sender_id,
-u.email AS sender_email
-
-
-FROM messages m
-
-
-JOIN users u
-ON u.id=m.sender_id
-
-
-WHERE m.conversation_id=?
-
-
-ORDER BY m.created_at ASC
-
-`,
-    [conversationId],
-  );
-
-  return messages;
-};
-
-export const createMessageService = async (data: any) => {
-  const [result]: any = await connection.query(
-    `
-    INSERT INTO messages
-    (
-      conversation_id,
-      sender_id,
-      message
-    )
-    VALUES (?, ?, ?)
-    `,
-    [data.conversationId, data.senderId, data.message],
-  );
-
-  const [rows]: any = await connection.query(
-    `
-    SELECT
-      m.id,
-      m.conversation_id,
-      m.sender_id,
-      m.message,
-      m.created_at,
-
-      u.email
-
-    FROM messages m
-
-    JOIN users u
-      ON u.id = m.sender_id
-
-    WHERE m.id = ?
-    `,
-    [result.insertId],
-  );
-
-  return rows;
-};
-
-export const createConversationService = async (data: any) => {
-  const [existing]: any = await connection.query(
-    `
-SELECT *
-FROM conversations
-WHERE user_id=?
-AND seller_id=?
-`,
-    [data.user_id, data.seller_id],
-  );
-
-  if (existing.length) {
-    return existing[0];
+  if (!conversation) {
+    return null;
   }
 
-  const [result]: any = await connection.query(
-    `
-INSERT INTO conversations
-(
-user_id,
-seller_id
-)
-VALUES(?,?)
-`,
-    [data.user_id, data.seller_id],
-  );
+  const messages = await prisma.message.findMany({
+    where: {
+      conversationId: id,
+    },
+    select: {
+      id: true,
+      message: true,
+      createdAt: true,
+      sender: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
 
-  const [rows]: any = await connection.query(
-    `
-SELECT *
-FROM conversations
-WHERE id=?
-`,
-    [result.insertId],
-  );
-
-  return rows[0];
+  return messages.map((message: any) => ({
+    id: message.id,
+    message: message.message,
+    created_at: message.createdAt,
+    sender_id: message.sender.id,
+    sender_email: message.sender.email,
+  }));
 };
+export const createMessageService = async (data: any) => {
+  const message = await prisma.message.create({
+    data: {
+      conversationId: Number(data.conversationId),
+      senderId: data.senderId,
+      message: data.message,
+    },
+    select: {
+      id: true,
+      conversationId: true,
+      senderId: true,
+      message: true,
+      createdAt: true,
+      sender: {
+        select: {
+          email: true,
+        },
+      },
+    },
+  });
 
+  return [
+    {
+      id: message.id,
+      conversation_id: message.conversationId,
+      sender_id: message.senderId,
+      message: message.message,
+      created_at: message.createdAt,
+      email: message.sender.email,
+    },
+  ];
+};
+export const createConversationService = async (data: any) => {
+  const existing = await prisma.conversation.findFirst({
+    where: {
+      userId: data.user_id,
+      sellerId: data.seller_id,
+    },
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  return await prisma.conversation.create({
+    data: {
+      userId: data.user_id,
+      sellerId: data.seller_id,
+    },
+  });
+};
 export const getConversationsService = async (userId: number) => {
-  const [rows]: any = await connection.query(
-    `
-    SELECT
+  const conversations = await prisma.conversation.findMany({
+    where: {
+      OR: [{ userId }, { sellerId: userId }],
+    },
+    select: {
+      id: true,
+      createdAt: true,
 
-      c.id,
-      c.created_at,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          lastName: true,
+        },
+      },
 
-      buyer.id AS buyer_id,
-      buyer.email AS buyer_email,
-      buyer.name AS buyer_first_name,
-      buyer.last_name AS buyer_last_name,
+      seller: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          lastName: true,
 
-      seller.id AS seller_id,
-      seller.email AS seller_email,
-      seller.name AS seller_first_name,
-      seller.last_name AS seller_last_name,
+          sellerProfiles: {
+            select: {
+              shopName: true,
+              logo: true,
+            },
+            take: 1,
+          },
+        },
+      },
 
-      sp.shop_name,
-      sp.logo,
+      messages: {
+        select: {
+          message: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      },
 
+      _count: {
+        select: {
+          messages: {
+            where: {
+              isRead: false,
+              senderId: {
+                not: userId,
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
-      (
-        SELECT m.message
-        FROM messages m
-        WHERE m.conversation_id = c.id
-        ORDER BY m.created_at DESC
-        LIMIT 1
-      ) AS last_message,
+  const result = conversations.map((conversation) => {
+    const lastMessage = conversation.messages[0];
+    const sellerProfile = conversation.seller.sellerProfiles[0];
 
+    return {
+      id: conversation.id,
+      created_at: conversation.createdAt,
 
-      (
-        SELECT m.created_at
-        FROM messages m
-        WHERE m.conversation_id = c.id
-        ORDER BY m.created_at DESC
-        LIMIT 1
-      ) AS last_message_date,
+      buyer_id: conversation.user.id,
+      buyer_email: conversation.user.email,
+      buyer_first_name: conversation.user.name,
+      buyer_last_name: conversation.user.lastName,
 
+      seller_id: conversation.seller.id,
+      seller_email: conversation.seller.email,
+      seller_first_name: conversation.seller.name,
+      seller_last_name: conversation.seller.lastName,
 
-      (
-        SELECT COUNT(*)
-        FROM messages m
-        WHERE m.conversation_id = c.id
-        AND m.is_read = 0
-        AND m.sender_id != ?
-      ) AS unread_count
+      shop_name: sellerProfile?.shopName ?? null,
+      logo: sellerProfile?.logo ?? null,
 
+      last_message: lastMessage?.message ?? null,
+      last_message_date: lastMessage?.createdAt ?? null,
 
-    FROM conversations c
+      unread_count: conversation._count.messages,
+    };
+  });
 
+  return result.sort((a, b) => {
+    const dateA = a.last_message_date?.getTime() ?? 0;
+    const dateB = b.last_message_date?.getTime() ?? 0;
 
-    JOIN users buyer
-    ON buyer.id = c.user_id
-
-
-    JOIN users seller
-    ON seller.id = c.seller_id
-
-
-    LEFT JOIN seller_profiles sp
-    ON sp.user_id = seller.id
-
-
-    WHERE 
-      c.user_id = ?
-      OR 
-      c.seller_id = ?
-
-
-    ORDER BY last_message_date DESC
-    `,
-    [userId, userId, userId],
-  );
-
-  return rows;
+    return dateB - dateA;
+  });
 };
 
 export const getNotificationsService = async (userId: number) => {
-  const [rows]: any = await connection.query(
-    `
-    SELECT COUNT(*) AS unread_count
-    FROM messages m
-    JOIN conversations c 
-      ON c.id = m.conversation_id
-    WHERE m.is_read = 0
-    AND m.sender_id != ?
-    AND (
-      c.user_id = ?
-      OR c.seller_id = ?
-    )
-    `,
-    [userId, userId, userId],
-  );
+  const unreadCount = await prisma.message.count({
+    where: {
+      isRead: false,
+      senderId: {
+        not: userId,
+      },
+      conversation: {
+        OR: [{ userId }, { sellerId: userId }],
+      },
+    },
+  });
 
-  return rows[0].unread_count;
+  return unreadCount;
 };
+
 export const markMessagesAsReadService = async (
   conversationId: number,
   userId: number,
 ) => {
-  await connection.query(
-    `
-    UPDATE messages
-    SET is_read = 1
-    WHERE conversation_id = ?
-    AND sender_id != ?
-    AND is_read = 0
-    `,
-    [conversationId, userId],
-  );
+  await prisma.message.updateMany({
+    where: {
+      conversationId,
+      senderId: {
+        not: userId,
+      },
+      isRead: false,
+    },
+    data: {
+      isRead: true,
+    },
+  });
 
   return true;
 };

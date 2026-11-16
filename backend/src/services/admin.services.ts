@@ -1,4 +1,6 @@
 import { connection } from "../config/db.config";
+import { prisma } from "../lib/prisma";
+
 export const getAllUsers = async (
   page: number,
   limit: number,
@@ -6,82 +8,110 @@ export const getAllUsers = async (
 ) => {
   const offset = (page - 1) * limit;
 
-  const searchValue = `%${search}%`;
+  const where = {
+    role: {
+      not: "ADMIN" as const,
+    },
+    ...(search && {
+      OR: [
+        {
+          email: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        },
+        {
+          name: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        },
+        {
+          lastName: {
+            contains: search,
+            mode: "insensitive" as const,
+          },
+        },
+      ],
+    }),
+  };
 
-  const [[count]]: any = await connection.query(
-    `
-    SELECT COUNT(*) AS total
-    FROM users u
-    WHERE u.role <> "ADMIN"
-    AND (
-      u.email LIKE ?
-      OR u.name LIKE ?
-      OR u.last_name LIKE ?
-    )
-    `,
-    [searchValue, searchValue, searchValue],
-  );
+  const [total, users] = await prisma.$transaction([
+    prisma.user.count({
+      where,
+    }),
 
-  const [rows]: any = await connection.query(
-    `
-    SELECT
-      u.id,
-      u.name,
-      u.last_name,
-      u.email,
-      u.role,
-      u.created_at,
-      u.is_active,
+    prisma.user.findMany({
+      where,
+      select: {
+        id: true,
+        name: true,
+        lastName: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        isActive: true,
 
-      sp.id AS seller_id,
-      sp.shop_name,
-      sp.slug,
-      sp.description,
-      sp.logo,
-      sp.company_name,
-      sp.nip,
-      sp.street,
-      sp.city,
-      sp.postal_code
-
-    FROM users u
-
-    LEFT JOIN seller_profiles sp
-      ON sp.user_id = u.id
-
-    WHERE u.role <> "ADMIN"
-
-    AND (
-      u.email LIKE ?
-      OR u.name LIKE ?
-      OR u.last_name LIKE ?
-    )
-
-    ORDER BY u.created_at DESC
-
-    LIMIT ?
-    OFFSET ?
-    `,
-    [searchValue, searchValue, searchValue, limit, offset],
-  );
+        sellerProfiles: {
+          select: {
+            id: true,
+            shopName: true,
+            slug: true,
+            description: true,
+            logo: true,
+            companyName: true,
+            nip: true,
+            street: true,
+            city: true,
+            postalCode: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip: offset,
+      take: limit,
+    }),
+  ]);
 
   return {
-    users: rows,
-    total: count.total,
+    users: users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      last_name: user.lastName,
+      email: user.email,
+      role: user.role,
+      created_at: user.createdAt,
+      is_active: user.isActive,
+      seller: user.sellerProfiles[0]
+        ? {
+            seller_id: user.sellerProfiles[0].id,
+            shop_name: user.sellerProfiles[0].shopName,
+            slug: user.sellerProfiles[0].slug,
+            description: user.sellerProfiles[0].description,
+            logo: user.sellerProfiles[0].logo,
+            company_name: user.sellerProfiles[0].companyName,
+            nip: user.sellerProfiles[0].nip,
+            street: user.sellerProfiles[0].street,
+            city: user.sellerProfiles[0].city,
+            postal_code: user.sellerProfiles[0].postalCode,
+          }
+        : null,
+    })),
+    total,
     page,
     limit,
-    totalPages: Math.ceil(count.total / limit),
+    totalPages: Math.ceil(total / limit),
   };
 };
 
 export const deleteUser = async (id: number) => {
-  await connection.query(
-    `
-    DELETE FROM users
-    WHERE id = ?
-    `,
-    [id],
-  );
+  await prisma.user.delete({
+    where: {
+      id,
+    },
+  });
 
   return true;
 };
@@ -89,55 +119,46 @@ export const deleteUser = async (id: number) => {
 export const updateUser = async (id: number, data: any) => {
   const { name, last_name, email, role } = data;
 
-  await connection.query(
-    `
-UPDATE users
-SET
-name = ?,
-last_name = ?,
-email = ?,
-role = ?,
-is_super_admin = ? 
-
-WHERE id = ?
-
-`,
-    [name, last_name, email, role, role == "ADMIN" ? 1 : 0, id],
-  );
+  await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      name,
+      lastName: last_name,
+      email,
+      role,
+      isSuperAdmin: role === "ADMIN",
+    },
+  });
 
   return true;
 };
-
 export const unactivUser = async (id: number) => {
-  await connection.query(
-    `
-UPDATE users
-SET
-is_active = 0
-
-WHERE id = ?
-
-`,
-    [id],
-  );
+  await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: false,
+    },
+  });
 
   return true;
 };
 
 export const activeUser = async (id: number) => {
-  await connection.query(
-    `
-    UPDATE users
-    SET
-      is_active = 1
-    WHERE id = ?
-    `,
-    [id],
-  );
+  await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      isActive: true,
+    },
+  });
 
   return true;
 };
-
 export const getAllAdminProducts = async (
   page: number,
   limit: number,
@@ -145,95 +166,74 @@ export const getAllAdminProducts = async (
 ) => {
   const offset = (page - 1) * limit;
 
-  const searchValue = `%${search}%`;
+  const where = {
+    OR: [
+      {
+        name: {
+          contains: search,
+          mode: "insensitive" as const,
+        },
+      },
+      ...(search && !isNaN(Number(search)) ? [{ id: Number(search) }] : []),
+    ],
+  };
 
-  const [rows] = await connection.query(
-    `
-SELECT 
-      p.id,
-      p.name,
-      p.description,
-      p.price,
-      p.stock,
-      p.attributes,
-      p.created_at,
-      p.brand,
-      p.model,
-      p.is_deleted,
-      p.is_visible,
-      p.seller_id,
-      sp.shop_name,
-      sp.shop_name,
+  const [products, total] = await prisma.$transaction([
+    prisma.product.findMany({
+      where,
+      skip: offset,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
 
-u.name AS seller_name,
-u.last_name AS seller_last_name,
-u.email AS seller_email,
-      
+      include: {
+        images: true,
+        category: {
+          select: {
+            id: true,
+          },
+          include: {
+            subcategories: true,
+          },
+        },
+        seller: {
+          select: {
+            sellerProfiles: {
+              select: {
+                shopName: true,
+              },
+            },
+          },
+          include: {
+            sellerProfiles: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+      },
+    }),
 
-      c.id AS category_id,
-      s.id AS subcategory_id,
+    prisma.product.count({
+      where,
+    }),
+  ]);
 
-      COALESCE(
-        JSON_ARRAYAGG(
-          JSON_OBJECT(
-            'id', pi.id,
-            'image', pi.image,
-            'url', pi.url,
-            'is_main', pi.is_main
-          )
-        ),
-        JSON_ARRAY()
-      ) AS images
-
-    FROM products p
-
-    LEFT JOIN categories c 
-      ON p.category_id = c.id
-      LEFT JOIN subcategories s
-      ON p.subcategory_id = s.id
-
-    LEFT JOIN product_images pi
-      ON p.id = pi.product_id
-LEFT JOIN seller_profiles sp
-    ON sp.id = p.seller_id
-
-LEFT JOIN users u
-    ON u.id = sp.user_id
-
-    
-
- WHERE 
-      p.name LIKE ?
-      OR CAST(p.id AS CHAR) LIKE ?
-      
-
-    GROUP BY p.id
-
-    ORDER BY p.created_at DESC
-
-    LIMIT ? OFFSET ?
-
-    `,
-    [searchValue, searchValue, limit, offset],
-  );
-
-  const [countResult]: any = await connection.query(
-    `
-    SELECT COUNT(*) as total
-    FROM products p
-
-    WHERE 
-      p.name LIKE ?
-      OR CAST(p.id AS CHAR) LIKE ?
-
-    `,
-    [searchValue, searchValue],
-  );
-
-  const total = countResult[0].total;
+  const formattedProducts = products.map((product) => ({
+    ...product,
+    sellerName: product.seller?.name,
+    sellerLastName: product.seller?.lastName,
+    sellerEmail: product.seller?.email,
+    shopName: product.seller?.sellerProfiles[0]?.shopName,
+    categoryId: product.category?.id,
+    subcategoryId: product.subcategoryId,
+    images: product.images,
+  }));
 
   return {
-    products: rows,
+    products: formattedProducts,
     total,
     page,
     limit,
@@ -242,52 +242,46 @@ LEFT JOIN users u
 };
 
 export const hideProduct = async (id: number) => {
-  await connection.query(
-    `
-    UPDATE products
-
-    SET is_visible = 0
-
-    WHERE id = ?
-    `,
-    [id],
-  );
+  await prisma.product.update({
+    where: {
+      id,
+    },
+    data: {
+      isVisible: false,
+    },
+  });
 
   return true;
 };
 
 export const showProduct = async (id: number) => {
-  await connection.query(
-    `
-    UPDATE products
-
-    SET is_visible = 1
-
-    WHERE id = ?
-    `,
-    [id],
-  );
+  await prisma.product.update({
+    where: {
+      id,
+    },
+    data: {
+      isVisible: true,
+    },
+  });
 
   return true;
 };
 
 export const deleteProduct = async (id: number) => {
-  await connection.query(
-    `
-    UPDATE products
-
-    SET is_deleted = 1,
-        is_visible = 0
-
-    WHERE id = ?
-
-    `,
-    [id],
-  );
+  await prisma.product.update({
+    where: {
+      id,
+    },
+    data: {
+      isDeleted: true,
+      isVisible: false,
+    },
+  });
 
   return true;
 };
 
+//DO AKTUALIZACJI
 export const updateProductImages = async (
   productId: number,
   sellerId: number,
@@ -337,21 +331,23 @@ export const updateProductImages = async (
 
   return values;
 };
+
 export const deleteProductImagesService = async (
   productId: number,
   images: string[],
 ) => {
   if (!images.length) return;
 
-  await connection.query(
-    `
- DELETE FROM product_images
- WHERE product_id = ?
- AND image IN (?)
- `,
-    [productId, images],
-  );
+  await prisma.productImage.deleteMany({
+    where: {
+      productId,
+      image: {
+        in: images,
+      },
+    },
+  });
 };
+
 export const updateProductService = async (productId: number, data: any) => {
   const {
     name,
@@ -365,39 +361,27 @@ export const updateProductService = async (productId: number, data: any) => {
     attributes,
   } = data;
 
-  const [result] = await connection.query(
-    `
-    UPDATE products
-    SET
-      name = ?,
-      description = ?,
-      price = ?,
-      stock = ?,
-      brand = ?,
-      model = ?,
-      category_id = ?,
-      subcategory_id = ?,
-      attributes = ?,
-      updated_at = NOW()
-
-    WHERE id = ?
-    `,
-    [
+  const result = await prisma.product.update({
+    where: {
+      id: productId,
+    },
+    data: {
       name,
       description,
       price,
       stock,
       brand,
       model,
-      category_id,
-      subcategory_id,
-      JSON.stringify(attributes),
-      productId,
-    ],
-  );
+      categoryId: category_id,
+      subcategoryId: subcategory_id,
+      attributes,
+      updatedAt: new Date(),
+    },
+  });
 
   return result;
 };
+
 export const addProductImagesService = async (
   productId: number,
   sellerId: number,
@@ -405,26 +389,16 @@ export const addProductImagesService = async (
 ) => {
   if (!files.length) return;
 
-  const values = files.map((file, index) => [
+  const values = files.map((file, index) => ({
     productId,
-    file.filename,
-    `uploads/products/${sellerId}/${productId}/${file.filename}`,
-    index === 0 ? 1 : 0,
-  ]);
+    image: file.filename,
+    url: `uploads/products/${sellerId}/${productId}/${file.filename}`,
+    isMain: index === 0,
+  }));
 
-  await connection.query(
-    `
- INSERT INTO product_images
- (
-   product_id,
-   image,
-   url,
-   is_main
- )
- VALUES ?
- `,
-    [values],
-  );
+  await prisma.productImage.createMany({
+    data: values,
+  });
 
   return values;
 };
@@ -440,74 +414,40 @@ export const updateSellerProfileAdmin = async (userId: number, data: any) => {
     logo,
   } = data;
 
-  const [result] = await connection.query(
-    `
-UPDATE seller_profiles
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+  });
 
-SET
-
-shop_name=?,
-
-description=?,
-
-company_name=?,
-
-nip=?,
-
-street=?,
-
-city=?,
-
-postal_code=?,
-
-logo=?,
-
-updated_at=NOW()
-
-
-WHERE user_id=?
-
-`,
-
-    [
-      shop_name,
-
+  const result = await prisma.sellerProfile.updateMany({
+    where: {
+      userId: user?.id,
+    },
+    data: {
+      shopName: shop_name,
       description,
-
-      company_name,
-
+      companyName: company_name,
       nip,
-
       street,
-
       city,
-
-      postal_code,
-
-      logo || "",
-
-      userId,
-    ],
-  );
+      postalCode: postal_code,
+      logo: logo || "",
+      updatedAt: new Date(),
+    },
+  });
 
   return result;
 };
+
 export const getSellerByUserId = async (userId: number) => {
-  const [rows]: any = await connection.query(
-    `
-SELECT *
-
-FROM seller_profiles
-
-WHERE user_id=?
-
-`,
-
-    [userId],
-  );
-
-  return rows[0];
+  return await prisma.sellerProfile.findFirst({
+    where: {
+      userId,
+    },
+  });
 };
+
 export const getAdminOrdersService = async (
   page: number,
   limit: number,
@@ -515,78 +455,81 @@ export const getAdminOrdersService = async (
 ) => {
   const offset = (page - 1) * limit;
 
-  const searchValue = `%${search}%`;
+  const where = {
+    OR: [
+      {
+        orderNumber: {
+          contains: search,
+          mode: "insensitive" as const,
+        },
+      },
+      {
+        user: {
+          is: {
+            email: {
+              contains: search,
+              mode: "insensitive" as const,
+            },
+          },
+        },
+      },
+      {
+        user: {
+          is: {
+            name: {
+              contains: search,
+              mode: "insensitive" as const,
+            },
+          },
+        },
+      },
+    ],
+  };
 
-  const [orders] = await connection.query(
-    `
-    SELECT
-      o.id,
-      o.order_number,
-      o.user_id,
+  const [orders, total] = await prisma.$transaction([
+    prisma.order.findMany({
+      where,
+      skip: offset,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        user: true,
+      },
+    }),
 
-      -- użytkownik
-      u.email,
-      u.name AS user_name,
-      u.last_name AS user_last_name,
-
-      -- snapshot adresu
-      oa.first_name,
-      oa.last_name,
-      oa.phone,
-      oa.street,
-      oa.postal_code,
-      oa.city,
-      oa.country,
-
-      -- zamówienie
-      o.payment_method,
-      o.delivery_method,
-      o.delivery_price,
-      o.total_price,
-      o.status,
-      o.created_at
-
-
-    FROM orders o
-
-    LEFT JOIN users u
-      ON u.id = o.user_id
-
-    LEFT JOIN order_addresses oa
-      ON oa.id = o.address_id
-
-
-    WHERE 
-      o.order_number LIKE ?
-      OR u.email LIKE ?
-      OR u.name LIKE ?
-
-
-    ORDER BY o.created_at DESC
-
-    LIMIT ?
-    OFFSET ?
-
-    `,
-    [searchValue, searchValue, searchValue, limit, offset],
-  );
-
-  const [countResult]: any = await connection.query(
-    `
-   SELECT COUNT(*) AS total
-    FROM orders o
-
-    WHERE 
-      o.order_number LIKE ?
-
-    `,
-    [searchValue],
-  );
-
-  const total = countResult[0].total;
+    prisma.order.count({
+      where,
+    }),
+  ]);
 
   return {
-    orders,
+    orders: orders.map((order) => ({
+      id: order.id,
+      order_number: order.orderNumber,
+      user_id: order.userId,
+
+      email: order.user?.email,
+      user_name: order.user?.name,
+      user_last_name: order.user?.lastName,
+
+      first_name: order.customerName,
+      last_name: order.customerLastName,
+      phone: order.customerPhone,
+      street: order.customerStreet,
+      postal_code: order.customerPostalCode,
+      city: order.customerCity,
+      country: order.customerCountry,
+
+      payment_method: order.paymentMethod,
+      delivery_method: order.deliveryMethod,
+      delivery_price: order.deliveryPrice,
+      total_price: order.totalPrice,
+      status: order.status,
+      created_at: order.createdAt,
+    })),
+
     total,
     page,
     limit,
@@ -594,112 +537,79 @@ export const getAdminOrdersService = async (
   };
 };
 export const getAdminOrderDetailsService = async (id: string) => {
-  const [rows]: any = await connection.query(
-    `
-    SELECT
+  const order = await prisma.order.findUnique({
+    where: {
+      id: Number(id),
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+        },
+      },
+      items: {
+        select: {
+          id: true,
+          productId: true,
+          productName: true,
+          quantity: true,
+          price: true,
+          image: true,
+        },
+      },
+    },
+  });
 
-      o.id AS order_id,
-      o.order_number,
-      o.status,
-      o.total_price,
-      o.delivery_method,
-      o.delivery_price,
-      o.locker_id,
-      o.locker_name,
-      o.locker_address,
-      o.payment_method,
-      o.created_at,
-
-      u.id AS user_id,
-      u.email,
-
-      oa.name,
-      oa.last_name,
-      oa.street,
-      oa.postal_code,
-      oa.city,
-      oa.country,
-      oa.phone,
-
-      oi.id AS item_id,
-      oi.product_id,
-      oi.product_name,
-      oi.quantity,
-      oi.price,
-      oi.image
-
-
-    FROM orders o
-
-
-    JOIN users u
-    ON u.id = o.user_id
-
-
-    LEFT JOIN order_addresses oa
-    ON oa.id = o.address_id
-
-
-    LEFT JOIN order_items oi
-    ON oi.order_id = o.id
-
-
-    WHERE o.id = ?
-
-    `,
-    [id],
-  );
-
-  if (!rows.length) {
+  if (!order) {
     return null;
   }
 
-  const order = {
-    order_id: rows[0].order_id,
-    order_number: rows[0].order_number,
-    status: rows[0].status,
-    total_price: rows[0].total_price,
-    delivery_method: rows[0].delivery_method,
-    delivery_price: rows[0].delivery_price,
-    payment_method: rows[0].payment_method,
-    created_at: rows[0].created_at,
+  return {
+    order_id: order.id,
+    order_number: order.orderNumber,
+    status: order.status,
+    total_price: order.totalPrice,
+    delivery_method: order.deliveryMethod,
+    delivery_price: order.deliveryPrice,
+    locker_id: order.lockerId,
+    locker_name: order.lockerName,
+    locker_address: order.lockerAddress,
+    payment_method: order.paymentMethod,
+    created_at: order.createdAt,
 
     customer: {
-      email: rows[0].email,
-      name: rows[0].name,
-      last_name: rows[0].last_name,
-      street: rows[0].street,
-      postal_code: rows[0].postal_code,
-      city: rows[0].city,
-      country: rows[0].country,
-      phone: rows[0].phone,
+      email: order.email,
+      name: order.customerName,
+      last_name: order.customerLastName,
+      street: order.customerStreet,
+      postal_code: order.customerPostalCode,
+      city: order.customerCity,
+      country: order.customerCountry,
+      phone: order.customerPhone,
     },
 
-    items: rows.map((item: any) => ({
-      id: item.item_id,
-      product_id: item.product_id,
-      product_name: item.product_name,
+    items: order.items.map((item) => ({
+      id: item.id,
+      product_id: item.productId,
+      product_name: item.productName,
       quantity: item.quantity,
       price: item.price,
       image: item.image,
     })),
   };
-
-  return order;
 };
+
 export const updateAdminOrderStatusService = async (
   orderId: number,
   status: string,
 ) => {
-  await connection.query(
-    `
- UPDATE orders
-
- SET status = ?
-
- WHERE id = ?
-
- `,
-    [status, orderId],
-  );
+  await prisma.order.update({
+    where: {
+      id: orderId,
+    },
+    data: {
+      status: status as any,
+    },
+  });
 };

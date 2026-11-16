@@ -1,9 +1,9 @@
 import { useCartStore } from "../../../zustand/states/cartState";
-import {  useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { useImage } from "../../../hooks/useImage";
 import { X } from "lucide-react";
-
+import { ca } from "zod/locales";
 
 const CartDropdown = ({ onClose }: any) => {
   const navigate = useNavigate();

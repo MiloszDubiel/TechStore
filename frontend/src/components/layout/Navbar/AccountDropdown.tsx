@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { LogIn, UserPlus, User, Store, Shield, LogOut } from "lucide-react";
+import { LogIn, UserPlus, User, Store, Shield, LogOut, X } from "lucide-react";
 import { useSeller } from "../../../hooks/useSeller";
 import { useEffect, useRef } from "react";
 

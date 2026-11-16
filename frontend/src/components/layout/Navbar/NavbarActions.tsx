@@ -1,4 +1,5 @@
-import { Heart, ShoppingCart, Bell, MessageCircle, User, Menu } from "lucide-react";
+import { Heart, ShoppingCart, Bell, MessageCircle, User, Menu, SearchIcon } from "lucide-react";
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import FavoritesDropdown from "./FavoriteDropdown";
@@ -17,9 +18,9 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
   const { notifications, notificationData = [] } = useNotification();
   const { favorites = [] } = useFavorite();
 
-  const { unreadMessages } = useChat();
-
-  const data = unreadMessages().data;
+  const {
+    unreadMessages: { data },
+  } = useChat();
 
   const [hidden, setHidden] = useState<boolean>(true);
 

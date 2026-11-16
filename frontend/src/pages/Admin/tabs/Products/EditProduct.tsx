@@ -1,12 +1,20 @@
 import { useState } from "react";
+
 import { toast } from "react-toastify";
+
 import { productEditSchema } from "../../../../schemas/productSchema";
 import ProductForm from "../../../SellerPage/SellerDashboardPage/tabs/Products/ProductForm";
+
 import { useSeller } from "../../../../hooks/useSeller";
 import { useAdmin } from "../../../../hooks/useAdmin";
+import { useAuth } from "../../../../context/AuthContext";
 
+type Props = {
+  product: any;
+};
 
 const ProductEditForm = ({ product, onBack }: any) => {
+  const [newImages] = useState<File[]>([]);
 
   const {
     getCategories: { data: categories },

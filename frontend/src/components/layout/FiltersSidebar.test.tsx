@@ -1,3 +1,4 @@
+import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "../../test/utils/test-utils";
 import FiltersSidebar from "./FiltersSidebar";
 import { screen } from "@testing-library/dom";
@@ -26,7 +27,7 @@ describe("FiltersSidebar tests ", () => {
   });
 
   it("checks Bateria Wh checkbox", async () => {
-    await screen.findByLabelText("50", {
+    const checkbox = await screen.findByLabelText("50", {
       selector: 'input[type="checkbox"]',
     });
   });
