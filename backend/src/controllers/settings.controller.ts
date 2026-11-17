@@ -119,6 +119,8 @@ export const setAdresses = async (req: Request, res: Response) => {
     const { street, postal_code, city, is_default } = req.body;
     const { id } = (req as any).user;
 
+
+
     if (!id) {
       return res.status(400).json({
         success: false,

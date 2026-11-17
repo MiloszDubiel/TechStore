@@ -67,9 +67,9 @@ export default function AddressModal({ closeModal, saveAddress, defaultValues, u
             <label className="mb-1 block text-sm font-medium">Kod pocztowy</label>
 
             <input
-              {...register("postal_code")}
+              {...register("postalCode")}
               onChange={(e) => {
-                setValue("postal_code", formatPostalCode(e.target.value), {
+                setValue("postalCode", formatPostalCode(e.target.value), {
                   shouldValidate: true,
                   shouldDirty: true,
                 });
@@ -77,7 +77,7 @@ export default function AddressModal({ closeModal, saveAddress, defaultValues, u
               className="w-full border border-(--border) bg-(--surface-secondary) p-2 text-(--foreground) outline-none focus:border-orange-500"
             />
 
-            {errors.postal_code && <p className="mt-1 text-sm text-red-500">{errors.postal_code.message}</p>}
+            {errors.postalCode && <p className="mt-1 text-sm text-red-500">{errors.postalCode.message}</p>}
           </div>
 
           <div>
@@ -95,7 +95,7 @@ export default function AddressModal({ closeModal, saveAddress, defaultValues, u
             <input
               id="is_default"
               type="checkbox"
-              {...register("is_default", {
+              {...register("isDefault", {
                 setValueAs: (value) => Boolean(value),
               })}
               className="h-4 w-4 cursor-pointer accent-orange-500"

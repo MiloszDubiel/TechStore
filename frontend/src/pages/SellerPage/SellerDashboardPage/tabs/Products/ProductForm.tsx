@@ -55,11 +55,11 @@ const ProductForm = ({
     name: "attributes",
   });
 
-  const selectedCategory = watch("category_id");
+  const selectedCategory = watch("categoryId");
 
-  const filteredSubcategories = subcategories?.filter((item) => Number(item.category_id) === Number(selectedCategory));
+  const filteredSubcategories = subcategories?.filter((item) => Number(item.categoryId) === Number(selectedCategory));
 
-  const selectedSubcategory = watch("subcategory_id");
+  const selectedSubcategory = watch("subcategoryId");
 
   const { data: parameters = [] } = useQuery({
     queryKey: ["subcategory-parameters", selectedSubcategory],
@@ -71,6 +71,8 @@ const ProductForm = ({
     },
     enabled: !!selectedSubcategory,
   });
+
+
 
   useEffect(() => {
     if (!parameters.length) return;
@@ -177,14 +179,16 @@ const ProductForm = ({
         <label className="mb-2 block font-medium text-(--foreground)">Kategoria</label>
 
         <select
-          {...register("category_id")}
+          {...register("categoryId")}
           onChange={(e) => {
-            setValue("category_id", e.target.value);
-            setValue("subcategory_id", "");
+            setValue("categoryId", e.target.value);
+            setValue("subcategoryId", "");
           }}
           className="w-full border border-(--border) bg-(--surface) px-4 py-3 text-(--foreground)"
         >
-          <option value="">Wybierz kategorię</option>
+          <option value="" disabled>
+            Wybierz kategorię
+          </option>
 
           {categories.map((category: any) => (
             <option key={category.id} value={category.id}>
@@ -193,22 +197,24 @@ const ProductForm = ({
           ))}
         </select>
 
-        <FormError message={errors?.category_id?.message} />
+        <FormError message={errors?.categoryId?.message} />
       </div>
 
       <div>
         <label className="mb-2 block font-medium text-(--foreground)">Podkategoria</label>
 
         <select
-          {...register("subcategory_id")}
+          {...register("subcategoryId")}
           onChange={(e) => {
-            setValue("subcategory_id", e.target.value, {
+            setValue("subcategoryId", e.target.value, {
               shouldValidate: true,
             });
           }}
           className="w-full border border-(--border) bg-(--surface) px-4 py-3 text-(--foreground)"
         >
-          <option value="">Wybierz podkategorię</option>
+          <option value="" disabled>
+            Wybierz podkategorię
+          </option>
 
           {filteredSubcategories.map((sub: any) => (
             <option key={sub.id} value={sub.id}>

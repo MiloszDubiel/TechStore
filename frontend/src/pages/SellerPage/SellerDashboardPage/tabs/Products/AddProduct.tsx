@@ -20,14 +20,11 @@ const AddProduct = () => {
     brand: "",
     model: "",
     description: "",
-
     price: "",
     stock: "",
-
-    category_id: "",
-    subcategory_id: "",
+    categoryId: "",
+    subcategoryId: "",
     attributes: [],
-
     images: [],
   };
 
@@ -39,8 +36,8 @@ const AddProduct = () => {
       description: data.description,
       price: data.price,
       stock: data.stock,
-      category_id: data.category_id,
-      subcategory_id: data.subcategory_id,
+      categoryId: data.categoryId,
+      subcategoryId: data.subcategoryId,
       attributes: data.attributes,
       seller_id: sellerData.seller_id,
     };

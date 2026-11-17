@@ -11,10 +11,10 @@ export const Addresses = () => {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [currentEditAddress, setCurrentEditAdress] = useState<AddressFrom>({
     city: "",
-    postal_code: "",
+    postalCode: "",
     street: "",
     isEdit: false,
-    is_default: false,
+    isDefault: false,
   });
   const [openConfirm, setOpenConfirm] = useState({ id: "", isOpen: false });
   const [edited, setEdited] = useState(false);
@@ -22,6 +22,8 @@ export const Addresses = () => {
   const { user } = useAuth();
 
   const { userAddresses, saveAddress, updateAddress, deleteAddress } = useAdresses(user?.id);
+
+  console.log(userAddresses);
 
   return (
     <div>
@@ -33,10 +35,10 @@ export const Addresses = () => {
           setIsAddressModalOpen(true);
           setCurrentEditAdress({
             city: "",
-            postal_code: "",
+            postalCode: "",
             street: "",
             isEdit: false,
-            is_default: false,
+            isDefault: false,
           });
           setEdited(false);
         }}
@@ -50,13 +52,13 @@ export const Addresses = () => {
           <AddressCard
             key={address.id}
             id={address.id}
-            title={address.is_default ? "Adres domyślny" : "Adres"}
+            title={address.isDefault ? "Adres domyślny" : "Adres"}
             street={address.street}
-            postalCode={address.postal_code}
+            postalCode={address.postalCode}
             city={address.city}
             country={address.country}
             phone={user?.phone}
-            isDefault={address.is_default}
+            isDefault={address.isDefault}
             onEdit={() => {
               setCurrentEditAdress({
                 ...address,

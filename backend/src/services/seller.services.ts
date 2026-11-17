@@ -51,9 +51,9 @@ export const createSellerProfile = async ({
   logo,
   nip,
   city,
-  postal_code,
+  postalCode,
   street,
-  company_name,
+  companyName,
 }: {
   userId: number;
   shop_name: string;
@@ -62,9 +62,9 @@ export const createSellerProfile = async ({
   logo: string | null;
   nip: string | null;
   city?: string;
-  postal_code?: string;
+  postalCode?: string;
   street?: string;
-  company_name: string;
+  companyName: string;
 }) => {
   const result = await prisma.sellerProfile.create({
     data: {
@@ -75,9 +75,9 @@ export const createSellerProfile = async ({
       logo,
       nip,
       city: city || null,
-      postalCode: postal_code || null,
+      postalCode: postalCode || null,
       street: street || null,
-      companyName: company_name,
+      companyName: companyName,
     },
     select: {
       id: true,
@@ -292,13 +292,13 @@ export const editSellerProfile = async (data: {
   logo: string | null;
   nip: string | null;
   city?: string;
-  postal_code?: string;
+  postalCode?: string;
   street?: string;
-  company_name: string;
+  companyName: string;
 }) => {
   try {
     const slug = slugify(
-      data.shop_name + " " + data.company_name + " " + data.userId,
+      data.shop_name + " " + data.companyName + " " + data.userId,
       {
         lower: true,
         strict: true,
@@ -317,9 +317,9 @@ export const editSellerProfile = async (data: {
         logo: data.logo,
         nip: data.nip,
         city: data.city || null,
-        postalCode: data.postal_code || null,
+        postalCode: data.postalCode || null,
         street: data.street || null,
-        companyName: data.company_name,
+        companyName: data.companyName,
       },
     });
 

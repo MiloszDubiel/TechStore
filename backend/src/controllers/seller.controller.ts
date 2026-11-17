@@ -37,10 +37,10 @@ export const createProfile = async (req: Request, res: Response) => {
       shop_name,
       description,
       nip,
-      company_name,
+      companyName,
       street,
       city,
-      postal_code,
+      postalCode,
     } = req.body;
 
     if (!shop_name || !description) {
@@ -57,7 +57,7 @@ export const createProfile = async (req: Request, res: Response) => {
       });
     }
 
-    const slug = slugify(shop_name + " " + company_name + " " + userId, {
+    const slug = slugify(shop_name + " " + companyName + " " + userId, {
       lower: true,
       strict: true,
       trim: true,
@@ -73,9 +73,9 @@ export const createProfile = async (req: Request, res: Response) => {
       logo,
       nip,
       city,
-      postal_code,
+      postalCode,
       street,
-      company_name,
+      companyName,
     });
 
     await updateUserRoleToSeller(userId);
@@ -211,9 +211,9 @@ export const editSeller = async (req: any, res: any) => {
       logo: newLogo,
       nip: req.body.nip,
       city: req.body.city,
-      postal_code: req.body.postal_code,
+      postalCode: req.body.postalCode,
       street: req.body.street,
-      company_name: req.body.company_name,
+      companyName: req.body.companyName,
     });
 
     if (req.file && oldLogo && oldLogo !== newLogo) {
@@ -336,7 +336,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       attributes,
 
       product_data: {
-        ...product.productData as any,
+        ...(product.productData as any),
 
         url: finalImages,
       },

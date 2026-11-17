@@ -62,7 +62,7 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
             Mój profil
           </Link>
 
-          {user?.role === "SELLER" && user?.id === data?.user_id && (
+          {user?.role === "SELLER" && user?.id === data?.userId && (
             <Link to="/seller/dashboard" onClick={onClose} className={itemClass}>
               <Store size={18} />
               Panel sprzedawcy
@@ -76,7 +76,7 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
             </Link>
           )}
 
-          {user?.role !== "ADMIN" && user?.id !== data?.user_id && (
+          {user?.role !== "ADMIN" && user?.id !== data?.userId && (
             <Link to="/seller/create" onClick={onClose} className={itemClass}>
               <Store size={18} />
               Zostań sprzedawcą

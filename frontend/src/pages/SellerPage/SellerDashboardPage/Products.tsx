@@ -25,7 +25,7 @@ const getStatus = (product: any) => {
 
 const Products = () => {
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [search, _] = useState("");
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [productData, setProductData] = useState<any>();
   const [isOpen, setIsOpen] = useState(false);
@@ -161,6 +161,7 @@ const Products = () => {
         </table>
 
         <Pagination page={page} totalPages={data?.totalPages ?? 1} onPageChange={setPage} />
+        
         <ConfirmModal
           isOpen={isOpen}
           message={"Czy chcesz usunąć produkt? "}

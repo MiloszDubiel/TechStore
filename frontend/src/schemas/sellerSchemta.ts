@@ -16,11 +16,11 @@ export const logoSchema = z
   });
 
 const sellerFields = {
-  shop_name: z.string().min(3, "Podaj nazwę sklepu").max(100),
+  shopName: z.string().min(3, "Podaj nazwę sklepu").max(100),
 
   description: z.string().min(20, "Opis powinien mieć minimum 20 znaków").max(1000),
 
-  company_name: z.string().min(3, "Podaj nazwę firmy"),
+  companyName: z.string().min(3, "Podaj nazwę firmy"),
 
   nip: z.string().regex(/^\d{10}$/, "Niepoprawny NIP"),
 
@@ -28,7 +28,7 @@ const sellerFields = {
 
   city: z.string().min(2, "Podaj miasto"),
 
-  postal_code: z.string().regex(/^\d{2}-\d{3}$/, "Kod powinien mieć format XX-XXX"),
+  postalCode: z.string().regex(/^\d{2}-\d{3}$/, "Kod powinien mieć format XX-XXX"),
 };
 
 // Tworzenie sklepu - logo wymagane

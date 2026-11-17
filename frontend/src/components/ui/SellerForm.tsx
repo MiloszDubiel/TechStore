@@ -19,6 +19,8 @@ type Props = {
 const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButton, storeData = null, onBack }: Props) => {
   let data = storeData;
 
+
+
   const {
     register,
     handleSubmit,
@@ -35,17 +37,19 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
   useEffect(() => {
     if (data) {
       reset({
-        shop_name: data?.shop_name ?? "",
+        shopName: data?.shopName ?? "",
         description: data?.description ?? "",
-        company_name: data?.company_name ?? "",
+        companyName: data?.companyName ?? "",
         nip: data?.nip ?? "",
         street: data?.street ?? "",
         city: data?.city ?? "",
-        postal_code: data?.postal_code ?? "",
+        postalCode: data?.postalCode ?? "",
       });
     }
   }, [data]);
   const handleFormSubmit = (data: SellerProfileType) => {
+
+
     onSubmit({
       ...data,
       removedLogo,
@@ -80,12 +84,12 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
             <label className="mb-2 block font-medium text-(--foreground)">Nazwa sklepu</label>
 
             <input
-              {...register("shop_name")}
+              {...register("shopName")}
               placeholder="Nazwa sklepu"
               className="w-full border border-(--border) bg-(--surface-secondary) px-4 py-3 text-(--foreground) outline-none placeholder:text-(--foreground-secondary) focus:border-(--primary)"
             />
 
-            {errors.shop_name && <p className="mt-1 text-sm text-red-500">{errors.shop_name.message}</p>}
+            {errors.shopName && <p className="mt-1 text-sm text-red-500">{errors.shopName.message}</p>}
           </div>
 
           <div>
@@ -135,20 +139,20 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {[
-            ["company_name", "Nazwa firmy"],
+            ["companyName", "Nazwa firmy"],
             ["nip", "NIP"],
             ["street", "Ulica"],
             ["city", "Miasto"],
-            ["postal_code", "Kod pocztowy"],
+            ["postalCode", "Kod pocztowy"],
           ].map(([field, placeholder]: any) => (
             <div key={field}>
               <input
                 {...register(field)}
                 placeholder={placeholder}
                 onChange={(e: any) => {
-                  if (field !== "postal_code") return;
+                  if (field !== "postalCode") return;
 
-                  setValue("postal_code", formatPostalCode(e.target.value), {
+                  setValue("postalCode", formatPostalCode(e.target.value), {
                     shouldValidate: true,
                     shouldDirty: true,
                   });
