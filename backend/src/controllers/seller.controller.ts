@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import slugify from "slugify";
+import { supabaseAdmin } from "../lib/supabaseAdmin";
 import {
   createSellerProfile,
   getSellerByUserId,
@@ -30,11 +31,11 @@ export const createProfile = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
 
     if (!userId) {
-      return res.status(404).json({ message: "Brak Id" });
+      return res.status(401).json({ message: "Brak Id" });
     }
 
     const {
-      shop_name,
+      shopName,
       description,
       nip,
       companyName,
@@ -43,7 +44,9 @@ export const createProfile = async (req: Request, res: Response) => {
       postalCode,
     } = req.body;
 
-    if (!shop_name || !description) {
+    const file: any = req.file;
+
+    if (!shopName || !description) {
       return res.status(400).json({
         message: "Uzupełnij wymagane pola.",
       });
@@ -57,17 +60,35 @@ export const createProfile = async (req: Request, res: Response) => {
       });
     }
 
-    const slug = slugify(shop_name + " " + companyName + " " + userId, {
+    const slug = slugify(`${shopName} ${companyName ?? ""} ${userId}`, {
       lower: true,
       strict: true,
       trim: true,
     });
 
-    const logo = req.file?.filename ?? null;
+    let logo: string | null = null;
+
+    let uploadPath = "";
+    if (file) {
+      uploadPath = `sellers/${userId}/${Date.now()}-${file.originalname}`;
+
+      const { data, error } = await supabaseAdmin.storage
+        .from("techstore")
+        .upload(uploadPath, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      logo = data.path;
+    }
 
     await createSellerProfile({
       userId,
-      shop_name,
+      shopName,
       slug,
       description,
       logo,
@@ -76,18 +97,19 @@ export const createProfile = async (req: Request, res: Response) => {
       postalCode,
       street,
       companyName,
+      uploadPath,
     });
 
     await updateUserRoleToSeller(userId);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Konto sprzedawcy zostało utworzone.",
     });
   } catch (err) {
     console.error(err);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Wystąpił błąd serwera.",
     });
   }
@@ -192,20 +214,49 @@ export const deleteProduct = async (req: Request, res: Response) => {
     });
   }
 };
-
 export const editSeller = async (req: any, res: any) => {
   try {
     const userId = req.user.id;
 
     const seller = await getSellerByUserId(userId);
 
-    const oldLogo = seller!.logo;
+    const file = req.file;
 
-    const newLogo = req.file ? req.file.filename : oldLogo;
+    if (!seller) {
+      return res.status(404).json({
+        message: "Profil sprzedawcy nie istnieje",
+      });
+    }
+
+    const oldLogo = seller.path;
+
+    let newLogo = oldLogo;
+    let uploadPath = " ";
+
+    if (req.file) {
+      uploadPath = `sellers/${userId}/${Date.now()}-${req.file.originalname}`;
+
+      const { data, error } = await supabaseAdmin.storage
+        .from("techstore")
+        .upload(uploadPath, file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: false,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const {
+        data: { publicUrl },
+      } = supabaseAdmin.storage.from("techstore").getPublicUrl(data.path);
+
+      newLogo = publicUrl;
+    }
 
     await editSellerProfile({
       userId,
-      shop_name: req.body.shop_name,
+      shopName: req.body.shopName,
       slug: req.body.slug,
       description: req.body.description,
       logo: newLogo,
@@ -214,25 +265,31 @@ export const editSeller = async (req: any, res: any) => {
       postalCode: req.body.postalCode,
       street: req.body.street,
       companyName: req.body.companyName,
+      uploadPath: uploadPath,
     });
 
     if (req.file && oldLogo && oldLogo !== newLogo) {
-      const oldPath = path.join(process.cwd(), "uploads", "sellers", oldLogo);
+      const { error } = await supabaseAdmin.storage
+        .from("techstore")
+        .remove([oldLogo.substring(oldLogo.indexOf("/sellers") + 1)]);
 
-      await fs.promises.unlink(oldPath).catch(() => {
-        console.log("Stare logo nie istnieje");
-      });
+      if (error) {
+        console.error("Nie udało się usunąć starego logo:", error);
+      }
     }
 
-    res.json({
+    return res.json({
       message: "Profil zaktualizowany",
     });
   } catch (error) {
-    res.status(500).json({
+    console.error(error);
+
+    return res.status(500).json({
       message: "Błąd aktualizacji",
     });
   }
 };
+
 export const getSellerPage = async (req: Request, res: Response) => {
   try {
     const { seller_id, slug } = req.params;
@@ -254,32 +311,37 @@ export const getSellerPage = async (req: Request, res: Response) => {
 export const uploadProductImages = async (req: Request, res: Response) => {
   try {
     const sellerId = (req as any).user.id;
-
     const productId = Number(req.params.id);
 
-    const files = req.files as Express.Multer.File[];
+    const files = (req.files as Express.Multer.File[]) ?? [];
+
+    if (!files.length) {
+      return res.status(400).json({
+        message: "Nie przesłano żadnych zdjęć",
+      });
+    }
 
     const images = await updateProductImages(productId, sellerId, files);
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Zdjęcia dodane",
       images,
     });
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Nie udało się dodać zdjęć",
     });
   }
 };
+
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const sellerId = (req as any).user.id;
-
     const productId = Number(req.params.id);
 
-    const files = req.files as Express.Multer.File[];
+    const files = (req.files as Express.Multer.File[]) ?? [];
 
     const product = await getCurrtentProdcutByID(String(productId));
 
@@ -289,7 +351,7 @@ export const updateProduct = async (req: Request, res: Response) => {
       });
     }
 
-    const removedImages = req.body.removedImages
+    const removedImages: string[] = req.body.removedImages
       ? JSON.parse(req.body.removedImages)
       : [];
 
@@ -299,11 +361,35 @@ export const updateProduct = async (req: Request, res: Response) => {
       (img: any) => !removedImages.includes(img.image),
     );
 
-    const uploadedImages =
-      files?.map((file) => ({
-        image: file.filename,
-        url: `/uploads/products/${sellerId}/${productId}/${file.filename}`,
-      })) ?? [];
+    const uploadedImages = await Promise.all(
+      files.map(async (file, index) => {
+        const extension = path.extname(file.originalname);
+
+        const fileName = `${Date.now()}-${index}${extension}`;
+
+        const filePath = `products/${sellerId}/${productId}/${fileName}`;
+
+        const { error } = await supabaseAdmin.storage
+          .from("techstore")
+          .upload(filePath, file.buffer, {
+            contentType: file.mimetype,
+            upsert: false,
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        const { data } = supabaseAdmin.storage
+          .from("techstore")
+          .getPublicUrl(filePath);
+
+        return {
+          image: filePath,
+          url: data.publicUrl,
+        };
+      }),
+    );
 
     const finalImages = [...filteredImages, ...uploadedImages];
 
@@ -314,58 +400,50 @@ export const updateProduct = async (req: Request, res: Response) => {
 
     await updateProductService({
       id: productId,
-
       sellerId,
 
       name: req.body.name,
-
       description: req.body.description,
-
       price: Number(req.body.price),
-
       stock: Number(req.body.stock),
-
       brand: req.body.brand,
-
       model: req.body.model,
 
       category_id: Number(req.body.category_id),
-
       subcategory_id: Number(req.body.subcategory_id),
 
       attributes,
 
       product_data: {
         ...(product.productData as any),
-
         url: finalImages,
       },
     });
 
-    for (const image of removedImages) {
-      const filePath = path.join(
-        process.cwd(),
-        "uploads",
-        "products",
-        String(sellerId),
-        String(productId),
-        image,
-      );
+    if (removedImages.length > 0) {
+      const { error } = await supabaseAdmin.storage
+        .from("techstore")
+        .remove(
+          removedImages.map(
+            (image) =>
+              `products/${sellerId}/${productId}/${path.basename(image)}`,
+          ),
+        );
 
-      await fs.promises.unlink(filePath).catch(() => {
-        console.log("Nie znaleziono pliku", image);
-      });
+      if (error) {
+        console.error("Błąd usuwania zdjęć z Supabase:", error);
+      }
     }
 
     await deleteProductImagesService(productId, sellerId, removedImages);
 
-    res.json({
+    return res.json({
       message: "Produkt zaktualizowany",
     });
   } catch (error) {
     console.error(error);
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Błąd aktualizacji produktu",
     });
   }

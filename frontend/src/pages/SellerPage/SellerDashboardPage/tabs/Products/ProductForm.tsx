@@ -22,9 +22,10 @@ type Props = {
   onSubmit: (data: any) => void;
   categories: any[];
   subcategories: any[];
-  existingImages?: string[];
+  existingImages?: any;
   onRemoveExisting?: (image: string) => void;
   isSuccess?: boolean;
+  attributes: any[];
 };
 
 const ProductForm = ({
@@ -36,6 +37,7 @@ const ProductForm = ({
   subcategories = [],
   existingImages = [],
   onRemoveExisting,
+  attributes,
 }: Props) => {
   const {
     register,
@@ -43,7 +45,6 @@ const ProductForm = ({
     control,
     watch,
     setValue,
-
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -72,18 +73,16 @@ const ProductForm = ({
     enabled: !!selectedSubcategory,
   });
 
-
-
   useEffect(() => {
     if (!parameters.length) return;
 
-    const currentAttributes = watch("attributes") || [];
+    const currentAttributes = attributes || watch("attributes") || [];
 
-    const attributes = parameters.map((param: any) => {
-      const existing = currentAttributes.find((attr: any) => attr.parameter_id === param.id);
+    const newAttributes = parameters.map((param: any) => {
+      const existing = currentAttributes.find((attr: any) => Number(attr.parameterId) === Number(param.id));
 
       return {
-        parameter_id: param.id,
+        parameterId: param.id,
         name: param.name,
         label: param.label,
         type: param.type,
@@ -93,11 +92,11 @@ const ProductForm = ({
       };
     });
 
-    replace(attributes);
-  }, [parameters, replace]);
+    replace(newAttributes);
+  }, [parameters, replace, attributes]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, (err) => console.log(err))} className="space-y-6">
       <div>
         <label className="mb-2 block font-medium text-(--foreground)">Nazwa produktu</label>
 
@@ -223,7 +222,7 @@ const ProductForm = ({
           ))}
         </select>
 
-        <FormError message={errors?.subcategory_id?.message} />
+        <FormError message={errors?.subcategoryId?.message} />
       </div>
 
       <div className="border border-(--border) bg-(--surface) p-5">
@@ -245,7 +244,7 @@ const ProductForm = ({
               <div>
                 <label className="font-medium text-(--foreground)">{field.label || field.name}</label>
 
-                <input type="hidden" value={field.parameter_id} {...register(`attributes.${index}.parameter_id`)} />
+                <input type="hidden" value={field.parameterId} {...register(`attributes.${index}.parameterId`)} />
 
                 <input type="hidden" value={field.name} {...register(`attributes.${index}.name`)} />
 
@@ -290,7 +289,7 @@ const ProductForm = ({
         <h2 className="mb-3 text-xl font-semibold text-(--foreground)">Zdjęcia</h2>
 
         <ImageUploader
-          images={existingImages}
+          images={existingImages.url}
           value={watch("images") || []}
           onChange={(files: File[]) => {
             setValue("images", files, {

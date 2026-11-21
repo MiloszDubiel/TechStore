@@ -2,6 +2,7 @@ import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { adressesSchema, type AddressFrom } from "../../schemas/addressSchema";
+import { da } from "zod/locales";
 
 type Props = {
   closeModal: () => void;
@@ -34,6 +35,8 @@ export default function AddressModal({ closeModal, saveAddress, defaultValues, u
   });
 
   const onSubmit = (data: AddressFrom) => {
+    console.log(data);
+
     if (isEdited) {
       updateAddress({ ...data, aid: defaultValues.aid });
     } else {

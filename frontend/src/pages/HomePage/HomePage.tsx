@@ -92,7 +92,7 @@ const HomePage = () => {
                       </button>
                     )}
 
-                    {product?.seller_id == user?.id && (
+                    {product?.sellerId == user?.id && (
                       <button
                         className="mt-auto flex w-full cursor-pointer items-center justify-center gap-2 bg-orange-500 py-2 text-white transition hover:bg-orange-600"
                         onClick={() => {

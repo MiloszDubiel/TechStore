@@ -73,11 +73,11 @@ export const orderProdcuts = async (req: Request, res: Response) => {
       orderNumber,
     });
   } catch (error: any) {
-    console.error(error);
+    // console.error(error);
 
     return res.status(500).json({
       success: false,
-      message: error.message,
+      // message: error.message,
     });
   }
 };

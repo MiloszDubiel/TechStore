@@ -4,6 +4,8 @@ import OrderDetails from "./OrderDetails";
 import { OrangeButton } from "../../../components/ui/Buttons";
 import LoadingScreen from "../../../components/LoadingScreen";
 
+
+
 const Orders = () => {
   const { data: orders, isLoading } = useOrders();
 
@@ -24,13 +26,13 @@ const Orders = () => {
           orders.map((order: any) => (
             <div key={order.id} className="flex items-center justify-between border border-(--border) bg-(--surface) p-5">
               <div>
-                <p className="font-semibold text-(--foreground)">Zamówienie {order.order_number}</p>
+                <p className="font-semibold text-(--foreground)">Zamówienie {order.orderNumber}</p>
 
-                <p className="text-sm text-(--foreground-secondary)">{new Date(order.created_at).toLocaleDateString()}</p>
+                <p className="text-sm text-(--foreground-secondary)">{new Date(order.createdAt).toLocaleDateString()}</p>
 
                 <p className="text-sm text-(--foreground)">{order.items_count} produktów</p>
 
-                <p className="font-bold text-(--primary)">{order.total_price} zł</p>
+                <p className="font-bold text-(--primary)">{order.totalPrice} zł</p>
               </div>
 
               <OrangeButton onClick={() => setSelectedOrder(order.id)}>Szczegóły</OrangeButton>

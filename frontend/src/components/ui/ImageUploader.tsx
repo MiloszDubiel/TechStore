@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 type Props = {
   value?: File[];
-  images?: string[];
+  images?: any[];
 
   onChange: (files: File[]) => void;
 
@@ -17,7 +17,7 @@ type Props = {
 };
 
 const ImageUploader = ({ value = [], images = [], onChange, onRemoveExisting, multiple = true, maxFiles = 5, replace = false }: Props) => {
-  const [preview, setPreview] = useState<string[]>([]);
+  const [preview, setPreview] = useState<any[]>([]);
   const [removedImages, setRemovedImages] = useState<string[]>([]);
   useEffect(() => {
     const urls = value.filter((file): file is File => file instanceof File).map((file) => URL.createObjectURL(file));
@@ -97,7 +97,7 @@ const ImageUploader = ({ value = [], images = [], onChange, onRemoveExisting, mu
         <div className="mt-5 grid grid-cols-4 gap-4">
           {preview.map((image, index) => (
             <div key={index} className="relative border border-(--border) bg-(--surface)">
-              <img src={image} className="h-32 w-full object-cover" alt="preview" />
+              <img src={image.url} className="h-32 w-full object-cover" alt="preview" />
 
               <button
                 type="button"

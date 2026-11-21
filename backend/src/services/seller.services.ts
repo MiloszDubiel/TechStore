@@ -1,5 +1,5 @@
-import { connection } from "../config/db.config";
-import { ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import { supabaseAdmin } from "../lib/supabaseAdmin";
+import path from "node:path";
 import slugify from "slugify";
 import { createNotificationService } from "./notification.service";
 import { prisma } from "../lib/prisma";
@@ -12,10 +12,8 @@ export interface CreateProductDTO {
   brand: string;
   model: string;
 
-  category_id: number;
-  subcategory_id?: number;
-
-  image?: string;
+  categoryId: number;
+  subcategoryId?: number;
 
   attributes: {
     name: string;
@@ -45,7 +43,7 @@ export const getCompanyInfo = async (userId: number) => {
 
 export const createSellerProfile = async ({
   userId,
-  shop_name,
+  shopName,
   slug,
   description,
   logo,
@@ -54,9 +52,10 @@ export const createSellerProfile = async ({
   postalCode,
   street,
   companyName,
+  uploadPath,
 }: {
   userId: number;
-  shop_name: string;
+  shopName: string;
   slug: string;
   description: string;
   logo: string | null;
@@ -65,11 +64,12 @@ export const createSellerProfile = async ({
   postalCode?: string;
   street?: string;
   companyName: string;
+  uploadPath: string;
 }) => {
   const result = await prisma.sellerProfile.create({
     data: {
       userId,
-      shopName: shop_name,
+      shopName: shopName,
       slug,
       description,
       logo,
@@ -78,6 +78,7 @@ export const createSellerProfile = async ({
       postalCode: postalCode || null,
       street: street || null,
       companyName: companyName,
+      path: uploadPath,
     },
     select: {
       id: true,
@@ -102,6 +103,8 @@ export const getSellerProductsByID = async (
   sellerId: number,
   productId: number,
 ) => {
+  console.log(productId);
+
   const product = await prisma.product.findFirst({
     where: {
       sellerId,
@@ -119,6 +122,7 @@ export const getSellerProductsByID = async (
       model: true,
       isDeleted: true,
       isVisible: true,
+      productData: true,
 
       category: {
         select: {
@@ -131,15 +135,6 @@ export const getSellerProductsByID = async (
           id: true,
         },
       },
-
-      images: {
-        select: {
-          id: true,
-          image: true,
-          url: true,
-          isMain: true,
-        },
-      },
     },
   });
 
@@ -147,17 +142,13 @@ export const getSellerProductsByID = async (
     throw new Error("Nie jestes włascicielem produktu");
   }
 
-  const { category, subcategory, images, ...productData } = product;
+  const { category, subcategory, ...productData } = product;
 
   return {
     product: {
       ...productData,
-      category_id: category?.id ?? null,
-      subcategory_id: subcategory?.id ?? null,
-      images: images.map((image) => ({
-        ...image,
-        is_main: image.isMain,
-      })),
+      categoryId: category?.id ?? null,
+      subcategoryId: subcategory?.id ?? null,
     },
   };
 };
@@ -211,6 +202,7 @@ export const getSellerProducts = async (
         model: true,
         isDeleted: true,
         isVisible: true,
+        productData: true,
 
         category: {
           select: {
@@ -223,15 +215,6 @@ export const getSellerProducts = async (
             id: true,
           },
         },
-
-        images: {
-          select: {
-            id: true,
-            image: true,
-            url: true,
-            isMain: true,
-          },
-        },
       },
       orderBy: {
         createdAt: "desc",
@@ -242,14 +225,10 @@ export const getSellerProducts = async (
   ]);
 
   return {
-    products: products.map(({ category, subcategory, images, ...product }) => ({
+    products: products.map(({ category, subcategory, ...product }) => ({
       ...product,
-      category_id: category?.id ?? null,
-      subcategory_id: subcategory?.id ?? null,
-      images: images.map(({ isMain, ...image }) => ({
-        ...image,
-        is_main: isMain,
-      })),
+      categoryId: category?.id ?? null,
+      subcategoryId: subcategory?.id ?? null,
     })),
     total,
     page,
@@ -286,7 +265,7 @@ export const deleteProductFromDB = async (
 };
 export const editSellerProfile = async (data: {
   userId: number;
-  shop_name: string;
+  shopName: string;
   slug: string;
   description: string;
   logo: string | null;
@@ -295,10 +274,11 @@ export const editSellerProfile = async (data: {
   postalCode?: string;
   street?: string;
   companyName: string;
+  uploadPath: string;
 }) => {
   try {
     const slug = slugify(
-      data.shop_name + " " + data.companyName + " " + data.userId,
+      data.shopName + " " + data.companyName + " " + data.userId,
       {
         lower: true,
         strict: true,
@@ -311,7 +291,7 @@ export const editSellerProfile = async (data: {
         userId: data.userId,
       },
       data: {
-        shopName: data.shop_name,
+        shopName: data.shopName,
         slug,
         description: data.description,
         logo: data.logo,
@@ -320,6 +300,7 @@ export const editSellerProfile = async (data: {
         postalCode: data.postalCode || null,
         street: data.street || null,
         companyName: data.companyName,
+        path: data.uploadPath,
       },
     });
 
@@ -399,10 +380,12 @@ export const createProduct = async (
     description,
     price,
     stock,
-    category_id,
-    subcategory_id,
+    categoryId,
+    subcategoryId,
     attributes,
   } = data;
+
+
 
   const product = await prisma.product.create({
     data: {
@@ -411,8 +394,8 @@ export const createProduct = async (
       description,
       price,
       stock,
-      categoryId: category_id,
-      subcategoryId: subcategory_id ?? null,
+      categoryId: Number(categoryId),
+      subcategoryId: Number(subcategoryId) ?? null,
       attributes,
       brand,
       model,
@@ -431,8 +414,8 @@ export const createProduct = async (
     description,
     price,
     stock,
-    category_id,
-    subcategory_id,
+    categoryId,
+    subcategoryId,
     brand,
     model,
     attributes,
@@ -481,7 +464,7 @@ export const updateProductService = async (data: any) => {
 export const updateProductImages = async (
   productId: number,
   sellerId: number,
-  images: Express.Multer.File[],
+  files: Express.Multer.File[],
 ) => {
   const product = await prisma.product.findFirst({
     where: {
@@ -490,6 +473,7 @@ export const updateProductImages = async (
     },
     select: {
       id: true,
+      productData: true,
     },
   });
 
@@ -497,22 +481,52 @@ export const updateProductImages = async (
     throw new Error("Produkt nie istnieje");
   }
 
-  if (!images.length) {
-    return [];
-  }
+  const uploadedImages = await Promise.all(
+    files.map(async (file, index) => {
+      const extension = path.extname(file.originalname);
+      const fileName = `${Date.now()}-${index}${extension}`;
 
-  const values = images.map((file, index) => ({
-    productId,
-    image: file.filename,
-    url: `uploads/products/${sellerId}/${productId}/${file.filename}`,
-    isMain: index === 0,
-  }));
+      const filePath = `products/${sellerId}/${productId}/${fileName}`;
 
-  await prisma.productImage.createMany({
-    data: values,
+      const { error } = await supabaseAdmin.storage
+        .from("techstore")
+        .upload(filePath, file.buffer, {
+          contentType: file.mimetype,
+          upsert: false,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const { data } = supabaseAdmin.storage
+        .from("techstore")
+        .getPublicUrl(filePath);
+
+      return {
+        image: filePath,
+        url: data.publicUrl,
+      };
+    }),
+  );
+
+  const productData = (product.productData as Record<string, any>) ?? {};
+
+  const oldImages = Array.isArray(productData.url) ? productData.url : [];
+
+  await prisma.product.update({
+    where: {
+      id: productId,
+    },
+    data: {
+      productData: {
+        ...productData,
+        url: [...oldImages, ...uploadedImages],
+      },
+    },
   });
 
-  return values;
+  return uploadedImages;
 };
 
 export const deleteProductImagesService = async (

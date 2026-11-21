@@ -96,7 +96,7 @@ const OrderDetails = ({ id, onBack }: any) => {
                     <p className="text-sm text-(--foreground-secondary)">Sprzedawca</p>
 
                     <Link
-                      to={`/seller/${seller.slug}/${seller.seller_id}`}
+                      to={`/seller/${seller.slug}/${seller.sellerId}`}
                       className="mt-1 block truncate font-semibold text-(--foreground) transition hover:text-(--primary)"
                     >
                       {seller.shop_name}

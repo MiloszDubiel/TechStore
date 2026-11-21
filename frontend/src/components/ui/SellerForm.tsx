@@ -19,7 +19,7 @@ type Props = {
 const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButton, storeData = null, onBack }: Props) => {
   let data = storeData;
 
-
+  console.log(storeData);
 
   const {
     register,
@@ -48,8 +48,6 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
     }
   }, [data]);
   const handleFormSubmit = (data: SellerProfileType) => {
-
-
     onSubmit({
       ...data,
       removedLogo,
@@ -109,7 +107,7 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
             <label className="mb-2 block font-medium text-(--foreground)">Logo sklepu</label>
 
             <ImageUploader
-              images={data?.logo ? [`${import.meta.env.VITE_API_URL}uploads/sellers/${data.user_id || data.id}/${data.logo}`] : []}
+              images={data?.logo ? [data?.logo] : []}
               value={values}
               onChange={(files) => {
                 setValues(files);

@@ -87,8 +87,8 @@ const ProductEditForm = ({ product, onBack }: any) => {
           model: product.model,
           price: String(product.price),
           stock: String(product.stock),
-          category_id: String(product.category_id),
-          subcategory_id: String(product.subcategory_id),
+          categoryId: String(product.categoryId),
+          subcategoryId: String(product.subcategoryId),
 
           attributes: typeof product.attributes === "string" ? JSON.parse(product.attributes) : (product.attributes ?? []),
 

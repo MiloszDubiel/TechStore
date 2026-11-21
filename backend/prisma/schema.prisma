@@ -398,6 +398,7 @@ model SellerProfile {
   slug        String    @unique(map: "seller_profiles_slug_key") @db.VarChar(120)
   description String?   @db.Text
   logo        String?   @db.VarChar(255)
+  path        String?   @db.VarChar(255)
   banner      String?   @db.VarChar(255)
   email       String?   @db.VarChar(255)
   phone       String?   @db.VarChar(20)

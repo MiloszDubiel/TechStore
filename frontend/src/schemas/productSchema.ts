@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const attributesSchema = z
   .object({
-    parameter_id: z.number().positive("ID parametru musi być większe od 0"),
+    parameterId: z.number().positive("ID parametru musi być większe od 0"),
     name: z.string(),
     value: z.coerce.number(),
     type: z.string(),
@@ -38,7 +38,7 @@ const baseProductSchema = {
       name: z.string(),
       label: z.string(),
       type: z.string(),
-      required: z.number(),
+      required: z.boolean(),
       options: z.array(
         z.object({
           id: z.number().nullable(),

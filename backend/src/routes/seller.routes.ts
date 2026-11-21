@@ -25,7 +25,7 @@ import { uploadSellerLogo, uploadProductImages } from "../multer";
 
 const router = Router();
 
-// Seller profile
+
 router.post(
   "/create",
   verifyToken,
@@ -42,10 +42,8 @@ router.patch(
   editSeller,
 );
 
-// Seller dashboard
 router.get("/dashboard/overview", verifyToken, getSellerOverview);
 
-// Seller products
 router.get("/products", verifyToken, getProducts);
 
 router.get("/products/:id", verifyToken, getProductsByID);

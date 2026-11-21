@@ -43,10 +43,11 @@ export const getAdressesFromDB = async (id: string) => {
 export const saveAdressesToDB = async (
   id: string,
   street: string,
-  postal_code: string,
+  postalCode: string,
   city: string,
-  is_default: boolean,
+  isDefault: boolean,
 ) => {
+
   return await prisma.$transaction(async (tx) => {
     const userId = Number(id);
 
@@ -60,7 +61,7 @@ export const saveAdressesToDB = async (
       return "Osiągnięto maksymalną liczbe adresów";
     }
 
-    if (is_default) {
+    if (isDefault) {
       await tx.address.updateMany({
         where: {
           userId,
@@ -75,9 +76,9 @@ export const saveAdressesToDB = async (
       data: {
         userId,
         street,
-        postalCode: postal_code,
+        postalCode: postalCode,
         city,
-        isDefault: is_default,
+        isDefault: isDefault,
       },
     });
 
@@ -90,14 +91,14 @@ export const updateAdressesToDB = async (
   street: string,
   postalCode: string,
   city: string,
-  is_default: boolean,
+  isDefault: boolean,
   aid: string,
 ) => {
   return await prisma.$transaction(async (tx) => {
     const userId = Number(id);
     const addressId = Number(aid);
 
-    if (is_default) {
+    if (isDefault) {
       await tx.address.updateMany({
         where: {
           userId,
@@ -117,7 +118,7 @@ export const updateAdressesToDB = async (
         street,
         postalCode,
         city,
-        isDefault: is_default,
+        isDefault: isDefault,
       },
     });
   });

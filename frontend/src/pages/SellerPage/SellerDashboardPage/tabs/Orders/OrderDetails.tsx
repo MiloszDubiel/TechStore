@@ -44,7 +44,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
         onSuccess: () => {
           socket.emit("changeStatus", {
             order_id: orderId,
-            user: order?.user_id,
+            user: order?.userId,
           });
 
           clientQuery.invalidateQueries({ queryKey: ["seller-orders"] });

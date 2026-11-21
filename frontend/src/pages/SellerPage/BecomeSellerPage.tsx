@@ -37,7 +37,7 @@ const BecomeSellerForm = () => {
       }
     });
 
-    formData.append("user_id", String(user!.id));
+    formData.append("userId", String(user!.id));
 
     createProfile.mutate(formData, {
       onSuccess: async () => {

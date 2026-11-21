@@ -299,9 +299,13 @@ export const saveOrderToDB = async (data: any) => {
       user_id: userId = null,
     } = data;
 
+    console.log(customer, address, delivery, payment, products, userId);
+
     const normalizedUserId = userId === null ? null : Number(userId);
 
     const deliveryMethod = delivery.method.toUpperCase();
+
+    const paymentMethod = payment.method.toUpperCase();
 
     let productsTotal = 0;
 
@@ -389,7 +393,7 @@ export const saveOrderToDB = async (data: any) => {
         deliveryMethod,
         deliveryPrice: Number(delivery.price),
 
-        paymentMethod: payment.method,
+        paymentMethod: paymentMethod,
 
         lockerId: deliveryMethod === "LOCKER" ? delivery.locker?.id : null,
 

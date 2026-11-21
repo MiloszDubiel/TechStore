@@ -8,11 +8,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const getStatus = (product: any) => {
-  if (product.is_deleted) {
+  if (product.isDeleted) {
     return "Usunięty";
   }
 
-  if (!product.is_visible) {
+  if (!product.isVisible) {
     return "Ukryty";
   }
 
@@ -42,6 +42,8 @@ const Products = () => {
   });
 
   const { data: selectedProduct } = productsById(editId);
+
+  console.log(data);
 
   useEffect(() => {
     if (!editId) {
@@ -121,7 +123,7 @@ const Products = () => {
                   <td className="p-4">
                     <span
                       className={`rounded-full px-3 py-1 text-sm ${
-                        !product.is_deleted || product.stock < 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        !product.isDeleted || product.stock < 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
                       } `}
                     >
                       {getStatus(product)}
@@ -129,24 +131,27 @@ const Products = () => {
                   </td>
 
                   <td className="p-4">
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() => setEditingProduct(product)}
-                        className="cursor-pointer text-(--primary) hover:text-(--primary-hover)"
-                      >
-                        <Edit size={18} />
-                      </button>
-
-                      <button
-                        className="cursor-pointer text-red-600 hover:text-red-800"
-                        onClick={() => {
-                          setIsOpen(true);
-                          setProductData(product);
-                        }}
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
+                    {!product.isDeleted && (
+                      <div className="flex gap-3">
+                        <button
+                          onClick={() => setEditingProduct(product)}
+                          className="cursor-pointer text-(--primary) hover:text-(--primary-hover)"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        (
+                        <button
+                          className="cursor-pointer text-red-600 hover:text-red-800"
+                          onClick={() => {
+                            setIsOpen(true);
+                            setProductData(product);
+                          }}
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                        )
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))
@@ -161,7 +166,7 @@ const Products = () => {
         </table>
 
         <Pagination page={page} totalPages={data?.totalPages ?? 1} onPageChange={setPage} />
-        
+
         <ConfirmModal
           isOpen={isOpen}
           message={"Czy chcesz usunąć produkt? "}

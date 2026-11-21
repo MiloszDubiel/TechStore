@@ -74,7 +74,9 @@ export const updateAdresses = async (req: Request, res: Response) => {
   try {
     const { id } = (req as any).user;
 
-    const { street, postal_code, city, is_default, aid } = req.body;
+    const { street, postalCode, city, isDefault, aid } = req.body;
+
+    console.log(street, postalCode, city, isDefault);
 
     if (!id) {
       return res.status(400).json({
@@ -93,9 +95,9 @@ export const updateAdresses = async (req: Request, res: Response) => {
     const addresses = await updateAdressesToDB(
       id,
       street,
-      postal_code,
+      postalCode,
       city,
-      Boolean(is_default),
+      Boolean(isDefault),
       aid,
     );
 
@@ -116,10 +118,10 @@ export const updateAdresses = async (req: Request, res: Response) => {
 
 export const setAdresses = async (req: Request, res: Response) => {
   try {
-    const { street, postal_code, city, is_default } = req.body;
+    const { street, postalCode, city, isDefault } = req.body;
     const { id } = (req as any).user;
 
-
+    
 
     if (!id) {
       return res.status(400).json({
@@ -131,9 +133,9 @@ export const setAdresses = async (req: Request, res: Response) => {
     const result = await saveAdressesToDB(
       id,
       street,
-      postal_code,
+      postalCode,
       city,
-      is_default,
+      isDefault,
     );
 
     if (typeof result === "string") {
@@ -145,9 +147,9 @@ export const setAdresses = async (req: Request, res: Response) => {
     const newAddress = {
       id: result.id,
       street,
-      postal_code,
+      postalCode,
       city,
-      is_default,
+      isDefault,
     };
 
     return res.status(201).json({

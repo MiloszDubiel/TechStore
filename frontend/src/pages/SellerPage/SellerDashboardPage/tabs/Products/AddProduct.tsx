@@ -39,8 +39,10 @@ const AddProduct = () => {
       categoryId: data.categoryId,
       subcategoryId: data.subcategoryId,
       attributes: data.attributes,
-      seller_id: sellerData.seller_id,
+      sellerId: sellerData.sellerId,
     };
+
+
 
     mutate(productData, {
       onSuccess: (product) => {

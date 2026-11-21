@@ -168,14 +168,14 @@ const OfferDetails = () => {
 
                   {product?.seller_id !== user?.id && user && (
                     <button
-                      onClick={() => navigate(`/chat?seller_id=${product?.seller_id}`)}
+                      onClick={() => navigate(`/chat?sellerId=${product?.sellerId}`)}
                       className="flex w-full cursor-pointer items-center justify-center gap-3 border border-(--border) py-4 font-semibold text-(--foreground) transition hover:border-orange-500 hover:bg-orange-500 hover:text-white"
                     >
                       Napisz do sprzedawcy
                     </button>
                   )}
 
-                  {product?.seller_id === user?.id && (
+                  {product?.sellerId === user?.id && (
                     <button
                       onClick={() => navigate(`/seller/dashboard?tab=products&edit=${product.id}`)}
                       className="flex w-full cursor-pointer items-center justify-center gap-3 border border-(--border) bg-(--surface) py-4 font-semibold text-(--foreground) transition hover:bg-orange-400"

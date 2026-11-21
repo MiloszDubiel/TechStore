@@ -86,7 +86,7 @@ const SellerPage = () => {
 
                 <p className="mt-2 text-(--foreground-secondary)">{seller.company_name}</p>
 
-                {seller.seller_id === user?.id && (
+                {seller.sellerId === user?.id && (
                   <button
                     onClick={() => navigate("/seller/dashboard?tab=settings")}
                     className="mt-4 flex cursor-pointer items-center gap-2 bg-(--primary) px-5 py-2 text-white transition hover:bg-(--primary-hover)"
@@ -141,7 +141,7 @@ const SellerPage = () => {
 
                         <p className="mt-1 text-sm text-(--foreground-secondary)">Dostępne: {product.stock}</p>
 
-                        {seller.seller_id === user?.id && (
+                        {seller.sellerId === user?.id && (
                           <button
                             onClick={() => navigate(`/seller/dashboard?tab=products&edit=${product.id}`)}
                             className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) py-2 text-white transition hover:bg-(--primary-hover)"

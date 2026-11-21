@@ -3,7 +3,6 @@ import ProductForm from "./ProductForm";
 import { productEditSchema } from "../../../../../schemas/productSchema";
 import { useSeller } from "../../../../../hooks/useSeller";
 import { toast } from "react-toastify";
-import { useImage } from "../../../../../hooks/useImage";
 
 type Props = {
   product: any;
@@ -12,6 +11,7 @@ type Props = {
 
 const EditProduct = ({ product, onBack }: Props) => {
   const [removedImages, setRemovedImages] = useState<string[]>([]);
+
 
   const {
     getCategories: { data: categories = [] },
@@ -38,18 +38,16 @@ const EditProduct = ({ product, onBack }: Props) => {
           model: product.model,
           price: String(product.price),
           stock: String(product.stock),
-          category_id: String(product.category_id),
-          subcategory_id: String(product.subcategory_id),
-
-          attributes: typeof product.attributes === "string" ? JSON.parse(product.attributes) : (product.attributes ?? []),
-
+          categoryId: String(product.categoryId),
+          subcategoryId: String(product.subcategoryId),
           images: [],
-          existingImages: useImage(product),
           removedImages: [],
         }}
+
+        attributes={product.attributes}
         categories={categories}
         subcategories={subcategories}
-        existingImages={useImage(product)}
+        existingImages={product.productData}
         onRemoveExisting={(image) => {
           const filename = image.split("/").pop();
 
@@ -66,8 +64,8 @@ const EditProduct = ({ product, onBack }: Props) => {
           formData.append("model", data.model);
           formData.append("price", data.price);
           formData.append("stock", data.stock);
-          formData.append("category_id", data.category_id);
-          formData.append("subcategory_id", data.subcategory_id);
+          formData.append("categoryId", data.categoryId);
+          formData.append("subcategoryId", data.subcategoryId);
           formData.append("attributes", JSON.stringify(data.attributes));
           formData.append("removedImages", JSON.stringify(removedImages));
 

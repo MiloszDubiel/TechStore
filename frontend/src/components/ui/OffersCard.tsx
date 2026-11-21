@@ -91,7 +91,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
           </button>
         )}
 
-        {product?.seller_id == user?.id && (
+        {product?.sellerId == user?.id && (
           <button
             className="flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) px-4 py-2 font-semibold text-white transition hover:bg-(--primary-hover) sm:w-auto sm:whitespace-nowrap"
             onClick={() => {
