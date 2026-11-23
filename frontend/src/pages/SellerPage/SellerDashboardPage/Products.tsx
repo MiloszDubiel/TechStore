@@ -139,7 +139,7 @@ const Products = () => {
                         >
                           <Edit size={18} />
                         </button>
-                        (
+
                         <button
                           className="cursor-pointer text-red-600 hover:text-red-800"
                           onClick={() => {
@@ -149,7 +149,6 @@ const Products = () => {
                         >
                           <Trash2 size={18} />
                         </button>
-                        )
                       </div>
                     )}
                   </td>

@@ -280,9 +280,6 @@ export const getCurrtentProdcutByID = async (id: string) => {
     where: {
       id: Number(id),
     },
-    include: {
-      images: true,
-    },
   });
 
   return product ?? null;

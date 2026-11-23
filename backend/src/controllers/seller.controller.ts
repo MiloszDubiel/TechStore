@@ -12,7 +12,7 @@ import {
   editSellerProfile,
   getSellerById,
   updateProductService,
-  deleteProductImagesService,
+  // deleteProductImagesService,
   getSellerByUserIdService,
   getSellerOverviewService,
   getSellerOrderDetailsService,
@@ -351,11 +351,11 @@ export const updateProduct = async (req: Request, res: Response) => {
       });
     }
 
-    const removedImages: string[] = req.body.removedImages
-      ? JSON.parse(req.body.removedImages)
-      : [];
+    const removedImages: string[] = req.body.removedImages;
 
-    const oldImages = product.images ?? [];
+    const oldImages = (product.productData as any)?.url ?? [];
+
+    console.log(oldImages, removedImages);
 
     const filteredImages = oldImages.filter(
       (img: any) => !removedImages.includes(img.image),
@@ -423,19 +423,13 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (removedImages.length > 0) {
       const { error } = await supabaseAdmin.storage
         .from("techstore")
-        .remove(
-          removedImages.map(
-            (image) =>
-              `products/${sellerId}/${productId}/${path.basename(image)}`,
-          ),
-        );
+        .remove(removedImages);
 
       if (error) {
         console.error("Błąd usuwania zdjęć z Supabase:", error);
       }
     }
 
-    await deleteProductImagesService(productId, sellerId, removedImages);
 
     return res.json({
       message: "Produkt zaktualizowany",

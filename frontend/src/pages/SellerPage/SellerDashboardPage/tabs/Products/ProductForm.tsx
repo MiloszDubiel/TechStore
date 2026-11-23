@@ -9,6 +9,10 @@ import { api } from "../../../../../axios";
 type PropsEr = {
   message?: any;
 };
+type Image = {
+  url: string;
+  image: string;
+};
 
 const FormError = ({ message }: PropsEr) => {
   if (!message) return null;
@@ -72,6 +76,8 @@ const ProductForm = ({
     },
     enabled: !!selectedSubcategory,
   });
+
+
 
   useEffect(() => {
     if (!parameters.length) return;

@@ -432,8 +432,8 @@ export const updateProductService = async (data: any) => {
     stock,
     brand,
     model,
-    category_id,
-    subcategory_id,
+    categoryId,
+    subcategoryId,
     attributes,
     product_data,
   } = data;
@@ -450,8 +450,8 @@ export const updateProductService = async (data: any) => {
       stock,
       brand,
       model,
-      categoryId: category_id,
-      subcategoryId: subcategory_id ?? null,
+      categoryId: categoryId,
+      subcategoryId: subcategoryId ?? null,
       attributes,
       productData: product_data,
       updatedAt: new Date(),
@@ -480,6 +480,13 @@ export const updateProductImages = async (
   if (!product) {
     throw new Error("Produkt nie istnieje");
   }
+
+
+
+
+
+
+
 
   const uploadedImages = await Promise.all(
     files.map(async (file, index) => {
@@ -529,25 +536,25 @@ export const updateProductImages = async (
   return uploadedImages;
 };
 
-export const deleteProductImagesService = async (
-  productId: number,
-  sellerId: number,
-  images: string[],
-) => {
-  if (!images.length) return;
+// export const deleteProductImagesService = async (
+//   productId: number,
+//   sellerId: number,
+//   images: string[],
+// ) => {
+//   if (!images.length) return;
 
-  await prisma.productImage.deleteMany({
-    where: {
-      productId,
-      image: {
-        in: images,
-      },
-      product: {
-        sellerId,
-      },
-    },
-  });
-};
+//   await prisma.productImage.deleteMany({
+//     where: {
+//       productId,
+//       image: {
+//         in: images,
+//       },
+//       product: {
+//         sellerId,
+//       },
+//     },
+//   });
+// };
 
 export const getSellerByUserIdService = async (userId: number) => {
   const seller = await prisma.sellerProfile.findFirst({

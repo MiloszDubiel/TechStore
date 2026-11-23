@@ -10,15 +10,12 @@ type Props = {
 };
 
 const EditProduct = ({ product, onBack }: Props) => {
-  const [removedImages, setRemovedImages] = useState<string[]>([]);
-
+  const [removedExsistingImages, setRemovedExisitngImages] = useState<string[]>([]);
 
   const {
     getCategories: { data: categories = [] },
     getSubcategories: { data: subcategories = [] },
-
     updateProduct: { mutate: updateProduct },
-
     uploadImage: { mutate: uploadAnotherImage },
   } = useSeller();
 
@@ -40,7 +37,7 @@ const EditProduct = ({ product, onBack }: Props) => {
           stock: String(product.stock),
           categoryId: String(product.categoryId),
           subcategoryId: String(product.subcategoryId),
-          images: [],
+          images: product.productData.url,
           removedImages: [],
         }}
 
@@ -48,11 +45,9 @@ const EditProduct = ({ product, onBack }: Props) => {
         categories={categories}
         subcategories={subcategories}
         existingImages={product.productData}
-        onRemoveExisting={(image) => {
-          const filename = image.split("/").pop();
-
-          if (filename) {
-            setRemovedImages((prev) => [...prev, filename]);
+        onRemoveExisting={(imgUrl: string) => {
+          if (imgUrl) {
+            setRemovedExisitngImages((prev) => [...prev, imgUrl]);
           }
         }}
         onSubmit={(data) => {
@@ -67,7 +62,7 @@ const EditProduct = ({ product, onBack }: Props) => {
           formData.append("categoryId", data.categoryId);
           formData.append("subcategoryId", data.subcategoryId);
           formData.append("attributes", JSON.stringify(data.attributes));
-          formData.append("removedImages", JSON.stringify(removedImages));
+          formData.append("removedImages", JSON.stringify(removedExsistingImages));
 
           updateProduct(
             {

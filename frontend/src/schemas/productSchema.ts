@@ -60,7 +60,7 @@ export const productEditSchema = z
   .object({
     ...baseProductSchema,
 
-    images: z.array(z.instanceof(File)).optional(),
+    images: z.array(z.instanceof(Object)).optional(),
 
     existingImages: z.array(z.string()).optional(),
 
