@@ -37,7 +37,7 @@ const EditProduct = ({ product, onBack }: Props) => {
           stock: String(product.stock),
           categoryId: String(product.categoryId),
           subcategoryId: String(product.subcategoryId),
-          images: product.productData.url,
+          images: [],
           removedImages: [],
         }}
 

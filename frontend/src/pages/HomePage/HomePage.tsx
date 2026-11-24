@@ -37,7 +37,7 @@ const HomePage = () => {
       <Navbar />
       <section className="bg-orange-500 py-16 text-center text-white">
         <h1 className="mb-4 text-4xl font-bold">Aktualne Oferty</h1>
-        <p className="text-lg">Najlepsze promocje w My IT Store</p>
+        <p className="text-lg">Najlepsze promocje w TechStore</p>
       </section>
 
       <main className="container mx-auto flex-1 bg-(--background) px-6 py-12">
@@ -61,7 +61,7 @@ const HomePage = () => {
               <Link key={product.id} to={`/offers/${product.slug}/${product.id}`}>
                 <div className="flex h-95 flex-col overflow-hidden border border-(--border) bg-(--surface) text-(--foreground) shadow-sm transition-all hover:-translate-y-1 hover:border-orange-500 hover:shadow-xl">
                   <div className="relative flex h-52 items-center justify-center bg-(--surface-secondary)">
-                    <img src={useImage(product) || "/no-image.png"} alt={product.name} className="max-h-44 object-contain" />
+                    <img src={product.images[0] || "/no-image.png"} alt={product.name} className="max-h-44 object-cover" />
 
                     <span className="absolute top-3 left-3 bg-orange-500 px-3 py-1 text-xs text-white">PROMOCJA</span>
                   </div>
@@ -75,7 +75,7 @@ const HomePage = () => {
 
                     <div className="mb-2 text-sm text-(--foreground-secondary)">{product.stock} szt. dostępnych</div>
 
-                    {product?.seller_id != user?.id && (
+                    {product?.sellerId != user?.id && (
                       <button
                         className="mt-auto w-full bg-orange-500 py-2 font-medium text-white transition hover:bg-orange-600"
                         onClick={(e) => {

@@ -42,7 +42,7 @@ const FavoritesDropdown = ({ onClose }: Props) => {
         <ul className="space-y-3">
           {favorites.map((product: any) => (
             <li key={product.id} className="flex items-center gap-3 border-b border-(--border) pb-2">
-              <img src={useImage(product)} className="h-12 w-12 bg-(--surface-secondary) object-cover" />
+              <img src={product.images[0]} className="h-12 w-12 bg-(--surface-secondary) object-cover" />
               <div className="flex-1">
                 <p className="line-clamp-2 font-medium">{product.name}</p>
 

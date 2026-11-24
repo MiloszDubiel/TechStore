@@ -35,7 +35,7 @@ export default function AddressModal({ closeModal, saveAddress, defaultValues, u
   });
 
   const onSubmit = (data: AddressFrom) => {
-    console.log(data);
+
 
     if (isEdited) {
       updateAddress({ ...data, aid: defaultValues.aid });

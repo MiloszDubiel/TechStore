@@ -21,6 +21,7 @@ const ImageUploader = ({ value = [], images = [], onChange, onRemoveExisting, mu
   const [preview, setPreview] = useState<string[]>(images.map((el: Image) => el.url));
   [];
 
+
   useEffect(() => {
     const urls = value.filter((file): file is File => file instanceof File).map((file) => URL.createObjectURL(file));
 
@@ -29,6 +30,7 @@ const ImageUploader = ({ value = [], images = [], onChange, onRemoveExisting, mu
       urls.forEach((url) => URL.revokeObjectURL(url));
     };
   }, [value.map((file) => `${file.name}-${file.size}-${file.lastModified}`).join("|"), images.join("|"), replace]);
+
 
   const onDrop = (acceptedFiles: File[]) => {
     let files = acceptedFiles;
@@ -70,12 +72,9 @@ const ImageUploader = ({ value = [], images = [], onChange, onRemoveExisting, mu
   };
 
   const removeNewPreview = (index: number) => {
+
     if (index < newPhotosPreview.length) {
-      const removed = newPhotosPreview[index];
-
-      setNewPhotosPreview((prev) => prev.filter((_, i) => i != index));
-
-      onRemoveExisting?.(removed);
+      setNewPhotosPreview((prev) => prev.filter((_, i) => i !== index));
 
       onChange(value.filter((_, i) => i !== index));
     }
@@ -112,7 +111,6 @@ const ImageUploader = ({ value = [], images = [], onChange, onRemoveExisting, mu
           ))}
         </div>
       )}
-      Nowe zdjecia
       {newPhotosPreview.length > 0 && (
         <div className="mt-5 grid grid-cols-4 gap-4">
           {newPhotosPreview.map((image, index) => (

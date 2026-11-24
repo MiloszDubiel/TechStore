@@ -19,8 +19,6 @@ type Props = {
 const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButton, storeData = null, onBack }: Props) => {
   let data = storeData;
 
-  console.log(storeData);
-
   const {
     register,
     handleSubmit,
@@ -57,6 +55,7 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
 
   const isEdit = mode === "edit";
   const [values, setValues] = useState<File[]>([]);
+
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
@@ -107,7 +106,7 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
             <label className="mb-2 block font-medium text-(--foreground)">Logo sklepu</label>
 
             <ImageUploader
-              images={data?.logo ? [data?.logo] : []}
+              images={data.logo ? [{ url: data.logo }] : []}
               value={values}
               onChange={(files) => {
                 setValues(files);

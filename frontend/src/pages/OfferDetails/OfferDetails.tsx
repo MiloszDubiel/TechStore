@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, use } from "react";
 import { api } from "../../axios";
 import Navbar from "../../components/layout/Navbar/Navbar";
 import ReviewsList from "../../components/layout/ReviewList";
@@ -45,16 +45,6 @@ const OfferDetails = () => {
     mutationFn: (data) => api.post("/api/report/", data),
   });
 
-  const getImages = () => {
-    if (!product?.images[0].url) return [];
-
-    return product.images.map((img: any) => {
-      if (img?.url?.includes("http")) return img.url;
-
-      return `${import.meta.env.VITE_API_URL}${img.url}`;
-    });
-  };
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,6 +85,8 @@ const OfferDetails = () => {
     );
   }
 
+  console.log(product);
+
   return (
     <>
       <Navbar />
@@ -103,20 +95,20 @@ const OfferDetails = () => {
           <div className="grid gap-10 lg:grid-cols-12">
             <div className="lg:col-span-7">
               <div className="border border-(--border) bg-(--surface) p-6 shadow-sm">
-                <img src={getImages()} alt={product.name} className="h-130 w-full object-contain" />
+                <img src={product.images[0]} alt={product.name} className="h-130 w-full object-cover" />
               </div>
 
               {product.images?.length > 1 && (
                 <div className="mt-5 flex flex-wrap gap-4">
                   {product.images.map((img: any, index: number) => (
                     <button
-                      key={img.image}
+                      key={img}
                       onClick={() => setSelectedImage(index)}
                       className={`border p-1 transition ${
                         selectedImage === index ? "border-orange-500" : "border-(--border) hover:border-orange-300"
                       }`}
                     >
-                      <img src={getImages()} alt="" className="h-20 w-20 object-cover" />
+                      <img src={img} alt="" className="h-20 w-20 object-cover" />
                     </button>
                   ))}
                 </div>
@@ -131,27 +123,26 @@ const OfferDetails = () => {
 
                 <div className="mt-6 flex items-center justify-between gap-2">
                   <span className="p-4 text-(--foreground-secondary)">
-                    Dostępność{" "}
+                    Dostępność
                     <span className={`font-semibold ${product.stock ? "text-green-600" : "text-red-600"}`}>
                       {product.stock ? `${product.stock} szt.` : "Brak produktu"}
                     </span>
                   </span>
 
-                  {product?.seller_id !== user?.id ||
-                    (user && (
-                      <button
-                        disabled={!product.stock}
-                        onClick={() => setOpenReport(true)}
-                        className="flex w-full cursor-pointer items-center justify-center gap-3 bg-orange-500 p-4 font-semibold text-white transition hover:bg-orange-600"
-                      >
-                        <Flag size={18} />
-                        Zgłoś
-                      </button>
-                    ))}
+                  {product?.sellerId != user?.id && user && (
+                    <button
+                      disabled={!product.stock}
+                      onClick={() => setOpenReport(true)}
+                      className="flex w-full cursor-pointer items-center justify-center gap-3 bg-orange-500 p-4 font-semibold text-white transition hover:bg-orange-600"
+                    >
+                      <Flag size={18} />
+                      Zgłoś
+                    </button>
+                  )}
                 </div>
 
                 <div className="mt-6 flex flex-col gap-3">
-                  {product?.seller_id !== user?.id && (
+                  {product?.sellerId !== user?.id && (
                     <button
                       disabled={!product.stock}
                       onClick={() => {
@@ -166,7 +157,7 @@ const OfferDetails = () => {
                     </button>
                   )}
 
-                  {product?.seller_id !== user?.id && user && (
+                  {product?.sellerId !== user?.id && user && (
                     <button
                       onClick={() => navigate(`/chat?sellerId=${product?.sellerId}`)}
                       className="flex w-full cursor-pointer items-center justify-center gap-3 border border-(--border) py-4 font-semibold text-(--foreground) transition hover:border-orange-500 hover:bg-orange-500 hover:text-white"
@@ -188,7 +179,7 @@ const OfferDetails = () => {
 
                 <div className="mt-6 border-t border-(--border) pt-5 text-sm text-(--foreground-secondary)">
                   Sprzedawca:
-                  <span className="ml-2 font-semibold text-(--foreground)">{product.shop_name}</span>
+                  <span className="ml-2 font-semibold text-(--foreground)">{product.shopName}</span>
                 </div>
               </div>
             </div>
@@ -201,8 +192,8 @@ const OfferDetails = () => {
               {[
                 ["Marka", product.brand],
                 ["Model", product.model],
-                ["Kategoria", product.category_name],
-                ["Podkategoria", product.subcategory_name],
+                ["Kategoria", product.categoryName],
+                ["Podkategoria", product.subcategoryName],
               ].map(([name, value]) => (
                 <div key={name} className="border border-(--border) p-4">
                   <p className="text-sm text-(--foreground-secondary)">{name}</p>
@@ -281,20 +272,12 @@ const OfferDetails = () => {
 
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-5">
-                <img
-                  src={
-                    product.logo
-                      ? `${import.meta.env.VITE_API_URL}uploads/sellers/${product.seller_id}/${product.logo}`
-                      : "/shop-placeholder.png"
-                  }
-                  alt={product.shop_name}
-                  className="h-24 w-24 border border-(--border) object-cover"
-                />
+                <img src={product.images[0]} alt={product.shopName} className="h-24 w-24 border border-(--border) object-cover" />
 
                 <div>
-                  <h3 className="text-xl font-semibold text-(--foreground)">{product.shop_name || "Nieznany sklep"}</h3>
+                  <h3 className="text-xl font-semibold text-(--foreground)">{product.shopName || "Nieznany sklep"}</h3>
 
-                  {product.company_name && <p className="mt-1 text-(--foreground-secondary)">{product.company_name}</p>}
+                  {product.companyName && <p className="mt-1 text-(--foreground-secondary)">{product.companyName}</p>}
 
                   <div className="mt-3 flex items-center gap-3">
                     {product.is_verified ? (
@@ -324,7 +307,7 @@ const OfferDetails = () => {
           <section className="mt-12">
             <h2 className="mb-6 text-2xl font-semibold text-(--foreground)">Opinie klientów</h2>
 
-            <AddReview productId={id as string} seller_id={product.seller_id} />
+            <AddReview productId={id as string} sellerId={product.sellerId} />
 
             <ReviewsList productId={id as string} />
           </section>

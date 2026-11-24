@@ -43,7 +43,6 @@ const Products = () => {
 
   const { data: selectedProduct } = productsById(editId);
 
-  console.log(data);
 
   useEffect(() => {
     if (!editId) {

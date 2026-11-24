@@ -66,33 +66,31 @@ export const getProducts = async (query: any) => {
     ...filters
   } = query;
 
-  const currentPage = Number(page);
-  const pageSize = Number(limit);
+  const currentPage = Math.max(1, Number(page) || 1);
+  const pageSize = Math.max(1, Number(limit) || 10);
   const offset = (currentPage - 1) * pageSize;
 
   const where: any = {
     stock: {
       gt: 0,
     },
+    isVisible: true,
+    isDeleted: false,
   };
 
   if (categories) {
-    const cats = categories.split(",");
-
     where.category = {
       is: {
         name: {
-          in: cats,
+          in: categories.split(","),
         },
       },
     };
   }
 
   if (brands) {
-    const brandList = brands.split(",");
-
     where.brand = {
-      in: brandList,
+      in: brands.split(","),
     };
   }
 
@@ -124,8 +122,12 @@ export const getProducts = async (query: any) => {
       ...(where.AND || []),
       {
         attributes: {
-          path: [label],
-          equals: String(value),
+          array_contains: [
+            {
+              label: label,
+              value: String(value),
+            },
+          ],
         },
       },
     ];
@@ -138,6 +140,7 @@ export const getProducts = async (query: any) => {
 
     prisma.product.findMany({
       where,
+
       include: {
         category: {
           select: {
@@ -147,12 +150,6 @@ export const getProducts = async (query: any) => {
         subcategory: {
           select: {
             name: true,
-          },
-        },
-        images: {
-          select: {
-            image: true,
-            url: true,
           },
         },
         seller: {
@@ -181,24 +178,22 @@ export const getProducts = async (query: any) => {
 
   return {
     products: products.map((product) => {
-      const { category, subcategory, seller, images, ...productData } = product;
+      const { category, subcategory, seller, ...productData } = product;
 
       const sellerProfile = seller?.sellerProfiles[0];
 
       return {
         ...productData,
+        categoryName: category?.name ?? null,
+        subcategoryName: subcategory?.name ?? null,
 
-        category_name: category?.name ?? null,
-        subcategory_name: subcategory?.name ?? null,
-
-        shop_name: sellerProfile?.shopName ?? null,
-        company_name: sellerProfile?.companyName ?? null,
+        shopName: sellerProfile?.shopName ?? null,
+        companyName: sellerProfile?.companyName ?? null,
         logo: sellerProfile?.logo ?? null,
         slug: sellerProfile?.slug ?? null,
         seller_created_at: sellerProfile?.createdAt ?? null,
-        is_verified: sellerProfile?.isVerified ?? null,
-
-        images,
+        isVerified: sellerProfile?.isVerified ?? null,
+        images: (productData.productData as any).url.map((el: any) => el.url),
       };
     }),
 
@@ -225,11 +220,6 @@ export const getCurrtentProdcut = async (id: string) => {
           name: true,
         },
       },
-      images: {
-        select: {
-          url: true,
-        },
-      },
       seller: {
         select: {
           sellerProfiles: {
@@ -251,27 +241,22 @@ export const getCurrtentProdcut = async (id: string) => {
 
   if (!product) return null;
 
-  const { category, subcategory, images, seller, ...productData } = product;
+  const { category, subcategory, seller, ...productData } = product;
 
   const sellerProfile = seller?.sellerProfiles[0];
 
   return {
     ...productData,
-
-    category_name: category?.name ?? null,
-    subcategory_name: subcategory?.name ?? null,
-
-    shop_name: sellerProfile?.shopName ?? null,
-    company_name: sellerProfile?.companyName ?? null,
+    categoryName: category?.name ?? null,
+    subcategoryName: subcategory?.name ?? null,
+    shopName: sellerProfile?.shopName ?? null,
+    companyName: sellerProfile?.companyName ?? null,
     logo: sellerProfile?.logo ?? null,
     slug: sellerProfile?.slug ?? null,
     seller_created_at: sellerProfile?.createdAt ?? null,
-    is_verified: sellerProfile?.isVerified ?? null,
+    isVerified: sellerProfile?.isVerified ?? null,
     banner: sellerProfile?.banner ?? null,
-
-    images: images.map((image) => ({
-      url: image.url,
-    })),
+    images: (productData.productData as any).url.map((el: any) => el.url),
   };
 };
 
@@ -442,6 +427,8 @@ type FilterResult = {
   count: number;
 };
 
+import { Prisma } from "../generated/prisma/client";
+
 export const getFiltersService = async (
   categoryId?: number,
 ): Promise<FilterResult[]> => {
@@ -454,8 +441,8 @@ export const getFiltersService = async (
     CROSS JOIN LATERAL jsonb_array_elements(p.attributes) AS attr
     ${
       categoryId !== undefined
-        ? prisma.$queryRaw`WHERE p.category_id = ${categoryId}`
-        : prisma.$queryRaw``
+        ? Prisma.sql`WHERE p.category_id = ${categoryId}`
+        : Prisma.empty
     }
     GROUP BY
       attr->>'label',

@@ -14,10 +14,13 @@ type OfferCardProps = {
 const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
   const { toggleFavorite, isFavorite } = useFavorite();
   const { isAuthenticated, user } = useAuth();
+
   const navigate = useNavigate();
 
   const addToCart = useCartStore((state) => state.addToCart);
+
   const favorite = isFavorite(product.id);
+
   const importantParams = ["RAM", "Procesor", "Dysk", "Karta graficzna"];
 
   const displayedParams: string[] = [];
@@ -32,22 +35,13 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
     }
   });
 
-  const getImage = (images: any[]) => {
-    if (!images[0].url) return [];
-
-    return product.images.map((img: any) => {
-      if (img?.url?.includes("http")) return img.url;
-
-      return `${import.meta.env.VITE_API_URL}${img.url}`;
-    });
-  };
   return (
     <div className="flex min-w-0 flex-col gap-4 bg-(--surface) p-4 text-(--foreground) sm:flex-row sm:items-start sm:justify-between">
       <Link
         to={`/offers/${product.slug}/${product.id}`}
         className="flex h-48 w-full shrink-0 items-center justify-center overflow-hidden bg-(--surface-secondary) sm:h-32 sm:w-32"
       >
-        <img src={getImage(product.images)} alt={product.name} className="h-full w-full object-contain" />
+        <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
       </Link>
 
       <div className="min-w-0 flex-1">
@@ -57,7 +51,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
           </h3>
         </Link>
 
-        <p className="mt-1 text-sm text-(--foreground-secondary)">Kategoria: {product.category_name ?? "Brak"}</p>
+        <p className="mt-1 text-sm text-(--foreground-secondary)">Kategoria: {product.categoryName ?? "Brak"}</p>
 
         <ul className="mt-2 space-y-1 text-sm text-(--foreground-secondary)">
           {displayedParams.map((param) => (
@@ -65,7 +59,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
           ))}
         </ul>
 
-        <p className="mt-2 text-sm text-(--foreground-secondary)">Dostępna szybka wysyłka • Gwarancja 24 miesiące</p>
+        <p className="mt-2 text-sm text-(--foreground-secondary)">Dostępna szybka wysyłka Gwarancja 24 miesiące</p>
       </div>
 
       <div className="flex min-w-0 flex-col items-stretch gap-3 sm:w-40 sm:shrink-0 sm:items-end">
@@ -75,7 +69,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
           {product.stock > 0 ? `Dostępne: ${product.stock} szt.` : "Brak w magazynie"}
         </p>
 
-        {product?.seller_id != user?.id && product.stock > 0 && (
+        {product?.sellerId != user?.id && product.stock > 0 && (
           <button
             className="w-full cursor-pointer bg-(--primary) px-4 py-2 font-semibold text-white transition hover:bg-(--primary-hover) sm:w-auto sm:whitespace-nowrap"
             onClick={() => {
@@ -103,7 +97,7 @@ const OfferCard: React.FC<OfferCardProps> = ({ product }) => {
           </button>
         )}
 
-        {isAuthenticated && product?.seller_id !== user?.id && (
+        {isAuthenticated && product?.seller_Id !== user?.id && (
           <button
             className="flex cursor-pointer justify-center"
             onClick={() => {

@@ -1,69 +1,60 @@
 import { Request, Response } from "express";
-import { connection } from "../config/db.config";
+import { prisma } from "../lib/prisma";
 
 export const toggleFavorite = async (req: Request, res: Response) => {
-  const { userId } = req.body;
-  const { productId } = req.params;
+  const userId = Number(req.body.userId);
+  const productId = Number(req.params.productId);
 
   try {
-    const [existing]: any = await connection.query(
-      "SELECT * FROM favorites WHERE user_id = ? AND product_id = ?",
-      [userId, productId],
-    );
+    const existing = await prisma.favorite.findFirst({
+      where: {
+        userId: userId,
+        productId: productId,
+      },
+    });
 
-    if (existing.length > 0) {
-      await connection.query(
-        "DELETE FROM favorites WHERE user_id = ? AND product_id = ?",
-        [userId, productId],
-      );
+    if (existing) {
+      await prisma.favorite.deleteMany({
+        where: {
+          userId: userId,
+          productId: productId,
+        },
+      });
 
       return res.json({ favorite: false });
     }
 
-    await connection.query(
-      "INSERT INTO favorites (user_id, product_id) VALUES (?, ?)",
-      [userId, productId],
-    );
+    await prisma.favorite.create({
+      data: {
+        userId,
+        productId,
+      },
+    });
 
-    res.json({ favorite: true });
+    return res.json({ favorite: true });
   } catch (err) {
     res.status(500).json(err);
   }
 };
-
 export const getFavorites = async (req: Request, res: Response) => {
-  const { userId } = req.params;
+  const userId = Number(req.params.userId);
 
   try {
-    const [rows] = await connection.query(
-      `
-      SELECT 
-    p.*,
+    const favorites = await prisma.favorite.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        product: true,
+      },
+    });
 
-    COALESCE(
-        JSON_ARRAYAGG(
-            JSON_OBJECT(
-                'image', pi.image,
-                'url', pi.url
-            )
-        ),
-        JSON_ARRAY()
-    ) AS images
-
-FROM favorites f
-
-JOIN products p 
-    ON p.id = f.product_id
-
-LEFT JOIN product_images pi
-    ON pi.product_id = p.id
-
-WHERE f.user_id = ?
-
-GROUP BY p.id;
-      `,
-      [userId],
-    );
+    const rows = favorites.map(({ product }) => ({
+      ...product,
+      images: (
+        product.productData as { url: { url: string; image: string }[] }
+      ).url.map((el) => el.url),
+    }));
 
     res.json(rows);
   } catch (err) {

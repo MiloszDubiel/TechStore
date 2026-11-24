@@ -237,16 +237,16 @@ export const getSellerProducts = async (
   };
 };
 
-export const saveProductImages = async (productId: number, files: any) => {
-  if (files.length === 0) return;
+// export const saveProductImages = async (productId: number, files: any) => {
+//   if (files.length === 0) return;
 
-  return await prisma.productImage.createMany({
-    data: files.map((file: any) => ({
-      productId,
-      image: file.filename,
-    })),
-  });
-};
+//   return await prisma.productImage.createMany({
+//     data: files.map((file: any) => ({
+//       productId,
+//       image: file.filename,
+//     })),
+//   });
+// };
 
 export const deleteProductFromDB = async (
   productId: number,
@@ -328,11 +328,7 @@ export const getSellerById = async (id: number, slug: string) => {
               stock: true,
               brand: true,
               model: true,
-              images: {
-                select: {
-                  url: true,
-                },
-              },
+              productData: true,
             },
           },
         },
@@ -363,7 +359,7 @@ export const getSellerById = async (id: number, slug: string) => {
       stock: product.stock,
       brand: product.brand,
       model: product.model,
-      images: product.images,
+      images: product.productData,
     })),
   };
 };
@@ -384,8 +380,6 @@ export const createProduct = async (
     subcategoryId,
     attributes,
   } = data;
-
-
 
   const product = await prisma.product.create({
     data: {
@@ -480,13 +474,6 @@ export const updateProductImages = async (
   if (!product) {
     throw new Error("Produkt nie istnieje");
   }
-
-
-
-
-
-
-
 
   const uploadedImages = await Promise.all(
     files.map(async (file, index) => {

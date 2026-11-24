@@ -231,7 +231,7 @@ export const editSeller = async (req: any, res: any) => {
     const oldLogo = seller.path;
 
     let newLogo = oldLogo;
-    let uploadPath = " ";
+    let uploadPath = "";
 
     if (req.file) {
       uploadPath = `sellers/${userId}/${Date.now()}-${req.file.originalname}`;

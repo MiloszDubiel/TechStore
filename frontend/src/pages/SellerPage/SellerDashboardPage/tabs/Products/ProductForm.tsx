@@ -102,7 +102,7 @@ const ProductForm = ({
   }, [parameters, replace, attributes]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit, (err) => console.log(err))} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
         <label className="mb-2 block font-medium text-(--foreground)">Nazwa produktu</label>
 

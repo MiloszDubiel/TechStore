@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
-const AddReview = ({ productId, seller_id }: { productId: string; seller_id: string }) => {
+const AddReview = ({ productId, sellerId }: { productId: string; sellerId: string }) => {
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -13,6 +13,9 @@ const AddReview = ({ productId, seller_id }: { productId: string; seller_id: str
   const { user } = useAuth();
   const navigate = useNavigate();
 
+
+
+  
   const submit = async () => {
     if (!rating) {
       setMessage("Wybierz ocenę produktu");
@@ -39,7 +42,7 @@ const AddReview = ({ productId, seller_id }: { productId: string; seller_id: str
     }
   };
 
-  if (user && Number(seller_id) === Number(user.id)) {
+  if (user && Number(sellerId) === Number(user.id)) {
     return null;
   }
   if (!user?.id) {

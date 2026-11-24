@@ -12,6 +12,7 @@ import { useFilterStore } from "../../zustand/states/filterStore";
 const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
   const { min, max, selectedFilters, setMin, setMax, toggleFilter, resetFilters } = useFilterStore();
 
+
   const [openFilters, setOpenFilter] = useState<string[]>([]);
 
   const { data: filters = [] } = useQuery({
@@ -23,15 +24,22 @@ const FiltersSidebar = ({ searchParams, setSearchParams }: any) => {
     },
   });
 
-  const groupedFilters = filters.reduce((acc: Record<string, FilterItem[]>, item: FilterItem) => {
-    if (!acc[item.label]) {
-      acc[item.label] = [];
-    }
+  const groupedFilters = filters.reduce(
+    (
+      acc: Record<string, FilterItem[]>,
 
-    acc[item.label].push(item);
+      item: FilterItem,
+    ) => {
+      if (!acc[item.label]) {
+        acc[item.label] = [];
+      }
 
-    return acc;
-  }, {});
+      acc[item.label].push(item);
+
+      return acc;
+    },
+    {},
+  );
 
   const applyFilters = () => {
     const params = new URLSearchParams(searchParams);

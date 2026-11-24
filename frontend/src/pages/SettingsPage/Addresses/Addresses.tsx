@@ -23,7 +23,6 @@ export const Addresses = () => {
 
   const { userAddresses, saveAddress, updateAddress, deleteAddress } = useAdresses(user?.id);
 
-  console.log(userAddresses);
 
   return (
     <div>
