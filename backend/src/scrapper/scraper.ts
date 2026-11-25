@@ -19,7 +19,7 @@ const getUrl = (url: string, page: number) => `${url}?page=${page}`;
 
 export async function scrapeMediaMarkt() {
   const browser = await chromium.launch({
-    headless: true,
+    headless: false,
   });
 
   const page = await browser.newPage({
@@ -35,7 +35,7 @@ export async function scrapeMediaMarkt() {
 
   for (const category of URLS) {
     {
-      for (let pageNumber = 1; pageNumber <= 5; pageNumber++) {
+      for (let pageNumber = 1; pageNumber <= 1; pageNumber++) {
         console.log(`Pobieram: ${getUrl(category.url, pageNumber)}`);
 
         await page.goto(getUrl(category.url, pageNumber), {
@@ -57,21 +57,11 @@ export async function scrapeMediaMarkt() {
 
         const products = await page.evaluate(() => {
           const cards = [
-            ...document.querySelectorAll("[data-test='mms-product-card']"),
+            ...document.querySelectorAll("[data-test='mms-cofr-product-card']"),
           ];
 
           return cards.map((card: any) => ({
-            name:
-              card
-                .querySelector("[data-test='product-title']")
-                ?.innerText?.trim() ?? null,
-
-            price:
-              card
-                .querySelector("[data-test='mms-price'] span.mms-ui-mBgaT")
-                ?.innerText?.trim() ?? "",
-
-            link: card.querySelector("a")?.href ?? null,
+            link: card.querySelector("a.mms-ui-cJiGkM")?.href ?? null,
           }));
         });
 
@@ -90,24 +80,11 @@ export async function scrapeMediaMarkt() {
               .locator("#features-content")
               .scrollIntoViewIfNeeded();
 
-            await detailPage.waitForFunction(
-              () =>
-                document.querySelectorAll("#features-content tr").length > 0,
-              null,
-              {
-                timeout: 30000,
-              },
-            );
-
             const data = await detailPage.evaluate(() => {
-              const rows = [
-                ...document.querySelectorAll("#features-content tr"),
-              ];
-
               const brand =
-                document
-                  .querySelector(".mms-ui-kFYpmu [data-test='mms-router-link']")
-                  ?.textContent.trim() ?? null;
+                document.querySelector(
+                  '[data-test="mms-select-details-header"] span',
+                )?.textContent ?? null;
 
               const img = (
                 document.querySelector(
@@ -116,28 +93,22 @@ export async function scrapeMediaMarkt() {
               )?.src;
 
               return {
-                description:
-                  document.querySelector("#description-content")?.innerHTML ??
-                  null,
-
-                spec: rows
-                  .map((row) => {
-                    const cells = row.querySelectorAll("td");
-
-                    return {
-                      name: cells[0]?.textContent?.trim() ?? null,
-                      value: cells[1]?.textContent?.trim() ?? null,
-                    };
-                  })
-                  .filter((x) => x.name && x.value),
-
+                description: document.querySelector("#description-content")
+                  ?.textContent,
                 img,
                 brand,
-                model:
-                  document
-                    .querySelector("[data-test='pdp-article-number']")
-                    ?.textContent.replace("Numer produktu:", brand || "") ??
-                  null,
+                model: document
+                  .querySelector(
+                    "[data-test=mms-select-details-header] [data-test=pdp-article-number] ",
+                  )
+                  ?.textContent.replace("Numer produktu:", brand || ""),
+                name: document.querySelector(
+                  "[data-sctrack=pdp-product-headline]",
+                )?.textContent,
+
+                price: document.querySelectorAll(
+                  "[data-test=mms-product-price] span",
+                )[1]?.textContent,
               };
             });
 

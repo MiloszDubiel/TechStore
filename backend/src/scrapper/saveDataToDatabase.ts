@@ -10,9 +10,7 @@ export const saveToDatabase = async (data: any) => {
   });
 
   const productData = {
-    source: "MediaMarkt",
-    url: data.link,
-    type: data.type,
+    url: [{ url: data.img }],
   };
 
   const attributes = data.spec ?? [];
@@ -29,7 +27,7 @@ export const saveToDatabase = async (data: any) => {
         name: data.name,
         description: data.description ?? "",
         price,
-        stock: 1,
+        stock: Math.floor(Math.random() + 1 * 10),
         isVisible: true,
         isDeleted: false,
         productData,
@@ -39,23 +37,13 @@ export const saveToDatabase = async (data: any) => {
         sellerId,
         categoryId: data.categoryId ?? null,
         subcategoryId: data.subcategoryId ?? null,
+
         slug,
       },
       select: {
         id: true,
       },
     });
-
-    if (data.img) {
-      await tx.productImage.create({
-        data: {
-          productId: createdProduct.id,
-          image: data.img.split("/").pop()!,
-          url: data.img,
-          isMain: true,
-        },
-      });
-    }
 
     return createdProduct;
   });
