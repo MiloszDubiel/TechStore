@@ -6,7 +6,6 @@ import { useCartStore } from "../../zustand/states/cartState";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Edit } from "lucide-react";
-import { useImage } from "../../hooks/useImage";
 const HomePage = () => {
   const addToCart = useCartStore((state) => state.addToCart);
   const { user } = useAuth();

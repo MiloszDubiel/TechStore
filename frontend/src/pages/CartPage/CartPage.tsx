@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import Navbar from "../../components/layout/Navbar/Navbar";
 import { useCartStore } from "../../zustand/states/cartState";
 import { useNavigate } from "react-router-dom";
-import { useImage } from "../../hooks/useImage";
 import { useAuth } from "../../context/AuthContext";
 
 export const totalPrice = (cart: any) => cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0).toFixed(2);
@@ -18,7 +17,7 @@ const CartPage = () => {
 
   const { user } = useAuth();
 
-  const hasOwnProduct = cart.some((item) => item.seller_id === user?.id);
+  const hasOwnProduct = cart.some((item: any) => item.sellerId === user?.id);
   return (
     <>
       <Navbar />
@@ -35,7 +34,7 @@ const CartPage = () => {
 
           {cart.map((item: any) => (
             <div key={item.id} className="flex min-w-0 items-center gap-4 border border-(--border) bg-(--surface) p-4 shadow-sm">
-              <img src={useImage(item) || "/no-image.png"} className="h-24 w-24 shrink-0 object-cover" alt={item.name} />
+              <img src={item.images} className="h-24 w-24 shrink-0 object-cover" alt={item.name} />
 
               <div className="min-w-0 flex-1">
                 <h3 className="truncate font-semibold text-(--foreground)">{item.name}</h3>

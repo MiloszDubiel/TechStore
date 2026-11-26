@@ -33,6 +33,11 @@ export const getProductRev = async (productId: string | number) => {
           email: true,
         },
       },
+      product: {
+        select: {
+          sellerId: true,
+        },
+      },
     },
     orderBy: {
       createdAt: "desc",
@@ -46,7 +51,30 @@ export const getProductRev = async (productId: string | number) => {
   }));
 };
 
-export const setComment = async (reviewId: number | string, reply: string) => {
+export const setComment = async (
+  reviewId: number,
+  reply: string,
+  userId: number,
+) => {
+  const review = await prisma.productReview.findFirst({
+    where: {
+      id: reviewId,
+    },
+  });
+
+  const isOwner = await prisma.product.findFirst({
+    where: {
+      id: review?.productId,
+      sellerId: userId,
+    },
+  });
+
+  if (!isOwner) {
+    return {
+      success: false,
+      message: "Nie jestes włascicielem produktu, aby odpowiedziec",
+    };
+  }
   const result = await prisma.productReview.updateMany({
     where: {
       id: Number(reviewId),

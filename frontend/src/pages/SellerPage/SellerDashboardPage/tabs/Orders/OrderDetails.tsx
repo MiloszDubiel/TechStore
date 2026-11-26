@@ -26,6 +26,9 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
   if (!order) {
     return <p>Nie znaleziono</p>;
   }
+
+  console.log(order);
+
   const orderStatusLabels: Record<string, string> = {
     NEW: "Nowe",
     PROCESSING: "W realizacji",
@@ -186,7 +189,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
             <div key={item.id} className="flex gap-5 border border-(--border) p-4">
               <div className="flex gap-2">
                 {item.images?.map((img: any) => (
-                  <img key={img.id} src={`${import.meta.env.VITE_API_URL}${img.url}`} className="h-24 w-24 object-cover" />
+                  <img key={img.id} src={img.url} className="h-24 w-24 object-cover" />
                 ))}
               </div>
 

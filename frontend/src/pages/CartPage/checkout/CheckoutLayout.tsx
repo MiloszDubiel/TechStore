@@ -35,7 +35,7 @@ export default function CheckoutLayout() {
   const cart = useCartStore((state) => state.cart);
   const { user } = useAuth();
 
-  const hasOwnProduct = cart.some((item) => item.seller_id === user?.id);
+  const hasOwnProduct = cart.some((item: any) => item.sellerId === user?.id);
 
   if (hasOwnProduct) {
     return <Navigate to="/cart" replace />;

@@ -35,7 +35,9 @@ export const getProductReviews = async (req: Request, res: Response) => {
 export const setSellerComment = async (req: Request, res: Response) => {
   const reviewId = req.params.id;
   const { reply } = req.body;
+  const sellerId = (req as any).user.id;
 
-  const result = await setComment(reviewId as string, reply);
+  const result = await setComment(Number(reviewId), reply, sellerId);
+
   res.json(result);
 };

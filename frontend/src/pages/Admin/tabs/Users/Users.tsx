@@ -2,7 +2,6 @@ import { Search, CheckCircle, UserCog, Ban, Store } from "lucide-react";
 
 import { useState } from "react";
 import { useAdmin } from "../../../../hooks/useAdmin";
-import { useAuth } from "../../../../context/AuthContext";
 import EditUser from "./EditUser";
 import ConfirmModal from "../../../../components/ui/ConfirmModal";
 import { toast } from "react-toastify";

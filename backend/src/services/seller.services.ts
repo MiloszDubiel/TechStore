@@ -754,21 +754,10 @@ export const getSellerOrderDetailsService = async (
       oi.quantity,
       oi.price,
       oi.image,
+      p.product_data
+   
 
-      -- ZDJĘCIA
-      (
-        SELECT JSON_AGG(
-          JSON_BUILD_OBJECT(
-            'id', pi.id,
-            'image', pi.image,
-            'url', pi.url,
-            'is_main', pi.is_main
-          )
-          ORDER BY pi.id
-        )
-        FROM product_images pi
-        WHERE pi.product_id = p.id
-      ) AS images
+   
 
     FROM orders o
 
@@ -836,7 +825,7 @@ export const getSellerOrderDetailsService = async (
       quantity: item.quantity,
       price: item.price,
       image: item.image,
-      images: item.images ?? [],
+      images: item.product_data.url ?? [],
     })),
 
     created_at: order.created_at,

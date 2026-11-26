@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useFavorite } from "../../../context/FavoritesContext";
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
-import { useImage } from "../../../hooks/useImage";
+
 
 type Props = {
   onClose: () => void;

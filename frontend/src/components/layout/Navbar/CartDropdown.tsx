@@ -1,9 +1,7 @@
 import { useCartStore } from "../../../zustand/states/cartState";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import { useImage } from "../../../hooks/useImage";
 import { X } from "lucide-react";
-import { ca } from "zod/locales";
 
 const CartDropdown = ({ onClose }: any) => {
   const navigate = useNavigate();
@@ -42,7 +40,7 @@ const CartDropdown = ({ onClose }: any) => {
           <ul className="max-h-65 overflow-y-auto">
             {cart.map((item: any) => (
               <li className="flex items-center gap-3">
-                <img src={useImage(item)} className="h-16 w-16 shrink-0 bg-(--surface-secondary) object-cover" alt={item.name} />
+                <img src={item.images} className="h-16 w-16 shrink-0 bg-(--surface-secondary) object-cover" alt={item.name} />
 
                 <div className="min-w-0 flex-1">
                   <p

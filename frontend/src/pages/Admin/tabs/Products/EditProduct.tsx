@@ -1,20 +1,13 @@
 import { useState } from "react";
 
 import { toast } from "react-toastify";
-
 import { productEditSchema } from "../../../../schemas/productSchema";
 import ProductForm from "../../../SellerPage/SellerDashboardPage/tabs/Products/ProductForm";
-
 import { useSeller } from "../../../../hooks/useSeller";
 import { useAdmin } from "../../../../hooks/useAdmin";
-import { useAuth } from "../../../../context/AuthContext";
-
-type Props = {
-  product: any;
-};
 
 const ProductEditForm = ({ product, onBack }: any) => {
-  const [newImages] = useState<File[]>([]);
+  const [removedExsistingImages, setRemovedExisitngImages] = useState<string[]>([]);
 
   const {
     getCategories: { data: categories },
@@ -24,15 +17,6 @@ const ProductEditForm = ({ product, onBack }: any) => {
   const {
     updateProduct: { mutate: updateProducts },
   } = useAdmin();
-
-  const getImages = () => {
-    if (!product?.images) return [];
-
-    const check = product?.images.some((el: any) => !el.id);
-    if (check) return [];
-
-    return product.images.map((img: any) => `${import.meta.env.VITE_API_URL}${img.url}`);
-  };
 
   const onSubmit = (data: any) => {
     const formData = new FormData();
@@ -47,7 +31,7 @@ const ProductEditForm = ({ product, onBack }: any) => {
     formData.append("category_id", data.category_id);
     formData.append("subcategory_id", data.subcategory_id);
     formData.append("attributes", JSON.stringify(data.attributes));
-    formData.append("removedImages", JSON.stringify(removedImages));
+    formData.append("removedImages", JSON.stringify(removedExsistingImages));
     data.images?.forEach((file: any) => formData.append("images", file));
 
     updateProducts(
@@ -69,8 +53,6 @@ const ProductEditForm = ({ product, onBack }: any) => {
     );
   };
 
-  const [removedImages, setRemovedImages] = useState<string[]>([]);
-
   return (
     <div className="space-y-6">
       <button onClick={onBack} className="bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
@@ -89,21 +71,17 @@ const ProductEditForm = ({ product, onBack }: any) => {
           stock: String(product.stock),
           categoryId: String(product.categoryId),
           subcategoryId: String(product.subcategoryId),
-
-          attributes: typeof product.attributes === "string" ? JSON.parse(product.attributes) : (product.attributes ?? []),
-
           images: [],
-          existingImages: getImages(),
           removedImages: [],
         }}
+
+        attributes={product.attributes}
         categories={categories}
         subcategories={subcategories}
-        existingImages={getImages()}
-        onRemoveExisting={(image) => {
-          const filename = image.split("/").pop();
-
-          if (filename) {
-            setRemovedImages((prev) => [...prev, filename]);
+        existingImages={product.productData}
+        onRemoveExisting={(imgUrl: string) => {
+          if (imgUrl) {
+            setRemovedExisitngImages((prev) => [...prev, imgUrl]);
           }
         }}
         onSubmit={onSubmit}

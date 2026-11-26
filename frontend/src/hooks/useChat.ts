@@ -19,7 +19,7 @@ export const useChat = () => {
       enabled: !!user,
     });
 
-  const unreadMessages = (user: any) =>
+  const unreadMessages = (user: any): any =>
     useQuery({
       queryKey: ["unread-messages", user?.id],
       queryFn: async () => {

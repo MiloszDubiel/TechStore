@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import SellerReply from "./../layout/SellerReply";
 import LoadingScreen from "../LoadingScreen";
 
+
 const ReviewsList = ({ productId }: { productId: string }) => {
   const { user } = useAuth();
 
@@ -16,6 +17,7 @@ const ReviewsList = ({ productId }: { productId: string }) => {
       return Array.isArray(res.data) ? res.data : [];
     },
   });
+
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -42,7 +44,7 @@ const ReviewsList = ({ productId }: { productId: string }) => {
               <div>
                 <p className="font-semibold">{review.email}</p>
 
-                <p className="text-xs text-(--foreground-secondary)">{new Date(review.created_at).toLocaleDateString()}</p>
+                <p className="text-xs text-(--foreground-secondary)">{new Date(review.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
 
@@ -55,15 +57,15 @@ const ReviewsList = ({ productId }: { productId: string }) => {
 
           <p className="mt-4 text-(--foreground)">{review.comment}</p>
 
-          {review.seller_reply && (
+          {review.sellerReply && (
             <div className="mt-4 border-l-4 border-orange-500 bg-(--surface-secondary) p-4">
               <p className="font-semibold">Odpowiedź sprzedawcy</p>
 
-              <p className="mt-1 text-(--foreground-secondary)">{review.seller_reply}</p>
+              <p className="mt-1 text-(--foreground-secondary)">{review.sellerReply}</p>
             </div>
           )}
 
-          {user?.role === "SELLER" && !review.seller_reply && <SellerReply reviewId={review.id} />}
+          {user?.id === review.product.sellerId && <SellerReply reviewId={review.id} />}
         </div>
       ))}
     </div>

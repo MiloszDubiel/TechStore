@@ -10,6 +10,6 @@ const router = Router();
 
 router.post("/", verifyToken, insertReviews);
 router.get("/product/:id", getProductReviews);
-router.put("/:id/reply", setSellerComment);
+router.put("/:id/reply", verifyToken, setSellerComment);
 
 export default router;

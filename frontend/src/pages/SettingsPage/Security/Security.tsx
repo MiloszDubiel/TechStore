@@ -1,4 +1,4 @@
-import { useAuth, type User } from "../../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { changePasswordSchema, type ChangePasswordSchema } from "../../../schemas/seciuritySchema";

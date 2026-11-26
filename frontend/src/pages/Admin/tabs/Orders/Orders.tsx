@@ -1,6 +1,5 @@
 import { Eye } from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "../../../../context/AuthContext";
 import { useAdmin } from "../../../../hooks/useAdmin";
 import EditOrder from "./EditOrder";
 import Pagination from "../../../../components/ui/Pagination";

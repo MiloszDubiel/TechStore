@@ -18,7 +18,7 @@ const SearchBar = ({ search, setSearch }: Props) => {
   };
 
   return (
-    <form className="flex w-80 items-center overflow-hidden border border-gray-300" onSubmit={(e) => e.preventDefault()}>
+    <form className="flex w-80 items-center overflow-hidden border border-(--border)" onSubmit={(e) => e.preventDefault()}>
       <div className="relative flex-1">
         <input
           value={search}

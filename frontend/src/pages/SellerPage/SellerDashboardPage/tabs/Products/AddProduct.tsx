@@ -42,8 +42,6 @@ const AddProduct = () => {
       sellerId: sellerData.sellerId,
     };
 
-
-
     mutate(productData, {
       onSuccess: (product) => {
         if (data.images?.length) {
@@ -108,6 +106,7 @@ const AddProduct = () => {
         subcategories={subcategories}
         defaultValues={defaultValues}
         onSubmit={onSubmit}
+        attributes={null}
       />
     </div>
   );
