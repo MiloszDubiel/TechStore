@@ -1,8 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { v4 as uuidv4 } from "uuid";
-import { RowDataPacket } from "mysql2/promise";
-import { connection } from "../config/db.config";
+import { randomUUID } from "crypto";
 import { prisma } from "../lib/prisma";
 
 type User = {
@@ -84,7 +82,7 @@ export const loginUser = async (email: string, password: string) => {
     },
   );
 
-  const refreshToken = uuidv4();
+const refreshToken = randomUUID();
 
   const expiresAt = new Date(
     Date.now() + Number(process.env.REFRESH_TOKEN_EXPIRES) * 1000,
