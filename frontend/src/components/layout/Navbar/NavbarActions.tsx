@@ -24,6 +24,7 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
 
   const [hidden, setHidden] = useState<boolean>(true);
 
+
   return (
     <>
       <div className="flex shrink-0 items-center gap-6">
@@ -34,11 +35,11 @@ const NavbarActions = ({ isAuthenticated, user, logout, seller }: any) => {
               setHidden((prev) => !prev);
             }}
           />
-          {favorites.length > 0 ||
-            notificationData[0] ||
-            (cart.length > 0 && (
-              <div className="absolute -right-1 -bottom-1 grid h-3 w-3 place-content-center rounded-full bg-orange-500 text-[9px] font-medium text-white md:hidden"></div>
-            ))}
+          {favorites.length > 0 || notificationData[0] || cart.length > 0 ? (
+            <div className="absolute -right-1 -bottom-1 grid h-3 w-3 place-content-center rounded-full bg-orange-500 text-[9px] font-medium text-white md:hidden"></div>
+          ) : (
+            ""
+          )}
         </div>
         <div
           className={` ${hidden ? "hidden" : "flex"} border-0.5 absolute top-18 left-0 flex h-20 w-full items-center justify-around gap-6 border border-(--border) bg-(--surface) md:static md:flex! md:justify-start md:gap-4 md:border-0 md:bg-transparent`}

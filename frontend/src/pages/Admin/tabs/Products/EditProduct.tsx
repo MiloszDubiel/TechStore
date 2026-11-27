@@ -5,7 +5,7 @@ import { productEditSchema } from "../../../../schemas/productSchema";
 import ProductForm from "../../../SellerPage/SellerDashboardPage/tabs/Products/ProductForm";
 import { useSeller } from "../../../../hooks/useSeller";
 import { useAdmin } from "../../../../hooks/useAdmin";
-
+import { ArrowLeft } from "lucide-react";
 const ProductEditForm = ({ product, onBack }: any) => {
   const [removedExsistingImages, setRemovedExisitngImages] = useState<string[]>([]);
 
@@ -56,7 +56,8 @@ const ProductEditForm = ({ product, onBack }: any) => {
   return (
     <div className="space-y-6">
       <button onClick={onBack} className="bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
-        ← Powrót
+        <ArrowLeft />
+        Powrót
       </button>
 
       <ProductForm

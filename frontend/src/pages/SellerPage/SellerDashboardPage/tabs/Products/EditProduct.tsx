@@ -3,6 +3,7 @@ import ProductForm from "./ProductForm";
 import { productEditSchema } from "../../../../../schemas/productSchema";
 import { useSeller } from "../../../../../hooks/useSeller";
 import { toast } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
 
 type Props = {
   product: any;
@@ -21,8 +22,9 @@ const EditProduct = ({ product, onBack }: Props) => {
 
   return (
     <div className="space-y-6">
-      <button onClick={onBack} className="cursor-pointer bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
-        ← Powrót
+      <button onClick={onBack} className="flex cursor-pointer items-center bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
+        <ArrowLeft size={18} />
+        Powrót
       </button>
 
       <ProductForm

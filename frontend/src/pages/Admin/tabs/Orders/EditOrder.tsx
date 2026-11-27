@@ -30,7 +30,7 @@ const OrderDetails = ({ orderId, onBack }: Props) => {
   if (!order) {
     return (
       <div className="p-6">
-        <button onClick={onBack} className="flex items-center gap-2 bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
+        <button onClick={onBack} className="flex cursor-pointer items-center bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
           <ArrowLeft size={18} />
           Powrót
         </button>

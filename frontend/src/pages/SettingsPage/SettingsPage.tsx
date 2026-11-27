@@ -26,7 +26,7 @@ const AccountPage = () => {
         return (
           <div>
             <button onClick={() => setActiveTab("orders")} className="mb-4 text-sm text-gray-500 hover:underline">
-              ← Powrót
+              Powrót
             </button>
 
             <h2 className="mb-4 text-2xl font-bold">Zamówienie #{selectedOrderId}</h2>

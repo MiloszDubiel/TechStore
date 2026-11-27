@@ -47,7 +47,6 @@ export const saveAdressesToDB = async (
   city: string,
   isDefault: boolean,
 ) => {
-
   return await prisma.$transaction(async (tx) => {
     const userId = Number(id);
 
@@ -296,12 +295,6 @@ export const getOrderDetailsFromDB = async (
           name: true,
         },
       },
-      images: {
-        select: {
-          image: true,
-          url: true,
-        },
-      },
       seller: {
         select: {
           id: true,
@@ -330,7 +323,7 @@ export const getOrderDetailsFromDB = async (
     return {
       quantity: item.quantity,
       price: item.price,
-      image: item.image,
+      image: (product?.productData as any).ulr,
 
       product: {
         id: product?.id ?? null,
@@ -339,20 +332,21 @@ export const getOrderDetailsFromDB = async (
         brand: product?.brand ?? null,
         model: product?.model ?? null,
         attributes: product?.attributes ?? null,
+        sellerId: product?.sellerId,
 
         category_name: product?.category?.name ?? null,
-        subcategory_name: product?.subcategory?.name ?? null,
+        subcategoryName: product?.subcategory?.name ?? null,
 
-        images: product?.images ?? [],
+        images: (product as any)?.productData.url ?? [],
       },
 
       seller: {
-        seller_id: product?.seller?.id ?? null,
-        shop_name: sellerProfile?.shopName ?? null,
-        company_name: sellerProfile?.companyName ?? null,
+        sellerId: product?.seller?.id ?? null,
+        shopName: sellerProfile?.shopName ?? null,
+        companyName: sellerProfile?.companyName ?? null,
         logo: sellerProfile?.logo ?? null,
         slug: sellerProfile?.slug ?? null,
-        is_verified: sellerProfile?.isVerified ?? null,
+        isVerified: sellerProfile?.isVerified ?? null,
       },
     };
   });
@@ -360,10 +354,11 @@ export const getOrderDetailsFromDB = async (
   return {
     order: {
       id: order.id,
-      order_number: order.orderNumber,
-      total_price: order.totalPrice,
+      orderNumber: order.orderNumber,
+      totalPrice: order.totalPrice,
       status: order.status,
-      created_at: order.createdAt,
+      createdAt: order.createdAt,
+      sellerId: order,
 
       customer: {
         firstName: order.customerName,
@@ -371,6 +366,7 @@ export const getOrderDetailsFromDB = async (
         email: order.email,
         phone: order.customerPhone,
       },
+      
 
       delivery: {
         method: order.deliveryMethod,
@@ -385,7 +381,8 @@ export const getOrderDetailsFromDB = async (
           : null,
       },
 
-      payment_method: order.paymentMethod,
+      paymentMethod: order.paymentMethod,
+
     },
 
     items,

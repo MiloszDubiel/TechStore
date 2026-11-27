@@ -18,6 +18,8 @@ const CartPage = () => {
   const { user } = useAuth();
 
   const hasOwnProduct = cart.some((item: any) => item.sellerId === user?.id);
+
+
   return (
     <>
       <Navbar />

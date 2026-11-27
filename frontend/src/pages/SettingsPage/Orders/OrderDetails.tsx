@@ -43,7 +43,7 @@ const OrderDetails = ({ id, onBack }: any) => {
           <div>
             <p className="text-sm text-(--foreground-secondary)">Numer zamówienia</p>
 
-            <p className="font-semibold text-(--foreground)">{order.order_number}</p>
+            <p className="font-semibold text-(--foreground)">{order.orderNumber}</p>
           </div>
 
           <div>
@@ -55,13 +55,13 @@ const OrderDetails = ({ id, onBack }: any) => {
           <div>
             <p className="text-sm text-(--foreground-secondary)">Data</p>
 
-            <p className="text-(--foreground)">{new Date(order.created_at).toLocaleString("pl-PL")}</p>
+            <p className="text-(--foreground)">{new Date(order.createdAt).toLocaleString("pl-PL")}</p>
           </div>
 
           <div>
             <p className="text-sm text-(--foreground-secondary)">Kwota</p>
 
-            <p className="font-bold text-(--primary)">{Number(order.total_price).toFixed(2)} zł</p>
+            <p className="font-bold text-(--primary)">{Number(order.totalPrice).toFixed(2)} zł</p>
           </div>
         </div>
       </section>
@@ -82,7 +82,7 @@ const OrderDetails = ({ id, onBack }: any) => {
             >
               <div className="flex min-w-0 flex-col gap-4 sm:flex-row">
                 <div className="flex h-40 w-full shrink-0 items-center justify-center border border-(--border) bg-(--surface) p-2 sm:h-32 sm:w-32">
-                  <img src={useImage(product)} className="h-full w-full object-contain" alt={product.name} />
+                  <img src={item.product.images[0].url} className="h-full w-full object-cover" alt={product.name} />
                 </div>
 
                 <div className="min-w-0 flex-1">
@@ -99,12 +99,12 @@ const OrderDetails = ({ id, onBack }: any) => {
                       to={`/seller/${seller.slug}/${seller.sellerId}`}
                       className="mt-1 block truncate font-semibold text-(--foreground) transition hover:text-(--primary)"
                     >
-                      {seller.shop_name}
+                      {seller.shopName}
                     </Link>
 
-                    <p className="truncate text-sm text-(--foreground-secondary)">{seller.company_name}</p>
+                    <p className="truncate text-sm text-(--foreground-secondary)">{seller.companyName}</p>
 
-                    {seller.is_verified === 1 && <span className="mt-1 block text-sm text-(--success)">✓ Zweryfikowany sprzedawca</span>}
+                    {seller.isVerified === 1 && <span className="mt-1 block text-sm text-(--success)">✓ Zweryfikowany sprzedawca</span>}
                   </div>
 
                   <div className="mt-5 flex flex-col gap-4 border-t border-(--border) pt-4 min-[400px]:flex-row min-[400px]:items-end min-[400px]:justify-between">

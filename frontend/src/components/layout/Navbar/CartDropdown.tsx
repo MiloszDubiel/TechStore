@@ -9,6 +9,8 @@ const CartDropdown = ({ onClose }: any) => {
 
   const { cart, updateQuantity, removeFromCart, clearCart } = useCartStore();
 
+  console.log(cart);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -40,7 +42,7 @@ const CartDropdown = ({ onClose }: any) => {
           <ul className="max-h-65 overflow-y-auto">
             {cart.map((item: any) => (
               <li className="flex items-center gap-3">
-                <img src={item.images} className="h-16 w-16 shrink-0 bg-(--surface-secondary) object-cover" alt={item.name} />
+                <img src={item.images[0]} className="h-16 w-16 shrink-0 bg-(--surface-secondary) object-cover" alt={item.name} />
 
                 <div className="min-w-0 flex-1">
                   <p

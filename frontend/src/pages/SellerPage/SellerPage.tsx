@@ -1,17 +1,19 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../axios";
 import { CheckCircle, Store, Edit } from "lucide-react";
-import { useImage } from "../../hooks/useImage";
 import Navbar from "../../components/layout/Navbar/Navbar";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import Pagination from "../../components/ui/Pagination";
 import LoadingScreen from "../../components/LoadingScreen";
+import { useCartStore } from "../../zustand/states/cartState";
+import { toast } from "react-toastify";
 
 const SellerPage = () => {
   const { slug, id } = useParams();
 
+  const addToCart = useCartStore((state) => state.addToCart);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -41,6 +43,7 @@ const SellerPage = () => {
   useEffect(() => {
     setPage(1);
   }, [search]);
+
   if (isLoading) {
     return (
       <>
@@ -49,6 +52,8 @@ const SellerPage = () => {
       </>
     );
   }
+
+  console.log(products);
 
   if (!seller) {
     return (
@@ -68,10 +73,7 @@ const SellerPage = () => {
             <div className="flex items-center gap-6">
               <div className="flex h-32 w-32 items-center justify-center border border-(--border) bg-(--surface-secondary)">
                 {seller.logo ? (
-                  <img
-                    src={`${import.meta.env.VITE_API_URL}uploads/sellers/${seller.seller_id}/${seller.logo}`}
-                    className="h-full w-full object-cover"
-                  />
+                  <img src={seller.logo} className="h-full w-full object-cover" />
                 ) : (
                   <Store size={45} className="text-(--foreground-secondary)" />
                 )}
@@ -79,12 +81,12 @@ const SellerPage = () => {
 
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-bold text-(--foreground)">{seller.shop_name}</h1>
+                  <h1 className="text-3xl font-bold text-(--foreground)">{seller.shopName}</h1>
 
-                  {seller.is_verified === 1 && <CheckCircle className="text-(--success)" />}
+                  {seller.isVerified === 1 && <CheckCircle className="text-(--success)" />}
                 </div>
 
-                <p className="mt-2 text-(--foreground-secondary)">{seller.company_name}</p>
+                <p className="mt-2 text-(--foreground-secondary)">{seller.companyName}</p>
 
                 {seller.sellerId === user?.id && (
                   <button
@@ -97,7 +99,7 @@ const SellerPage = () => {
                 )}
 
                 <p className="mt-3 text-sm text-(--foreground-secondary)">
-                  Sprzedawca od {new Date(seller.created_at).toLocaleDateString("pl-PL")}
+                  Sprzedawca od {new Date(seller.createdAt).toLocaleDateString("pl-PL")}
                 </p>
               </div>
             </div>
@@ -131,11 +133,13 @@ const SellerPage = () => {
                       className="overflow-hidden border border-(--border) bg-(--surface) shadow-sm transition hover:shadow-lg"
                     >
                       <div className="flex items-center justify-center bg-(--surface-secondary) p-4">
-                        <img src={useImage(product)} className="h-48 w-full object-contain" />
+                        <img src={product.images[0]} className="h-48 w-full object-contain" />
                       </div>
 
                       <div className="p-4">
-                        <h3 className="line-clamp-2 font-semibold text-(--foreground)">{product.name}</h3>
+                        <h3 className="line-clamp-2 font-semibold text-(--foreground)">
+                          <Link to={`/offers/${product.slug}/${product.id}`}>{product.name}</Link>
+                        </h3>
 
                         <p className="mt-3 text-2xl font-bold text-(--primary)">{product.price} zł</p>
 
@@ -150,6 +154,19 @@ const SellerPage = () => {
                             Edytuj produkt
                           </button>
                         )}
+                        <button
+                          className="mt-4 flex w-full cursor-pointer items-center justify-center gap-2 bg-(--primary) py-2 text-white transition hover:bg-(--primary-hover)"
+                          onClick={() => {
+                            addToCart(product);
+                            toast.success("Dodano do koszuka");
+                            document.getElementById("navbar")?.scrollIntoView({
+                              behavior: "smooth",
+                              block: "start",
+                            });
+                          }}
+                        >
+                          Dodaj do koszyka
+                        </button>
                       </div>
                     </div>
                   ))

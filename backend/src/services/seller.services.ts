@@ -329,6 +329,7 @@ export const getSellerById = async (id: number, slug: string) => {
               brand: true,
               model: true,
               productData: true,
+              slug: true,
             },
           },
         },
@@ -343,14 +344,14 @@ export const getSellerById = async (id: number, slug: string) => {
   const { user, ...sellerData } = seller;
 
   return {
-    seller_id: sellerData.userId,
-    shop_name: sellerData.shopName,
+    sellerId: sellerData.userId,
+    shopName: sellerData.shopName,
     slug: sellerData.slug,
     description: sellerData.description,
     logo: sellerData.logo,
-    company_name: sellerData.companyName,
-    is_verified: sellerData.isVerified,
-    created_at: sellerData.createdAt,
+    companyName: sellerData.companyName,
+    isVerified: sellerData.isVerified,
+    createdAt: sellerData.createdAt,
 
     products: user.products.map((product) => ({
       id: product.id,
@@ -359,7 +360,8 @@ export const getSellerById = async (id: number, slug: string) => {
       stock: product.stock,
       brand: product.brand,
       model: product.model,
-      images: product.productData,
+      images: (product.productData as any)?.url.map((el: any) => el.url),
+      slug: product.slug,
     })),
   };
 };

@@ -2,7 +2,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
 import { useAdmin } from "../../../../hooks/useAdmin";
-import { editUserAdminSchema, type EditUserAdminForm } from "../../../../schemas/editUserAdminSchema";
+import { editUserAdminSchema,
+   type EditUserAdminForm } from "../../../../schemas/editUserAdminSchema";
+   
 
 const EditUser = ({ user, onSuccess, onBack }: any) => {
   const { editUser } = useAdmin();
@@ -41,7 +43,7 @@ const EditUser = ({ user, onSuccess, onBack }: any) => {
     <div className="w-full space-y-6">
       <div>
         <button type="button" onClick={onBack} className="cursor-pointer bg-orange-500 px-4 py-3 text-white hover:bg-orange-600">
-          ← Powrót
+          Powrót
         </button>
         <h1 className="text-2xl font-bold">Edytuj użytkownika</h1>
 

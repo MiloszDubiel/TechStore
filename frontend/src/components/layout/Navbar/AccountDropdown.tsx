@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { LogIn, UserPlus, User, Store, Shield, LogOut} from "lucide-react";
+import { LogIn, UserPlus, User, Store, Shield, LogOut } from "lucide-react";
 import { useSeller } from "../../../hooks/useSeller";
 import { useEffect, useRef } from "react";
 
@@ -15,6 +15,8 @@ const AccountDropdown = ({ isAuthenticated, user, logout, onClose }: Props) => {
   const {
     getCompanyInfo: { data },
   } = useSeller();
+
+  
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 

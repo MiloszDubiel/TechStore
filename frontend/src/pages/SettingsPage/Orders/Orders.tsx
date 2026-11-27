@@ -22,7 +22,7 @@ const Orders = () => {
       <h2 className="mb-6 text-2xl font-bold text-(--foreground)">Moje zamówienia</h2>
 
       <div className="space-y-4">
-        {orders.length > 0 ? (
+        {orders?.length > 0 ? (
           orders.map((order: any) => (
             <div key={order.id} className="flex items-center justify-between border border-(--border) bg-(--surface) p-5">
               <div>

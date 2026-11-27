@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import ImageUploader from "../ui/ImageUploader";
 import { sellerProfileSchema, type SellerProfileType } from "../../schemas/sellerSchemta";
 import { formatPostalCode } from "./AddressModal";
-import { Save, Store, Building2 } from "lucide-react";
+import { Save, Store, Building2, ArrowLeft } from "lucide-react";
 
 type Props = {
   mode: "create" | "edit";
@@ -56,7 +56,6 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
   const isEdit = mode === "edit";
   const [values, setValues] = useState<File[]>([]);
 
-
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
       <section className="border border-(--border) bg-(--surface) p-6">
@@ -66,7 +65,8 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
             onClick={onBack}
             className="mb-2 cursor-pointer bg-(--primary) px-4 py-3 text-white transition hover:bg-(--primary-hover)"
           >
-            ← Powrót
+            <ArrowLeft />
+            Powrót
           </button>
         )}
 
@@ -106,7 +106,7 @@ const SellerProfileForm = ({ mode, defaultValues, onSubmit, isLoading, hideButto
             <label className="mb-2 block font-medium text-(--foreground)">Logo sklepu</label>
 
             <ImageUploader
-              images={data.logo ? [{ url: data.logo }] : []}
+              images={data?.logo ? [{ url: data?.logo }] : []}
               value={values}
               onChange={(files) => {
                 setValues(files);
