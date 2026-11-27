@@ -2,6 +2,21 @@
 
 Nowoczesna aplikacja sklepu internetowego ze sprzętem IT stworzona z wykorzystaniem **React**, **Node.js**, **Express** oraz **TypeScript**. Projekt powstał w celu rozwijania umiejętności FullStack Web Development
 
+## Wersja live
+
+[Otwórz aplikację TechStore](https://miloszdubieltechstore.vercel.app)
+
+Aplikacja zawiera konta, na których można wypróbować aplikację.
+
+Sprzedawca:
+- Email: miloszdubiel@example.com
+- Hasło: !QAZxsw2
+
+Użytkownik:
+- Email: andrzej@example.com
+- hasło: 1qazXSW@
+
+- 
 ## Funkcjonalności
 
 ### Użytkownik
